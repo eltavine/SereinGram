@@ -549,7 +549,7 @@
 | D093 | 全局：托盘隐私模式 | `showGhostToggleInTray` | `bool` / `true` | 纳入/合并 · [F11](requirements.md#f11) |
 | D094 | 全局：托盘演示隐私模式 | `showStreamerToggleInTray` | `bool` / `false` | 纳入/合并 · [F11](requirements.md#f11) |
 | D095 | 全局：隐藏高级会员状态 | `hidePremiumStatuses` | `bool` / `false` | 纳入/合并 · [F03](requirements.md#f03) |
-| D096 | 全局：等宽字体 | `monoFont` | `QString` / `构造时确定/空值` | 纳入/合并 · [F01](requirements.md#f01) |
+| D096 | 全局：等宽字体 | `monoFont` | `QString` / `构造时确定/空值` | 排除 · 上游 `lib_ui` 无设置接口，决定放弃 A01 |
 | D097 | 全局：隐藏通知计数 | `hideNotificationCounters` | `bool` / `false` | 纳入/合并 · [F18](requirements.md#f18) |
 | D098 | 全局：隐藏通知角标 | `hideNotificationBadge` | `bool` / `false` | 纳入/合并 · [F18](requirements.md#f18) |
 | D099 | 全局：隐藏全部会话文件夹 | `hideAllChatsFolder` | `bool` / `false` | 纳入/合并 · [F02](requirements.md#f02) |

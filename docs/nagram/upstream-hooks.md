@@ -29,7 +29,6 @@
 
 | 编号 | 上游位置 | 需要处理的上游逻辑 | 方式 |
 | --- | --- | --- | --- |
-| A01 | `core/application.cpp`（字体初始化，`style::SetCustomFont` 之后） | 启动时设置等宽字体族；字体不存在时回退并在首个窗口显示提示 | 替换 |
 | A02 | `ui/chat/chat_style_radius.cpp`、`core/application.cpp` | 气泡圆角半径由常量改为按比例计算，启动时设定一次 | 替换 |
 | A03、A04 | `ui/userpic_view.cpp`、`ui/controls/userpic_button.cpp`、`ui/peer/video_userpic_player.cpp` | 圆形头像的绘制路径改为圆角矩形；论坛和频道私信的特殊形状按 A04 决定是否统一 | 替换 |
 | A05、A06 | `history/view/history_view_message.cpp`（最大气泡宽度计算） | 纯文字消息的最大宽度乘以比例；频道文字消息使用可用宽度；两者同时设置时 A05 优先 | 替换 |
