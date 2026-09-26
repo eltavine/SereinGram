@@ -61,6 +61,24 @@ inline constexpr auto kDisableEmojiInteractions = Option<bool>{
 inline constexpr auto kDisableMessageEffects = Option<bool>{
 	"nagram.disableMessageEffects", Scope::Device, false,
 	Category::Messages, "lng_nagram_disable_message_effects" };
+inline constexpr auto kRevealSpoilers = Option<bool>{
+	"nagram.revealSpoilers", Scope::Device, false,
+	Category::Messages, "lng_nagram_reveal_spoilers", kRefreshMessageView };
+inline constexpr auto kHideQuickShare = Option<bool>{
+	"nagram.hideQuickShare", Scope::Device, false,
+	Category::Messages, "lng_nagram_hide_quick_share", kRefreshMessageView };
+inline constexpr auto kHideRecommendedChannels = Option<bool>{
+	"nagram.hideRecommendedChannels", Scope::Device, false,
+	Category::Messages, "lng_nagram_hide_recommended_channels", kRefreshMessageView };
+inline constexpr auto kHidePremiumBadges = Option<bool>{
+	"nagram.hidePremiumBadges", Scope::Device, false,
+	Category::Messages, "lng_nagram_hide_premium_badges", kRefreshMessageView };
+inline constexpr auto kHideSavedTags = Option<bool>{
+	"nagram.hideSavedTags", Scope::Device, false,
+	Category::Messages, "lng_nagram_hide_saved_tags" };
+inline constexpr auto kHidePrivateChatActivities = Option<bool>{
+	"nagram.hidePrivateChatActivities", Scope::Device, false,
+	Category::Messages, "lng_nagram_hide_private_chat_activities" };
 
 inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kSecondsInMessages));
@@ -81,6 +99,12 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kDisablePremiumStickerEffects));
 	Expects(registry.Add(kDisableEmojiInteractions));
 	Expects(registry.Add(kDisableMessageEffects));
+	Expects(registry.Add(kRevealSpoilers));
+	Expects(registry.Add(kHideQuickShare));
+	Expects(registry.Add(kHideRecommendedChannels));
+	Expects(registry.Add(kHidePremiumBadges));
+	Expects(registry.Add(kHideSavedTags));
+	Expects(registry.Add(kHidePrivateChatActivities));
 }
 
 } // namespace Nagram::Messages

@@ -81,7 +81,7 @@
 | C19 | `history/view/history_view_element.cpp`、`history/view/history_view_text_helper.cpp`、`history/view/media/history_view_media.cpp` | 文字剧透与普通图片/视频剧透默认展开 | 读取 |
 | C20 | `history/view/history_view_message.cpp` | 不显示快速转发按钮及其命中区域 | 读取 |
 | C21 | `history/view/history_view_element.cpp` | 不插入推荐频道卡片 | 读取 |
-| C22 | `info/profile/info_profile_badge.cpp`、`dialogs/dialogs_inner_widget_accessibility.cpp`、`main/main_session.cpp` | 不绘制会员星标与表情状态，认证和警告标识保留 | 读取 |
+| C22 | `info/profile/info_profile_badge.cpp`、`dialogs/dialogs_inner_widget_accessibility.cpp`、`dialogs/dialogs_inner_widget.cpp`、`main/main_session.cpp` | 不绘制会员星标与表情状态，认证和警告标识保留；列表订阅开关变化后重绘 | 读取 |
 | C23 | `dialogs/dialogs_search_tags.cpp`、`history/view/reactions/history_view_reactions_selector.cpp` | 不显示未选中的收藏标签与标签选择器 | 过滤 |
 | C24 | `history/view/history_view_send_action.cpp`、`history/view/history_view_top_bar_widget.cpp`、`dialogs/dialogs_inner_widget.cpp` | 私聊中不显示对方的输入、录制等状态 | 读取 |
 | C25、C26 | `history/history_item.cpp`、`history/view/history_view_element.cpp` | 显示文本经过投影（间距、简繁），原文不变；投影结果按消息缓存 | 替换 |

@@ -3,6 +3,8 @@ set(nagram_sources
     nagram/core/options.cpp
     nagram/display/view_refresher.cpp
     nagram/messages/format.cpp
+    nagram/messages/content.cpp
+    nagram/messages/badges.cpp
     nagram/messages/effects.cpp
     nagram/messages/reactions.cpp
     nagram/settings/home.cpp

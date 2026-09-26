@@ -208,6 +208,37 @@ const auto kMeta = BuildHelper({
 		tr::lng_nagram_disable_message_effects(),
 		u"nagram/messages/effects-message"_q,
 		{ u"message effects"_q });
+	builder.addSubsectionTitle({
+		.id = u"nagram/messages/content"_q,
+		.title = tr::lng_nagram_content_display(),
+		.keywords = { u"content"_q, u"display"_q },
+	});
+	AddToggle(builder, Messages::kRevealSpoilers,
+		tr::lng_nagram_reveal_spoilers(),
+		u"nagram/messages/reveal-spoilers"_q,
+		{ u"reveal"_q, u"spoilers"_q });
+	builder.addDividerText(tr::lng_nagram_reveal_spoilers_note());
+	AddToggle(builder, Messages::kHideQuickShare,
+		tr::lng_nagram_hide_quick_share(),
+		u"nagram/messages/hide-quick-share"_q,
+		{ u"quick forward"_q, u"share"_q });
+	AddToggle(builder, Messages::kHideRecommendedChannels,
+		tr::lng_nagram_hide_recommended_channels(),
+		u"nagram/messages/hide-recommended"_q,
+		{ u"recommended"_q, u"channels"_q });
+	AddToggle(builder, Messages::kHidePremiumBadges,
+		tr::lng_nagram_hide_premium_badges(),
+		u"nagram/messages/hide-premium"_q,
+		{ u"Premium"_q, u"emoji status"_q });
+	AddToggle(builder, Messages::kHideSavedTags,
+		tr::lng_nagram_hide_saved_tags(),
+		u"nagram/messages/hide-tags"_q,
+		{ u"saved messages"_q, u"tags"_q });
+	AddToggle(builder, Messages::kHidePrivateChatActivities,
+		tr::lng_nagram_hide_private_chat_activities(),
+		u"nagram/messages/hide-private-activity"_q,
+		{ u"typing"_q, u"recording"_q, u"private chat"_q });
+	builder.addDividerText(tr::lng_nagram_private_activities_note());
 });
 
 const SectionBuildMethod MessagesSection::kBuild = kMeta.build;

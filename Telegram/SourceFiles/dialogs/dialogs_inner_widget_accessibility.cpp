@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "dialogs/dialogs_inner_widget_accessibility.h"
+#include "nagram/messages/badges.h"
 
 #include "data/notify/data_notify_settings.h"
 #include "data/data_channel.h"
@@ -206,7 +207,7 @@ QString RowAccessibilityName(
 	}
 
 	if (const auto user = peer->asUser()) {
-		if (user->isPremium()) {
+		if (user->isPremium() && Nagram::Messages::ShowPremiumBadges()) {
 			parts << tr::lng_premium(tr::now);
 		}
 	}
@@ -358,7 +359,8 @@ QString SubItemValue(
 		return {};
 	case SubItem::Premium:
 		if (const auto user = peer->asUser()) {
-			if (user->isPremium()) {
+			if (user->isPremium()
+				&& Nagram::Messages::ShowPremiumBadges()) {
 				return tr::lng_premium(tr::now);
 			}
 		}
@@ -620,7 +622,7 @@ QString PeerSearchResultAccessibilityName(
 	}
 
 	if (const auto user = peer->asUser()) {
-		if (user->isPremium()) {
+		if (user->isPremium() && Nagram::Messages::ShowPremiumBadges()) {
 			parts << tr::lng_premium(tr::now);
 		}
 	}

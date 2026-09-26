@@ -36,3 +36,12 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_nagram_ prefix.
 "lng_nagram_disable_premium_sticker_effects" = "Disable Premium sticker effects";
 "lng_nagram_disable_emoji_interactions" = "Disable emoji interactions";
 "lng_nagram_disable_message_effects" = "Disable message effects";
+"lng_nagram_content_display" = "Content display";
+"lng_nagram_reveal_spoilers" = "Reveal spoilers by default";
+"lng_nagram_hide_quick_share" = "Hide quick forward button";
+"lng_nagram_hide_recommended_channels" = "Hide recommended channels";
+"lng_nagram_hide_premium_badges" = "Hide Premium badges and emoji statuses";
+"lng_nagram_hide_saved_tags" = "Hide saved message tags";
+"lng_nagram_hide_private_chat_activities" = "Hide typing activity in private chats";
+"lng_nagram_reveal_spoilers_note" = "Paid, expiring, and sensitive media still follow Telegram's visibility rules.";
+"lng_nagram_private_activities_note" = "Only hides the other person's activity. Your own activity is unaffected.";

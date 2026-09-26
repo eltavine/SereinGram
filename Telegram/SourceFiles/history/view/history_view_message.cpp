@@ -7,6 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/history_view_message.h"
 #include "nagram/messages/reactions.h"
+#include "nagram/messages/content.h"
 
 #include "api/api_suggest_post.h"
 #include "api/api_transcribes.h"
@@ -5996,6 +5997,9 @@ std::optional<QSize> Message::rightActionSize() const {
 }
 
 bool Message::displayFastShare() const {
+	if (Nagram::Messages::HideQuickShare()) {
+		return false;
+	}
 	const auto item = data();
 	const auto peer = item->history()->peer;
 	if (!item->allowsForward() || IsAnchoredEphemeral(item)) {

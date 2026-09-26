@@ -49,11 +49,20 @@ void TestOptions() {
 	Require(registry.All().size() == 1, "registry count");
 	auto messages = Registry();
 	Messages::RegisterOptions(messages);
-	Require(messages.All().size() == 18, "message option count");
+	Require(messages.All().size() == 24, "message option count");
+	auto refreshCount = 0;
 	for (const auto &entry : messages.All()) {
 		Require(entry.scope == Scope::Device, "message option scope");
 		Require(entry.category == Category::Messages, "message option category");
+		refreshCount += messages.HasFlag(entry.key, Flag::RefreshMessageView);
 	}
+	Require(refreshCount == 17, "message refresh option count");
+	Require(messages.HasFlag(Messages::kSecondsInMessages.key,
+		Flag::RefreshMessageView), "message refresh option missing");
+	Require(!messages.HasFlag(Messages::kHideReactionMenu.key,
+		Flag::RefreshMessageView), "unrelated refresh option");
+	Require(!messages.HasFlag("nagram.unknown", Flag::RefreshMessageView),
+		"unknown refresh option");
 	const auto locale = QLocale();
 	QLocale::setDefault(QLocale::c());
 	Require(Messages::FormatTime(QTime(9, 8, 7), false)

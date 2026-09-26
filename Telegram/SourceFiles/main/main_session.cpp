@@ -7,6 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "main/main_session.h"
 #include "nagram/display/view_refresher.h"
+#include "nagram/messages/badges.h"
 
 #include "apiwrap.h"
 #include "api/api_peer_colors.h"
@@ -361,7 +362,8 @@ bool Session::premiumPossible() const {
 }
 
 bool Session::premiumBadgesShown() const {
-	return supportMode() || premiumPossible();
+	return Nagram::Messages::ShowPremiumBadges()
+		&& (supportMode() || premiumPossible());
 }
 
 rpl::producer<bool> Session::premiumPossibleValue() const {

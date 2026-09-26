@@ -32,3 +32,12 @@
 "lng_nagram_disable_premium_sticker_effects" = "关闭 Premium 贴纸特效";
 "lng_nagram_disable_emoji_interactions" = "关闭表情互动特效";
 "lng_nagram_disable_message_effects" = "关闭消息特效";
+"lng_nagram_content_display" = "内容显示";
+"lng_nagram_reveal_spoilers" = "直接显示剧透内容";
+"lng_nagram_hide_quick_share" = "隐藏快速转发按钮";
+"lng_nagram_hide_recommended_channels" = "隐藏推荐频道";
+"lng_nagram_hide_premium_badges" = "隐藏会员标识和表情状态";
+"lng_nagram_hide_saved_tags" = "隐藏收藏夹标签栏";
+"lng_nagram_hide_private_chat_activities" = "隐藏私聊中对方的输入状态";
+"lng_nagram_reveal_spoilers_note" = "付费、限时和敏感媒体仍按 Telegram 原规则处理。";
+"lng_nagram_private_activities_note" = "只隐藏对方的状态，不影响你发送的状态。";

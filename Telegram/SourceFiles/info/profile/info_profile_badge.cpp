@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "info/profile/info_profile_badge.h"
+#include "nagram/messages/badges.h"
 
 #include "data/data_changes.h"
 #include "data/data_emoji_statuses.h"
@@ -49,8 +50,7 @@ Badge::Badge(
 , _customStatusLoopsLimit(customStatusLoopsLimit)
 , _allowed(allowed)
 , _animationPaused(std::move(animationPaused)) {
-	std::move(
-		content
+	Nagram::Messages::VisibleBadgeContent(std::move(content)
 	) | rpl::on_next([=](Content content) {
 		setContent(content);
 	}, _lifetime);

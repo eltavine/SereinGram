@@ -2,6 +2,7 @@
 
 #include "nagram/core/options.h"
 #include "nagram/messages/options.h"
+#include "nagram/messages/content.h"
 #include "data/data_peer.h"
 #include "data/data_message_reactions.h"
 #include "history/history_item.h"
@@ -41,7 +42,8 @@ HistoryView::Reactions::ButtonParameters FilterReactionButton(
 
 Data::PossibleItemReactionsRef MenuReactions(
 		not_null<HistoryItem*> item) {
-	return ForDevice().Get(kHideReactionMenu)
+	return (ForDevice().Get(kHideReactionMenu)
+		|| (item->reactionsAreTags() && HideSavedTags()))
 		? Data::PossibleItemReactionsRef()
 		: Data::LookupPossibleReactions(item, true);
 }

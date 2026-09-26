@@ -8,6 +8,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "history/view/history_view_element.h"
 #include "nagram/messages/format.h"
 #include "nagram/messages/reactions.h"
+#include "nagram/messages/content.h"
 
 #include "apiwrap.h"
 #include "api/api_transcribes.h"
@@ -1647,7 +1648,7 @@ void Element::refreshMedia(Element *replacing) {
 		}
 		_media = media->createView(this, replacing);
 	} else if (item->showSimilarChannels()) {
-		_media = std::make_unique<SimilarChannels>(this);
+		_media = Nagram::Messages::RecommendedChannelsMedia(this);
 	} else if (isOnlyCustomEmoji()
 		&& Core::App().settings().largeEmoji()
 		&& !item->isSponsored()) {
