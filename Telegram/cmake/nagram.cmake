@@ -1,6 +1,7 @@
 set(nagram_sources
     nagram/chats/layout.cpp
     nagram/chats/list_refresher.cpp
+    nagram/chats/promotions.cpp
     nagram/core/language.cpp
     nagram/core/options.cpp
     nagram/display/view_refresher.cpp

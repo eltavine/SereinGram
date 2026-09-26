@@ -135,6 +135,27 @@ const auto kMeta = BuildHelper({
 		tr::lng_nagram_hide_folder_unread_counters(),
 		u"nagram/chats/hide-folder-unread"_q,
 		{ u"unread"_q, u"folders"_q });
+	builder.addSubsectionTitle({
+		.id = u"nagram/chats/promotions"_q,
+		.title = tr::lng_nagram_promotions(),
+		.keywords = { u"promotions"_q, u"ads"_q },
+	});
+	AddToggle(builder, Chats::kHideSponsoredMessages,
+		tr::lng_nagram_hide_sponsored_messages(),
+		u"nagram/chats/hide-sponsored"_q,
+		{ u"sponsored"_q, u"search ads"_q });
+	AddToggle(builder, Chats::kHideProxySponsor,
+		tr::lng_nagram_hide_proxy_sponsor(),
+		u"nagram/chats/hide-proxy-sponsor"_q,
+		{ u"proxy"_q, u"sponsored channel"_q });
+	AddToggle(builder, Chats::kHidePremiumPromotions,
+		tr::lng_nagram_hide_premium_promotions(),
+		u"nagram/chats/hide-premium-promotions"_q,
+		{ u"Premium"_q, u"promotions"_q });
+	AddToggle(builder, Chats::kHideBirthdaySuggestions,
+		tr::lng_nagram_hide_birthday_suggestions(),
+		u"nagram/chats/hide-birthday"_q,
+		{ u"birthday"_q, u"suggestion"_q });
 });
 
 const SectionBuildMethod ChatsSection::kBuild = kMeta.build;

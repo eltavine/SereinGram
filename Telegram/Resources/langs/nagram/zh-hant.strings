@@ -23,6 +23,11 @@
 "lng_nagram_hide_all_chats_folder" = "隱藏「所有聊天」資料夾";
 "lng_nagram_show_archive_in_folders" = "在資料夾中顯示封存入口";
 "lng_nagram_hide_folder_unread_counters" = "隱藏資料夾未讀數";
+"lng_nagram_promotions" = "推廣內容";
+"lng_nagram_hide_sponsored_messages" = "隱藏贊助訊息和搜尋廣告";
+"lng_nagram_hide_proxy_sponsor" = "隱藏代理贊助頻道";
+"lng_nagram_hide_premium_promotions" = "隱藏 Premium 推廣提示";
+"lng_nagram_hide_birthday_suggestions" = "隱藏生日提示";
 "lng_nagram_time_and_info" = "時間與資訊";
 "lng_nagram_seconds_in_messages" = "時間顯示秒數";
 "lng_nagram_show_forwarded_message_date" = "轉傳訊息顯示原始傳送時間";

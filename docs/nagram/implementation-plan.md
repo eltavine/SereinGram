@@ -75,7 +75,7 @@
 | --- | --- | --- | --- |
 | ✅ S30 | `feat(chats): 列表布局` | B01–B04 | 随附会话列表刷新机制；macOS Debug 构建与 `test_nagram` 通过，指定测试目录内开关与列表即时刷新已验证；B04 按用户确认保留动态条内部对象 |
 | ✅ S31 | `feat(chats): 文件夹` | B06–B08 | B05 在 M4；macOS Debug 构建与 `test_nagram` 通过，指定测试目录内侧栏隐藏、未读数和文件夹归档入口即时切换已验证 |
-| ☐ S32 | `feat(chats): 推广内容` | B10–B13 | |
+| ✅ S32 | `feat(chats): 推广内容` | B10–B13 | macOS Debug 构建与 `test_nagram` 通过，四项设置切换并恢复；测试账号缺少赞助、代理和生日提示样本，实际内容效果待 M2 V2 验证 |
 | ☐ S33 | `feat(chats): 滚动导航` | B14、B15 | |
 | ☐ S34 | `feat(compose): 输入框按钮` | D01–D11 | 随附输入区按钮可见性机制 |
 | ☐ S35 | `feat(compose): 输入行为` | D12–D15 | |

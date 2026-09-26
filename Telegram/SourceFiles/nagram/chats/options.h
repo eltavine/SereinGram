@@ -31,6 +31,18 @@ inline constexpr auto kShowArchiveInFolders = Option<bool>{
 inline constexpr auto kHideFolderUnreadCounters = Option<bool>{
 	"nagram.hideFolderUnreadCounters", Scope::Device, false,
 	Category::Chats, "lng_nagram_hide_folder_unread_counters" };
+inline constexpr auto kHideSponsoredMessages = Option<bool>{
+	"nagram.hideSponsoredMessages", Scope::Device, false,
+	Category::Chats, "lng_nagram_hide_sponsored_messages" };
+inline constexpr auto kHideProxySponsor = Option<bool>{
+	"nagram.hideProxySponsor", Scope::Device, false,
+	Category::Chats, "lng_nagram_hide_proxy_sponsor" };
+inline constexpr auto kHidePremiumPromotions = Option<bool>{
+	"nagram.hidePremiumPromotions", Scope::Device, false,
+	Category::Chats, "lng_nagram_hide_premium_promotions" };
+inline constexpr auto kHideBirthdaySuggestions = Option<bool>{
+	"nagram.hideBirthdaySuggestions", Scope::Device, false,
+	Category::Chats, "lng_nagram_hide_birthday_suggestions" };
 
 inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kCompactList));
@@ -40,6 +52,10 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kHideAllChatsFolder));
 	Expects(registry.Add(kShowArchiveInFolders));
 	Expects(registry.Add(kHideFolderUnreadCounters));
+	Expects(registry.Add(kHideSponsoredMessages));
+	Expects(registry.Add(kHideProxySponsor));
+	Expects(registry.Add(kHidePremiumPromotions));
+	Expects(registry.Add(kHideBirthdaySuggestions));
 }
 
 } // namespace Nagram::Chats

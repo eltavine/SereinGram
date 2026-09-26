@@ -8,6 +8,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "dialogs/dialogs_inner_widget.h"
 #include "nagram/chats/list_refresher.h"
 #include "nagram/chats/layout.h"
+#include "nagram/chats/promotions.h"
 #include "nagram/messages/content.h"
 #include "nagram/messages/badges.h"
 
@@ -4746,6 +4747,9 @@ void InnerWidget::searchReceived(
 void InnerWidget::peerSearchReceived(Api::PeerSearchResult result) {
 	if (_state != WidgetState::Filtered) {
 		return;
+	}
+	if (Nagram::Chats::HideSponsoredMessages()) {
+		result.sponsored.clear();
 	}
 
 	_peerSearchQuery = result.query.toLower().trimmed();

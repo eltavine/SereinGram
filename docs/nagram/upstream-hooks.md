@@ -56,7 +56,7 @@
 | B07 | `dialogs/dialogs_inner_widget.cpp` | 自定义文件夹列表顶部加入归档入口行 | 读取 |
 | B08 | `ui/widgets/chat_filters_tabs_strip.cpp`、`window/window_filters_menu.cpp` | 不绘制文件夹未读数，读屏文本同步 | 读取 |
 | B09 | `dialogs/dialogs_entry.cpp`、`dialogs/dialogs_list.cpp` | 会话排序键加入 Nagram 优先级（置顶之后、时间之前）；状态变化时更新该会话的位置 | 替换 |
-| B10 | `data/components/sponsored_messages.cpp`、`dialogs/dialogs_inner_widget.cpp` | 不请求、不显示赞助消息与搜索广告 | 读取 |
+| B10 | `data/components/sponsored_messages.cpp`、`dialogs/dialogs_inner_widget.cpp` | 不请求、注入赞助消息，切换时清除已显示的赞助消息；过滤搜索结果中的广告 | 读取 |
 | B11 | `data/components/promo_suggestions.cpp` | 忽略代理赞助频道 | 读取 |
 | B12、B13 | `dialogs/dialogs_top_bar_suggestion.cpp` | 顶部提示条不显示 Premium 推广与生日提示 | 过滤 |
 | B14、B15 | `history/history_view_pull_to_next_channel.cpp` | 滚动到底时不触发切换，取消已排队的切换 | 读取 |

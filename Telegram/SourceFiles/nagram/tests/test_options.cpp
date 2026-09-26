@@ -66,7 +66,7 @@ void TestOptions() {
 		"unknown refresh option");
 	auto chats = Registry();
 	Chats::RegisterOptions(chats);
-	Require(chats.All().size() == 7, "chat option count");
+	Require(chats.All().size() == 11, "chat option count");
 	Require(chats.HasFlag(Chats::kCompactList.key,
 		Flag::RefreshDialogList), "compact list refresh flag");
 	Require(chats.HasFlag(Chats::kPreviewLines.key,

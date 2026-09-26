@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "data/components/promo_suggestions.h"
+#include "nagram/chats/promotions.h"
 
 #include "api/api_text_entities.h"
 #include "apiwrap.h"
@@ -194,6 +195,9 @@ void PromoSuggestions::setTopPromoted(
 		History *promoted,
 		const QString &type,
 		const QString &message) {
+	if (Nagram::Chats::HideProxySponsor() && type == u"proxy"_q) {
+		promoted = nullptr;
+	}
 	const auto changed = (_topPromoted != promoted);
 	if (!changed
 		&& (!promoted || promoted->topPromotionMessage() == message)) {
