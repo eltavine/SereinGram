@@ -95,6 +95,8 @@ inline constexpr auto kHideStories = Option<bool>{
 | 凭据 | macOS Keychain / Windows Credential Manager；其他平台明确报告不可用 | 不进入偏好、不导出；查找键绑定服务地址、协议和用途 |
 | 大体量数据 | 独立的账号级加密文件（仅 P3 本地历史需要） | 进入实现前单独设计生命周期 |
 
+`Storage::Account` 上游只提供 `bool` 偏好特化；Nagram 在自己的 `options.cpp` 中补充 `QByteArray` 特化，继续使用上游账号 KV 和保存生命周期。
+
 响应式通知由 Nagram 自己维护的 `rpl::event_stream<std::string_view>` 提供，在 `Nagram::Set` 内部触发，不修改上游 `Core::Settings`。旧实现为原子导入新增的 `Core::Settings::applyPrefChanges()` 不再需要：导入先完成全部校验与冲突检查，再在同一事件循环内逐键写入，写入期间抑制通知，结束后统一推送一次。若 M0 验证发现上游逐键写入会产生可观察的中间状态，再以最小改动补一个批量接口。
 
 结构化对象一律为 `{"version": N, ...}`，边界严格校验类型、枚举、范围和未知字段；解析失败保留原字节并在诊断中报告。
@@ -169,7 +171,7 @@ M1、M2、M3 之间没有依赖，但按计划顺序提交，避免并行分支�
 
 | 里程碑 | 状态 | 上游改动文件数 | 挂钩数 |
 | --- | --- | --- | --- |
-| M0 | 进行中：S00–S04、S10 已完成；V0 macOS arm64 Debug 完整构建与 `test_nagram` 通过；S11–S14 待做 | 文案管线 1 个；品牌 33 个上游文本文件（仅字符串与标识）；构建配置 2 个（`Telegram/CMakeLists.txt` 一行、`.gitignore`） | — |
+| M0 | S00–S14 已提交；V2 部分完成：`upstream/dev` fetch 无变化，macOS arm64 Debug clean 构建、增量构建、`test_nagram`、独立目录登录页及简体中文后备文案通过。三平台 CI 留到首次获准推送；双账号、设置页与 125%/200% 缩放延至 M1 的 V2 | 相对 `dev` 共 122 个文件；其中原有 Telegram 文件 81 个（文本／代码 35、资源 46） | 功能调用 2 处（语言、设置）；另有构建与样式接入 |
 | M1–M7 | 未开始 | — | — |
 
 ## 6. 已确认的决定

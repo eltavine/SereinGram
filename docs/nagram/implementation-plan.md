@@ -57,7 +57,7 @@
 | ✅ S11 | `feat(core): 选项注册表与本机存储` | `Option<T>` 句柄、`Get/Value/Set`、校验、读取失败保留原值、变更通知；`Core::Settings` 偏好 | V1；单元测试覆盖默认值、往返、校验、通知去重 |
 | ✅ S12 | `feat(core): 账号作用域存储` | `Storage::Account` 偏好读写；账号切换与退出的生命周期 | V1；双账号隔离单元测试；真实双账号场景待验证 |
 | ✅ S13 | `feat(lang): 简繁内置文案` | `langs/nagram/zh-hans.strings`、`zh-hant.strings`；`lang_instance.cpp` 一处挂钩；含品牌文案译文 | V1；三语键与占位符一致性测试；缺少任一简繁文件时 `test_nagram` 必须失败 |
-| ☐ S14 | `feat(settings): Nagram 设置入口与首页` | 设置主页顶部入口；首页头部；分栏在有条目后显示；搜索注册 | V1；125%/200% 缩放；**V2（M0 结束）** |
+| ✅ S14 | `feat(settings): Nagram 设置入口与首页` | 设置主页顶部入口；首页头部；分栏在有条目后显示；搜索注册 | V1 编译与登录页冒烟通过；账号内设置页和 125%/200% 缩放待验证；**V2（M0 结束）** |
 
 ### M1 消息（分栏 3）
 

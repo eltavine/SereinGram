@@ -1,6 +1,7 @@
 set(nagram_sources
     nagram/core/language.cpp
     nagram/core/options.cpp
+    nagram/settings/home.cpp
 )
 
 if (nagram_sources)

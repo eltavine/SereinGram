@@ -7,6 +7,8 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "settings/sections/settings_main.h"
 
+#include "nagram/settings/home.h"
+
 #include "settings/settings_common_session.h"
 
 #include "api/api_cloud_password.h"
@@ -361,6 +363,7 @@ void Cover::refreshQrButtonGeometry(int newWidth) {
 }
 
 void BuildSectionButtons(SectionBuilder &builder) {
+	Nagram::AddSettingsEntry(builder);
 	const auto session = builder.session();
 	const auto controller = builder.controller();
 	const auto showOther = builder.showOther();

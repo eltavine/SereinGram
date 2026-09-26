@@ -5,3 +5,6 @@
 "lng_nagram_open_from_tray" = "打开 Nagram";
 "lng_nagram_quit_from_tray" = "退出 Nagram";
 "lng_nagram_tray_icon_text" = "Nagram 仍在这里运行。你可以在设置中更改此行为。";
+"lng_nagram_settings" = "Nagram";
+"lng_nagram_source_code" = "源代码";
+"lng_nagram_settings_note" = "Nagram 设置默认跟随 Telegram 原有行为，只影响本机显示，除非条目另有说明。";

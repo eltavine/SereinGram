@@ -1,0 +1,70 @@
+#include "nagram/settings/home.h"
+
+#include "boxes/about_box.h"
+#include "core/click_handler_types.h"
+#include "lang/lang_keys.h"
+#include "settings/sections/settings_main.h"
+#include "settings/settings_builder.h"
+#include "settings/settings_common_session.h"
+#include "ui/vertical_list.h"
+#include "window/window_session_controller.h"
+#include "styles/style_menu_icons.h"
+
+namespace Nagram {
+namespace {
+
+using namespace ::Settings;
+using namespace ::Settings::Builder;
+
+class Home final : public Section<Home> {
+public:
+	Home(QWidget *parent, not_null<Window::SessionController*> controller)
+	: Section(parent, controller) {
+		const auto content = Ui::CreateChild<Ui::VerticalLayout>(this);
+		build(content, kBuild);
+		Ui::ResizeFitChild(this, content);
+	}
+
+	[[nodiscard]] rpl::producer<QString> title() override {
+		return tr::lng_nagram_settings();
+	}
+
+	static const SectionBuildMethod kBuild;
+};
+
+const auto kMeta = BuildHelper({
+	.id = Home::Id(),
+	.parentId = MainId(),
+	.title = &tr::lng_nagram_settings,
+	.icon = &st::menuIconNagram,
+}, [](SectionBuilder &builder) {
+	builder.addButton({
+		.title = tr::lng_nagram_settings(),
+		.icon = { &st::menuIconNagram },
+		.label = rpl::single(tr::lng_settings_current_version(
+			tr::now, lt_version, currentVersionShortText())),
+	});
+	builder.addButton({
+		.title = tr::lng_nagram_source_code(),
+		.icon = { &st::menuIconLink },
+		.onClick = [] {
+			UrlClickHandler::Open(u"https://github.com/NextAlone/Nagram-qt"_q);
+		},
+	});
+	builder.addDividerText(tr::lng_nagram_settings_note());
+});
+
+const SectionBuildMethod Home::kBuild = kMeta.build;
+
+} // namespace
+
+void AddSettingsEntry(SectionBuilder &builder) {
+	builder.addSectionButton({
+		.title = tr::lng_nagram_settings(),
+		.targetSection = Home::Id(),
+		.icon = { &st::menuIconNagram },
+		.keywords = { u"Nagram"_q, u"desktop"_q },
+	});
+}
+
+} // namespace Nagram
