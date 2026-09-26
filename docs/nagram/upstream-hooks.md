@@ -14,7 +14,7 @@
 | 消息视图刷新 | `nagram/display/` 中的 `ViewRefresher`：随每个 `Main::Session` 订阅“消息显示类”选项，变化时对已加载消息调用上游 `Data::Session::requestItemViewRefresh` / `requestItemResize`。构造时一处调用，`Data::Session` 另加一处 `friend` 标记以访问已加载消息 | 旧实现在 `data/data_session.cpp` 中写了 31 处订阅与刷新逻辑 |
 | 会话列表刷新 | `ListRefresher` 订阅注册表的 `RefreshDialogList` 标记，调用列表的行高重算与重绘接口；`Dialogs::InnerWidget` 构造时接入一处，头文件加一处 `friend` | 旧实现分散在 `dialogs/` 各文件 |
 | 输入区刷新 | `nagram/compose/` 提供 `ButtonsChanged`；`HistoryWidget` 的短订阅块调用其私有刷新方法，`ComposeControls` 订阅同一事件 | 旧实现两处各自读取 11 个开关 |
-| 消息菜单 | 原型确认 `Ui::PopupMenu` 支持填充后删除及插入新项，但不能安全移动既有动作；S40 的挂钩方式待维护者确认（见设计文档第 3.4 节） | 旧实现在两个菜单文件中插入约 270 处调用 |
+| 消息菜单 | 每个上游菜单项创建处一行 `Nagram::Menu::Tag`；两条填充路径结束处各一行 `Nagram::Menu::Apply`，仅显隐并插入新增项，不移动上游动作（见设计文档第 3.4 节） | 旧实现在两个菜单文件中插入约 270 处调用 |
 | 文案 | 英文在 `Resources/langs/nagram/nagram.strings`；简繁通过 `lang/lang_instance.cpp` 的一个挂钩作为缺失键的后备值 | 旧实现修改上游 `lang.strings` 与 `lang_instance.cpp` 81 行 |
 | 设置入口 | `settings/sections/settings_main.cpp` 的 `BuildSectionButtons` 第一项加入 Nagram 分栏按钮；Nagram 页面本身在 `nagram/settings/` | 旧实现在同一文件中加入入口 |
 | 存储 | 本机：`Core::Settings::readPref/writePref`；账号：`Storage::Account::readPref/writePref` | 旧实现向 `Main::SessionSettings` 二进制流尾部追加字段 |
@@ -109,8 +109,8 @@
 
 | 编号 | 上游位置 | 需要处理的上游逻辑 | 方式 |
 | --- | --- | --- | --- |
-| E01–E14 | `history/history_inner_widget.cpp`（`showContextMenu`）、`history/view/history_view_context_menu.cpp`（`FillContextMenu`） | 创建菜单项处加 `Tag`；填充结束处调用一次 `Apply` | 过滤 |
-| E15–E23 | 同上（`Apply` 内插入） | Nagram 动作在 `nagram/menu/` 中实现，检查权限与消息有效性 | 读取 |
+| E01–E14 | `history/history_inner_widget.cpp`（`showContextMenu`）、`history/view/history_view_context_menu.cpp`（`FillContextMenu`） | 每个上游菜单项创建处一行 `Nagram::Menu::Tag(action, id)`；两条填充路径结束处各一行 `Nagram::Menu::Apply(menu, context)`，按三态设置移除动作并清理首尾及连续分隔线，不移动上游动作 | 过滤 |
+| E15–E23 | 同上（`Apply` 内插入） | Nagram 动作在 `nagram/menu/` 中实现，检查权限与消息有效性；E15–E17 插在“转发”之后，其余插在“删除”之前或末尾 | 读取 |
 | E24 | `nagram/menu/` 内部 | 复读前确认 | — |
 | 上游其他菜单 | `window/window_peer_menu.cpp`（G08、本地别名入口） | 会话菜单项过滤与新增 | 过滤 |
 
