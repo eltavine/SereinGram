@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "info/profile/info_profile_shared_media_classic.h"
+#include "nagram/privacy/options.h"
 
 #include "core/ui_integration.h"
 #include "data/components/recent_shared_media_gifts.h"
@@ -204,9 +205,10 @@ namespace {
 	wrap->toggleOn(
 		rpl::combine(
 			rpl::duplicate(forked),
-			state->textRefreshed.events_starting_with({})
-		) | rpl::map([=](int count, auto) {
-			return count > 0 && state->giftsLoaded;
+			state->textRefreshed.events_starting_with({}),
+			Nagram::ForDevice().Value(Nagram::Privacy::kHideProfileGifts)
+		) | rpl::map([=](int count, auto, bool hidden) {
+			return count > 0 && state->giftsLoaded && !hidden;
 		}));
 	tracker.track(wrap);
 

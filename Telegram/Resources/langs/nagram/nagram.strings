@@ -83,6 +83,15 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_nagram_ prefix.
 "lng_nagram_hide_my_phone" = "Hide my phone number";
 "lng_nagram_hide_read_time" = "Hide read time hints";
 "lng_nagram_hide_share_phone_prompt" = "Hide share phone number prompt";
+"lng_nagram_profile_id_format" = "Show ID on profile";
+"lng_nagram_id_off" = "Off";
+"lng_nagram_id_bot_api" = "Bot API format";
+"lng_nagram_id_raw" = "Raw format";
+"lng_nagram_profile_id" = "ID";
+"lng_nagram_show_profile_dc" = "Show data center on profile";
+"lng_nagram_profile_dc" = "Data center";
+"lng_nagram_hide_profile_gifts" = "Hide profile gifts";
+"lng_nagram_hide_create_todo" = "Hide Create To-Do List";
 "lng_nagram_time_and_info" = "Time and info";
 "lng_nagram_seconds_in_messages" = "Show seconds in message times";
 "lng_nagram_show_forwarded_message_date" = "Show original time on forwarded messages";

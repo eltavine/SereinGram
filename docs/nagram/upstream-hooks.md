@@ -138,8 +138,8 @@
 | G02 | `core/application.cpp`（窗口保护原因）、`dialogs/ui/dialogs_layout.cpp`、`dialogs/dialogs_inner_widget.cpp`、`window/notifications_manager.cpp`、`window/main_window.cpp`（标题） | 加入窗口捕获保护原因；遮盖列表身份、预览、标题与通知内容 | 读取 |
 | G03 | `api/api_who_reacted.cpp` | 不显示已读时间提示 | 读取 |
 | G04 | `history/view/history_view_contact_status.cpp` | 不显示分享手机号提示 | 读取 |
-| G05、G06 | `info/profile/info_profile_values.cpp` | 资料页增加 ID 与数据中心行 | 读取 |
-| G07 | `info/profile/info_profile_inner_widget.cpp`、`info/profile/info_profile_shared_media_classic.cpp`、`info/profile/info_profile_top_bar.cpp` | 不显示礼物区与礼物入口 | 读取 |
+| G05、G06 | `info/profile/info_profile_actions.cpp` | 资料页增加 ID 与数据中心行，取值逻辑在 `nagram/privacy/profile.cpp` | 读取 |
+| G07 | `info/profile/tabs/adapters/info_profile_tab_peer_lists.cpp`、`info/profile/info_profile_shared_media_classic.cpp`、`info/profile/info_profile_top_bar.cpp` | 不显示礼物标签、礼物区、礼物按钮与置顶礼物 | 读取 |
 | G08 | `window/window_peer_menu.cpp` | 不显示创建待办入口 | 过滤 |
 | 本地别名 | `data/data_peer.cpp`（显示名）、`history/history.cpp`、`info/profile/info_profile_values.cpp`、`window/window_peer_menu.cpp` | 显示名与本地搜索使用别名，原名保留 | 替换 |
 

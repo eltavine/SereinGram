@@ -12,6 +12,7 @@ set(nagram_sources
     nagram/messages/badges.cpp
     nagram/messages/effects.cpp
     nagram/messages/reactions.cpp
+    nagram/privacy/profile.cpp
     nagram/settings/home.cpp
     nagram/settings/chats.cpp
     nagram/settings/compose.cpp

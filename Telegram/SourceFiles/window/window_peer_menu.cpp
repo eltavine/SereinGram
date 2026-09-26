@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "window/window_peer_menu.h"
+#include "nagram/privacy/options.h"
 
 #include "base/call_delayed.h"
 #include "menu/menu_check_item.h"
@@ -1433,7 +1434,8 @@ void Filler::addCreatePoll() {
 }
 
 void Filler::addCreateTodoList() {
-	if (skipCreateActions()) {
+	if (skipCreateActions() || Nagram::ForDevice().Get(
+		Nagram::Privacy::kHideCreateTodo)) {
 		return;
 	}
 	const auto can = _topic
