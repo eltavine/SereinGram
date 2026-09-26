@@ -18,6 +18,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "mtproto/mtproto_dh_utils.h"
 #include "core/application.h"
 #include "core/core_settings.h"
+#include "nagram/compose/options.h"
 #include "main/session/session_show.h"
 #include "main/main_app_config.h"
 #include "main/main_session.h"
@@ -214,6 +215,22 @@ void Instance::startOutgoingCall(
 			tr::now,
 			lt_user,
 			user->name())));
+		return;
+	}
+	if (!args.isConfirmed
+		&& Nagram::ForDevice().Get(Nagram::Compose::kConfirmPrivateCall)) {
+		Ui::show(Ui::MakeConfirmBox({
+			.text = tr::lng_nagram_confirm_start_call(),
+			.confirmed = crl::guard(this, [=](Fn<void()> close) {
+				close();
+				auto confirmed = args;
+				confirmed.isConfirmed = true;
+				startOutgoingCall(user, confirmed);
+			}),
+			.confirmText = args.video
+				? tr::lng_call_start_video()
+				: tr::lng_call_start(),
+		}));
 		return;
 	}
 	requestPermissionsOrFail(crl::guard(this, [=] {

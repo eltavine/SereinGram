@@ -154,6 +154,31 @@ const auto kMeta = BuildHelper({
 		.onClick = [=] { controller->show(Box(PlaceholderBox)); },
 		.keywords = { u"placeholder"_q, u"hint"_q },
 	});
+	builder.addSubsectionTitle({
+		.id = u"nagram/compose/send-confirmation"_q,
+		.title = tr::lng_nagram_send_confirmation(),
+		.keywords = { u"send"_q, u"confirm"_q },
+	});
+	AddToggle(builder, Compose::kConfirmSticker,
+		tr::lng_nagram_confirm_sticker(),
+		u"nagram/compose/confirm-sticker"_q,
+		{ u"sticker"_q, u"confirm"_q });
+	AddToggle(builder, Compose::kConfirmGif,
+		tr::lng_nagram_confirm_gif(),
+		u"nagram/compose/confirm-gif"_q,
+		{ u"GIF"_q, u"confirm"_q });
+	AddToggle(builder, Compose::kPreviewVoice,
+		tr::lng_nagram_preview_voice(),
+		u"nagram/compose/preview-voice"_q,
+		{ u"voice"_q, u"listen"_q });
+	AddToggle(builder, Compose::kPreviewRoundVideo,
+		tr::lng_nagram_preview_round_video(),
+		u"nagram/compose/preview-round-video"_q,
+		{ u"video"_q, u"preview"_q });
+	AddToggle(builder, Compose::kConfirmPrivateCall,
+		tr::lng_nagram_confirm_private_call(),
+		u"nagram/compose/confirm-private-call"_q,
+		{ u"call"_q, u"confirm"_q });
 });
 
 const SectionBuildMethod ComposeSection::kBuild = kMeta.build;

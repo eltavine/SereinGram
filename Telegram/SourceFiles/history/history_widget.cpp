@@ -124,6 +124,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "history/view/controls/history_view_webpage_processor.h"
 #include "history/view/reactions/history_view_reactions_button.h"
 #include "nagram/compose/buttons.h"
+#include "nagram/compose/confirm.h"
 #include "nagram/compose/placeholder.h"
 #include "history/view/history_view_chat_section.h"
 #include "history/view/history_view_cursor_state.h"
@@ -9374,6 +9375,12 @@ void HistoryWidget::sendInlineResult(InlineBots::ResultSelected result) {
 	if (!checked) {
 		return;
 	}
+	if (Nagram::Compose::ConfirmBeforeSend(
+			controller()->uiShow(),
+			result.result->document(),
+			crl::guard(this, [=] { sendInlineResult(result); }))) {
+		return;
+	}
 
 	controller()->sendingAnimation().appendSending(
 		result.messageSendingFrom);
@@ -10031,6 +10038,14 @@ bool HistoryWidget::sendExistingDocument(
 		if (!checked) {
 			return false;
 		}
+	}
+	if (Nagram::Compose::ConfirmBeforeSend(
+			controller()->uiShow(),
+			document,
+			crl::guard(this, [=] {
+				sendExistingDocument(document, messageToSend, localId);
+			}))) {
+		return false;
 	}
 
 	Api::SendExistingDocument(

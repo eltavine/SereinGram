@@ -2,6 +2,7 @@ set(nagram_sources
     nagram/chats/layout.cpp
     nagram/chats/list_refresher.cpp
     nagram/chats/promotions.cpp
+    nagram/compose/confirm.cpp
     nagram/compose/placeholder.cpp
     nagram/core/language.cpp
     nagram/core/options.cpp

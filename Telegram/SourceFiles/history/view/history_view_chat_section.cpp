@@ -35,6 +35,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "history/history_item_components.h"
 #include "history/history_item_helpers.h" // GetErrorForSending.
 #include "history/history_view_pull_to_next_channel.h"
+#include "nagram/compose/confirm.h"
 #include "nagram/compose/options.h"
 #include "history/history_item_reply_markup.h"
 #include "history/history_view_pull_to_next_channel.h"
@@ -3147,6 +3148,14 @@ bool ChatWidget::sendExistingDocument(
 			return false;
 		}
 	}
+	if (Nagram::Compose::ConfirmBeforeSend(
+			controller()->uiShow(),
+			document,
+			crl::guard(this, [=] {
+				sendExistingDocument(document, messageToSend, localId);
+			}))) {
+		return false;
+	}
 
 	Api::SendExistingDocument(
 		std::move(messageToSend),
@@ -3246,6 +3255,14 @@ void ChatWidget::sendInlineResult(
 		action.options,
 		withPaymentApproved);
 	if (!checked) {
+		return;
+	}
+	if (Nagram::Compose::ConfirmBeforeSend(
+			controller()->uiShow(),
+			result->document(),
+			crl::guard(this, [=] {
+				sendInlineResult(result, bot, options, localMessageId);
+			}))) {
 		return;
 	}
 

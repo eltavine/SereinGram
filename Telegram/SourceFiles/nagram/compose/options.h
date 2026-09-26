@@ -53,6 +53,21 @@ inline constexpr auto kInputPlaceholderMode = Option<int>{
 	"nagram.inputPlaceholderMode", Scope::Device, 0,
 	Category::Compose, "lng_nagram_input_placeholder", 0,
 	[](const int &value) { return value >= 0 && value <= 2; } };
+inline constexpr auto kConfirmSticker = Option<bool>{
+	"nagram.confirmSticker", Scope::Device, false,
+	Category::Compose, "lng_nagram_confirm_sticker" };
+inline constexpr auto kConfirmGif = Option<bool>{
+	"nagram.confirmGif", Scope::Device, false,
+	Category::Compose, "lng_nagram_confirm_gif" };
+inline constexpr auto kPreviewVoice = Option<bool>{
+	"nagram.previewVoice", Scope::Device, false,
+	Category::Compose, "lng_nagram_preview_voice" };
+inline constexpr auto kPreviewRoundVideo = Option<bool>{
+	"nagram.previewRoundVideo", Scope::Device, false,
+	Category::Compose, "lng_nagram_preview_round_video" };
+inline constexpr auto kConfirmPrivateCall = Option<bool>{
+	"nagram.confirmPrivateCall", Scope::Device, false,
+	Category::Compose, "lng_nagram_confirm_private_call" };
 
 inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kHideAttachButton));
@@ -70,6 +85,11 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kDisableAttachHover));
 	Expects(registry.Add(kBotCommandsToDraft));
 	Expects(registry.Add(kInputPlaceholderMode));
+	Expects(registry.Add(kConfirmSticker));
+	Expects(registry.Add(kConfirmGif));
+	Expects(registry.Add(kPreviewVoice));
+	Expects(registry.Add(kPreviewRoundVideo));
+	Expects(registry.Add(kConfirmPrivateCall));
 }
 
 } // namespace Nagram::Compose

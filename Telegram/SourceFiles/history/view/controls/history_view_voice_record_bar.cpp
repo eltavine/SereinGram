@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/controls/history_view_voice_record_bar.h"
+#include "nagram/compose/options.h"
 
 #include "api/api_send_progress.h"
 #include "base/event_filter.h"
@@ -2810,7 +2811,10 @@ void VoiceRecordBar::recordUpdated(quint16 level, int samples) {
 void VoiceRecordBar::stop(bool send) {
 	if (isHidden() && !send) {
 		return;
-	} else if (send && _pauseInsteadSend) {
+	} else if (send && (_pauseInsteadSend || Nagram::ForDevice().Get(
+			_recordingVideo
+				? Nagram::Compose::kPreviewRoundVideo
+				: Nagram::Compose::kPreviewVoice))) {
 		_fullRecord = true;
 		stopRecording(StopType::Listen);
 		_lockShowing = false;
