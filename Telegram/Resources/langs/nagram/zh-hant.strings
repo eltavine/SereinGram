@@ -74,6 +74,7 @@
 "lng_nagram_hide_recommended_emoji" = "隱藏推薦表情";
 "lng_nagram_hide_gif_categories" = "隱藏 GIF 推薦分類";
 "lng_nagram_hide_greeting_sticker" = "隱藏新私人對話的問候貼圖";
+"lng_nagram_disable_video_autoplay" = "關閉聊天中的影片自動播放";
 "lng_nagram_time_and_info" = "時間與資訊";
 "lng_nagram_seconds_in_messages" = "時間顯示秒數";
 "lng_nagram_show_forwarded_message_date" = "轉傳訊息顯示原始傳送時間";

@@ -34,6 +34,10 @@ inline constexpr auto kHideGifCategories = Option<bool>{
 inline constexpr auto kHideGreetingSticker = Option<bool>{
 	"nagram.hideGreetingSticker", Scope::Device, false,
 	Category::Media, "lng_nagram_hide_greeting_sticker" };
+inline constexpr auto kDisableVideoAutoplay = Option<bool>{
+	"nagram.disableVideoAutoplay", Scope::Device, false,
+	Category::Media, "lng_nagram_disable_video_autoplay",
+	static_cast<unsigned>(Flag::RefreshMessageView) };
 
 inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kStickerScale));
@@ -44,6 +48,7 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kHideRecommendedEmoji));
 	Expects(registry.Add(kHideGifCategories));
 	Expects(registry.Add(kHideGreetingSticker));
+	Expects(registry.Add(kDisableVideoAutoplay));
 }
 
 } // namespace Nagram::Media

@@ -155,6 +155,10 @@ const auto kMeta = BuildHelper({
 		tr::lng_nagram_hide_greeting_sticker(),
 		u"nagram/media/hide-greeting-sticker"_q,
 		{ u"greeting"_q, u"sticker"_q });
+	AddToggle(builder, Media::kDisableVideoAutoplay,
+		tr::lng_nagram_disable_video_autoplay(),
+		u"nagram/media/disable-video-autoplay"_q,
+		{ u"video"_q, u"autoplay"_q });
 });
 
 const SectionBuildMethod MediaSection::kBuild = kMeta.build;

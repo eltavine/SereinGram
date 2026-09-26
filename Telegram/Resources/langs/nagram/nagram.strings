@@ -78,6 +78,7 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_nagram_ prefix.
 "lng_nagram_hide_recommended_emoji" = "Hide recommended emoji";
 "lng_nagram_hide_gif_categories" = "Hide suggested GIF categories";
 "lng_nagram_hide_greeting_sticker" = "Hide greeting sticker in new private chats";
+"lng_nagram_disable_video_autoplay" = "Disable video autoplay in chats";
 "lng_nagram_time_and_info" = "Time and info";
 "lng_nagram_seconds_in_messages" = "Show seconds in message times";
 "lng_nagram_show_forwarded_message_date" = "Show original time on forwarded messages";

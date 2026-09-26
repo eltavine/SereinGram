@@ -95,11 +95,13 @@ void TestOptions() {
 	}
 	auto media = Registry();
 	Media::RegisterOptions(media);
-	Require(media.All().size() == 8, "media option count");
+	Require(media.All().size() == 9, "media option count");
 	Require(media.HasFlag(Media::kStickerScale.key,
 		Flag::RefreshMessageView), "sticker scale refresh flag");
 	Require(!media.HasFlag(Media::kRecentStickerLimit.key,
 		Flag::RefreshMessageView), "recent sticker uses panel refresh");
+	Require(media.HasFlag(Media::kDisableVideoAutoplay.key,
+		Flag::RefreshMessageView), "video autoplay refresh flag");
 	const auto locale = QLocale();
 	QLocale::setDefault(QLocale::c());
 	Require(Messages::FormatTime(QTime(9, 8, 7), false)
