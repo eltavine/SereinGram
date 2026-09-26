@@ -5,6 +5,7 @@ set(nagram_sources
     nagram/compose/confirm.cpp
     nagram/compose/placeholder.cpp
     nagram/core/language.cpp
+    nagram/core/exchange.cpp
     nagram/core/options.cpp
     nagram/display/view_refresher.cpp
     nagram/menu/actions.cpp
@@ -41,6 +42,7 @@ if (DESKTOP_APP_TEST_APPS)
     nice_target_sources(test_nagram ${src_loc} PRIVATE
         nagram/tests/test_lang.cpp
         nagram/tests/test_options.cpp
+        nagram/core/exchange.cpp
         nagram/menu/model.cpp
     )
 

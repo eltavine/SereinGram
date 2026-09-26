@@ -1,4 +1,5 @@
 #include "nagram/core/options.h"
+#include "nagram/core/exchange.h"
 #include "nagram/core/device_options.h"
 #include "nagram/messages/options.h"
 #include "nagram/chats/options.h"
@@ -7,6 +8,9 @@
 #include "nagram/menu/model.h"
 #include "nagram/privacy/options.h"
 #include "nagram/messages/time_format.h"
+
+#include <QtCore/QJsonDocument>
+#include <QtCore/QJsonObject>
 
 #include <iostream>
 #include <map>
@@ -204,4 +208,69 @@ void TestOptions() {
 	Require(!second.Get(accountOption), "account values leaked");
 	Require(!options.Set(accountOption, true), "device accepted account option");
 	std::cout << "PASS: Nagram account options" << std::endl;
+
+	auto exchangeRegistry = Registry();
+	Require(exchangeRegistry.Add(option), "exchange int registration");
+	Require(exchangeRegistry.Add(accountOption), "exchange account registration");
+	Menu::RegisterOptions(exchangeRegistry);
+	auto exchangePrefs = MemoryPrefs();
+	auto exchangeOptions = Options(exchangePrefs);
+	Require(exchangeOptions.Set(option, 42), "exchange int setup");
+	Require(exchangeOptions.Set(Menu::kMenuConfig, hiddenReply),
+		"exchange menu setup");
+	const auto exported = Exchange::Export(exchangeOptions, exchangeRegistry);
+	Require(exported.invalidKeys.empty(), "unexpected export error");
+	const auto exportedValues = QJsonDocument::fromJson(exported.data)
+		.object().value("options").toObject();
+	Require(exportedValues.value("nagram.testPercent") == 42,
+		"integer missing from export");
+	Require(exportedValues.value("nagram.messageMenu").isObject(),
+		"structured menu missing from export");
+	Require(!exportedValues.contains("nagram.testAccount"),
+		"account value included in device export");
+
+	const auto payload = QByteArray(R"({"version":1,"options":{"nagram.testPercent":25,"nagram.messageMenu":{"version":1,"states":{"E01":"option"}},"nagram.future":true}})");
+	const auto plan = Exchange::PlanImport(
+		exchangeOptions, exchangeRegistry, payload);
+	Require(plan.error.isEmpty() && plan.changes.size() == 2,
+		"valid import preview");
+	Require(plan.skippedKeys == QStringList{ QString::fromLatin1("nagram.future") },
+		"unknown key was not skipped");
+	auto seen = std::vector<std::pair<int, Menu::Visibility>>();
+	auto exchangeLifetime = rpl::lifetime();
+	exchangeOptions.changes() | rpl::on_next([&](auto) {
+		seen.emplace_back(exchangeOptions.Get(option),
+			Menu::ReadVisibility(exchangeOptions.Get(Menu::kMenuConfig),
+				ActionId::Reply));
+	}, exchangeLifetime);
+	const auto applied = Exchange::Apply(
+		exchangeOptions, exchangeRegistry, plan);
+	Require(applied.applied && applied.error.isEmpty(), "valid import apply");
+	Require(exchangeOptions.Get(option) == 25 && seen.size() == 2,
+		"import values or notifications");
+	for (const auto &[number, visibility] : seen) {
+		Require(number == 25 && visibility == Visibility::WithOption,
+			"partial import observed");
+	}
+
+	const auto invalidPayload = QByteArray(R"({"version":1,"options":{"nagram.testPercent":99,"nagram.messageMenu":{"version":1,"states":{"E01":"bad"}}}})");
+	const auto invalid = Exchange::PlanImport(
+		exchangeOptions, exchangeRegistry, invalidPayload);
+	Require(!invalid.error.isEmpty() && invalid.changes.empty(),
+		"invalid object produced an import plan");
+	Require(exchangeOptions.Get(option) == 25,
+		"invalid import changed storage");
+	Require(!Exchange::PlanImport(exchangeOptions, exchangeRegistry,
+		R"({"version":"1","options":{}})").error.isEmpty(),
+		"string version accepted");
+	Require(!Exchange::PlanImport(exchangeOptions, exchangeRegistry,
+		R"({"version":1,"options":{"nagram.testPercent":25.5}})")
+		.error.isEmpty(), "fractional integer accepted");
+	const auto stale = Exchange::PlanImport(exchangeOptions, exchangeRegistry,
+		R"({"version":1,"options":{"nagram.testPercent":30}})");
+	Require(exchangeOptions.Set(option, 20), "conflict setup");
+	Require(!Exchange::Apply(exchangeOptions, exchangeRegistry, stale).applied,
+		"stale import applied");
+	Require(exchangeOptions.Get(option) == 20, "stale import changed storage");
+	std::cout << "PASS: Nagram settings exchange" << std::endl;
 }

@@ -1,10 +1,15 @@
 #pragma once
 
 #include <QtCore/QByteArray>
+#include <QtCore/QJsonDocument>
+#include <QtCore/QJsonObject>
+#include <QtCore/QJsonValue>
 #include <QtCore/QString>
 #include <gsl/pointers>
 #include <rpl/rpl.h>
 
+#include <functional>
+#include <limits>
 #include <optional>
 #include <set>
 #include <span>
@@ -51,11 +56,15 @@ struct Option {
 };
 
 struct OptionInfo {
+	enum class ValueType { Boolean, Integer, String, Object };
 	std::string_view key;
 	Scope scope;
 	Category category;
 	std::string_view titleKey;
 	unsigned flags;
+	ValueType type;
+	QByteArray fallbackRaw;
+	std::function<bool(const QJsonValue &)> accepts;
 };
 
 class Registry final {
@@ -70,14 +79,70 @@ public:
 				return false;
 			}
 		}
+		static_assert(std::is_same_v<Type, bool>
+			|| std::is_same_v<Type, int>
+			|| std::is_same_v<Type, QString>
+			|| std::is_same_v<Type, QByteArray>);
+		const auto type = [] {
+			if constexpr (std::is_same_v<Type, bool>) {
+				return OptionInfo::ValueType::Boolean;
+			} else if constexpr (std::is_same_v<Type, int>) {
+				return OptionInfo::ValueType::Integer;
+			} else if constexpr (std::is_same_v<Type, QString>) {
+				return OptionInfo::ValueType::String;
+			} else {
+				return OptionInfo::ValueType::Object;
+			}
+		}();
+		const auto fallbackRaw = [&] {
+			if constexpr (std::is_same_v<Type, bool>) {
+				return QByteArray(option.fallback ? "1" : "0");
+			} else if constexpr (std::is_same_v<Type, int>) {
+				return QByteArray::number(option.fallback);
+			} else if constexpr (std::is_same_v<Type, QString>) {
+				return "s" + option.fallback.toUtf8();
+			} else {
+				return option.fallback;
+			}
+		}();
+		const auto accepts = [validate = option.validate](const QJsonValue &value) {
+			if constexpr (std::is_same_v<Type, bool>) {
+				return value.isBool() && (!validate || validate(value.toBool()));
+			} else if constexpr (std::is_same_v<Type, int>) {
+				const auto parsed = value.toInt(std::numeric_limits<int>::min());
+				return value.isDouble()
+					&& value.toDouble() == double(parsed)
+					&& (!validate || validate(parsed));
+			} else if constexpr (std::is_same_v<Type, QString>) {
+				const auto parsed = value.toString();
+				return value.isString() && !parsed.contains(u'\n')
+					&& !parsed.contains(u'\r')
+					&& (!validate || validate(parsed));
+			} else {
+				return value.isObject() && (!validate || validate(
+					QJsonDocument(value.toObject()).toJson(QJsonDocument::Compact)));
+			}
+		};
+		const auto exportable = (option.scope == Scope::Device)
+			&& !(option.flags & static_cast<unsigned>(Flag::Hidden));
 		_entries.push_back({
 			option.key, option.scope, option.category,
-			option.titleKey, option.flags });
+			option.titleKey,
+			option.flags | (exportable ? static_cast<unsigned>(Flag::Exportable) : 0),
+			type, fallbackRaw, accepts });
 		return true;
 	}
 
 	[[nodiscard]] std::span<const OptionInfo> All() const {
 		return _entries;
+	}
+	[[nodiscard]] const OptionInfo *Find(std::string_view key) const {
+		for (const auto &entry : _entries) {
+			if (entry.key == key) {
+				return &entry;
+			}
+		}
+		return nullptr;
 	}
 	[[nodiscard]] bool HasFlag(std::string_view key, Flag flag) const {
 		for (const auto &entry : _entries) {
@@ -123,6 +188,7 @@ private:
 };
 
 class Options final {
+	friend class Exchange;
 public:
 	explicit Options(RawPrefs &prefs, Scope scope = Scope::Device)
 	: _prefs(prefs), _scope(scope) { }
