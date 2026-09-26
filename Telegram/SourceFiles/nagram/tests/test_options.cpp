@@ -4,6 +4,7 @@
 #include "nagram/chats/options.h"
 #include "nagram/compose/options.h"
 #include "nagram/media/options.h"
+#include "nagram/menu/model.h"
 #include "nagram/privacy/options.h"
 #include "nagram/messages/time_format.h"
 
@@ -44,6 +45,29 @@ void Require(bool condition, const char *message) {
 
 void TestOptions() {
 	using namespace Nagram;
+	using Menu::ActionId;
+	using Menu::Visibility;
+	const auto hiddenReply = Menu::WriteVisibility(
+		{}, ActionId::Reply, Visibility::Hide);
+	Require(Menu::ValidateConfig(hiddenReply), "menu config valid");
+	Require(Menu::ReadVisibility(hiddenReply, ActionId::Reply)
+		== Visibility::Hide, "menu hidden state");
+	Require(Menu::ReadVisibility(hiddenReply, ActionId::Edit)
+		== Visibility::Show, "menu default state");
+	const auto optionReply = Menu::WriteVisibility(
+		hiddenReply, ActionId::Reply, Visibility::WithOption);
+	Require(!Menu::Visible(Menu::ReadVisibility(optionReply, ActionId::Reply),
+		false), "menu option released");
+	Require(Menu::Visible(Menu::ReadVisibility(optionReply, ActionId::Reply),
+		true), "menu option held");
+	Require(Menu::WriteVisibility(optionReply, ActionId::Reply,
+		Visibility::Show).isEmpty(), "menu default removes stored override");
+	Require(!Menu::ValidateConfig(R"({"version":1,"states":{"E99":"hide"}})"),
+		"unknown menu action accepted");
+	Require(!Menu::ValidateConfig(R"({"version":1,"states":{"E01":"show"}})"),
+		"invalid menu state accepted");
+	Require(!Menu::ValidateConfig(R"({"version":1,"states":{},"extra":1})"),
+		"unknown menu field accepted");
 	const auto option = Option<int>{
 		"nagram.testPercent", Scope::Device, 0, Category::Interface,
 		"lng_nagram_test_percent", 0, ValidPercent };

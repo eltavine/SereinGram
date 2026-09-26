@@ -1,5 +1,6 @@
 #include "nagram/settings/home.h"
 #include "nagram/settings/messages.h"
+#include "nagram/settings/menu.h"
 #include "nagram/settings/chats.h"
 #include "nagram/settings/compose.h"
 #include "nagram/settings/media.h"
@@ -79,6 +80,12 @@ const auto kMeta = BuildHelper({
 		.targetSection = MediaId(),
 		.icon = { &st::menuIconChatBubble },
 		.keywords = { u"media"_q, u"sticker"_q, u"emoji"_q },
+	});
+	builder.addSectionButton({
+		.title = tr::lng_nagram_menu(),
+		.targetSection = MenuId(),
+		.icon = { &st::menuIconChatBubble },
+		.keywords = { u"menu"_q, u"actions"_q },
 	});
 	builder.addSectionButton({
 		.title = tr::lng_nagram_privacy(),

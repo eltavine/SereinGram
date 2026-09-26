@@ -7,6 +7,8 @@ set(nagram_sources
     nagram/core/language.cpp
     nagram/core/options.cpp
     nagram/display/view_refresher.cpp
+    nagram/menu/actions.cpp
+    nagram/menu/model.cpp
     nagram/messages/format.cpp
     nagram/messages/content.cpp
     nagram/messages/badges.cpp
@@ -17,6 +19,7 @@ set(nagram_sources
     nagram/settings/chats.cpp
     nagram/settings/compose.cpp
     nagram/settings/media.cpp
+    nagram/settings/menu.cpp
     nagram/settings/privacy.cpp
     nagram/settings/messages.cpp
 )
@@ -34,6 +37,7 @@ if (DESKTOP_APP_TEST_APPS)
     nice_target_sources(test_nagram ${src_loc} PRIVATE
         nagram/tests/test_lang.cpp
         nagram/tests/test_options.cpp
+        nagram/menu/model.cpp
     )
 
     target_include_directories(test_nagram PRIVATE ${src_loc})
