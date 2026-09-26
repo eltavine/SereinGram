@@ -44,6 +44,15 @@
 "lng_nagram_hide_send_as_button" = "隐藏“发送身份”按钮";
 "lng_nagram_hide_stars_reaction_button" = "隐藏 Stars 反应按钮";
 "lng_nagram_hide_channel_mute_button" = "隐藏频道底部静音按钮";
+"lng_nagram_input_behavior" = "输入行为";
+"lng_nagram_disable_emoji_hover" = "鼠标悬停时不弹出表情面板";
+"lng_nagram_disable_attach_hover" = "鼠标悬停时不弹出附件菜单";
+"lng_nagram_bot_commands_to_draft" = "点击机器人命令时先填入输入框";
+"lng_nagram_input_placeholder" = "输入框提示文字";
+"lng_nagram_placeholder_chat" = "对话名称";
+"lng_nagram_placeholder_sender" = "发送身份";
+"lng_nagram_input_chat_hint" = "发消息给{name}";
+"lng_nagram_input_sender_hint" = "以{name}身份发消息";
 "lng_nagram_time_and_info" = "时间与信息";
 "lng_nagram_seconds_in_messages" = "时间显示秒";
 "lng_nagram_show_forwarded_message_date" = "转发消息显示原始发送时间";

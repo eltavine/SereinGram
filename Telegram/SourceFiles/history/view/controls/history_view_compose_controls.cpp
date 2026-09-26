@@ -88,6 +88,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "history/view/controls/history_view_suggest_options.h"
 #include "history/view/controls/history_view_ttl_button.h"
 #include "nagram/compose/buttons.h"
+#include "nagram/compose/placeholder.h"
 #include "history/view/controls/history_view_voice_record_bar.h"
 #include "history/view/controls/history_view_webpage_processor.h"
 #include "history/view/history_view_reply.h"
@@ -2929,7 +2930,10 @@ void ComposeControls::init() {
 		updateSubmitSettings();
 	}, _wrap->lifetime());
 
-	session().attachWebView().attachBotsUpdates(
+	rpl::merge(
+		session().attachWebView().attachBotsUpdates(),
+		Nagram::ForDevice().Value(Nagram::Compose::kDisableAttachHover
+		) | rpl::skip(1) | rpl::to_empty
 	) | rpl::on_next([=] {
 		updateAttachBotsMenu();
 	}, _wrap->lifetime());
@@ -3322,10 +3326,10 @@ void ComposeControls::updateFieldPlaceholder() {
 			} else if (channel->adminRights() & ChatAdminRight::Anonymous) {
 				return tr::lng_send_anonymous_ph();
 			} else {
-				return tr::lng_message_ph();
+				return Nagram::Compose::InputPlaceholder(peer);
 			}
 		} else {
-			return tr::lng_message_ph();
+			return Nagram::Compose::InputPlaceholder(peer);
 		}
 	}();
 	_field->setPlaceholder(rpl::combine(
@@ -5632,7 +5636,9 @@ void ComposeControls::updateAttachBotsMenu() {
 	}
 	_attachBotsMenu->setOrigin(
 		Ui::PanelAnimation::Origin::BottomLeft);
-	if (!ChatHelpers::ShowPanelOnClick()) {
+	if (!ChatHelpers::ShowPanelOnClick()
+		&& !Nagram::Compose::Hidden(
+			Nagram::Compose::kDisableAttachHover)) {
 		_attachToggle->installEventFilter(_attachBotsMenu.get());
 	}
 	_attachBotsMenu->heightValue(

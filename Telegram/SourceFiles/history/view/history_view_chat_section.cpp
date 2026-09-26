@@ -35,6 +35,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "history/history_item_components.h"
 #include "history/history_item_helpers.h" // GetErrorForSending.
 #include "history/history_view_pull_to_next_channel.h"
+#include "nagram/compose/options.h"
 #include "history/history_item_reply_markup.h"
 #include "history/history_view_pull_to_next_channel.h"
 #include "iv/iv_rich_message_serializer.h"
@@ -5382,6 +5383,18 @@ void ChatWidget::sendBotCommand(
 		Api::SendOptions options) {
 	if (_peer != request.peer.get()) {
 		return;
+	}
+	if (!request.replyTo
+		&& Nagram::ForDevice().Get(Nagram::Compose::kBotCommandsToDraft)) {
+		const auto canSendTexts = (mode() == Mode::History)
+			? Data::CanSend(_peer, ChatRestriction::SendOther)
+			: _bottom->canSendTexts();
+		if (canSendTexts) {
+			_composeControls->insertTextToField(Bot::WrapCommandInChat(
+				_peer, request.command, request.context) + ' ');
+			setInnerFocus();
+			return;
+		}
 	}
 	const auto action = prepareSendAction(options);
 	const auto keyboardId = keyboardSourceIdForHiddenState();

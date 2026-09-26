@@ -6,11 +6,14 @@
 #include "settings/settings_builder.h"
 #include "settings/settings_common_session.h"
 #include "ui/vertical_list.h"
+#include "ui/layers/generic_box.h"
 #include "ui/widgets/buttons.h"
+#include "ui/widgets/checkbox.h"
 #include "ui/wrap/vertical_layout.h"
 #include "window/window_session_controller.h"
 #include "styles/style_menu_icons.h"
 #include "styles/style_settings.h"
+#include "styles/style_layers.h"
 
 namespace Nagram {
 namespace {
@@ -57,6 +60,29 @@ void AddToggle(
 	}
 }
 
+QString PlaceholderLabel(int value) {
+	switch (value) {
+	case 1: return tr::lng_nagram_placeholder_chat(tr::now);
+	case 2: return tr::lng_nagram_placeholder_sender(tr::now);
+	default: return tr::lng_nagram_preview_follow(tr::now);
+	}
+}
+
+void PlaceholderBox(not_null<Ui::GenericBox*> box) {
+	box->setTitle(tr::lng_nagram_input_placeholder());
+	const auto group = std::make_shared<Ui::RadiobuttonGroup>(
+		ForDevice().Get(Compose::kInputPlaceholderMode));
+	for (auto value = 0; value != 3; ++value) {
+		box->addRow(object_ptr<Ui::Radiobutton>(
+			box, group, value, PlaceholderLabel(value), st::settingsSendType),
+			st::settingsSendTypePadding);
+	}
+	group->setChangedCallback([=](int value) {
+		Expects(ForDevice().Set(Compose::kInputPlaceholderMode, value));
+		box->closeBox();
+	});
+}
+
 const auto kMeta = BuildHelper({
 	.id = ComposeSection::Id(),
 	.parentId = HomeId(),
@@ -101,6 +127,33 @@ const auto kMeta = BuildHelper({
 	AddToggle(builder, Compose::kHideChannelMuteButton,
 		tr::lng_nagram_hide_channel_mute_button(),
 		u"nagram/compose/hide-channel-mute"_q, { u"channel"_q, u"mute"_q });
+	builder.addSubsectionTitle({
+		.id = u"nagram/compose/input-behavior"_q,
+		.title = tr::lng_nagram_input_behavior(),
+		.keywords = { u"input"_q, u"behavior"_q },
+	});
+	AddToggle(builder, Compose::kDisableEmojiHover,
+		tr::lng_nagram_disable_emoji_hover(),
+		u"nagram/compose/disable-emoji-hover"_q,
+		{ u"emoji"_q, u"hover"_q });
+	AddToggle(builder, Compose::kDisableAttachHover,
+		tr::lng_nagram_disable_attach_hover(),
+		u"nagram/compose/disable-attach-hover"_q,
+		{ u"attachment"_q, u"hover"_q });
+	AddToggle(builder, Compose::kBotCommandsToDraft,
+		tr::lng_nagram_bot_commands_to_draft(),
+		u"nagram/compose/bot-commands-to-draft"_q,
+		{ u"bot"_q, u"command"_q, u"draft"_q });
+	const auto controller = builder.controller();
+	builder.addButton({
+		.id = u"nagram/compose/input-placeholder"_q,
+		.title = tr::lng_nagram_input_placeholder(),
+		.st = &st::settingsButtonNoIcon,
+		.label = ForDevice().Value(Compose::kInputPlaceholderMode)
+			| rpl::map(PlaceholderLabel),
+		.onClick = [=] { controller->show(Box(PlaceholderBox)); },
+		.keywords = { u"placeholder"_q, u"hint"_q },
+	});
 });
 
 const SectionBuildMethod ComposeSection::kBuild = kMeta.build;

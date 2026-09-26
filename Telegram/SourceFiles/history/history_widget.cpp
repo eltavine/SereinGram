@@ -124,6 +124,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "history/view/controls/history_view_webpage_processor.h"
 #include "history/view/reactions/history_view_reactions_button.h"
 #include "nagram/compose/buttons.h"
+#include "nagram/compose/placeholder.h"
 #include "history/view/history_view_chat_section.h"
 #include "history/view/history_view_cursor_state.h"
 #include "history/view/history_view_service_message.h"
@@ -664,6 +665,8 @@ HistoryWidget::HistoryWidget(
 	session().attachWebView().requestBots();
 	rpl::merge(
 		session().attachWebView().attachBotsUpdates(),
+		Nagram::ForDevice().Value(Nagram::Compose::kDisableAttachHover
+		) | rpl::skip(1) | rpl::to_empty,
 		session().changes().peerUpdates(
 			Data::PeerUpdate::Flag::Rights
 			| Data::PeerUpdate::Flag::StarsPerMessage
@@ -3626,7 +3629,9 @@ void HistoryWidget::refreshAttachBotsMenu() {
 	}
 	_attachBotsMenu->setOrigin(
 		Ui::PanelAnimation::Origin::BottomLeft);
-	if (!ChatHelpers::ShowPanelOnClick()) {
+	if (!ChatHelpers::ShowPanelOnClick()
+		&& !Nagram::Compose::Hidden(
+			Nagram::Compose::kDisableAttachHover)) {
 		_attachToggle->installEventFilter(_attachBotsMenu.get());
 	}
 	_attachBotsMenu->heightValue(
@@ -6458,6 +6463,14 @@ void HistoryWidget::sendBotCommand(
 	if (_peer != request.peer.get()) {
 		return;
 	}
+	if (!request.replyTo
+		&& _canSendTexts
+		&& Nagram::ForDevice().Get(Nagram::Compose::kBotCommandsToDraft)) {
+		insertBotCommand(Bot::WrapCommandInChat(
+			_peer, request.command, request.context));
+		setInnerFocus();
+		return;
+	}
 
 	const auto action = prepareSendAction(options);
 
@@ -7677,7 +7690,7 @@ void HistoryWidget::updateFieldPlaceholder() {
 			} else if (channel->adminRights() & ChatAdminRight::Anonymous) {
 				return tr::lng_send_anonymous_ph();
 			} else {
-				return tr::lng_message_ph();
+				return Nagram::Compose::InputPlaceholder(peer);
 			}
 		} else if (const auto user = peer->asUser()) {
 			if (const auto &info = user->botInfo) {
@@ -7685,9 +7698,9 @@ void HistoryWidget::updateFieldPlaceholder() {
 					return tr::lng_bot_off_thread_ph();
 				}
 			}
-			return tr::lng_message_ph();
+			return Nagram::Compose::InputPlaceholder(peer);
 		} else {
-			return tr::lng_message_ph();
+			return Nagram::Compose::InputPlaceholder(peer);
 		}
 	}());
 	updateSendButtonType();

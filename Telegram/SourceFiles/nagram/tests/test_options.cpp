@@ -76,10 +76,15 @@ void TestOptions() {
 		Flag::RefreshDialogList), "stories use widget refresh");
 	auto compose = Registry();
 	Compose::RegisterOptions(compose);
-	Require(compose.All().size() == 11, "compose option count");
+	Require(compose.All().size() == 15, "compose option count");
 	for (const auto &entry : compose.All()) {
-		Require(compose.HasFlag(entry.key, Flag::RefreshComposeButtons),
-			"compose button refresh flag");
+		if (entry.key != Compose::kDisableEmojiHover.key
+			&& entry.key != Compose::kDisableAttachHover.key
+			&& entry.key != Compose::kBotCommandsToDraft.key
+			&& entry.key != Compose::kInputPlaceholderMode.key) {
+			Require(compose.HasFlag(entry.key, Flag::RefreshComposeButtons),
+				"compose button refresh flag");
+		}
 	}
 	const auto locale = QLocale();
 	QLocale::setDefault(QLocale::c());

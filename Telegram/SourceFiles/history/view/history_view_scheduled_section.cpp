@@ -18,6 +18,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "history/history_item_helpers.h" // GetErrorForSending.
 #include "history/history_view_swipe_back_session.h"
 #include "menu/menu_send.h" // SendMenu::Type.
+#include "nagram/compose/options.h"
 #include "ui/widgets/buttons.h"
 #include "ui/widgets/tooltip.h"
 #include "ui/widgets/elastic_scroll.h"
@@ -1608,6 +1609,11 @@ Window::SectionActionResult ScheduledWidget::sendBotCommand(
 void ScheduledWidget::listSendBotCommand(
 		const QString &command,
 		const FullMsgId &context) {
+	if (Nagram::ForDevice().Get(Nagram::Compose::kBotCommandsToDraft)) {
+		_composeControls->insertTextToField(Bot::WrapCommandInChat(
+			_history->peer, command, context) + ' ');
+		return;
+	}
 	const auto callback = [=](Api::SendOptions options) {
 		const auto text = Bot::WrapCommandInChat(
 			_history->peer,
