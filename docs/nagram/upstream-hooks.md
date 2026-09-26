@@ -14,7 +14,7 @@
 | 消息视图刷新 | `nagram/display/` 中的 `ViewRefresher`：随每个 `Main::Session` 订阅“消息显示类”选项，变化时对已加载消息调用上游 `Data::Session::requestItemViewRefresh` / `requestItemResize`。构造时一处调用，`Data::Session` 另加一处 `friend` 标记以访问已加载消息 | 旧实现在 `data/data_session.cpp` 中写了 31 处订阅与刷新逻辑 |
 | 会话列表刷新 | `ListRefresher` 订阅注册表的 `RefreshDialogList` 标记，调用列表的行高重算与重绘接口；`Dialogs::InnerWidget` 构造时接入一处，头文件加一处 `friend` | 旧实现分散在 `dialogs/` 各文件 |
 | 输入区刷新 | `nagram/compose/` 提供 `ButtonsChanged`；`HistoryWidget` 的短订阅块调用其私有刷新方法，`ComposeControls` 订阅同一事件 | 旧实现两处各自读取 11 个开关 |
-| 消息菜单 | `Nagram::Menu::Tag` 标记 + `Nagram::Menu::Apply` 后处理（见设计文档第 3.4 节） | 旧实现在两个菜单文件中插入约 270 处调用 |
+| 消息菜单 | 原型确认 `Ui::PopupMenu` 支持填充后删除及插入新项，但不能安全移动既有动作；S40 的挂钩方式待维护者确认（见设计文档第 3.4 节） | 旧实现在两个菜单文件中插入约 270 处调用 |
 | 文案 | 英文在 `Resources/langs/nagram/nagram.strings`；简繁通过 `lang/lang_instance.cpp` 的一个挂钩作为缺失键的后备值 | 旧实现修改上游 `lang.strings` 与 `lang_instance.cpp` 81 行 |
 | 设置入口 | `settings/sections/settings_main.cpp` 的 `BuildSectionButtons` 第一项加入 Nagram 分栏按钮；Nagram 页面本身在 `nagram/settings/` | 旧实现在同一文件中加入入口 |
 | 存储 | 本机：`Core::Settings::readPref/writePref`；账号：`Storage::Account::readPref/writePref` | 旧实现向 `Main::SessionSettings` 二进制流尾部追加字段 |
