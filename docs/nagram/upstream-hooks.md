@@ -10,7 +10,7 @@
 
 | 机制 | 做法 | 替代旧实现的做法 |
 | --- | --- | --- |
-| 选项读取 | `Nagram::Get(kOption)` / `Nagram::Value(kOption)`；账号作用域额外传 `Main::Session` | 旧实现的 `Nagram::Option` 大枚举 |
+| 选项读取 | 本机经 `Nagram::ForDevice()`、账号经 `Nagram::ForAccount(session)` 获取共享 `Options`，再调用 `Get` / `Value` | 旧实现的 `Nagram::Option` 大枚举 |
 | 消息视图刷新 | `nagram/display/` 中的 `ViewRefresher`：每个 `Main::Session` 一个实例，订阅所有“消息显示类”选项，变化时对已加载的消息视图调用上游 `Data::Session::requestItemViewRefresh` / `requestItemResize`。挂钩只有一处：`Main::Session` 构造时创建它 | 旧实现在 `data/data_session.cpp` 中写了 31 处订阅与刷新逻辑 |
 | 会话列表刷新 | 同上，由 `ListRefresher` 调用上游已有的列表重绘接口 | 旧实现分散在 `dialogs/` 各文件 |
 | 输入区刷新 | `nagram/compose/` 提供 `ComposeButtonsVisibility`，`HistoryWidget` 与 `ComposeControls` 各用一行订阅其结果 | 旧实现两处各自读取 11 个开关 |
@@ -20,6 +20,8 @@
 | 存储 | 本机：`Core::Settings::readPref/writePref`；账号：`Storage::Account::readPref/writePref` | 旧实现向 `Main::SessionSettings` 二进制流尾部追加字段 |
 
 消息视图由两套实现渲染：`history/history_inner_widget.cpp`（普通聊天）和 `history/view/history_view_list_widget.cpp`（话题、计划消息等）。所有显示条目必须两处都生效，验收时分别检查。
+
+`nagram/core/options.cpp` 为 `Storage::Account` 提供了 `QByteArray` 偏好读写特化。同步上游时，若上游也增加同名特化，需检查并移除重复定义；重复符号会使链接失败。
 
 ## 2. 各条目
 

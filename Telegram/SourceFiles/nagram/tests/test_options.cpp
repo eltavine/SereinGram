@@ -84,4 +84,17 @@ void TestOptions() {
 	Require(!options.Set(text, QString::fromUtf8("two\nlines")),
 		"multiline string accepted");
 	std::cout << "PASS: Nagram device options" << std::endl;
+
+	const auto accountOption = Option<bool>{
+		"nagram.testAccount", Scope::Account, false, Category::Chats,
+		"lng_nagram_test_account" };
+	auto firstPrefs = MemoryPrefs();
+	auto secondPrefs = MemoryPrefs();
+	auto first = Options(firstPrefs, Scope::Account);
+	auto second = Options(secondPrefs, Scope::Account);
+	Require(first.Set(accountOption, true), "account write");
+	Require(first.Get(accountOption), "first account value");
+	Require(!second.Get(accountOption), "account values leaked");
+	Require(!options.Set(accountOption, true), "device accepted account option");
+	std::cout << "PASS: Nagram account options" << std::endl;
 }

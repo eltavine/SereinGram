@@ -2,6 +2,7 @@
 
 #include <QtCore/QByteArray>
 #include <QtCore/QString>
+#include <gsl/pointers>
 #include <rpl/rpl.h>
 
 #include <optional>
@@ -14,6 +15,12 @@
 namespace Core {
 class Settings;
 } // namespace Core
+namespace Main {
+class Session;
+} // namespace Main
+namespace Storage {
+class Account;
+} // namespace Storage
 
 namespace Nagram {
 
@@ -88,12 +95,25 @@ private:
 	Core::Settings &_settings;
 };
 
+class AccountPrefs final : public RawPrefs {
+public:
+	explicit AccountPrefs(Storage::Account &account);
+	[[nodiscard]] QByteArray read(std::string_view key) override;
+	void write(std::string_view key, const QByteArray &value) override;
+	void clear(std::string_view key) override;
+
+private:
+	Storage::Account &_account;
+};
+
 class Options final {
 public:
-	explicit Options(RawPrefs &prefs) : _prefs(prefs) { }
+	explicit Options(RawPrefs &prefs, Scope scope = Scope::Device)
+	: _prefs(prefs), _scope(scope) { }
 
 	template <typename Type>
 	[[nodiscard]] Type Get(const Option<Type> &option) {
+		Expects(option.scope == _scope);
 		static_assert(std::is_same_v<Type, bool>
 			|| std::is_same_v<Type, int>
 			|| std::is_same_v<Type, QString>
@@ -138,7 +158,7 @@ public:
 
 	template <typename Type>
 	[[nodiscard]] bool Set(const Option<Type> &option, const Type &value) {
-		if (option.scope != Scope::Device
+		if (option.scope != _scope
 			|| (option.validate && !option.validate(value))) {
 			return false;
 		}
@@ -184,9 +204,12 @@ public:
 
 private:
 	RawPrefs &_prefs;
+	Scope _scope;
 	rpl::event_stream<std::string_view> _changes;
 	rpl::event_stream<std::string_view> _readErrors;
 	std::set<std::string_view> _invalidKeys;
 };
+
+[[nodiscard]] Options &ForAccount(gsl::not_null<Main::Session*> session);
 
 } // namespace Nagram
