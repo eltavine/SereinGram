@@ -191,6 +191,23 @@ const auto kMeta = BuildHelper({
 		tr::lng_nagram_hide_reaction_menu_when_selecting(),
 		u"nagram/messages/reaction-selection"_q,
 		{ u"selection"_q, u"reaction panel"_q });
+	builder.addSubsectionTitle({
+		.id = u"nagram/messages/effects"_q,
+		.title = tr::lng_nagram_effects(),
+		.keywords = { u"effects"_q, u"animation"_q },
+	});
+	AddToggle(builder, Messages::kDisablePremiumStickerEffects,
+		tr::lng_nagram_disable_premium_sticker_effects(),
+		u"nagram/messages/effects-premium"_q,
+		{ u"Premium"_q, u"sticker effects"_q });
+	AddToggle(builder, Messages::kDisableEmojiInteractions,
+		tr::lng_nagram_disable_emoji_interactions(),
+		u"nagram/messages/effects-emoji"_q,
+		{ u"emoji"_q, u"interactions"_q });
+	AddToggle(builder, Messages::kDisableMessageEffects,
+		tr::lng_nagram_disable_message_effects(),
+		u"nagram/messages/effects-message"_q,
+		{ u"message effects"_q });
 });
 
 const SectionBuildMethod MessagesSection::kBuild = kMeta.build;

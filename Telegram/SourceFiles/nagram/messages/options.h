@@ -52,6 +52,15 @@ inline constexpr auto kHideReactionMenu = Option<bool>{
 inline constexpr auto kHideReactionMenuWhenSelecting = Option<bool>{
 	"nagram.hideReactionMenuWhenSelecting", Scope::Device, false,
 	Category::Messages, "lng_nagram_hide_reaction_menu_when_selecting" };
+inline constexpr auto kDisablePremiumStickerEffects = Option<bool>{
+	"nagram.disablePremiumStickerEffects", Scope::Device, false,
+	Category::Messages, "lng_nagram_disable_premium_sticker_effects" };
+inline constexpr auto kDisableEmojiInteractions = Option<bool>{
+	"nagram.disableEmojiInteractions", Scope::Device, false,
+	Category::Messages, "lng_nagram_disable_emoji_interactions" };
+inline constexpr auto kDisableMessageEffects = Option<bool>{
+	"nagram.disableMessageEffects", Scope::Device, false,
+	Category::Messages, "lng_nagram_disable_message_effects" };
 
 inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kSecondsInMessages));
@@ -69,6 +78,9 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kHideChannelReactions));
 	Expects(registry.Add(kHideReactionMenu));
 	Expects(registry.Add(kHideReactionMenuWhenSelecting));
+	Expects(registry.Add(kDisablePremiumStickerEffects));
+	Expects(registry.Add(kDisableEmojiInteractions));
+	Expects(registry.Add(kDisableMessageEffects));
 }
 
 } // namespace Nagram::Messages

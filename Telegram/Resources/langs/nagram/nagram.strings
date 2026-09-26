@@ -32,3 +32,7 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_nagram_ prefix.
 "lng_nagram_hide_channel_reactions" = "Channels";
 "lng_nagram_hide_reaction_menu" = "Hide reactions from the context menu";
 "lng_nagram_hide_reaction_menu_when_selecting" = "Hide reactions while selecting messages";
+"lng_nagram_effects" = "Effects";
+"lng_nagram_disable_premium_sticker_effects" = "Disable Premium sticker effects";
+"lng_nagram_disable_emoji_interactions" = "Disable emoji interactions";
+"lng_nagram_disable_message_effects" = "Disable message effects";

@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/media/history_view_sticker.h"
+#include "nagram/messages/effects.h"
 
 #include "base/options.h"
 #include "boxes/sticker_set_box.h"
@@ -137,7 +138,8 @@ Sticker::~Sticker() {
 }
 
 bool Sticker::hasPremiumEffect() const {
-	return !_skipPremiumEffect && _data->isPremiumSticker();
+	return !_skipPremiumEffect && _data->isPremiumSticker()
+		&& !Nagram::Messages::PremiumStickerEffectDisabled();
 }
 
 bool Sticker::customEmojiPart() const {
