@@ -13,6 +13,10 @@ namespace Nagram::Messages {
 
 [[nodiscard]] QString FormatTime(QTime time);
 [[nodiscard]] QString FormatSavedFrom(QDateTime dateTime);
+[[nodiscard]] QString FormatEditedDate(QDateTime sent, QDateTime edited);
+[[nodiscard]] QString EditedMark();
+[[nodiscard]] QString FormatCounter(int count);
+void ApplyInfoOptions(HistoryView::BottomInfo::Data &data);
 void ApplyForwardedDate(
 	HistoryView::BottomInfo::Data &data,
 	not_null<HistoryItem*> item);

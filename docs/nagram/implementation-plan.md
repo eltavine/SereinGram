@@ -64,7 +64,7 @@
 | 步骤 | 提交 | 条目 | 备注 |
 | --- | --- | --- | --- |
 | ✅ S20 | `feat(messages): 时间与信息` | C01–C04 | 消息视图刷新已接入；V1 macOS 编译和纯逻辑测试通过，账号内场景待 M1 V2 验证 |
-| ☐ S21 | `feat(messages): 标记与计数` | C05–C09 | |
+| ✅ S21 | `feat(messages): 标记与计数` | C05–C09 | V1 macOS 编译与 `test_nagram` 通过；账号内场景待 M1 V2 验证 |
 | ☐ S22 | `feat(messages): 反应` | C10–C15 | |
 | ☐ S23 | `feat(messages): 特效` | C16–C18 | |
 | ☐ S24 | `feat(messages): 内容显示` | C19–C24 | C25、C26 在 M5（依赖文本投影）；**V2** |

@@ -70,20 +70,6 @@ namespace {
 	return map.back().text;
 }
 
-[[nodiscard]] QString FormatEditedDate(QDateTime sent, QDateTime edited) {
-	const auto today = QDateTime::currentDateTime().date();
-	const auto time = Nagram::Messages::FormatTime(edited.time());
-	if (sent.date() == today && edited.date() == today) {
-		return tr::lng_edited_at(tr::now, lt_time, time);
-	}
-	return tr::lng_edited_on(
-		tr::now,
-		lt_date,
-		langDayOfMonthShort(edited.date()),
-		lt_time,
-		time);
-}
-
 } // namespace
 
 struct BottomInfo::Effect {
@@ -493,7 +479,7 @@ void BottomInfo::layoutDateText() {
 		: updated
 		? (tr::lng_ephemeral_updated(tr::now) + ' ')
 		: (_data.flags & Data::Flag::Edited)
-		? (tr::lng_edited(tr::now) + ' ')
+		? (Nagram::Messages::EditedMark() + ' ')
 		: (_data.flags & Data::Flag::EstimateDate)
 		? (tr::lng_approximate(tr::now) + ' ')
 		: _data.scheduleRepeatPeriod
@@ -502,7 +488,7 @@ void BottomInfo::layoutDateText() {
 	const auto author = _data.author;
 	const auto prefix = !author.isEmpty() ? u", "_q : QString();
 	const auto date = editedPrimary
-		? FormatEditedDate(_data.date, _data.editedDate)
+		? Nagram::Messages::FormatEditedDate(_data.date, _data.editedDate)
 		: edited + ((_data.flags & Data::Flag::ForwardedDate)
 		? Nagram::Messages::FormatSavedFrom(_data.date)
 		: Nagram::Messages::FormatTime(_data.date.time()));
@@ -558,7 +544,7 @@ void BottomInfo::layoutViewsText() {
 	}
 	_views.setText(
 		st::msgDateTextStyle,
-		Lang::FormatCountToShort(std::max(*_data.views, 1)).string,
+		Nagram::Messages::FormatCounter(std::max(*_data.views, 1)),
 		Ui::NameTextOptions());
 }
 
@@ -573,7 +559,7 @@ void BottomInfo::layoutRepliesText() {
 	}
 	_replies.setText(
 		st::msgDateTextStyle,
-		Lang::FormatCountToShort(*_data.replies).string,
+		Nagram::Messages::FormatCounter(*_data.replies),
 		Ui::NameTextOptions());
 }
 
@@ -748,6 +734,7 @@ BottomInfo::Data BottomInfoDataFromMessage(not_null<Message*> message) {
 			result.flags |= Flag::Silent;
 		}
 	}
+	Nagram::Messages::ApplyInfoOptions(result);
 	if (!forwarded) {
 		return result;
 	}

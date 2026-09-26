@@ -19,3 +19,9 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_nagram_ prefix.
 "lng_nagram_show_service_time" = "Show time on service messages";
 "lng_nagram_show_message_id" = "Show message ID in time tooltip";
 "lng_nagram_message_id" = "Message ID: {id}";
+"lng_nagram_marks_and_counts" = "Labels and counts";
+"lng_nagram_exact_message_counters" = "Show exact view and reply counts";
+"lng_nagram_hide_message_views" = "Hide view counts";
+"lng_nagram_hide_channel_signature" = "Hide channel message signatures";
+"lng_nagram_hide_edited_badge" = "Hide edited label";
+"lng_nagram_edited_mark" = "Edited label text";

@@ -15,3 +15,9 @@
 "lng_nagram_show_service_time" = "服務訊息顯示時間";
 "lng_nagram_show_message_id" = "時間提示中顯示訊息 ID";
 "lng_nagram_message_id" = "訊息 ID：{id}";
+"lng_nagram_marks_and_counts" = "標記與計數";
+"lng_nagram_exact_message_counters" = "顯示精確的瀏覽數和回覆數";
+"lng_nagram_hide_message_views" = "隱藏瀏覽數";
+"lng_nagram_hide_channel_signature" = "隱藏頻道訊息署名";
+"lng_nagram_hide_edited_badge" = "隱藏「已編輯」標記";
+"lng_nagram_edited_mark" = "「已編輯」標記文字";

@@ -15,3 +15,9 @@
 "lng_nagram_show_service_time" = "服务消息显示时间";
 "lng_nagram_show_message_id" = "时间提示中显示消息 ID";
 "lng_nagram_message_id" = "消息 ID：{id}";
+"lng_nagram_marks_and_counts" = "标记与计数";
+"lng_nagram_exact_message_counters" = "显示精确的浏览数和回复数";
+"lng_nagram_hide_message_views" = "隐藏浏览数";
+"lng_nagram_hide_channel_signature" = "隐藏频道消息签名";
+"lng_nagram_hide_edited_badge" = "隐藏“已编辑”标记";
+"lng_nagram_edited_mark" = "“已编辑”标记文字";

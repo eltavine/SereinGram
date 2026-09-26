@@ -47,6 +47,46 @@ QString FormatSavedFrom(QDateTime dateTime) {
 		tr::now, lt_date, dateText, lt_time, time);
 }
 
+QString FormatEditedDate(QDateTime sent, QDateTime edited) {
+	const auto today = QDateTime::currentDateTime().date();
+	const auto time = FormatTime(edited.time());
+	const auto mark = ForDevice().Get(kEditedMark);
+	if (sent.date() == today && edited.date() == today) {
+		return mark.isEmpty()
+			? tr::lng_edited_at(tr::now, lt_time, time)
+			: mark + ' ' + time;
+	}
+	const auto date = langDayOfMonthShort(edited.date());
+	return mark.isEmpty()
+		? tr::lng_edited_on(tr::now, lt_date, date, lt_time, time)
+		: mark + ' ' + date + ' ' + time;
+}
+
+QString EditedMark() {
+	const auto mark = ForDevice().Get(kEditedMark);
+	return mark.isEmpty() ? tr::lng_edited(tr::now) : mark;
+}
+
+QString FormatCounter(int count) {
+	return ForDevice().Get(kExactMessageCounters)
+		? Lang::FormatCountDecimal(count)
+		: Lang::FormatCountToShort(count).string;
+}
+
+void ApplyInfoOptions(HistoryView::BottomInfo::Data &data) {
+	auto &options = ForDevice();
+	if (options.Get(kHideMessageViews)) {
+		data.views.reset();
+	}
+	if (options.Get(kHideChannelSignature)) {
+		data.author.clear();
+	}
+	if (options.Get(kHideEditedBadge)) {
+		using Flag = HistoryView::BottomInfo::Data::Flag;
+		data.flags &= ~(Flag::Edited | Flag::EditedPrimary);
+	}
+}
+
 void ApplyForwardedDate(
 		HistoryView::BottomInfo::Data &data,
 		not_null<HistoryItem*> item) {
