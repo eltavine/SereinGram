@@ -32,6 +32,9 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_nagram_ prefix.
 "lng_nagram_hide_proxy_sponsor" = "Hide proxy sponsored channels";
 "lng_nagram_hide_premium_promotions" = "Hide Premium promotions";
 "lng_nagram_hide_birthday_suggestions" = "Hide birthday suggestions";
+"lng_nagram_scroll_navigation" = "Scroll navigation";
+"lng_nagram_disable_scroll_to_next_channel" = "Do not switch to next channel at bottom";
+"lng_nagram_disable_scroll_to_next_topic" = "Do not switch to next topic at bottom";
 "lng_nagram_time_and_info" = "Time and info";
 "lng_nagram_seconds_in_messages" = "Show seconds in message times";
 "lng_nagram_show_forwarded_message_date" = "Show original time on forwarded messages";

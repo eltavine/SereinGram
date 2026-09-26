@@ -156,6 +156,19 @@ const auto kMeta = BuildHelper({
 		tr::lng_nagram_hide_birthday_suggestions(),
 		u"nagram/chats/hide-birthday"_q,
 		{ u"birthday"_q, u"suggestion"_q });
+	builder.addSubsectionTitle({
+		.id = u"nagram/chats/scroll-navigation"_q,
+		.title = tr::lng_nagram_scroll_navigation(),
+		.keywords = { u"scroll"_q, u"navigation"_q },
+	});
+	AddToggle(builder, Chats::kDisableScrollToNextChannel,
+		tr::lng_nagram_disable_scroll_to_next_channel(),
+		u"nagram/chats/disable-next-channel"_q,
+		{ u"scroll"_q, u"channel"_q });
+	AddToggle(builder, Chats::kDisableScrollToNextTopic,
+		tr::lng_nagram_disable_scroll_to_next_topic(),
+		u"nagram/chats/disable-next-topic"_q,
+		{ u"scroll"_q, u"topic"_q });
 });
 
 const SectionBuildMethod ChatsSection::kBuild = kMeta.build;

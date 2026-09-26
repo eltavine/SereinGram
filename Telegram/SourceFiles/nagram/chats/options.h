@@ -43,6 +43,12 @@ inline constexpr auto kHidePremiumPromotions = Option<bool>{
 inline constexpr auto kHideBirthdaySuggestions = Option<bool>{
 	"nagram.hideBirthdaySuggestions", Scope::Device, false,
 	Category::Chats, "lng_nagram_hide_birthday_suggestions" };
+inline constexpr auto kDisableScrollToNextChannel = Option<bool>{
+	"nagram.disableScrollToNextChannel", Scope::Device, false,
+	Category::Chats, "lng_nagram_disable_scroll_to_next_channel" };
+inline constexpr auto kDisableScrollToNextTopic = Option<bool>{
+	"nagram.disableScrollToNextTopic", Scope::Device, false,
+	Category::Chats, "lng_nagram_disable_scroll_to_next_topic" };
 
 inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kCompactList));
@@ -56,6 +62,8 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kHideProxySponsor));
 	Expects(registry.Add(kHidePremiumPromotions));
 	Expects(registry.Add(kHideBirthdaySuggestions));
+	Expects(registry.Add(kDisableScrollToNextChannel));
+	Expects(registry.Add(kDisableScrollToNextTopic));
 }
 
 } // namespace Nagram::Chats
