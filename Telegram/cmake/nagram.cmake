@@ -15,6 +15,7 @@ set(nagram_sources
     nagram/settings/home.cpp
     nagram/settings/chats.cpp
     nagram/settings/compose.cpp
+    nagram/settings/media.cpp
     nagram/settings/messages.cpp
 )
 

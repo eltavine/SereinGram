@@ -7,6 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/history_view_bottom_info.h"
 #include "nagram/messages/format.h"
+#include "nagram/media/options.h"
 
 #include "ui/chat/message_bubble.h"
 #include "ui/chat/chat_style.h"
@@ -21,6 +22,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "history/history_item_components.h"
 #include "history/history_item_helpers.h"
 #include "history/history_item.h"
+#include "data/data_document.h"
 #include "history/history.h"
 #include "history/view/media/history_view_media.h"
 #include "history/view/history_view_message.h"
@@ -486,12 +488,15 @@ void BottomInfo::layoutDateText() {
 		? (SchedulePeriodText(_data.scheduleRepeatPeriod) + ' ')
 		: QString();
 	const auto author = _data.author;
-	const auto prefix = !author.isEmpty() ? u", "_q : QString();
-	const auto date = editedPrimary
+	const auto date = (_data.flags & Data::Flag::HideDate)
+		? QString()
+		: editedPrimary
 		? Nagram::Messages::FormatEditedDate(_data.date, _data.editedDate)
 		: edited + ((_data.flags & Data::Flag::ForwardedDate)
 		? Nagram::Messages::FormatSavedFrom(_data.date)
 		: Nagram::Messages::FormatTime(_data.date.time()));
+	const auto prefix = (!author.isEmpty() && !date.isEmpty())
+		? u", "_q : QString();
 	const auto afterAuthor = prefix + date;
 	const auto afterAuthorWidth = st::msgDateFont->width(afterAuthor);
 	const auto authorWidth = st::msgDateFont->width(author);
@@ -504,7 +509,9 @@ void BottomInfo::layoutDateText() {
 	const auto full = (_data.flags & Data::Flag::Sponsored)
 		? QString()
 		: (_data.flags & Data::Flag::Imported)
-		? (date + ' ' + tr::lng_imported(tr::now))
+		? (date.isEmpty()
+			? tr::lng_imported(tr::now)
+			: date + ' ' + tr::lng_imported(tr::now))
 		: name.isEmpty()
 		? date
 		: (name + afterAuthor);
@@ -717,6 +724,11 @@ BottomInfo::Data BottomInfoDataFromMessage(not_null<Message*> message) {
 		}
 	}
 	if (const auto media = item->media()) {
+		if (const auto document = media->document(); document
+			&& document->sticker()
+			&& Nagram::ForDevice().Get(Nagram::Media::kHideStickerTime)) {
+			result.flags |= Flag::HideDate;
+		}
 		if (const auto outcome = media->diceGameOutcome()) {
 			result.tonStake = outcome.stakeNanoTon;
 		}

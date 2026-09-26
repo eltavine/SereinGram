@@ -81,7 +81,7 @@
 | ✅ S35 | `feat(compose): 输入行为` | D12–D15 | macOS Debug 构建与 `test_nagram` 通过；D15 在已打开聊天即时切换三种占位文字并恢复默认，D12–D14 实际交互待 M2 V2 验证 |
 | ✅ S36 | `feat(compose): 发送确认` | D22–D26 | macOS Debug 构建与 `test_nagram` 通过；指定测试目录内五个开关可切换并恢复默认。遵守不发送、不通话约束，确认弹窗与试听预览的实际动作待 M2 V2 验证 |
 | ✅ S37 | `feat(compose): 转发` | D27 | macOS Debug 构建与 `test_nagram` 通过；指定测试目录内开关可切换并恢复默认。遵守不发送约束，实际消息顺序待 M2 V2 验证 |
-| ☐ S38 | `feat(media): 贴纸与表情` | F01–F08 | |
+| ✅ S38 | `feat(media): 贴纸与表情` | F01–F08 | macOS Debug 构建与 `test_nagram` 通过；指定测试目录内 F01 的 150%／100% 和 F02 的时间显隐在已打开聊天即时生效；F03 数值写入与默认恢复、F04–F08 开关切换与恢复已验证。缺少可辨识的推荐、群组和新私聊样本，F03–F08 实际内容效果待 M2 V2 验证 |
 | ☐ S39 | `feat(media): 播放` | F09 | F10 在 M7 |
 | ☐ S3A | `feat(privacy): 本机隐私` | G01、G03、G04 | G02（演示模式）在 M7 |
 | ☐ S3B | `feat(privacy): 资料信息` | G05–G08 | **V2** |

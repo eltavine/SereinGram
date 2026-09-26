@@ -1,0 +1,49 @@
+#pragma once
+
+#include "nagram/core/options.h"
+
+namespace Nagram::Media {
+
+inline constexpr auto kStickerScale = Option<int>{
+	"nagram.stickerScale", Scope::Device, 100,
+	Category::Media, "lng_nagram_sticker_scale",
+	static_cast<unsigned>(Flag::RefreshMessageView),
+	[](const int &value) {
+		return value >= 50 && value <= 200 && value % 25 == 0;
+	} };
+inline constexpr auto kHideStickerTime = Option<bool>{
+	"nagram.hideStickerTime", Scope::Device, false,
+	Category::Media, "lng_nagram_hide_sticker_time",
+	static_cast<unsigned>(Flag::RefreshMessageView) };
+inline constexpr auto kRecentStickerLimit = Option<int>{
+	"nagram.recentStickerLimit", Scope::Device, 0,
+	Category::Media, "lng_nagram_recent_sticker_limit", 0,
+	[](const int &value) { return value >= 0 && value <= 200; } };
+inline constexpr auto kHideGroupStickers = Option<bool>{
+	"nagram.hideGroupStickers", Scope::Device, false,
+	Category::Media, "lng_nagram_hide_group_stickers" };
+inline constexpr auto kHideRecommendedStickers = Option<bool>{
+	"nagram.hideRecommendedStickers", Scope::Device, false,
+	Category::Media, "lng_nagram_hide_recommended_stickers" };
+inline constexpr auto kHideRecommendedEmoji = Option<bool>{
+	"nagram.hideRecommendedEmoji", Scope::Device, false,
+	Category::Media, "lng_nagram_hide_recommended_emoji" };
+inline constexpr auto kHideGifCategories = Option<bool>{
+	"nagram.hideGifCategories", Scope::Device, false,
+	Category::Media, "lng_nagram_hide_gif_categories" };
+inline constexpr auto kHideGreetingSticker = Option<bool>{
+	"nagram.hideGreetingSticker", Scope::Device, false,
+	Category::Media, "lng_nagram_hide_greeting_sticker" };
+
+inline void RegisterOptions(Registry &registry) {
+	Expects(registry.Add(kStickerScale));
+	Expects(registry.Add(kHideStickerTime));
+	Expects(registry.Add(kRecentStickerLimit));
+	Expects(registry.Add(kHideGroupStickers));
+	Expects(registry.Add(kHideRecommendedStickers));
+	Expects(registry.Add(kHideRecommendedEmoji));
+	Expects(registry.Add(kHideGifCategories));
+	Expects(registry.Add(kHideGreetingSticker));
+}
+
+} // namespace Nagram::Media

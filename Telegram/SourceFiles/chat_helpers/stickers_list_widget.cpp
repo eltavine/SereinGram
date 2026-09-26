@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "chat_helpers/stickers_list_widget.h"
+#include "nagram/media/options.h"
 
 #include "base/options.h"
 #include "base/timer_rpl.h"
@@ -298,6 +299,16 @@ StickersListWidget::StickersListWidget(
 			refreshRecent();
 		}, lifetime());
 	}
+	rpl::merge(
+		Nagram::ForDevice().Value(Nagram::Media::kRecentStickerLimit
+		) | rpl::skip(1) | rpl::to_empty,
+		Nagram::ForDevice().Value(Nagram::Media::kHideGroupStickers
+		) | rpl::skip(1) | rpl::to_empty,
+		Nagram::ForDevice().Value(Nagram::Media::kHideRecommendedStickers
+		) | rpl::skip(1) | rpl::to_empty
+	) | rpl::on_next([=] {
+		refreshStickers();
+	}, lifetime());
 
 	positionValue(
 	) | rpl::skip(1) | rpl::map_to(
@@ -357,7 +368,10 @@ object_ptr<TabbedSelector::InnerFooter> StickersListWidget::createFooter() {
 
 	_footer->openSettingsRequests(
 	) | rpl::on_next([=] {
-		const auto onlyFeatured = !_isMasks && _mySets.empty();
+		const auto onlyFeatured = !_isMasks
+			&& _mySets.empty()
+			&& !Nagram::ForDevice().Get(
+				Nagram::Media::kHideRecommendedStickers);
 		_show->showBox(Box<StickersBox>(
 			_show,
 			(onlyFeatured
@@ -3121,18 +3135,30 @@ void StickersListWidget::refreshMySets() {
 
 	refreshFavedStickers();
 	refreshRecentStickers(false);
-	refreshMegagroupStickers(GroupStickersPlace::Visible);
+	if (!Nagram::ForDevice().Get(Nagram::Media::kHideGroupStickers)) {
+		refreshMegagroupStickers(GroupStickersPlace::Visible);
+	}
 
 	for (const auto setId : defaultSetsOrder()) {
 		const auto externalLayout = false;
 		appendSet(_mySets, setId, externalLayout, AppendSkip::Archived);
 	}
-	refreshMegagroupStickers(GroupStickersPlace::Hidden);
+	if (!Nagram::ForDevice().Get(Nagram::Media::kHideGroupStickers)) {
+		refreshMegagroupStickers(GroupStickersPlace::Hidden);
+	}
 
 	takeHeavyData(_mySets, wasSets);
 }
 
 void StickersListWidget::refreshFeaturedSets() {
+	if (Nagram::ForDevice().Get(Nagram::Media::kHideRecommendedStickers)) {
+		_officialSets.clear();
+		_featuredSetsCount = 0;
+		if (_section == Section::Featured) {
+			_section = Section::Stickers;
+		}
+		return;
+	}
 	auto wasFeaturedSetsCount = base::take(_featuredSetsCount);
 	auto wereOfficial = base::take(_officialSets);
 	_officialSets.reserve(
@@ -3349,9 +3375,11 @@ auto StickersListWidget::collectRecentStickers() -> std::vector<Sticker> {
 	result.reserve(cloudCount + recent.size() + customCount);
 	_custom.reserve(cloudCount + recent.size() + customCount);
 
+	const auto configured = Nagram::ForDevice().Get(
+		Nagram::Media::kRecentStickerLimit);
 	auto add = [&](not_null<DocumentData*> document, bool custom) {
-		if (result.size() >= kRecentDisplayLimit
-			&& !OptionUnlimitedRecentStickers.value()) {
+		if (result.size() >= (configured ? configured : kRecentDisplayLimit)
+			&& (configured || !OptionUnlimitedRecentStickers.value())) {
 			return;
 		}
 		const auto i = ranges::find(result, document, &Sticker::document);
@@ -3806,6 +3834,10 @@ void StickersListWidget::showStickerSet(uint64 setId) {
 	}
 
 	if (setId == Data::Stickers::FeaturedSetId) {
+		if (Nagram::ForDevice().Get(
+				Nagram::Media::kHideRecommendedStickers)) {
+			return;
+		}
 		if (_section != Section::Featured) {
 			setSection(Section::Featured);
 			refreshRecentStickers(true);

@@ -2,6 +2,7 @@
 #include "nagram/core/device_options.h"
 #include "nagram/chats/options.h"
 #include "nagram/compose/options.h"
+#include "nagram/media/options.h"
 #include "nagram/messages/options.h"
 
 #include "core/application.h"
@@ -87,6 +88,7 @@ const Registry &RegisteredOptions() {
 		auto result = Registry();
 		Chats::RegisterOptions(result);
 		Compose::RegisterOptions(result);
+		Media::RegisterOptions(result);
 		Messages::RegisterOptions(result);
 		return result;
 	}();

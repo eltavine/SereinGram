@@ -119,7 +119,7 @@
 | 编号 | 上游位置 | 需要处理的上游逻辑 | 方式 |
 | --- | --- | --- | --- |
 | F01 | `history/view/media/history_view_sticker.cpp` | 贴纸显示尺寸乘以比例；表情与骰子保持原尺寸 | 替换 |
-| F02 | `history/view/history_view_element.cpp`、`history/view/history_view_bottom_info.cpp` | 贴纸不显示时间与状态 | 读取 |
+| F02 | `history/view/history_view_bottom_info.cpp`、`.h` | 贴纸隐藏时间，保留发送状态 | 读取 |
 | F03 | `chat_helpers/stickers_list_widget.cpp` | 最近贴纸显示数量 | 替换 |
 | F04、F05 | `chat_helpers/stickers_list_widget.cpp` | 不显示群组贴纸区与推荐贴纸 | 过滤 |
 | F06 | `chat_helpers/emoji_list_widget.cpp` | 不显示推荐表情 | 过滤 |

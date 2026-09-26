@@ -7,6 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/media/history_view_sticker.h"
 #include "nagram/messages/effects.h"
+#include "nagram/media/options.h"
 
 #include "base/options.h"
 #include "boxes/sticker_set_box.h"
@@ -52,6 +53,18 @@ base::options::option<int> OptionStickerSize({
 	.id = "sticker-size",
 	.name = "Sticker size",
 });
+
+[[nodiscard]] QSize UnscaledStickerSize() {
+	const auto side = std::min(st::maxStickerSize, kMaxSizeFixed);
+	if (OptionStickerSize.value() > 0) [[unlikely]] {
+		const auto scaled = std::clamp(
+			style::ConvertScale(OptionStickerSize.value()),
+			style::ConvertScale(50),
+			side);
+		return { scaled, scaled };
+	}
+	return { side, side };
+}
 
 [[nodiscard]] QImage CacheDiceImage(
 		const QString &emoji,
@@ -169,7 +182,10 @@ void Sticker::initSize(int customSize) {
 	} else {
 		_size = Size(_data);
 	}
-	_size = DownscaledSize(_size, Size());
+	_size = DownscaledSize(_size,
+		(customSize > 0 || emojiSticker() || _diceIndex >= 0)
+			? UnscaledStickerSize()
+			: Size());
 }
 
 QSize Sticker::countOptimalSize() {
@@ -200,15 +216,9 @@ bool Sticker::readyToDrawAnimationFrame() {
 }
 
 QSize Sticker::Size() {
-	const auto side = std::min(st::maxStickerSize, kMaxSizeFixed);
-	if (OptionStickerSize.value() > 0) [[unlikely]] {
-		const auto scaled = std::clamp(
-			style::ConvertScale(OptionStickerSize.value()),
-			style::ConvertScale(50),
-			side);
-		return { scaled, scaled };
-	}
-	return { side, side };
+	const auto base = UnscaledStickerSize();
+	const auto scale = Nagram::ForDevice().Get(Nagram::Media::kStickerScale);
+	return { base.width() * scale / 100, base.height() * scale / 100 };
 }
 
 QSize Sticker::Size(not_null<DocumentData*> document) {

@@ -64,6 +64,16 @@
 "lng_nagram_confirm_start_call" = "發起私人通話？";
 "lng_nagram_forwarding" = "轉傳";
 "lng_nagram_forward_before_comment" = "先傳送轉傳內容，再傳送附言";
+"lng_nagram_media" = "媒體與貼圖";
+"lng_nagram_sticker_scale" = "貼圖大小";
+"lng_nagram_hide_sticker_time" = "隱藏貼圖時間";
+"lng_nagram_recent_sticker_limit" = "最近使用貼圖顯示數量";
+"lng_nagram_recent_sticker_hint" = "輸入 1–200，留空則跟隨 Telegram";
+"lng_nagram_hide_group_stickers" = "隱藏群組貼圖";
+"lng_nagram_hide_recommended_stickers" = "隱藏推薦貼圖";
+"lng_nagram_hide_recommended_emoji" = "隱藏推薦表情";
+"lng_nagram_hide_gif_categories" = "隱藏 GIF 推薦分類";
+"lng_nagram_hide_greeting_sticker" = "隱藏新私人對話的問候貼圖";
 "lng_nagram_time_and_info" = "時間與資訊";
 "lng_nagram_seconds_in_messages" = "時間顯示秒數";
 "lng_nagram_show_forwarded_message_date" = "轉傳訊息顯示原始傳送時間";

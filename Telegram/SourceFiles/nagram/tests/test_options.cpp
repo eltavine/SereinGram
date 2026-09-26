@@ -3,6 +3,7 @@
 #include "nagram/messages/options.h"
 #include "nagram/chats/options.h"
 #include "nagram/compose/options.h"
+#include "nagram/media/options.h"
 #include "nagram/messages/time_format.h"
 
 #include <iostream>
@@ -92,6 +93,13 @@ void TestOptions() {
 				"compose button refresh flag");
 		}
 	}
+	auto media = Registry();
+	Media::RegisterOptions(media);
+	Require(media.All().size() == 8, "media option count");
+	Require(media.HasFlag(Media::kStickerScale.key,
+		Flag::RefreshMessageView), "sticker scale refresh flag");
+	Require(!media.HasFlag(Media::kRecentStickerLimit.key,
+		Flag::RefreshMessageView), "recent sticker uses panel refresh");
 	const auto locale = QLocale();
 	QLocale::setDefault(QLocale::c());
 	Require(Messages::FormatTime(QTime(9, 8, 7), false)
