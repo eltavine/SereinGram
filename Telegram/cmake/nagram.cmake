@@ -9,6 +9,7 @@ set(nagram_sources
     nagram/display/view_refresher.cpp
     nagram/menu/actions.cpp
     nagram/menu/batch.cpp
+    nagram/menu/media.cpp
     nagram/menu/model.cpp
     nagram/menu/repeat.cpp
     nagram/menu/selection.cpp

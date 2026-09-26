@@ -157,3 +157,10 @@
 "lng_nagram_menu_batch_no_text" = "所選訊息沒有可合併的文字。";
 "lng_nagram_menu_batch_unavailable" = "目標聊天不支援這項批次操作。";
 "lng_nagram_menu_selection_limit" = "選取的訊息太多。";
+"lng_nagram_menu_media_info" = "媒體資訊";
+"lng_nagram_menu_media_filename" = "檔案名稱";
+"lng_nagram_menu_media_type" = "類型";
+"lng_nagram_menu_media_dimensions" = "尺寸";
+"lng_nagram_menu_media_duration" = "時長";
+"lng_nagram_menu_media_bytes" = "位元組數";
+"lng_nagram_menu_media_unknown" = "沒有可用的媒體資訊。";

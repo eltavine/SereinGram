@@ -161,3 +161,10 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_nagram_ prefix.
 "lng_nagram_menu_batch_no_text" = "The selected messages contain no text to merge.";
 "lng_nagram_menu_batch_unavailable" = "This batch action is unavailable in the destination.";
 "lng_nagram_menu_selection_limit" = "Too many messages are selected.";
+"lng_nagram_menu_media_info" = "Media information";
+"lng_nagram_menu_media_filename" = "File name";
+"lng_nagram_menu_media_type" = "Type";
+"lng_nagram_menu_media_dimensions" = "Dimensions";
+"lng_nagram_menu_media_duration" = "Duration";
+"lng_nagram_menu_media_bytes" = "Size in bytes";
+"lng_nagram_menu_media_unknown" = "No media details are available.";

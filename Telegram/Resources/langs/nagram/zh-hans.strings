@@ -157,3 +157,10 @@
 "lng_nagram_menu_batch_no_text" = "所选消息没有可合并的文本。";
 "lng_nagram_menu_batch_unavailable" = "目标聊天不支持此批量操作。";
 "lng_nagram_menu_selection_limit" = "选中的消息太多。";
+"lng_nagram_menu_media_info" = "媒体信息";
+"lng_nagram_menu_media_filename" = "文件名";
+"lng_nagram_menu_media_type" = "类型";
+"lng_nagram_menu_media_dimensions" = "尺寸";
+"lng_nagram_menu_media_duration" = "时长";
+"lng_nagram_menu_media_bytes" = "字节数";
+"lng_nagram_menu_media_unknown" = "没有可用的媒体信息。";
