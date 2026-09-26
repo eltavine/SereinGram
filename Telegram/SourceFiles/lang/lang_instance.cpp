@@ -7,6 +7,8 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "lang/lang_instance.h"
 
+#include "nagram/core/language.h"
+
 #include "core/application.h"
 #include "storage/serialize_common.h"
 #include "storage/localstorage.h"
@@ -805,7 +807,7 @@ QString GetNonDefaultValue(const QByteArray &key) {
 namespace details {
 
 QString Current(ushort key) {
-	return GetInstance().getValue(key);
+	return Nagram::LocalizedValue(GetInstance(), key);
 }
 
 rpl::producer<QString> Value(ushort key) {

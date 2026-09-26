@@ -94,15 +94,16 @@ int main() {
 			if (!key.starts_with("lng_nagram_")) {
 				throw std::runtime_error("Invalid Nagram key prefix: " + key);
 			}
+			if (key.ends_with("#one") || key.ends_with("#other")) {
+				throw std::runtime_error("Nagram plural key is unsupported: " + key);
+			}
 			if (upstream.contains(key)) {
 				throw std::runtime_error("Key collides with upstream: " + key);
 			}
 		}
 		for (const auto &locale : { "zh-hans", "zh-hant" }) {
 			const auto path = root + "/nagram/" + locale + ".strings";
-			if (std::ifstream(path)) {
-				CheckTranslation(english, path);
-			}
+			CheckTranslation(english, path);
 		}
 		std::cout << "PASS: Nagram strings (" << english.size()
 			<< " English keys)" << std::endl;

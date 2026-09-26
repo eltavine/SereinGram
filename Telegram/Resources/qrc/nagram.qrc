@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="/langs/nagram">
+    <file alias="zh-hans.strings">../langs/nagram/zh-hans.strings</file>
+    <file alias="zh-hant.strings">../langs/nagram/zh-hant.strings</file>
+  </qresource>
+</RCC>

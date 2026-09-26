@@ -1,10 +1,13 @@
 set(nagram_sources
+    nagram/core/language.cpp
     nagram/core/options.cpp
 )
 
 if (nagram_sources)
     nice_target_sources(Telegram ${src_loc} PRIVATE ${nagram_sources})
 endif()
+
+nice_target_sources(Telegram ${res_loc} PRIVATE qrc/nagram.qrc)
 
 if (DESKTOP_APP_TEST_APPS)
     add_executable(test_nagram)
