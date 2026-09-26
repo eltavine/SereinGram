@@ -7,6 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "dialogs/dialogs_inner_widget.h"
 #include "nagram/chats/list_refresher.h"
+#include "nagram/chats/layout.h"
 #include "nagram/messages/content.h"
 #include "nagram/messages/badges.h"
 
@@ -684,6 +685,10 @@ void InnerWidget::refreshWithCollapsedRows(bool toTop) {
 		}
 	} else {
 		_skipTopDialog = false;
+	}
+	if (_filterId > 0 && Nagram::Chats::ShowArchiveInFolders()) {
+		_collapsedRows.push_back(std::make_unique<CollapsedRow>(
+			session().data().folder(Data::Folder::kId)));
 	}
 
 	Assert(!needCollapsedRowsRefresh());
@@ -4794,6 +4799,10 @@ Data::CommunityInfo *InnerWidget::shownCommunity() const {
 }
 
 bool InnerWidget::needCollapsedRowsRefresh() const {
+	if (_filterId > 0) {
+		const auto expected = Nagram::Chats::ShowArchiveInFolders();
+		return _skipTopDialog || (_collapsedRows.empty() == expected);
+	}
 	const auto archive = !_shownList->empty()
 		? _shownList->begin()->get()->folder()
 		: nullptr;

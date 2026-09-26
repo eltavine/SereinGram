@@ -11,5 +11,7 @@ namespace Nagram::Chats {
 [[nodiscard]] bool HideSavedAndArchivedPreviews();
 [[nodiscard]] bool HidePreview(bool folder, bool savedMessages);
 [[nodiscard]] bool HideStories();
+[[nodiscard]] bool ShowArchiveInFolders();
+[[nodiscard]] bool HideFolderUnreadCounters();
 
 } // namespace Nagram::Chats

@@ -118,6 +118,23 @@ const auto kMeta = BuildHelper({
 		tr::lng_nagram_hide_stories(),
 		u"nagram/chats/hide-stories"_q,
 		{ u"stories"_q });
+	builder.addSubsectionTitle({
+		.id = u"nagram/chats/folders"_q,
+		.title = tr::lng_nagram_folders(),
+		.keywords = { u"folders"_q },
+	});
+	AddToggle(builder, Chats::kHideAllChatsFolder,
+		tr::lng_nagram_hide_all_chats_folder(),
+		u"nagram/chats/hide-all"_q,
+		{ u"all chats"_q, u"folders"_q });
+	AddToggle(builder, Chats::kShowArchiveInFolders,
+		tr::lng_nagram_show_archive_in_folders(),
+		u"nagram/chats/archive-in-folders"_q,
+		{ u"archive"_q, u"folders"_q });
+	AddToggle(builder, Chats::kHideFolderUnreadCounters,
+		tr::lng_nagram_hide_folder_unread_counters(),
+		u"nagram/chats/hide-folder-unread"_q,
+		{ u"unread"_q, u"folders"_q });
 });
 
 const SectionBuildMethod ChatsSection::kBuild = kMeta.build;

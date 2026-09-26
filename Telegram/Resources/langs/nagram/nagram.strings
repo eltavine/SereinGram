@@ -23,6 +23,10 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_nagram_ prefix.
 "lng_nagram_preview_three" = "3 lines";
 "lng_nagram_hide_saved_and_archived_previews" = "Hide Saved Messages and Archive previews";
 "lng_nagram_hide_stories" = "Hide stories";
+"lng_nagram_folders" = "Folders";
+"lng_nagram_hide_all_chats_folder" = "Hide All Chats folder";
+"lng_nagram_show_archive_in_folders" = "Show Archive in folders";
+"lng_nagram_hide_folder_unread_counters" = "Hide folder unread counts";
 "lng_nagram_time_and_info" = "Time and info";
 "lng_nagram_seconds_in_messages" = "Show seconds in message times";
 "lng_nagram_show_forwarded_message_date" = "Show original time on forwarded messages";

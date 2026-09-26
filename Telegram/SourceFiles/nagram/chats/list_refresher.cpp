@@ -17,6 +17,8 @@ void ListRefresher::Attach(not_null<Dialogs::InnerWidget*> widget) {
 				widget->refreshFilterResults();
 			}
 			widget->refreshWithCollapsedRows();
+		} else if (key == Chats::kShowArchiveInFolders.key) {
+			widget->refreshWithCollapsedRows();
 		} else {
 			widget->update();
 		}

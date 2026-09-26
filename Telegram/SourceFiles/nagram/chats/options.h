@@ -21,12 +21,25 @@ inline constexpr auto kHideSavedAndArchivedPreviews = Option<bool>{
 inline constexpr auto kHideStories = Option<bool>{
 	"nagram.hideStories", Scope::Device, false,
 	Category::Chats, "lng_nagram_hide_stories" };
+inline constexpr auto kHideAllChatsFolder = Option<bool>{
+	"nagram.hideAllChatsFolder", Scope::Device, false,
+	Category::Chats, "lng_nagram_hide_all_chats_folder" };
+inline constexpr auto kShowArchiveInFolders = Option<bool>{
+	"nagram.showArchiveInFolders", Scope::Device, false,
+	Category::Chats, "lng_nagram_show_archive_in_folders",
+	kRefreshDialogList };
+inline constexpr auto kHideFolderUnreadCounters = Option<bool>{
+	"nagram.hideFolderUnreadCounters", Scope::Device, false,
+	Category::Chats, "lng_nagram_hide_folder_unread_counters" };
 
 inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kCompactList));
 	Expects(registry.Add(kPreviewLines));
 	Expects(registry.Add(kHideSavedAndArchivedPreviews));
 	Expects(registry.Add(kHideStories));
+	Expects(registry.Add(kHideAllChatsFolder));
+	Expects(registry.Add(kShowArchiveInFolders));
+	Expects(registry.Add(kHideFolderUnreadCounters));
 }
 
 } // namespace Nagram::Chats

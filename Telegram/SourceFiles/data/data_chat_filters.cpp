@@ -6,6 +6,9 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "data/data_chat_filters.h"
+#include "nagram/chats/options.h"
+#include "nagram/core/options.h"
+#include "data/data_premium_limits.h"
 
 #include "api/api_text_entities.h"
 #include "history/history.h"
@@ -899,6 +902,50 @@ bool ChatFilters::archiveNeeded() const {
 
 const std::vector<ChatFilter> &ChatFilters::list() const {
 	return _list;
+}
+
+bool ChatFilters::allChatsHidden() const {
+	if (!Nagram::ForDevice().Get(Nagram::Chats::kHideAllChatsFolder)) {
+		return false;
+	}
+	const auto limit = 1 + PremiumLimits(&_owner->session())
+		.dialogFiltersCurrent();
+	for (auto i = 0; i < std::min(int(_list.size()), limit); ++i) {
+		if (_list[i].id()) {
+			return true;
+		}
+	}
+	return false;
+}
+
+std::vector<ChatFilter> ChatFilters::displayList() const {
+	const auto hidden = allChatsHidden();
+	return _list | ranges::views::filter([=](const ChatFilter &filter) {
+		return !hidden || filter.id();
+	}) | ranges::to_vector;
+}
+
+int ChatFilters::displayLimit() const {
+	const auto limit = 1 + PremiumLimits(&_owner->session())
+		.dialogFiltersCurrent();
+	const auto all = ranges::find(_list, FilterId(0), &ChatFilter::id);
+	return limit - ((allChatsHidden() && all != end(_list)
+		&& (all - begin(_list)) < limit) ? 1 : 0);
+}
+
+void ChatFilters::saveDisplayOrder(const std::vector<FilterId> &order) {
+	if (!allChatsHidden()) {
+		saveOrder(order);
+		return;
+	}
+	Expects(order.size() == displayList().size());
+	auto full = std::vector<FilterId>();
+	full.reserve(_list.size());
+	auto i = 0;
+	for (const auto &filter : _list) {
+		full.push_back(filter.id() ? order[i++] : FilterId(0));
+	}
+	saveOrder(full);
 }
 
 FilterId ChatFilters::defaultId() const {

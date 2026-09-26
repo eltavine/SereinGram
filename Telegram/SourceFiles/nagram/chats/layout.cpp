@@ -37,4 +37,12 @@ bool HideStories() {
 	return ForDevice().Get(kHideStories);
 }
 
+bool ShowArchiveInFolders() {
+	return ForDevice().Get(kShowArchiveInFolders);
+}
+
+bool HideFolderUnreadCounters() {
+	return ForDevice().Get(kHideFolderUnreadCounters);
+}
+
 } // namespace Nagram::Chats

@@ -19,6 +19,10 @@
 "lng_nagram_preview_three" = "3 行";
 "lng_nagram_hide_saved_and_archived_previews" = "隱藏收藏訊息和封存的訊息預覽";
 "lng_nagram_hide_stories" = "隱藏動態";
+"lng_nagram_folders" = "資料夾";
+"lng_nagram_hide_all_chats_folder" = "隱藏「所有聊天」資料夾";
+"lng_nagram_show_archive_in_folders" = "在資料夾中顯示封存入口";
+"lng_nagram_hide_folder_unread_counters" = "隱藏資料夾未讀數";
 "lng_nagram_time_and_info" = "時間與資訊";
 "lng_nagram_seconds_in_messages" = "時間顯示秒數";
 "lng_nagram_show_forwarded_message_date" = "轉傳訊息顯示原始傳送時間";

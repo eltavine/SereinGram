@@ -6,6 +6,8 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "ui/widgets/chat_filters_tabs_strip.h"
+#include "nagram/chats/options.h"
+#include "nagram/core/options.h"
 
 #include "api/api_chat_filters_remove_manager.h"
 #include "boxes/choose_filter_box.h"
@@ -68,7 +70,7 @@ void ShowMenu(
 
 	auto id = FilterId(0);
 	{
-		const auto &list = session->data().chatsFilters().list();
+		const auto list = session->data().chatsFilters().displayList();
 		if (index < 0 || index >= list.size()) {
 			return;
 		}
@@ -139,16 +141,13 @@ void ShowFiltersListMenu(
 		not_null<State*> state,
 		int active,
 		Fn<void(int)> changeActive) {
-	const auto &list = session->data().chatsFilters().list();
+	const auto list = session->data().chatsFilters().displayList();
 
 	state->menu = base::make_unique_q<Ui::PopupMenu>(
 		parent,
 		st::popupMenuWithIcons);
 
-	const auto reorderAll = session->user()->isPremium();
-	const auto maxLimit = (reorderAll ? 1 : 0)
-		+ Data::PremiumLimits(session).dialogFiltersCurrent();
-	const auto premiumFrom = (reorderAll ? 0 : 1) + maxLimit;
+	const auto premiumFrom = session->data().chatsFilters().displayLimit();
 
 	for (auto i = 0; i < list.size(); ++i) {
 		const auto title = list[i].title();
@@ -230,22 +229,25 @@ not_null<Ui::RpWidget*> AddChatFiltersTabsStrip(
 	const auto state = wrap->lifetime().make_state<State>();
 	const auto reassignUnreadValue = [=] {
 		state->reorderLifetime.destroy();
-		const auto &list = session->data().chatsFilters().list();
+		const auto list = session->data().chatsFilters().displayList();
 		auto includeMuted = Data::IncludeMutedCounterFoldersValue();
 		for (auto i = 0; i < list.size(); i++) {
 			rpl::combine(
 				Data::UnreadStateValue(session, list[i].id()),
-				rpl::duplicate(includeMuted)
+				rpl::duplicate(includeMuted),
+				Nagram::ForDevice().Value(
+					Nagram::Chats::kHideFolderUnreadCounters)
 			) | rpl::on_next([=](
 					const Dialogs::UnreadState &state,
-					bool includeMuted) {
+					bool includeMuted,
+					bool hideCounters) {
 				const auto chats = state.chats;
 				const auto chatsMuted = state.chatsMuted;
 				const auto muted = (chatsMuted + state.marksMuted);
 				const auto count = (chats + state.marks)
 					- (includeMuted ? 0 : muted);
 				const auto isMuted = includeMuted && (count == muted);
-				slider->setUnreadCount(i, count, isMuted);
+				slider->setUnreadCount(i, hideCounters ? 0 : count, isMuted);
 				slider->fitWidthToSections();
 			}, state->reorderLifetime);
 		}
@@ -261,12 +263,12 @@ not_null<Ui::RpWidget*> AddChatFiltersTabsStrip(
 			}
 
 			const auto filters = &session->data().chatsFilters();
-			const auto &list = filters->list();
-			if (!session->user()->isPremium()) {
-				if (list[0].id() != FilterId()) {
+			if (!session->user()->isPremium() && !filters->allChatsHidden()) {
+				if (filters->list()[0].id() != FilterId()) {
 					filters->moveAllToFront();
 				}
 			}
+			const auto list = filters->displayList();
 			Assert(oldPosition >= 0 && oldPosition < list.size());
 			Assert(newPosition >= 0 && newPosition < list.size());
 
@@ -278,7 +280,7 @@ not_null<Ui::RpWidget*> AddChatFiltersTabsStrip(
 			base::reorder(order, oldPosition, newPosition);
 
 			state->ignoreRefresh = true;
-			filters->saveOrder(order);
+			filters->saveDisplayOrder(order);
 			state->ignoreRefresh = false;
 		};
 
@@ -310,8 +312,8 @@ not_null<Ui::RpWidget*> AddChatFiltersTabsStrip(
 						? slider->lookupSectionLeft(i + 1)
 						: slider->width();
 					if (x >= left && x < right) {
-						const auto &list
-							= session->data().chatsFilters().list();
+						const auto list
+							= session->data().chatsFilters().displayList();
 						return (i < list.size())
 							? list[i].id()
 							: FilterId();
@@ -321,7 +323,7 @@ not_null<Ui::RpWidget*> AddChatFiltersTabsStrip(
 			},
 			[=] { return state->lastFilterId.value_or(FilterId()); },
 			[=](FilterId id) {
-				const auto &list = session->data().chatsFilters().list();
+				const auto list = session->data().chatsFilters().displayList();
 				for (auto i = 0; i < list.size(); i++) {
 					if (list[i].id() == id) {
 						slider->selectSection(i);
@@ -368,15 +370,16 @@ not_null<Ui::RpWidget*> AddChatFiltersTabsStrip(
 		choose(filter.id());
 	};
 
-	const auto filterByIndex = [=](int index) -> const Data::ChatFilter& {
-		const auto &list = session->data().chatsFilters().list();
+	const auto filterByIndex = [=](int index) -> Data::ChatFilter {
+		const auto list = session->data().chatsFilters().displayList();
 		Assert(index >= 0 && index < list.size());
 		return list[index];
 	};
 
 	const auto rebuild = [=] {
-		const auto &list = session->data().chatsFilters().list();
-		if ((list.size() <= 1 && !slider->width()) || state->ignoreRefresh) {
+		const auto list = session->data().chatsFilters().displayList();
+		if ((list.size() <= 1 && !slider->width()
+			&& !session->data().chatsFilters().allChatsHidden()) || state->ignoreRefresh) {
 			return;
 		}
 		const auto context = Core::TextContext({ .session = session });
@@ -411,7 +414,7 @@ not_null<Ui::RpWidget*> AddChatFiltersTabsStrip(
 			const auto reorderAll = session->user()->isPremium();
 			const auto maxLimit = (reorderAll ? 1 : 0)
 				+ Data::PremiumLimits(session).dialogFiltersCurrent();
-			const auto premiumFrom = (reorderAll ? 0 : 1) + maxLimit;
+			const auto premiumFrom = session->data().chatsFilters().displayLimit();
 			slider->setLockedFrom((premiumFrom >= list.size())
 				? 0
 				: premiumFrom);
@@ -421,7 +424,8 @@ not_null<Ui::RpWidget*> AddChatFiltersTabsStrip(
 			if (state->reorder) {
 				state->reorder->cancel();
 				state->reorder->clearPinnedIntervals();
-				if (!reorderAll) {
+				if (!reorderAll
+					&& !session->data().chatsFilters().allChatsHidden()) {
 					state->reorder->addPinnedInterval(0, 1);
 				}
 				state->reorder->addPinnedInterval(
@@ -464,7 +468,12 @@ not_null<Ui::RpWidget*> AddChatFiltersTabsStrip(
 		if (trackActiveFilterAndUnreadAndReorder) {
 			controller->activeChatsFilter(
 			) | rpl::on_next([=](FilterId id) {
-				const auto &list = session->data().chatsFilters().list();
+				if (!id && session->data().chatsFilters().allChatsHidden()) {
+					controller->setActiveChatsFilter(
+						session->data().chatsFilters().displayList().front().id());
+					return;
+				}
+				const auto list = session->data().chatsFilters().displayList();
 				for (auto i = 0; i < list.size(); ++i) {
 					if (list[i].id() == id) {
 						slider->setActiveSection(i);
@@ -501,7 +510,9 @@ not_null<Ui::RpWidget*> AddChatFiltersTabsStrip(
 					[=](int i) { slider->setActiveSection(i); });
 			}
 		}, state->rebuildLifetime);
-		wrap->toggle((list.size() > 1), anim::type::instant);
+		wrap->toggle((list.size() > 1)
+			|| session->data().chatsFilters().allChatsHidden(),
+			anim::type::instant);
 
 		if (state->reorder) {
 			state->reorder->start();
@@ -509,7 +520,9 @@ not_null<Ui::RpWidget*> AddChatFiltersTabsStrip(
 	};
 	rpl::combine(
 		session->data().chatsFilters().changed(),
-		Data::AmPremiumValue(session) | rpl::to_empty
+		Data::AmPremiumValue(session) | rpl::to_empty,
+		Nagram::ForDevice().Value(Nagram::Chats::kHideAllChatsFolder)
+			| rpl::to_empty
 	) | rpl::on_next(rebuild, wrap->lifetime());
 	Core::App().settings().chatFiltersTabsModeValue(
 	) | rpl::on_next([=](ChatsFiltersTabsMode mode) {
@@ -523,7 +536,7 @@ not_null<Ui::RpWidget*> AddChatFiltersTabsStrip(
 		if (!id || !state->lastFilterId || (id != state->lastFilterId)) {
 			return;
 		}
-		for (const auto &filter : session->data().chatsFilters().list()) {
+		for (const auto &filter : session->data().chatsFilters().displayList()) {
 			if (filter.id() == id) {
 				applyFilter(filter);
 				return;
