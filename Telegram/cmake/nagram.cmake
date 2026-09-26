@@ -1,4 +1,6 @@
-set(nagram_sources)
+set(nagram_sources
+    nagram/core/options.cpp
+)
 
 if (nagram_sources)
     nice_target_sources(Telegram ${src_loc} PRIVATE ${nagram_sources})
@@ -10,6 +12,15 @@ if (DESKTOP_APP_TEST_APPS)
 
     nice_target_sources(test_nagram ${src_loc} PRIVATE
         nagram/tests/test_lang.cpp
+        nagram/tests/test_options.cpp
+    )
+
+    target_include_directories(test_nagram PRIVATE ${src_loc})
+
+    target_link_libraries(test_nagram PRIVATE
+        desktop-app::lib_base
+        desktop-app::lib_crl
+        desktop-app::external_qt
     )
 
     target_compile_definitions(test_nagram PRIVATE

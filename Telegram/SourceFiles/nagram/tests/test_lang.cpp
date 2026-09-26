@@ -6,6 +6,8 @@
 #include <stdexcept>
 #include <string>
 
+void TestOptions();
+
 namespace {
 
 using Strings = std::map<std::string, std::string>;
@@ -80,6 +82,7 @@ void CheckTranslation(
 
 int main() {
 	try {
+		TestOptions();
 		const auto root = std::string(NAGRAM_LANG_SOURCE_DIR);
 		const auto upstream = ReadStrings(root + "/lang.strings", false);
 		const auto english = ReadStrings(root + "/nagram/nagram.strings", true);

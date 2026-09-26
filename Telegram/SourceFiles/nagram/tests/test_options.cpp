@@ -1,0 +1,87 @@
+#include "nagram/core/options.h"
+#include "nagram/core/device_options.h"
+
+#include <iostream>
+#include <map>
+#include <stdexcept>
+#include <string>
+
+namespace {
+
+class MemoryPrefs final : public Nagram::RawPrefs {
+public:
+	[[nodiscard]] QByteArray read(std::string_view key) override {
+		const auto found = values.find(std::string(key));
+		return (found == values.end()) ? QByteArray() : found->second;
+	}
+	void write(std::string_view key, const QByteArray &value) override {
+		values[std::string(key)] = value;
+	}
+	void clear(std::string_view key) override {
+		values.erase(std::string(key));
+	}
+
+	std::map<std::string, QByteArray> values;
+};
+
+void Require(bool condition, const char *message) {
+	if (!condition) {
+		throw std::runtime_error(message);
+	}
+}
+
+[[nodiscard]] bool ValidPercent(const int &value) {
+	return value >= 0 && value <= 100;
+}
+
+} // namespace
+
+void TestOptions() {
+	using namespace Nagram;
+	const auto option = Option<int>{
+		"nagram.testPercent", Scope::Device, 0, Category::Interface,
+		"lng_nagram_test_percent", 0, ValidPercent };
+	auto registry = Registry();
+	Require(registry.Add(option), "register option");
+	Require(!registry.Add(option), "duplicate key accepted");
+	Require(registry.All().size() == 1, "registry count");
+
+	auto prefs = MemoryPrefs();
+	auto &subscriber = details::SharedDeviceOptions(prefs);
+	auto &writer = details::SharedDeviceOptions(prefs);
+	Require(&subscriber == &writer, "device entries use different instances");
+	auto &options = subscriber;
+	Require(options.Get(option) == 0, "default value");
+	auto changes = std::vector<int>();
+	auto lifetime = rpl::lifetime();
+	subscriber.Value(option) | rpl::on_next([&](int value) {
+		changes.push_back(value);
+	}, lifetime);
+	Require(changes == std::vector{ 0 }, "initial notification");
+	Require(writer.Set(option, 42), "valid write");
+	Require(prefs.values["nagram.testPercent"] == "42", "stored value");
+	Require(options.Get(option) == 42, "round trip");
+	Require(options.Set(option, 42), "repeat write");
+	Require(changes == (std::vector{ 0, 42 }), "duplicate notification");
+	Require(!options.Set(option, 101), "invalid value accepted");
+	Require(options.Get(option) == 42, "invalid value changed storage");
+
+	prefs.values["nagram.testPercent"] = "broken";
+	Require(options.Get(option) == 0, "invalid stored value fallback");
+	Require(prefs.values["nagram.testPercent"] == "broken",
+		"invalid payload overwritten");
+	Require(options.invalidKeys().contains(option.key), "read error absent");
+	Require(options.Set(option, 0), "clear to default");
+	Require(!prefs.values.contains("nagram.testPercent"), "default not cleared");
+	Require(options.invalidKeys().empty(), "stale read error");
+	Require(changes == (std::vector{ 0, 42, 0 }), "clear notification");
+
+	const auto text = Option<QString>{
+		"nagram.testText", Scope::Device, QString::fromUtf8("default"),
+		Category::Interface, "lng_nagram_test_text" };
+	Require(options.Set(text, QString()), "empty string write");
+	Require(options.Get(text).isEmpty(), "empty string round trip");
+	Require(!options.Set(text, QString::fromUtf8("two\nlines")),
+		"multiline string accepted");
+	std::cout << "PASS: Nagram device options" << std::endl;
+}
