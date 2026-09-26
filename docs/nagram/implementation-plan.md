@@ -90,11 +90,11 @@
 
 | 步骤 | 提交 | 条目 | 备注 |
 | --- | --- | --- | --- |
-| ☐ S40 | `feat(menu): 菜单三态显隐` | E01–E14 | 原型已确认 B 路线：`Tag` 标记、`Apply` 按弹出时 Option 状态过滤并清理分隔线、菜单设置页；保留上游动作顺序 |
-| ☐ S41 | `feat(menu): 复读与无引用转发` | E15–E17、E24 | 新增项默认隐藏 |
-| ☐ S42 | `feat(menu): 批量与选择` | E18、E19 | 预览后执行，不自动发送 |
-| ☐ S43 | `feat(menu): 媒体信息` | E20 | |
-| ☐ S44 | `feat(core): 结构化配置与导出核心` | — | 以菜单配置为第一个结构化对象；版本化 JSON 校验；不含界面；**V2** |
+| ✅ S40 | `feat(menu): 菜单三态显隐` | E01–E14 | B 路线：`Tag` 标记、`Apply` 按弹出时 Option 状态过滤并清理分隔线、菜单设置页；保留上游动作顺序；macOS Debug 构建与 `test_nagram` 通过 |
+| ✅ S41 | `feat(menu): 复读与无引用转发` | E15–E17、E24 | 新增项默认隐藏；macOS Debug 构建与 `test_nagram` 通过 |
+| ✅ S42 | `feat(menu): 批量与选择` | E18、E19 | 预览后放入草稿，不自动发送；macOS Debug 构建与 `test_nagram` 通过 |
+| ✅ S43 | `feat(menu): 媒体信息` | E20 | macOS Debug 构建与 `test_nagram` 通过 |
+| ✅ S44 | `feat(core): 结构化配置与导出核心` | — | 菜单配置为首个结构化对象；版本化 JSON 校验与差异预览核心，不含界面；macOS Debug 构建与 `test_nagram` 通过；**V2 待现场验证** |
 
 ### M4 界面与导航（分栏 1、2 其余）
 
