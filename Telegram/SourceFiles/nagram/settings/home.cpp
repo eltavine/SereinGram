@@ -3,6 +3,7 @@
 #include "nagram/settings/chats.h"
 #include "nagram/settings/compose.h"
 #include "nagram/settings/media.h"
+#include "nagram/settings/privacy.h"
 
 #include "boxes/about_box.h"
 #include "core/click_handler_types.h"
@@ -78,6 +79,12 @@ const auto kMeta = BuildHelper({
 		.targetSection = MediaId(),
 		.icon = { &st::menuIconChatBubble },
 		.keywords = { u"media"_q, u"sticker"_q, u"emoji"_q },
+	});
+	builder.addSectionButton({
+		.title = tr::lng_nagram_privacy(),
+		.targetSection = PrivacyId(),
+		.icon = { &st::menuIconLock },
+		.keywords = { u"privacy"_q, u"phone"_q },
 	});
 	builder.addDividerText(tr::lng_nagram_settings_note());
 });

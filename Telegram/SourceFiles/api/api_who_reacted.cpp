@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "api/api_who_reacted.h"
+#include "nagram/privacy/options.h"
 
 #include "api/api_global_privacy.h"
 #include "history/history_item.h"
@@ -559,12 +560,15 @@ void RegenerateParticipants(not_null<State*> state, int small, int large) {
 	for (auto &userpic : state->userpics) {
 		const auto peer = userpic.peer;
 		const auto date = userpic.date;
+		const auto dateText = (userpic.dateReacted
+			|| !Nagram::ForDevice().Get(Nagram::Privacy::kHideReadTime))
+			? FormatReadDate(date, currentDate) : QString();
 		const auto id = peer->id.value;
 		const auto self = peer->isSelf();
 		const auto was = ranges::find(old, id, &Ui::WhoReadParticipant::id);
 		if (was != end(old)) {
 			was->name = peer->name();
-			was->date = FormatReadDate(date, currentDate);
+			was->date = dateText;
 			was->dateReacted = userpic.dateReacted;
 			was->self = self;
 			was->customEntityData = userpic.customEntityData;
@@ -574,7 +578,7 @@ void RegenerateParticipants(not_null<State*> state, int small, int large) {
 		}
 		now.push_back({
 			.name = peer->name(),
-			.date = FormatReadDate(date, currentDate),
+			.date = dateText,
 			.dateReacted = userpic.dateReacted,
 			.self = self,
 			.customEntityData = userpic.customEntityData,

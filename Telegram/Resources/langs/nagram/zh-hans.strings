@@ -75,6 +75,10 @@
 "lng_nagram_hide_gif_categories" = "隐藏 GIF 推荐分类";
 "lng_nagram_hide_greeting_sticker" = "隐藏新私聊的问候贴纸";
 "lng_nagram_disable_video_autoplay" = "关闭聊天中的视频自动播放";
+"lng_nagram_privacy" = "隐私与资料";
+"lng_nagram_hide_my_phone" = "遮盖我的手机号";
+"lng_nagram_hide_read_time" = "隐藏已读时间提示";
+"lng_nagram_hide_share_phone_prompt" = "隐藏分享手机号提示";
 "lng_nagram_time_and_info" = "时间与信息";
 "lng_nagram_seconds_in_messages" = "时间显示秒";
 "lng_nagram_show_forwarded_message_date" = "转发消息显示原始发送时间";
