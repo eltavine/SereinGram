@@ -51,6 +51,9 @@ QString Title(Menu::ActionId id) {
 	case Menu::ActionId::Image: return tr::lng_nagram_menu_image(tr::now);
 	case Menu::ActionId::Delete: return tr::lng_nagram_menu_delete(tr::now);
 	case Menu::ActionId::StickerPack: return tr::lng_nagram_menu_sticker_pack(tr::now);
+	case Menu::ActionId::Repeat: return tr::lng_nagram_menu_repeat(tr::now);
+	case Menu::ActionId::RepeatAsCopy: return tr::lng_nagram_menu_repeat_as_copy(tr::now);
+	case Menu::ActionId::ForwardWithoutQuote: return tr::lng_nagram_menu_forward_without_quote(tr::now);
 	default: return QString();
 	}
 }
@@ -79,6 +82,9 @@ const style::icon *Icon(Menu::ActionId id) {
 	case Menu::ActionId::Image: return &st::menuIconSaveImage;
 	case Menu::ActionId::Delete: return &st::menuIconDelete;
 	case Menu::ActionId::StickerPack: return &st::menuIconStickers;
+	case Menu::ActionId::Repeat:
+	case Menu::ActionId::RepeatAsCopy: return &st::menuIconRepeat;
+	case Menu::ActionId::ForwardWithoutQuote: return &st::menuIconForward;
 	default: return &st::menuIconChatBubble;
 	}
 }
@@ -109,6 +115,19 @@ const auto kMeta = BuildHelper({
 	.icon = &st::menuIconChatBubble,
 }, [](SectionBuilder &builder) {
 	const auto controller = builder.controller();
+	const auto confirm = builder.addButton({
+		.id = u"nagram/menu/confirm-repeat"_q,
+		.title = tr::lng_nagram_menu_confirm_repeat(),
+		.st = &st::settingsButtonNoIcon,
+		.toggled = ForDevice().Value(Menu::kConfirmRepeat),
+		.keywords = { u"repeat"_q, u"confirm"_q },
+	});
+	if (confirm) {
+		confirm->toggledChanges(
+		) | rpl::on_next([](bool value) {
+			Expects(ForDevice().Set(Menu::kConfirmRepeat, value));
+		}, confirm->lifetime());
+	}
 	for (const auto &entry : Menu::kEntries) {
 		const auto id = entry.id;
 		builder.addButton({

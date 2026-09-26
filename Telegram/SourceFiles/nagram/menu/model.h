@@ -36,7 +36,7 @@ struct Entry {
 	const char *titleKey;
 };
 
-inline constexpr auto kEntries = std::array<Entry, 14>({{
+inline constexpr auto kEntries = std::array<Entry, 17>({{
 	{ ActionId::Reply, "lng_nagram_menu_reply" },
 	{ ActionId::Edit, "lng_nagram_menu_edit" },
 	{ ActionId::Copy, "lng_nagram_menu_copy" },
@@ -51,8 +51,12 @@ inline constexpr auto kEntries = std::array<Entry, 14>({{
 	{ ActionId::Image, "lng_nagram_menu_image" },
 	{ ActionId::Delete, "lng_nagram_menu_delete" },
 	{ ActionId::StickerPack, "lng_nagram_menu_sticker_pack" },
+	{ ActionId::Repeat, "lng_nagram_menu_repeat" },
+	{ ActionId::RepeatAsCopy, "lng_nagram_menu_repeat_as_copy" },
+	{ ActionId::ForwardWithoutQuote, "lng_nagram_menu_forward_without_quote" },
 }});
 
+[[nodiscard]] Visibility DefaultVisibility(ActionId id);
 [[nodiscard]] bool ValidateConfig(const QByteArray &raw);
 [[nodiscard]] Visibility ReadVisibility(const QByteArray &raw, ActionId id);
 [[nodiscard]] QByteArray WriteVisibility(
@@ -65,9 +69,14 @@ inline const auto kMenuConfig = Option<QByteArray>{
 	"nagram.messageMenu", Scope::Device, QByteArray(),
 	Category::Menu, "lng_nagram_menu", static_cast<unsigned>(Flag::Exportable),
 	ValidateConfig };
+inline constexpr auto kConfirmRepeat = Option<bool>{
+	"nagram.confirmRepeat", Scope::Device, false,
+	Category::Menu, "lng_nagram_menu_confirm_repeat",
+	static_cast<unsigned>(Flag::Exportable) };
 
 inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kMenuConfig));
+	Expects(registry.Add(kConfirmRepeat));
 }
 
 } // namespace Nagram::Menu

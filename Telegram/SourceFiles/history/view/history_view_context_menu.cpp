@@ -2036,7 +2036,8 @@ base::unique_qptr<Ui::PopupMenu> FillContextMenu(
 				});
 		});
 	}
-	Nagram::Menu::Apply(result.get());
+	Nagram::Menu::Apply(result.get(),
+		request.selectedItems.empty() ? item : nullptr, list->controller());
 	return result;
 }
 

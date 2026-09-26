@@ -139,3 +139,8 @@
 "lng_nagram_menu_hidden" = "隱藏";
 "lng_nagram_menu_with_option" = "按住 Option（Alt）時顯示";
 "lng_nagram_menu_note" = "隱藏只影響選單顯示，不改變權限；Telegram 不允許的操作不會因設為顯示而出現。";
+"lng_nagram_menu_repeat" = "複讀";
+"lng_nagram_menu_repeat_as_copy" = "無引用複讀";
+"lng_nagram_menu_forward_without_quote" = "無引用轉發";
+"lng_nagram_menu_confirm_repeat" = "複讀前確認";
+"lng_nagram_menu_repeat_confirm_text" = "要在目前聊天複讀這則訊息嗎？";

@@ -64,8 +64,14 @@ void TestOptions() {
 		Visibility::Show).isEmpty(), "menu default removes stored override");
 	Require(!Menu::ValidateConfig(R"({"version":1,"states":{"E99":"hide"}})"),
 		"unknown menu action accepted");
-	Require(!Menu::ValidateConfig(R"({"version":1,"states":{"E01":"show"}})"),
+	Require(!Menu::ValidateConfig(R"({"version":1,"states":{"E01":"unknown"}})"),
 		"invalid menu state accepted");
+	Require(Menu::ReadVisibility({}, ActionId::Repeat) == Visibility::Hide,
+		"new menu action default");
+	const auto shownRepeat = Menu::WriteVisibility({}, ActionId::Repeat,
+		Visibility::Show);
+	Require(Menu::ReadVisibility(shownRepeat, ActionId::Repeat)
+		== Visibility::Show, "new menu action override");
 	Require(!Menu::ValidateConfig(R"({"version":1,"states":{},"extra":1})"),
 		"unknown menu field accepted");
 	const auto option = Option<int>{

@@ -25,6 +25,11 @@ QJsonObject Parse(const QByteArray &raw) {
 
 } // namespace
 
+Visibility DefaultVisibility(ActionId id) {
+	return static_cast<int>(id) >= static_cast<int>(ActionId::Repeat)
+		? Visibility::Hide : Visibility::Show;
+}
+
 bool ValidateConfig(const QByteArray &raw) {
 	if (raw.isEmpty()) {
 		return true;
@@ -46,7 +51,8 @@ bool ValidateConfig(const QByteArray &raw) {
 			return false;
 		}
 		const auto value = it.value().toString();
-		if (value != u"hide" && value != u"option") {
+		if (value != u"show" && value != u"hide"
+			&& value != u"option") {
 			return false;
 		}
 	}
@@ -55,7 +61,7 @@ bool ValidateConfig(const QByteArray &raw) {
 
 Visibility ReadVisibility(const QByteArray &raw, ActionId id) {
 	if (raw.isEmpty() || !ValidateConfig(raw)) {
-		return Visibility::Show;
+		return DefaultVisibility(id);
 	}
 	const auto value = Parse(raw).value("states").toObject().value(
 		QString::fromLatin1(Key(id))).toString();
@@ -63,7 +69,9 @@ Visibility ReadVisibility(const QByteArray &raw, ActionId id) {
 		? Visibility::Hide
 		: (value == u"option")
 		? Visibility::WithOption
-		: Visibility::Show;
+		: value == u"show"
+		? Visibility::Show
+		: DefaultVisibility(id);
 }
 
 QByteArray WriteVisibility(
@@ -75,11 +83,13 @@ QByteArray WriteVisibility(
 		? QJsonObject()
 		: Parse(raw).value("states").toObject();
 	const auto key = QString::fromLatin1(Key(id));
-	if (visibility == Visibility::Show) {
+	if (visibility == DefaultVisibility(id)) {
 		states.remove(key);
 	} else {
 		states.insert(key, visibility == Visibility::Hide
-			? QString(u"hide") : QString(u"option"));
+			? QString(u"hide")
+			: visibility == Visibility::WithOption
+			? QString(u"option") : QString(u"show"));
 	}
 	if (states.isEmpty()) {
 		return QByteArray();

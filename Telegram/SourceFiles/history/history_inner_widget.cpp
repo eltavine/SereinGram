@@ -3918,7 +3918,7 @@ void HistoryInner::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 		}
 	}
 
-	Nagram::Menu::Apply(_menu.get());
+	Nagram::Menu::Apply(_menu.get(), selectedState.count ? nullptr : leaderOrSelf, controller);
 	if (_menu->empty()) {
 		_menu = nullptr;
 		return;
