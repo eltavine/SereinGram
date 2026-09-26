@@ -148,3 +148,16 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_nagram_ prefix.
 "lng_nagram_menu_forward_without_quote" = "Forward without attribution";
 "lng_nagram_menu_confirm_repeat" = "Confirm before repeating";
 "lng_nagram_menu_repeat_confirm_text" = "Repeat this message in the current chat?";
+"lng_nagram_menu_batch" = "Merge and batch actions";
+"lng_nagram_menu_select_sender" = "Select this sender's messages";
+"lng_nagram_menu_batch_reverse" = "Reverse order";
+"lng_nagram_menu_batch_no_names" = "Omit sender names";
+"lng_nagram_menu_batch_draft" = "Place in current chat draft";
+"lng_nagram_menu_batch_saved" = "Place forward draft in Saved Messages";
+"lng_nagram_menu_batch_limit" = "Select up to 100 available messages.";
+"lng_nagram_menu_batch_changed" = "The selected messages changed. Reopen the preview.";
+"lng_nagram_menu_batch_draft_exists" = "The destination already has a draft.";
+"lng_nagram_menu_batch_preview" = "Preview and edit the merged text before placing it in the draft.";
+"lng_nagram_menu_batch_no_text" = "The selected messages contain no text to merge.";
+"lng_nagram_menu_batch_unavailable" = "This batch action is unavailable in the destination.";
+"lng_nagram_menu_selection_limit" = "Too many messages are selected.";

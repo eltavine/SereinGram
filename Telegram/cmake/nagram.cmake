@@ -8,8 +8,10 @@ set(nagram_sources
     nagram/core/options.cpp
     nagram/display/view_refresher.cpp
     nagram/menu/actions.cpp
+    nagram/menu/batch.cpp
     nagram/menu/model.cpp
     nagram/menu/repeat.cpp
+    nagram/menu/selection.cpp
     nagram/messages/format.cpp
     nagram/messages/content.cpp
     nagram/messages/badges.cpp

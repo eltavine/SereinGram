@@ -1,22 +1,19 @@
 #pragma once
 
-#include "nagram/menu/model.h"
 #include "data/data_types.h"
 #include "base/basic_types.h"
 
-class QAction;
 class HistoryItem;
-namespace Window {
-class SessionController;
-} // namespace Window
 namespace Ui {
 class PopupMenu;
 } // namespace Ui
+namespace Window {
+class SessionController;
+} // namespace Window
 
 namespace Nagram::Menu {
 
-void Tag(QAction *action, ActionId id);
-void Apply(
+void InsertBatchActions(
 	Ui::PopupMenu *menu,
 	HistoryItem *item,
 	Window::SessionController *controller,

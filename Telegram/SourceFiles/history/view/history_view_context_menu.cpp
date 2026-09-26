@@ -7,6 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/history_view_context_menu.h"
 #include "nagram/menu/actions.h"
+#include "nagram/menu/selection.h"
 
 #include "api/api_attached_stickers.h"
 #include "api/api_editing.h"
@@ -2037,7 +2038,14 @@ base::unique_qptr<Ui::PopupMenu> FillContextMenu(
 		});
 	}
 	Nagram::Menu::Apply(result.get(),
-		request.selectedItems.empty() ? item : nullptr, list->controller());
+		(request.pointState != PointState::Outside
+			&& request.selectedItems.empty()) ? item : nullptr,
+		list->controller(),
+		(request.pointState != PointState::Outside && request.overSelection)
+			? ExtractIdsList(request.selectedItems) : MessageIdsList(),
+		crl::guard(list, [=](HistoryItem *item) {
+			Nagram::Menu::Selection::Select(list, item);
+		}));
 	return result;
 }
 

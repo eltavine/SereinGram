@@ -8,6 +8,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "history/history_inner_widget.h"
 #include "nagram/messages/reactions.h"
 #include "nagram/menu/actions.h"
+#include "nagram/menu/selection.h"
 
 #include "api/api_polls.h"
 #include "chat_helpers/stickers_emoji_pack.h"
@@ -3918,7 +3919,25 @@ void HistoryInner::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 		}
 	}
 
-	Nagram::Menu::Apply(_menu.get(), selectedState.count ? nullptr : leaderOrSelf, controller);
+	const auto nagramMoused = Element::Moused();
+	const auto nagramOnMessage = _dragStateItem
+		&& (e->reason() == QContextMenuEvent::Keyboard
+			|| (nagramMoused && nagramMoused->pointState(mapPointToItem(
+				mapFromGlobal(e->globalPos()), nagramMoused))
+				!= HistoryView::PointState::Outside));
+	auto nagramSelected = MessageIdsList();
+	if (nagramOnMessage && isUponSelected > 1) {
+		for (const auto &selected : selectedItemsForExport()) {
+			nagramSelected.push_back(selected->fullId());
+		}
+	}
+	Nagram::Menu::Apply(_menu.get(),
+		(nagramOnMessage && !selectedState.count) ? leaderOrSelf : nullptr,
+		controller,
+		std::move(nagramSelected),
+		crl::guard(this, [=](HistoryItem *item) {
+			Nagram::Menu::Selection::Select(this, item);
+		}));
 	if (_menu->empty()) {
 		_menu = nullptr;
 		return;

@@ -83,6 +83,7 @@ class VideoUserpic;
 } // namespace Dialogs::Ui
 
 class HistoryInner;
+namespace Nagram::Menu { class Selection; }
 class HistoryMainElementDelegate;
 class HistoryMainElementDelegateMixin {
 public:
@@ -106,6 +107,7 @@ class HistoryWidget;
 class HistoryInner
 	: public Ui::RpWidget
 	, public Ui::AbstractTooltipShower {
+	friend class Nagram::Menu::Selection;
 public:
 	using Element = HistoryView::Element;
 

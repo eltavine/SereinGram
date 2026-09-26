@@ -144,3 +144,16 @@
 "lng_nagram_menu_forward_without_quote" = "无引用转发";
 "lng_nagram_menu_confirm_repeat" = "复读前确认";
 "lng_nagram_menu_repeat_confirm_text" = "在当前聊天中复读这条消息吗？";
+"lng_nagram_menu_batch" = "合并与批量操作";
+"lng_nagram_menu_select_sender" = "选择此人的消息";
+"lng_nagram_menu_batch_reverse" = "反序";
+"lng_nagram_menu_batch_no_names" = "去掉发送者姓名";
+"lng_nagram_menu_batch_draft" = "填入当前聊天草稿";
+"lng_nagram_menu_batch_saved" = "将转发草稿放入收藏夹";
+"lng_nagram_menu_batch_limit" = "最多选择 100 条可用消息。";
+"lng_nagram_menu_batch_changed" = "所选消息已变化，请重新打开预览。";
+"lng_nagram_menu_batch_draft_exists" = "目标聊天已有草稿。";
+"lng_nagram_menu_batch_preview" = "先预览并编辑合并文本，再填入输入框。";
+"lng_nagram_menu_batch_no_text" = "所选消息没有可合并的文本。";
+"lng_nagram_menu_batch_unavailable" = "目标聊天不支持此批量操作。";
+"lng_nagram_menu_selection_limit" = "选中的消息太多。";

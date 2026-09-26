@@ -144,3 +144,16 @@
 "lng_nagram_menu_forward_without_quote" = "無引用轉發";
 "lng_nagram_menu_confirm_repeat" = "複讀前確認";
 "lng_nagram_menu_repeat_confirm_text" = "要在目前聊天複讀這則訊息嗎？";
+"lng_nagram_menu_batch" = "合併與批次操作";
+"lng_nagram_menu_select_sender" = "選取此人的訊息";
+"lng_nagram_menu_batch_reverse" = "反序";
+"lng_nagram_menu_batch_no_names" = "去掉發送者姓名";
+"lng_nagram_menu_batch_draft" = "填入目前聊天草稿";
+"lng_nagram_menu_batch_saved" = "將轉發草稿放入收藏訊息";
+"lng_nagram_menu_batch_limit" = "最多選取 100 則可用訊息。";
+"lng_nagram_menu_batch_changed" = "所選訊息已變更，請重新開啟預覽。";
+"lng_nagram_menu_batch_draft_exists" = "目標聊天已有草稿。";
+"lng_nagram_menu_batch_preview" = "先預覽並編輯合併文字，再填入輸入框。";
+"lng_nagram_menu_batch_no_text" = "所選訊息沒有可合併的文字。";
+"lng_nagram_menu_batch_unavailable" = "目標聊天不支援這項批次操作。";
+"lng_nagram_menu_selection_limit" = "選取的訊息太多。";

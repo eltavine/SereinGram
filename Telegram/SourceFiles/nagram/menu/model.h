@@ -36,7 +36,7 @@ struct Entry {
 	const char *titleKey;
 };
 
-inline constexpr auto kEntries = std::array<Entry, 17>({{
+inline constexpr auto kEntries = std::array<Entry, 19>({{
 	{ ActionId::Reply, "lng_nagram_menu_reply" },
 	{ ActionId::Edit, "lng_nagram_menu_edit" },
 	{ ActionId::Copy, "lng_nagram_menu_copy" },
@@ -54,6 +54,8 @@ inline constexpr auto kEntries = std::array<Entry, 17>({{
 	{ ActionId::Repeat, "lng_nagram_menu_repeat" },
 	{ ActionId::RepeatAsCopy, "lng_nagram_menu_repeat_as_copy" },
 	{ ActionId::ForwardWithoutQuote, "lng_nagram_menu_forward_without_quote" },
+	{ ActionId::Batch, "lng_nagram_menu_batch" },
+	{ ActionId::SelectSender, "lng_nagram_menu_select_sender" },
 }});
 
 [[nodiscard]] Visibility DefaultVisibility(ActionId id);

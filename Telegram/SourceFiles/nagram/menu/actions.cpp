@@ -1,5 +1,6 @@
 #include "nagram/menu/actions.h"
 #include "nagram/menu/repeat.h"
+#include "nagram/menu/batch.h"
 
 #include "ui/widgets/popup_menu.h"
 
@@ -21,10 +22,16 @@ void Tag(QAction *action, ActionId id) {
 void Apply(
 		Ui::PopupMenu *menu,
 		HistoryItem *item,
-		Window::SessionController *controller) {
+		Window::SessionController *controller,
+		MessageIdsList selected,
+		Fn<void(HistoryItem*)> selectAuthor) {
 	Expects(menu != nullptr);
-	if (item && controller) {
-		InsertRepeatActions(menu, item, controller);
+	if (controller) {
+		if (item) {
+			InsertRepeatActions(menu, item, controller);
+		}
+		InsertBatchActions(menu, item, controller,
+			std::move(selected), std::move(selectAuthor));
 	}
 	const auto config = ForDevice().Get(kMenuConfig);
 	const auto optionHeld = (QGuiApplication::keyboardModifiers()
