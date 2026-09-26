@@ -13,6 +13,16 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_nagram_ prefix.
 "lng_nagram_source_code" = "Source code";
 "lng_nagram_settings_note" = "Nagram settings follow Telegram's behavior by default and affect only this device unless a setting says otherwise.";
 "lng_nagram_messages" = "Messages";
+"lng_nagram_chats" = "Chats";
+"lng_nagram_chat_list" = "Chat list";
+"lng_nagram_compact_chat_list" = "Compact chat list";
+"lng_nagram_chat_preview_lines" = "Message preview lines";
+"lng_nagram_preview_follow" = "Follow Telegram";
+"lng_nagram_preview_one" = "1 line";
+"lng_nagram_preview_two" = "2 lines";
+"lng_nagram_preview_three" = "3 lines";
+"lng_nagram_hide_saved_and_archived_previews" = "Hide Saved Messages and Archive previews";
+"lng_nagram_hide_stories" = "Hide stories";
 "lng_nagram_time_and_info" = "Time and info";
 "lng_nagram_seconds_in_messages" = "Show seconds in message times";
 "lng_nagram_show_forwarded_message_date" = "Show original time on forwarded messages";

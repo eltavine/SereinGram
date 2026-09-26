@@ -12,6 +12,9 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "base/options.h"
 #include "dialogs/ui/chat_search_in.h"
 #include "dialogs/ui/dialogs_stories_content.h"
+#include "nagram/chats/layout.h"
+#include "nagram/chats/options.h"
+#include "nagram/core/options.h"
 #include "dialogs/ui/dialogs_stories_list.h"
 #include "dialogs/ui/dialogs_suggestions.h"
 #include "dialogs/ui/dialogs_top_bar_suggestion_content.h"
@@ -1704,6 +1707,10 @@ void Widget::setupMainMenuToggle() {
 }
 
 void Widget::setupStories() {
+	Nagram::ForDevice().Value(Nagram::Chats::kHideStories
+	) | rpl::skip(1) | rpl::on_next([=] {
+		updateStoriesVisibility();
+	}, _stories->lifetime());
 	_stories->verticalScrollEvents(
 	) | rpl::on_next([=](not_null<QWheelEvent*> e) {
 		_scroll->viewportEvent(e);
@@ -2858,6 +2865,7 @@ void Widget::updateStoriesVisibility() {
 	const auto pulledDown = _scroll->position().overscroll
 		< -st::dialogsFilterSkip;
 	const auto hiddenInstant = _showAnimation
+		|| Nagram::Chats::HideStories()
 		|| _openedForum
 		|| _openedCommunity
 		|| (widthAnimation && !suggestionsAnimation)

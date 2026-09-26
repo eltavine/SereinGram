@@ -35,6 +35,7 @@ enum class Flag : unsigned {
 	Exportable = 2,
 	Hidden = 4,
 	RefreshMessageView = 8,
+	RefreshDialogList = 16,
 };
 
 template <typename Type>

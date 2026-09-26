@@ -12,7 +12,7 @@
 | --- | --- | --- |
 | 选项读取 | 本机经 `Nagram::ForDevice()`、账号经 `Nagram::ForAccount(session)` 获取共享 `Options`，再调用 `Get` / `Value` | 旧实现的 `Nagram::Option` 大枚举 |
 | 消息视图刷新 | `nagram/display/` 中的 `ViewRefresher`：随每个 `Main::Session` 订阅“消息显示类”选项，变化时对已加载消息调用上游 `Data::Session::requestItemViewRefresh` / `requestItemResize`。构造时一处调用，`Data::Session` 另加一处 `friend` 标记以访问已加载消息 | 旧实现在 `data/data_session.cpp` 中写了 31 处订阅与刷新逻辑 |
-| 会话列表刷新 | 同上，由 `ListRefresher` 调用上游已有的列表重绘接口 | 旧实现分散在 `dialogs/` 各文件 |
+| 会话列表刷新 | `ListRefresher` 订阅注册表的 `RefreshDialogList` 标记，调用列表的行高重算与重绘接口；`Dialogs::InnerWidget` 构造时接入一处，头文件加一处 `friend` | 旧实现分散在 `dialogs/` 各文件 |
 | 输入区刷新 | `nagram/compose/` 提供 `ComposeButtonsVisibility`，`HistoryWidget` 与 `ComposeControls` 各用一行订阅其结果 | 旧实现两处各自读取 11 个开关 |
 | 消息菜单 | `Nagram::Menu::Tag` 标记 + `Nagram::Menu::Apply` 后处理（见设计文档第 3.4 节） | 旧实现在两个菜单文件中插入约 270 处调用 |
 | 文案 | 英文在 `Resources/langs/nagram/nagram.strings`；简繁通过 `lang/lang_instance.cpp` 的一个挂钩作为缺失键的后备值 | 旧实现修改上游 `lang.strings` 与 `lang_instance.cpp` 81 行 |
@@ -50,7 +50,7 @@
 | B01 | `dialogs/dialogs_row.cpp`、`dialogs/dialogs_inner_widget.cpp`、`dialogs/dialogs.style` | 普通会话行使用紧凑行高与头像尺寸；更新列表高度与命中区域 | 替换 |
 | B02 | `dialogs/ui/dialogs_layout.cpp`、`dialogs/dialogs_row.cpp` | 预览文字的最大行数与行高 | 替换 |
 | B03 | `dialogs/ui/dialogs_layout.cpp`、`dialogs/dialogs_inner_widget_accessibility.cpp` | 收藏夹与归档行不绘制预览文字，读屏文本同步脱敏 | 读取 |
-| B04 | `dialogs/dialogs_widget.cpp` | 不创建动态条，收起已展开区域 | 读取 |
+| B04 | `dialogs/dialogs_widget.cpp` | 即时隐藏动态条并收起已展开区域，保留内部对象（用户在 S30 确认沿用旧版行为） | 读取 |
 | B05 | `window/window_session_controller.cpp`（初始文件夹）、`data/data_chat_filters.cpp` | 账号启动时选择文件夹；记录上次打开的文件夹 | 替换 |
 | B06 | `data/data_chat_filters.cpp`、`ui/widgets/chat_filters_tabs_strip.cpp`、`window/window_filters_menu.cpp` | 显示列表中去掉“全部会话”；保存排序时保持其原位置 | 过滤 |
 | B07 | `dialogs/dialogs_inner_widget.cpp` | 自定义文件夹列表顶部加入归档入口行 | 读取 |

@@ -1,4 +1,6 @@
 set(nagram_sources
+    nagram/chats/layout.cpp
+    nagram/chats/list_refresher.cpp
     nagram/core/language.cpp
     nagram/core/options.cpp
     nagram/display/view_refresher.cpp
@@ -8,6 +10,7 @@ set(nagram_sources
     nagram/messages/effects.cpp
     nagram/messages/reactions.cpp
     nagram/settings/home.cpp
+    nagram/settings/chats.cpp
     nagram/settings/messages.cpp
 )
 

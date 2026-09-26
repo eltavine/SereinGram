@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "dialogs/dialogs_inner_widget.h"
+#include "nagram/chats/list_refresher.h"
 #include "nagram/messages/content.h"
 #include "nagram/messages/badges.h"
 
@@ -315,6 +316,7 @@ InnerWidget::InnerWidget(
 	setAttribute(Qt::WA_OpaquePaintEvent, true);
 	Nagram::Messages::AttachActivityRefresh(this);
 	Nagram::Messages::AttachPremiumRefresh(this);
+	Nagram::ListRefresher::Attach(this);
 	setAccessibleName(tr::lng_recent_chats(tr::now));
 
 	_communityViewable.setRepaint([=] { update(); });

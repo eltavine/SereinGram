@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "dialogs/ui/dialogs_layout.h"
+#include "nagram/chats/layout.h"
 
 #include "base/options.h"
 #include "base/unixtime.h"
@@ -606,7 +607,13 @@ void PaintRow(
 		}
 	}
 	auto texttop = context.st->textTop;
-	if (const auto folder = entry->asFolder()) {
+	if (Nagram::Chats::HidePreview(entry->asFolder(),
+				history && history->peer->isSelf())) {
+		if (history) {
+			PaintDialogDate(p, entry, fakeRow, date, rectForName, context);
+		}
+		PaintWideCounter(p, context, badgesState, texttop, namewidth, false);
+	} else if (const auto folder = entry->asFolder()) {
 		const auto availableWidth = PaintWideCounter(
 			p,
 			context,
@@ -1239,6 +1246,11 @@ void RowPainter::Paint(
 					monoforum,
 					[=] { entry->updateChatListEntry(); },
 					{});
+			}
+			if (Nagram::Chats::PreviewLines() > 1 && !forum && !monoforum
+				&& !entry->hasChatsFilterTags(context.filter)) {
+				rect.setHeight(st::dialogsTextFont->height
+					* Nagram::Chats::PreviewLines());
 			}
 			if (forum || monoforum) {
 				rect.setHeight(context.st->topicsHeight + rect.height());

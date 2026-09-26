@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "dialogs/dialogs_row.h"
+#include "nagram/chats/layout.h"
 
 #include "ui/chat/chat_theme.h" // CountAverageColor.
 #include "ui/color_contrast.h"
@@ -410,11 +411,7 @@ const style::DialogRow &Row::ComputeSt(
 		const auto hasTags = entry->hasChatsFilterTags(filterId);
 		const auto wideRow = history->peer->displayAsForum()
 			|| history->amMonoforumAdmin();
-		return wideRow
-			? (hasTags ? st::taggedForumDialogRow : st::forumDialogRow)
-			: hasTags
-			? st::taggedDialogRow
-			: st::defaultDialogRow;
+		return Nagram::Chats::RowStyle(hasTags, wideRow);
 	} else if (entry->asTopic()) {
 		return st::forumTopicRow;
 	}
@@ -423,7 +420,7 @@ const style::DialogRow &Row::ComputeSt(
 
 void Row::recountHeight(float64 narrowRatio, FilterId filterId) {
 	const auto &st = ComputeSt(_id.entry(), filterId);
-	_height = ((&st == &st::defaultDialogRow) || !_id.history())
+	_height = !_id.history()
 		? st::defaultDialogRow.height
 		: anim::interpolate(
 			st.height,

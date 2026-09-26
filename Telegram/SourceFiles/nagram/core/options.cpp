@@ -1,5 +1,6 @@
 #include "nagram/core/options.h"
 #include "nagram/core/device_options.h"
+#include "nagram/chats/options.h"
 #include "nagram/messages/options.h"
 
 #include "core/application.h"
@@ -83,6 +84,7 @@ Options &ForAccount(gsl::not_null<Main::Session*> session) {
 const Registry &RegisteredOptions() {
 	static const auto registry = [] {
 		auto result = Registry();
+		Chats::RegisterOptions(result);
 		Messages::RegisterOptions(result);
 		return result;
 	}();

@@ -1,6 +1,7 @@
 #include "nagram/core/options.h"
 #include "nagram/core/device_options.h"
 #include "nagram/messages/options.h"
+#include "nagram/chats/options.h"
 #include "nagram/messages/time_format.h"
 
 #include <iostream>
@@ -63,6 +64,15 @@ void TestOptions() {
 		Flag::RefreshMessageView), "unrelated refresh option");
 	Require(!messages.HasFlag("nagram.unknown", Flag::RefreshMessageView),
 		"unknown refresh option");
+	auto chats = Registry();
+	Chats::RegisterOptions(chats);
+	Require(chats.All().size() == 4, "chat option count");
+	Require(chats.HasFlag(Chats::kCompactList.key,
+		Flag::RefreshDialogList), "compact list refresh flag");
+	Require(chats.HasFlag(Chats::kPreviewLines.key,
+		Flag::RefreshDialogList), "preview line refresh flag");
+	Require(!chats.HasFlag(Chats::kHideStories.key,
+		Flag::RefreshDialogList), "stories use widget refresh");
 	const auto locale = QLocale();
 	QLocale::setDefault(QLocale::c());
 	Require(Messages::FormatTime(QTime(9, 8, 7), false)

@@ -9,6 +9,16 @@
 "lng_nagram_source_code" = "源代码";
 "lng_nagram_settings_note" = "Nagram 设置默认跟随 Telegram 原有行为，只影响本机显示，除非条目另有说明。";
 "lng_nagram_messages" = "消息";
+"lng_nagram_chats" = "会话";
+"lng_nagram_chat_list" = "会话列表";
+"lng_nagram_compact_chat_list" = "紧凑列表";
+"lng_nagram_chat_preview_lines" = "消息预览行数";
+"lng_nagram_preview_follow" = "跟随 Telegram";
+"lng_nagram_preview_one" = "1 行";
+"lng_nagram_preview_two" = "2 行";
+"lng_nagram_preview_three" = "3 行";
+"lng_nagram_hide_saved_and_archived_previews" = "隐藏收藏夹和归档的消息预览";
+"lng_nagram_hide_stories" = "隐藏动态";
 "lng_nagram_time_and_info" = "时间与信息";
 "lng_nagram_seconds_in_messages" = "时间显示秒";
 "lng_nagram_show_forwarded_message_date" = "转发消息显示原始发送时间";

@@ -9,6 +9,16 @@
 "lng_nagram_source_code" = "原始碼";
 "lng_nagram_settings_note" = "Nagram 設定預設遵循 Telegram 原有行為，除非選項另有說明，否則只影響本機顯示。";
 "lng_nagram_messages" = "訊息";
+"lng_nagram_chats" = "聊天";
+"lng_nagram_chat_list" = "聊天清單";
+"lng_nagram_compact_chat_list" = "緊湊清單";
+"lng_nagram_chat_preview_lines" = "訊息預覽行數";
+"lng_nagram_preview_follow" = "跟隨 Telegram";
+"lng_nagram_preview_one" = "1 行";
+"lng_nagram_preview_two" = "2 行";
+"lng_nagram_preview_three" = "3 行";
+"lng_nagram_hide_saved_and_archived_previews" = "隱藏收藏訊息和封存的訊息預覽";
+"lng_nagram_hide_stories" = "隱藏動態";
 "lng_nagram_time_and_info" = "時間與資訊";
 "lng_nagram_seconds_in_messages" = "時間顯示秒數";
 "lng_nagram_show_forwarded_message_date" = "轉傳訊息顯示原始傳送時間";

@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "dialogs/dialogs_inner_widget_accessibility.h"
+#include "nagram/chats/layout.h"
 #include "nagram/messages/badges.h"
 
 #include "data/notify/data_notify_settings.h"
@@ -254,7 +255,9 @@ QString RowAccessibilityName(
 		parts << tr::lng_sr_chat_mention(tr::now);
 	}
 
-	if (const auto item = history->chatListMessage()) {
+	if (!Nagram::Chats::HidePreview(false, peer->isSelf())
+			&& history->chatListMessage()) {
+		const auto item = history->chatListMessage();
 		parts += MessageTailParts(item, history, peer);
 	}
 
@@ -430,6 +433,9 @@ QString SubItemValue(
 		return {};
 	}
 	case SubItem::Message: {
+		if (Nagram::Chats::HidePreview(false, peer->isSelf())) {
+			return {};
+		}
 		const auto chatItem = history->chatListMessage();
 		if (!chatItem || chatItem->isService()) {
 			return {};
