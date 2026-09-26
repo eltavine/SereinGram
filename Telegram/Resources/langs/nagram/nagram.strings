@@ -1,0 +1,4 @@
+/*
+Nagram Desktop strings. Merged after lang.strings at configure time, see
+Telegram/cmake/td_lang.cmake. Every key uses the lng_nagram_ prefix.
+*/
