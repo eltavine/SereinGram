@@ -81,6 +81,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "history/history_item_components.h"
 #include "history/history_item_helpers.h"
 #include "history/view/controls/history_view_forward_panel.h"
+#include "nagram/compose/options.h"
 #include "iv/editor/iv_editor_session.h"
 #include "iv/iv_rich_message_serializer.h"
 #include "main/main_session.h"
@@ -4552,6 +4553,11 @@ void ApiWrap::sendRichMessage(
 	const auto submittedSummary = item->originalText();
 
 	StripEphemeralReply(_session, action.replyTo);
+	const auto forwardFirst = Nagram::ForDevice().Get(
+		Nagram::Compose::kForwardBeforeComment);
+	if (forwardFirst) {
+		finishForwarding(action);
+	}
 
 	const auto history = item->history();
 	const auto peer = history->peer;
@@ -4721,7 +4727,9 @@ void ApiWrap::sendRichMessage(
 			});
 	};
 	performRequest(performRequest, richMessage, false);
-	finishForwarding(action);
+	if (!forwardFirst) {
+		finishForwarding(action);
+	}
 }
 
 void ApiWrap::sendMessage(
@@ -4759,6 +4767,11 @@ void ApiWrap::sendMessage(
 	}
 	if (Api::SendDice(message)) {
 		return;
+	}
+	const auto forwardFirst = Nagram::ForDevice().Get(
+		Nagram::Compose::kForwardBeforeComment);
+	if (forwardFirst) {
+		finishForwarding(action);
 	}
 	local().saveRecentSentHashtags(textWithTags.text);
 
@@ -5031,7 +5044,9 @@ void ApiWrap::sendMessage(
 		isFirst = false;
 	}
 
-	finishForwarding(action);
+	if (!forwardFirst) {
+		finishForwarding(action);
+	}
 }
 
 void ApiWrap::sendBotStart(

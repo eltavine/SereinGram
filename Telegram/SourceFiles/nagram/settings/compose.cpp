@@ -179,6 +179,15 @@ const auto kMeta = BuildHelper({
 		tr::lng_nagram_confirm_private_call(),
 		u"nagram/compose/confirm-private-call"_q,
 		{ u"call"_q, u"confirm"_q });
+	builder.addSubsectionTitle({
+		.id = u"nagram/compose/forwarding"_q,
+		.title = tr::lng_nagram_forwarding(),
+		.keywords = { u"forward"_q },
+	});
+	AddToggle(builder, Compose::kForwardBeforeComment,
+		tr::lng_nagram_forward_before_comment(),
+		u"nagram/compose/forward-before-comment"_q,
+		{ u"forward"_q, u"comment"_q, u"order"_q });
 });
 
 const SectionBuildMethod ComposeSection::kBuild = kMeta.build;

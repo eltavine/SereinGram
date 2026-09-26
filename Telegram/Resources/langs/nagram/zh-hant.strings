@@ -62,6 +62,8 @@
 "lng_nagram_confirm_send_sticker" = "傳送這張貼圖？";
 "lng_nagram_confirm_send_gif" = "傳送這個 GIF？";
 "lng_nagram_confirm_start_call" = "發起私人通話？";
+"lng_nagram_forwarding" = "轉傳";
+"lng_nagram_forward_before_comment" = "先傳送轉傳內容，再傳送附言";
 "lng_nagram_time_and_info" = "時間與資訊";
 "lng_nagram_seconds_in_messages" = "時間顯示秒數";
 "lng_nagram_show_forwarded_message_date" = "轉傳訊息顯示原始傳送時間";

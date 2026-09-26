@@ -62,6 +62,8 @@
 "lng_nagram_confirm_send_sticker" = "发送这张贴纸？";
 "lng_nagram_confirm_send_gif" = "发送这个 GIF？";
 "lng_nagram_confirm_start_call" = "发起私聊通话？";
+"lng_nagram_forwarding" = "转发";
+"lng_nagram_forward_before_comment" = "先发送转发内容，再发送附言";
 "lng_nagram_time_and_info" = "时间与信息";
 "lng_nagram_seconds_in_messages" = "时间显示秒";
 "lng_nagram_show_forwarded_message_date" = "转发消息显示原始发送时间";

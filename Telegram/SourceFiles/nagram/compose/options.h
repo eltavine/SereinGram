@@ -68,6 +68,9 @@ inline constexpr auto kPreviewRoundVideo = Option<bool>{
 inline constexpr auto kConfirmPrivateCall = Option<bool>{
 	"nagram.confirmPrivateCall", Scope::Device, false,
 	Category::Compose, "lng_nagram_confirm_private_call" };
+inline constexpr auto kForwardBeforeComment = Option<bool>{
+	"nagram.forwardBeforeComment", Scope::Device, false,
+	Category::Compose, "lng_nagram_forward_before_comment" };
 
 inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kHideAttachButton));
@@ -90,6 +93,7 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kPreviewVoice));
 	Expects(registry.Add(kPreviewRoundVideo));
 	Expects(registry.Add(kConfirmPrivateCall));
+	Expects(registry.Add(kForwardBeforeComment));
 }
 
 } // namespace Nagram::Compose

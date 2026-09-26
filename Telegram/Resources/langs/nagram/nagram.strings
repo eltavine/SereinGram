@@ -66,6 +66,8 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_nagram_ prefix.
 "lng_nagram_confirm_send_sticker" = "Send this sticker?";
 "lng_nagram_confirm_send_gif" = "Send this GIF?";
 "lng_nagram_confirm_start_call" = "Start a private call?";
+"lng_nagram_forwarding" = "Forwarding";
+"lng_nagram_forward_before_comment" = "Send forwarded content before the comment";
 "lng_nagram_time_and_info" = "Time and info";
 "lng_nagram_seconds_in_messages" = "Show seconds in message times";
 "lng_nagram_show_forwarded_message_date" = "Show original time on forwarded messages";

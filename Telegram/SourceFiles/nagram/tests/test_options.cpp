@@ -76,7 +76,7 @@ void TestOptions() {
 		Flag::RefreshDialogList), "stories use widget refresh");
 	auto compose = Registry();
 	Compose::RegisterOptions(compose);
-	Require(compose.All().size() == 20, "compose option count");
+	Require(compose.All().size() == 21, "compose option count");
 	for (const auto &entry : compose.All()) {
 		if (entry.key != Compose::kDisableEmojiHover.key
 			&& entry.key != Compose::kDisableAttachHover.key
@@ -86,7 +86,8 @@ void TestOptions() {
 			&& entry.key != Compose::kConfirmGif.key
 			&& entry.key != Compose::kPreviewVoice.key
 			&& entry.key != Compose::kPreviewRoundVideo.key
-			&& entry.key != Compose::kConfirmPrivateCall.key) {
+			&& entry.key != Compose::kConfirmPrivateCall.key
+			&& entry.key != Compose::kForwardBeforeComment.key) {
 			Require(compose.HasFlag(entry.key, Flag::RefreshComposeButtons),
 				"compose button refresh flag");
 		}

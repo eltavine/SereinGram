@@ -34,6 +34,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "history/history_item.h"
 #include "history/history_item_helpers.h"
 #include "history/view/controls/history_view_forward_panel.h"
+#include "nagram/compose/options.h"
 #include "history/view/history_view_element.h"
 #include "history/view/history_view_context_menu.h" // CopyPostLink.
 #include "settings/sections/settings_premium.h"
@@ -1878,12 +1879,21 @@ ShareBox::SubmitCallback ShareBox::DefaultForwardCallback(
 				return thread;
 			}();
 
-			if (!comment.text.isEmpty()) {
+			const auto commentOptions = options;
+			const auto sendComment = [&] {
+				if (comment.text.isEmpty()) {
+					return;
+				}
 				auto message = Api::MessageToSend(
-					Api::SendAction(effectiveThread, options));
+					Api::SendAction(effectiveThread, commentOptions));
 				message.textWithTags = comment;
 				message.action.clearDraft = false;
 				api.sendMessage(std::move(message));
+			};
+			const auto forwardFirst = Nagram::ForDevice().Get(
+				Nagram::Compose::kForwardBeforeComment);
+			if (!forwardFirst) {
+				sendComment();
 			}
 
 			const auto topicRootId = effectiveThread->topicRootId();
@@ -2024,6 +2034,9 @@ ShareBox::SubmitCallback ShareBox::DefaultForwardCallback(
 							const MTP::Response &) {
 						requestFail(error, requestKey);
 					});
+			}
+			if (forwardFirst) {
+				sendComment();
 			}
 		}
 		if (state->requests.empty()) {
