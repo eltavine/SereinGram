@@ -1,5 +1,6 @@
 #include "nagram/core/options.h"
 #include "nagram/core/device_options.h"
+#include "nagram/messages/options.h"
 
 #include "core/application.h"
 #include "core/core_settings.h"
@@ -77,6 +78,15 @@ Options &ForAccount(gsl::not_null<Main::Session*> session) {
 		session, std::make_unique<State>(session->local())).first;
 	session->lifetime().add([session] { states.erase(session); });
 	return inserted->second->options;
+}
+
+const Registry &RegisteredOptions() {
+	static const auto registry = [] {
+		auto result = Registry();
+		Messages::RegisterOptions(result);
+		return result;
+	}();
+	return registry;
 }
 
 } // namespace Nagram

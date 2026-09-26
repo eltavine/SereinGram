@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/history_view_element.h"
+#include "nagram/messages/format.h"
 
 #include "apiwrap.h"
 #include "api/api_transcribes.h"
@@ -749,7 +750,7 @@ QString DateTooltipText(not_null<Element*> view) {
 	if (const auto stars = item->out() ? item->starsPaid() : 0) {
 		dateText += '\n' + tr::lng_you_paid_stars(tr::now, lt_count, stars);
 	}
-	return dateText;
+	return Nagram::Messages::WithMessageId(std::move(dateText), item);
 }
 
 void UnreadBar::init(const QString &string) {
@@ -2177,7 +2178,8 @@ void Element::setTextWithLinks(
 	});
 	if (_flags & Flag::ServiceMessage) {
 		const auto &options = Ui::ItemTextServiceOptions();
-		_text.setMarkedText(st::serviceTextStyle, text, options, context);
+		_text.setMarkedText(st::serviceTextStyle,
+			Nagram::Messages::ServiceText(this, text), options, context);
 		auto linkIndex = 0;
 		for (const auto &link : links) {
 			// Link indices start with 1.

@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/history_view_bottom_info.h"
+#include "nagram/messages/format.h"
 
 #include "ui/chat/message_bubble.h"
 #include "ui/chat/chat_style.h"
@@ -71,7 +72,7 @@ namespace {
 
 [[nodiscard]] QString FormatEditedDate(QDateTime sent, QDateTime edited) {
 	const auto today = QDateTime::currentDateTime().date();
-	const auto time = QLocale().toString(edited.time(), QLocale::ShortFormat);
+	const auto time = Nagram::Messages::FormatTime(edited.time());
 	if (sent.date() == today && edited.date() == today) {
 		return tr::lng_edited_at(tr::now, lt_time, time);
 	}
@@ -503,8 +504,8 @@ void BottomInfo::layoutDateText() {
 	const auto date = editedPrimary
 		? FormatEditedDate(_data.date, _data.editedDate)
 		: edited + ((_data.flags & Data::Flag::ForwardedDate)
-		? Ui::FormatDateTimeSavedFrom(_data.date)
-		: QLocale().toString(_data.date.time(), QLocale::ShortFormat));
+		? Nagram::Messages::FormatSavedFrom(_data.date)
+		: Nagram::Messages::FormatTime(_data.date.time()));
 	const auto afterAuthor = prefix + date;
 	const auto afterAuthorWidth = st::msgDateFont->width(afterAuthor);
 	const auto authorWidth = st::msgDateFont->width(author);
@@ -760,6 +761,7 @@ BottomInfo::Data BottomInfoDataFromMessage(not_null<Message*> message) {
 		result.date = base::unixtime::parse(forwarded->originalDate);
 		result.flags |= Flag::ForwardedDate;
 	}
+	Nagram::Messages::ApplyForwardedDate(result, item);
 	// We don't want to pass and update it in Data for now.
 	//if (item->unread()) {
 	//	result.flags |= Flag::Unread;

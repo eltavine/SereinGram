@@ -1,4 +1,5 @@
 #include "nagram/settings/home.h"
+#include "nagram/settings/messages.h"
 
 #include "boxes/about_box.h"
 #include "core/click_handler_types.h"
@@ -51,12 +52,22 @@ const auto kMeta = BuildHelper({
 			UrlClickHandler::Open(u"https://github.com/NextAlone/Nagram-qt"_q);
 		},
 	});
+	builder.addSectionButton({
+		.title = tr::lng_nagram_messages(),
+		.targetSection = MessagesId(),
+		.icon = { &st::menuIconChatBubble },
+		.keywords = { u"messages"_q, u"time"_q },
+	});
 	builder.addDividerText(tr::lng_nagram_settings_note());
 });
 
 const SectionBuildMethod Home::kBuild = kMeta.build;
 
 } // namespace
+
+Settings::Type HomeId() {
+	return Home::Id();
+}
 
 void AddSettingsEntry(SectionBuilder &builder) {
 	builder.addSectionButton({

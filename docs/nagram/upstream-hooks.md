@@ -11,7 +11,7 @@
 | 机制 | 做法 | 替代旧实现的做法 |
 | --- | --- | --- |
 | 选项读取 | 本机经 `Nagram::ForDevice()`、账号经 `Nagram::ForAccount(session)` 获取共享 `Options`，再调用 `Get` / `Value` | 旧实现的 `Nagram::Option` 大枚举 |
-| 消息视图刷新 | `nagram/display/` 中的 `ViewRefresher`：每个 `Main::Session` 一个实例，订阅所有“消息显示类”选项，变化时对已加载的消息视图调用上游 `Data::Session::requestItemViewRefresh` / `requestItemResize`。挂钩只有一处：`Main::Session` 构造时创建它 | 旧实现在 `data/data_session.cpp` 中写了 31 处订阅与刷新逻辑 |
+| 消息视图刷新 | `nagram/display/` 中的 `ViewRefresher`：随每个 `Main::Session` 订阅“消息显示类”选项，变化时对已加载消息调用上游 `Data::Session::requestItemViewRefresh` / `requestItemResize`。构造时一处调用，`Data::Session` 另加一处 `friend` 标记以访问已加载消息 | 旧实现在 `data/data_session.cpp` 中写了 31 处订阅与刷新逻辑 |
 | 会话列表刷新 | 同上，由 `ListRefresher` 调用上游已有的列表重绘接口 | 旧实现分散在 `dialogs/` 各文件 |
 | 输入区刷新 | `nagram/compose/` 提供 `ComposeButtonsVisibility`，`HistoryWidget` 与 `ComposeControls` 各用一行订阅其结果 | 旧实现两处各自读取 11 个开关 |
 | 消息菜单 | `Nagram::Menu::Tag` 标记 + `Nagram::Menu::Apply` 后处理（见设计文档第 3.4 节） | 旧实现在两个菜单文件中插入约 270 处调用 |

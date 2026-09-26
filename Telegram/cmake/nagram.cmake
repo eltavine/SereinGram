@@ -1,7 +1,10 @@
 set(nagram_sources
     nagram/core/language.cpp
     nagram/core/options.cpp
+    nagram/display/view_refresher.cpp
+    nagram/messages/format.cpp
     nagram/settings/home.cpp
+    nagram/settings/messages.cpp
 )
 
 if (nagram_sources)

@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "main/main_session.h"
+#include "nagram/display/view_refresher.h"
 
 #include "apiwrap.h"
 #include "api/api_peer_colors.h"
@@ -181,6 +182,7 @@ Session::Session(
 , _fastButtonsBots(std::make_unique<Support::FastButtonsBots>(this))
 , _saveSettingsTimer([=] { saveSettings(); }) {
 	Expects(_settings != nullptr);
+	Nagram::ViewRefresher::Attach(this);
 
 	_api->requestTermsUpdate();
 	_api->requestFullPeer(_user);

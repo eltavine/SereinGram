@@ -1,5 +1,7 @@
 #include "nagram/core/options.h"
 #include "nagram/core/device_options.h"
+#include "nagram/messages/options.h"
+#include "nagram/messages/time_format.h"
 
 #include <iostream>
 #include <map>
@@ -45,6 +47,24 @@ void TestOptions() {
 	Require(registry.Add(option), "register option");
 	Require(!registry.Add(option), "duplicate key accepted");
 	Require(registry.All().size() == 1, "registry count");
+	auto messages = Registry();
+	Messages::RegisterOptions(messages);
+	Require(messages.All().size() == 4, "message option count");
+	for (const auto &entry : messages.All()) {
+		Require(entry.scope == Scope::Device, "message option scope");
+		Require(entry.category == Category::Messages, "message option category");
+	}
+	const auto locale = QLocale();
+	QLocale::setDefault(QLocale::c());
+	Require(Messages::FormatTime(QTime(9, 8, 7), false)
+		== QString::fromLatin1("09:08"),
+		"default time format");
+	const auto withSeconds = Messages::FormatTime(QTime(9, 8, 7), true);
+	if (withSeconds != QString::fromLatin1("09:08:07")) {
+		throw std::runtime_error(
+			"seconds time format: " + withSeconds.toStdString());
+	}
+	QLocale::setDefault(locale);
 
 	auto prefs = MemoryPrefs();
 	auto &subscriber = details::SharedDeviceOptions(prefs);

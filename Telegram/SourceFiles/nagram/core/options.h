@@ -29,7 +29,13 @@ class Options;
 
 enum class Scope { Device, Account };
 enum class Category { Interface, Chats, Messages, Compose, Menu, Media, Privacy, Services, Rules };
-enum class Flag : unsigned { None = 0, RequiresRestart = 1, Exportable = 2, Hidden = 4 };
+enum class Flag : unsigned {
+	None = 0,
+	RequiresRestart = 1,
+	Exportable = 2,
+	Hidden = 4,
+	RefreshMessageView = 8,
+};
 
 template <typename Type>
 struct Option {
@@ -70,6 +76,14 @@ public:
 
 	[[nodiscard]] std::span<const OptionInfo> All() const {
 		return _entries;
+	}
+	[[nodiscard]] bool HasFlag(std::string_view key, Flag flag) const {
+		for (const auto &entry : _entries) {
+			if (entry.key == key) {
+				return (entry.flags & static_cast<unsigned>(flag)) != 0;
+			}
+		}
+		return false;
 	}
 
 private:
@@ -198,6 +212,9 @@ public:
 	[[nodiscard]] rpl::producer<std::string_view> readErrors() const {
 		return _readErrors.events();
 	}
+	[[nodiscard]] rpl::producer<std::string_view> changes() const {
+		return _changes.events();
+	}
 	[[nodiscard]] const std::set<std::string_view> &invalidKeys() const {
 		return _invalidKeys;
 	}
@@ -211,5 +228,6 @@ private:
 };
 
 [[nodiscard]] Options &ForAccount(gsl::not_null<Main::Session*> session);
+[[nodiscard]] const Registry &RegisteredOptions();
 
 } // namespace Nagram

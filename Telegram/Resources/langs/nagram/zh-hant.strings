@@ -8,3 +8,10 @@
 "lng_nagram_settings" = "Nagram";
 "lng_nagram_source_code" = "原始碼";
 "lng_nagram_settings_note" = "Nagram 設定預設遵循 Telegram 原有行為，除非選項另有說明，否則只影響本機顯示。";
+"lng_nagram_messages" = "訊息";
+"lng_nagram_time_and_info" = "時間與資訊";
+"lng_nagram_seconds_in_messages" = "時間顯示秒數";
+"lng_nagram_show_forwarded_message_date" = "轉傳訊息顯示原始傳送時間";
+"lng_nagram_show_service_time" = "服務訊息顯示時間";
+"lng_nagram_show_message_id" = "時間提示中顯示訊息 ID";
+"lng_nagram_message_id" = "訊息 ID：{id}";
