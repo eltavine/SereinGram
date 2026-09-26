@@ -13,7 +13,7 @@
 | 选项读取 | 本机经 `Nagram::ForDevice()`、账号经 `Nagram::ForAccount(session)` 获取共享 `Options`，再调用 `Get` / `Value` | 旧实现的 `Nagram::Option` 大枚举 |
 | 消息视图刷新 | `nagram/display/` 中的 `ViewRefresher`：随每个 `Main::Session` 订阅“消息显示类”选项，变化时对已加载消息调用上游 `Data::Session::requestItemViewRefresh` / `requestItemResize`。构造时一处调用，`Data::Session` 另加一处 `friend` 标记以访问已加载消息 | 旧实现在 `data/data_session.cpp` 中写了 31 处订阅与刷新逻辑 |
 | 会话列表刷新 | `ListRefresher` 订阅注册表的 `RefreshDialogList` 标记，调用列表的行高重算与重绘接口；`Dialogs::InnerWidget` 构造时接入一处，头文件加一处 `friend` | 旧实现分散在 `dialogs/` 各文件 |
-| 输入区刷新 | `nagram/compose/` 提供 `ComposeButtonsVisibility`，`HistoryWidget` 与 `ComposeControls` 各用一行订阅其结果 | 旧实现两处各自读取 11 个开关 |
+| 输入区刷新 | `nagram/compose/` 提供 `ButtonsChanged`；`HistoryWidget` 的短订阅块调用其私有刷新方法，`ComposeControls` 订阅同一事件 | 旧实现两处各自读取 11 个开关 |
 | 消息菜单 | `Nagram::Menu::Tag` 标记 + `Nagram::Menu::Apply` 后处理（见设计文档第 3.4 节） | 旧实现在两个菜单文件中插入约 270 处调用 |
 | 文案 | 英文在 `Resources/langs/nagram/nagram.strings`；简繁通过 `lang/lang_instance.cpp` 的一个挂钩作为缺失键的后备值 | 旧实现修改上游 `lang.strings` 与 `lang_instance.cpp` 81 行 |
 | 设置入口 | `settings/sections/settings_main.cpp` 的 `BuildSectionButtons` 第一项加入 Nagram 分栏按钮；Nagram 页面本身在 `nagram/settings/` | 旧实现在同一文件中加入入口 |
@@ -166,7 +166,7 @@
 
 ## 3. 改动面预估
 
-上表去重后共涉及 85 个上游文件（已逐个确认在当前上游中存在），与旧实现的文件数相当：这些功能本身就分布在这些位置。改进目标是**每个文件内的改动量**，即由第 1 节的共用机制把热点文件内的多处读取收敛为一处订阅或一个函数调用。热点文件及其承载的条目：
+上表去重后共涉及 85 个上游文件（已逐个确认在当前上游中存在），与旧实现的文件数相当：这些功能本身就分布在这些位置。上游改动以 `#include`、已有判断中的条件及单行调用为主；调用上游类私有方法时允许约 10 行以内的短块，并在提交正文说明原因。每个里程碑统计上游新增行数，解释集中改动，不再要求每个文件只改一行。M2 的 152 行调用／条件主要分布在输入按钮的既有判断处；D14 命令草稿分支与按钮刷新订阅因调用 `HistoryWidget` 私有方法而保留在上游文件。热点文件及其承载的条目：
 
 | 文件 | 条目数 |
 | --- | --- |
