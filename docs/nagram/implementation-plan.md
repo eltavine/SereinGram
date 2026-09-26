@@ -49,11 +49,11 @@
 | 步骤 | 提交 | 内容 | 验证 |
 | --- | --- | --- | --- |
 | ✅ S00 | `docs: Nagram 需求整理与重新设计路线` | 需求、来源目录、设计与路线 | — |
-| ✅ S01 | `build: 独立的 Nagram 文案文件` | `langs/nagram/nagram.strings` 在配置阶段与上游 `lang.strings` 合并 | 合并脚本单独运行，输出与直接拼接一致；待 V0 |
-| ✅ S02 | `feat: Nagram 品牌与应用标识` | 应用名、应用 ID、图标、打包配置、关于页与托盘文案；关闭上游自动更新和崩溃上报 | 静态核对文案键与资源；待 V0 |
+| ✅ S01 | `build: 独立的 Nagram 文案文件` | `langs/nagram/nagram.strings` 在配置阶段与上游 `lang.strings` 合并 | 合并脚本单独运行，输出与直接拼接一致；V0 macOS 编译通过 |
+| ✅ S02 | `feat: Nagram 品牌与应用标识` | 应用名、应用 ID、图标、打包配置、关于页与托盘文案；关闭上游自动更新和崩溃上报 | 静态核对文案键与资源；V0 macOS 编译通过 |
 | ✅ S03 | `docs: Nagram 设置页、上游处理点与实施计划` | 设置页设计、上游处理点、本计划 | — |
-| ✅ S04 | `build: Nagram 构建配置与 API 凭据来源` | `Telegram/cmake/nagram_api.cmake`；本地凭据文件模板与忽略规则；`nagram-mac/win/linux.yml` 工作流 | 凭据解析 7 种场景用 CMake 单独验证；工作流通过 YAML 解析与 actionlint；待 V0 与首次 CI |
-| ☐ S10 | `build: Nagram 源文件清单与单元测试目标` | `Telegram/cmake/nagram.cmake`（`Telegram/CMakeLists.txt` 一行引入）；`test_nagram` 目标，先只含文案一致性测试；三个工作流加入 `test_nagram` 构建与运行 | V0 |
+| ✅ S04 | `build: Nagram 构建配置与 API 凭据来源` | `Telegram/cmake/nagram_api.cmake`；本地凭据文件模板与忽略规则；`nagram-mac/win/linux.yml` 工作流 | 凭据解析 7 种场景用 CMake 单独验证；工作流通过 YAML 解析与 actionlint；V0 macOS 编译通过，首次 CI 待验证 |
+| ✅ S10 | `build: Nagram 源文件清单与单元测试目标` | `Telegram/cmake/nagram.cmake`（`Telegram/CMakeLists.txt` 一行引入）；`test_nagram` 目标，先只含文案一致性测试；三个工作流加入 `test_nagram` 构建与运行 | V0：macOS arm64 Debug 完整构建与 `test_nagram` 通过 |
 | ☐ S11 | `feat(core): 选项注册表与本机存储` | `Option<T>` 句柄、`Get/Value/Set`、校验、读取失败保留原值、变更通知；`Core::Settings` 偏好 | V1；单元测试覆盖默认值、往返、校验、通知去重 |
 | ☐ S12 | `feat(core): 账号作用域存储` | `Storage::Account` 偏好读写；账号切换与退出的生命周期 | V1；双账号手动检查 |
 | ☐ S13 | `feat(lang): 简繁内置文案` | `langs/nagram/zh-hans.strings`、`zh-hant.strings`；`lang_instance.cpp` 一处挂钩；含品牌文案译文 | V1；三语键与占位符一致性测试 |

@@ -1,0 +1,111 @@
+#include <fstream>
+#include <iostream>
+#include <map>
+#include <regex>
+#include <set>
+#include <stdexcept>
+#include <string>
+
+namespace {
+
+using Strings = std::map<std::string, std::string>;
+
+[[nodiscard]] Strings ReadStrings(const std::string &path, bool strict) {
+	auto input = std::ifstream(path);
+	if (!input) {
+		throw std::runtime_error("Cannot open " + path);
+	}
+
+	const auto entry = std::regex(
+		R"nagram(^[ \t]*"([^"]+)"[ \t]*=[ \t]*"((?:\\.|[^"\\])*)";[ \t]*$)nagram");
+	auto result = Strings();
+	auto line = std::string();
+	auto number = 0;
+	while (std::getline(input, line)) {
+		++number;
+		if (!line.empty() && line.back() == '\r') {
+			line.pop_back();
+		}
+		const auto first = line.find_first_not_of(" \t");
+		if (first == std::string::npos || line[first] != '"') {
+			continue;
+		}
+		auto match = std::smatch();
+		if (!std::regex_match(line, match, entry)) {
+			if (strict) {
+				throw std::runtime_error(path + ":" + std::to_string(number)
+					+ ": invalid string entry");
+			}
+			continue;
+		}
+		const auto key = match[1].str();
+		if (!result.emplace(key, match[2].str()).second) {
+			throw std::runtime_error(path + ":" + std::to_string(number)
+				+ ": duplicate key " + key);
+		}
+	}
+	return result;
+}
+
+[[nodiscard]] std::multiset<std::string> Placeholders(
+		const std::string &value) {
+	const auto pattern = std::regex(R"(\{[a-zA-Z_][a-zA-Z_0-9]*\})");
+	auto result = std::multiset<std::string>();
+	for (auto i = std::sregex_iterator(value.begin(), value.end(), pattern);
+		i != std::sregex_iterator(); ++i) {
+		result.insert(i->str());
+	}
+	return result;
+}
+
+void CheckTranslation(
+		const Strings &english,
+		const std::string &path) {
+	const auto translated = ReadStrings(path, true);
+	if (translated.size() != english.size()) {
+		throw std::runtime_error(path + ": key count differs from English");
+	}
+	for (const auto &[key, value] : english) {
+		const auto found = translated.find(key);
+		if (found == translated.end()) {
+			throw std::runtime_error(path + ": missing key " + key);
+		}
+		if (Placeholders(value) != Placeholders(found->second)) {
+			throw std::runtime_error(path + ": placeholder mismatch for " + key);
+		}
+	}
+}
+
+} // namespace
+
+int main() {
+	try {
+		const auto root = std::string(NAGRAM_LANG_SOURCE_DIR);
+		const auto upstream = ReadStrings(root + "/lang.strings", false);
+		const auto english = ReadStrings(root + "/nagram/nagram.strings", true);
+		if (english.empty()) {
+			throw std::runtime_error("Nagram English strings are empty");
+		}
+		for (const auto &entry : english) {
+			const auto &key = entry.first;
+			if (!key.starts_with("lng_nagram_")) {
+				throw std::runtime_error("Invalid Nagram key prefix: " + key);
+			}
+			if (upstream.contains(key)) {
+				throw std::runtime_error("Key collides with upstream: " + key);
+			}
+		}
+		for (const auto &locale : { "zh-hans", "zh-hant" }) {
+			const auto path = root + "/nagram/" + locale + ".strings";
+			if (std::ifstream(path)) {
+				CheckTranslation(english, path);
+			}
+		}
+		std::cout << "PASS: Nagram strings (" << english.size()
+			<< " English keys)" << std::endl;
+		return 0;
+	} catch (const std::exception &error) {
+		std::cerr << "FAIL: " << error.what() << std::endl;
+		return 1;
+	}
+}

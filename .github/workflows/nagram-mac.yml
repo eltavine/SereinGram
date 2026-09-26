@@ -121,12 +121,14 @@ jobs:
 
           ./configure.sh \
           -D CMAKE_CONFIGURATION_TYPES=Debug \
+          -D DESKTOP_APP_TEST_APPS=ON \
           -D CMAKE_COMPILE_WARNING_AS_ERROR=ON \
           -D CMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED=NO \
           $API \
           $DEFINE
 
           cmake --build ../out --config Debug --parallel
+          ../out/nagram-tests/Debug/test_nagram
 
       - name: Move artifact.
         if: env.UPLOAD_ARTIFACT == 'true'

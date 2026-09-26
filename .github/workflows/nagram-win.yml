@@ -228,11 +228,13 @@ jobs:
           ${{ matrix.qt }} ^
           %TDESKTOP_BUILD_API% ^
           -D CMAKE_CONFIGURATION_TYPES=Debug ^
+          -D DESKTOP_APP_TEST_APPS=ON ^
           -D CMAKE_COMPILE_WARNING_AS_ERROR=ON ^
           -D CMAKE_MSVC_DEBUG_INFORMATION_FORMAT= ^
           %TDESKTOP_BUILD_DEFINE%
 
           cmake --build ..\out --config Debug --parallel
+          ..\out\nagram-tests\Debug\test_nagram.exe
 
       - name: Move artifact.
         if: env.UPLOAD_ARTIFACT == 'true'
