@@ -2,6 +2,7 @@
 #include "nagram/core/device_options.h"
 #include "nagram/messages/options.h"
 #include "nagram/chats/options.h"
+#include "nagram/compose/options.h"
 #include "nagram/messages/time_format.h"
 
 #include <iostream>
@@ -73,6 +74,13 @@ void TestOptions() {
 		Flag::RefreshDialogList), "preview line refresh flag");
 	Require(!chats.HasFlag(Chats::kHideStories.key,
 		Flag::RefreshDialogList), "stories use widget refresh");
+	auto compose = Registry();
+	Compose::RegisterOptions(compose);
+	Require(compose.All().size() == 11, "compose option count");
+	for (const auto &entry : compose.All()) {
+		Require(compose.HasFlag(entry.key, Flag::RefreshComposeButtons),
+			"compose button refresh flag");
+	}
 	const auto locale = QLocale();
 	QLocale::setDefault(QLocale::c());
 	Require(Messages::FormatTime(QTime(9, 8, 7), false)

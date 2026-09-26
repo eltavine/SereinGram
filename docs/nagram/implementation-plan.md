@@ -77,7 +77,7 @@
 | ✅ S31 | `feat(chats): 文件夹` | B06–B08 | B05 在 M4；macOS Debug 构建与 `test_nagram` 通过，指定测试目录内侧栏隐藏、未读数和文件夹归档入口即时切换已验证 |
 | ✅ S32 | `feat(chats): 推广内容` | B10–B13 | macOS Debug 构建与 `test_nagram` 通过，四项设置切换并恢复；测试账号缺少赞助、代理和生日提示样本，实际内容效果待 M2 V2 验证 |
 | ✅ S33 | `feat(chats): 滚动导航` | B14、B15 | macOS Debug 构建与 `test_nagram` 通过；指定测试目录内两个开关可切换并恢复，实际滚动切换场景待 M2 V2 验证 |
-| ☐ S34 | `feat(compose): 输入框按钮` | D01–D11 | 随附输入区按钮可见性机制 |
+| ✅ S34 | `feat(compose): 输入框按钮` | D01–D11 | 随附输入区按钮可见性机制；macOS Debug 构建与 `test_nagram` 通过，指定测试目录内 D01–D03 即时显隐与恢复已验证，其余按钮缺少场景样本，待 M2 V2 验证 |
 | ☐ S35 | `feat(compose): 输入行为` | D12–D15 | |
 | ☐ S36 | `feat(compose): 发送确认` | D22–D26 | |
 | ☐ S37 | `feat(compose): 转发` | D27 | |

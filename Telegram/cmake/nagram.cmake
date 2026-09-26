@@ -12,6 +12,7 @@ set(nagram_sources
     nagram/messages/reactions.cpp
     nagram/settings/home.cpp
     nagram/settings/chats.cpp
+    nagram/settings/compose.cpp
     nagram/settings/messages.cpp
 )
 

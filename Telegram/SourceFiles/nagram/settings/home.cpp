@@ -1,6 +1,7 @@
 #include "nagram/settings/home.h"
 #include "nagram/settings/messages.h"
 #include "nagram/settings/chats.h"
+#include "nagram/settings/compose.h"
 
 #include "boxes/about_box.h"
 #include "core/click_handler_types.h"
@@ -64,6 +65,12 @@ const auto kMeta = BuildHelper({
 		.targetSection = ChatsId(),
 		.icon = { &st::menuIconChatBubble },
 		.keywords = { u"chats"_q, u"list"_q },
+	});
+	builder.addSectionButton({
+		.title = tr::lng_nagram_compose(),
+		.targetSection = ComposeId(),
+		.icon = { &st::menuIconChatBubble },
+		.keywords = { u"compose"_q, u"send"_q },
 	});
 	builder.addDividerText(tr::lng_nagram_settings_note());
 });
