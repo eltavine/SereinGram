@@ -34,6 +34,24 @@ inline constexpr auto kHideEditedBadge = Option<bool>{
 inline const auto kEditedMark = Option<QString>{
 	"nagram.editedMark", Scope::Device, QString(),
 	Category::Messages, "lng_nagram_edited_mark", kRefreshMessageView };
+inline constexpr auto kHideReactions = Option<bool>{
+	"nagram.hideReactions", Scope::Device, false,
+	Category::Messages, "lng_nagram_hide_reactions", kRefreshMessageView };
+inline constexpr auto kHidePrivateReactions = Option<bool>{
+	"nagram.hidePrivateReactions", Scope::Device, false,
+	Category::Messages, "lng_nagram_hide_private_reactions", kRefreshMessageView };
+inline constexpr auto kHideGroupReactions = Option<bool>{
+	"nagram.hideGroupReactions", Scope::Device, false,
+	Category::Messages, "lng_nagram_hide_group_reactions", kRefreshMessageView };
+inline constexpr auto kHideChannelReactions = Option<bool>{
+	"nagram.hideChannelReactions", Scope::Device, false,
+	Category::Messages, "lng_nagram_hide_channel_reactions", kRefreshMessageView };
+inline constexpr auto kHideReactionMenu = Option<bool>{
+	"nagram.hideReactionMenu", Scope::Device, false,
+	Category::Messages, "lng_nagram_hide_reaction_menu" };
+inline constexpr auto kHideReactionMenuWhenSelecting = Option<bool>{
+	"nagram.hideReactionMenuWhenSelecting", Scope::Device, false,
+	Category::Messages, "lng_nagram_hide_reaction_menu_when_selecting" };
 
 inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kSecondsInMessages));
@@ -45,6 +63,12 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kHideChannelSignature));
 	Expects(registry.Add(kHideEditedBadge));
 	Expects(registry.Add(kEditedMark));
+	Expects(registry.Add(kHideReactions));
+	Expects(registry.Add(kHidePrivateReactions));
+	Expects(registry.Add(kHideGroupReactions));
+	Expects(registry.Add(kHideChannelReactions));
+	Expects(registry.Add(kHideReactionMenu));
+	Expects(registry.Add(kHideReactionMenuWhenSelecting));
 }
 
 } // namespace Nagram::Messages

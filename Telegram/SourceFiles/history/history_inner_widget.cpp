@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/history_inner_widget.h"
+#include "nagram/messages/reactions.h"
 
 #include "api/api_polls.h"
 #include "chat_helpers/stickers_emoji_pack.h"
@@ -3893,7 +3894,8 @@ void HistoryInner::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 	const auto reactItem = Element::Hovered()
 		? Element::Hovered()->data().get()
 		: nullptr;
-	const auto attached = reactItem
+	const auto attached = (reactItem
+		&& Nagram::Messages::AllowReactionSelector(hasSelected))
 		? AttachSelectorToMenu(
 			_menu.get(),
 			controller,

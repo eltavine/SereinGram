@@ -25,3 +25,10 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_nagram_ prefix.
 "lng_nagram_hide_channel_signature" = "Hide channel message signatures";
 "lng_nagram_hide_edited_badge" = "Hide edited label";
 "lng_nagram_edited_mark" = "Edited label text";
+"lng_nagram_reactions" = "Reactions";
+"lng_nagram_hide_reactions" = "Hide message reactions";
+"lng_nagram_hide_private_reactions" = "Private chats";
+"lng_nagram_hide_group_reactions" = "Groups";
+"lng_nagram_hide_channel_reactions" = "Channels";
+"lng_nagram_hide_reaction_menu" = "Hide reactions from the context menu";
+"lng_nagram_hide_reaction_menu_when_selecting" = "Hide reactions while selecting messages";

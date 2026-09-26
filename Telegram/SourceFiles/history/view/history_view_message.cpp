@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/history_view_message.h"
+#include "nagram/messages/reactions.h"
 
 #include "api/api_suggest_post.h"
 #include "api/api_transcribes.h"
@@ -5332,7 +5333,8 @@ Reactions::ButtonParameters Message::reactionButtonParameters(
 	result.center = QPoint(
 		std::min(std::max(result.center.x(), minSkip), width() - minSkip),
 		result.center.y());
-	return result;
+	return Nagram::Messages::FilterReactionButton(
+		data()->history()->peer, result);
 }
 
 ReplyButton::ButtonParameters Message::replyButtonParameters(

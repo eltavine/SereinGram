@@ -49,7 +49,7 @@ void TestOptions() {
 	Require(registry.All().size() == 1, "registry count");
 	auto messages = Registry();
 	Messages::RegisterOptions(messages);
-	Require(messages.All().size() == 9, "message option count");
+	Require(messages.All().size() == 15, "message option count");
 	for (const auto &entry : messages.All()) {
 		Require(entry.scope == Scope::Device, "message option scope");
 		Require(entry.category == Category::Messages, "message option category");

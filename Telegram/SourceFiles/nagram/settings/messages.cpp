@@ -40,7 +40,7 @@ public:
 	static const SectionBuildMethod kBuild;
 };
 
-void AddToggle(
+Ui::SettingsButton *AddToggle(
 		SectionBuilder &builder,
 		const Option<bool> &option,
 		rpl::producer<QString> title,
@@ -57,6 +57,23 @@ void AddToggle(
 		button->toggledChanges(
 		) | rpl::on_next([option](bool value) {
 			Expects(ForDevice().Set(option, value));
+		}, button->lifetime());
+	}
+	return button;
+}
+
+void AddReactionChild(
+		SectionBuilder &builder,
+		const Option<bool> &option,
+		rpl::producer<QString> title,
+		QString id,
+		QStringList keywords) {
+	if (const auto button = AddToggle(builder, option,
+			std::move(title), std::move(id), std::move(keywords))) {
+		ForDevice().Value(Messages::kHideReactions
+		) | rpl::on_next([button](bool hidden) {
+			button->setDisabled(hidden);
+			button->setEnabled(!hidden);
 		}, button->lifetime());
 	}
 }
@@ -145,6 +162,35 @@ const auto kMeta = BuildHelper({
 		.shown = ForDevice().Value(Messages::kHideEditedBadge)
 			| rpl::map([](bool hidden) { return !hidden; }),
 	});
+	builder.addSubsectionTitle({
+		.id = u"nagram/messages/reactions"_q,
+		.title = tr::lng_nagram_reactions(),
+		.keywords = { u"reactions"_q },
+	});
+	AddToggle(builder, Messages::kHideReactions,
+		tr::lng_nagram_hide_reactions(),
+		u"nagram/messages/hide-reactions"_q,
+		{ u"hide"_q, u"reactions"_q });
+	AddReactionChild(builder, Messages::kHidePrivateReactions,
+		tr::lng_nagram_hide_private_reactions(),
+		u"nagram/messages/reactions-private"_q,
+		{ u"private"_q, u"chat reactions"_q });
+	AddReactionChild(builder, Messages::kHideGroupReactions,
+		tr::lng_nagram_hide_group_reactions(),
+		u"nagram/messages/reactions-group"_q,
+		{ u"group"_q, u"chat reactions"_q });
+	AddReactionChild(builder, Messages::kHideChannelReactions,
+		tr::lng_nagram_hide_channel_reactions(),
+		u"nagram/messages/reactions-channel"_q,
+		{ u"channel"_q, u"chat reactions"_q });
+	AddToggle(builder, Messages::kHideReactionMenu,
+		tr::lng_nagram_hide_reaction_menu(),
+		u"nagram/messages/reaction-menu"_q,
+		{ u"context menu"_q, u"reaction panel"_q });
+	AddToggle(builder, Messages::kHideReactionMenuWhenSelecting,
+		tr::lng_nagram_hide_reaction_menu_when_selecting(),
+		u"nagram/messages/reaction-selection"_q,
+		{ u"selection"_q, u"reaction panel"_q });
 });
 
 const SectionBuildMethod MessagesSection::kBuild = kMeta.build;

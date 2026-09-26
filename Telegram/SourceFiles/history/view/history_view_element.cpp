@@ -7,6 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/history_view_element.h"
 #include "nagram/messages/format.h"
+#include "nagram/messages/reactions.h"
 
 #include "apiwrap.h"
 #include "api/api_transcribes.h"
@@ -2859,7 +2860,8 @@ void Element::setupReactions(Element *replacing) {
 
 void Element::refreshReactions() {
 	using namespace Reactions;
-	auto reactionsData = InlineListDataFromMessage(this);
+	auto reactionsData = Nagram::Messages::FilterInlineReactions(
+		this, InlineListDataFromMessage(this));
 	if (reactionsData.reactions.empty()) {
 		setReactions(nullptr);
 		return;
