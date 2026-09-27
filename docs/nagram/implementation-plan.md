@@ -117,7 +117,7 @@
 | ✅ S61 | `feat(messages): 阅读显示转换` | C25、C26、E22 | macOS 编译与 `test_nagram` 通过；现场效果待 M5 V2 |
 | ✅ S62 | `feat(ai): 服务实例与系统凭据` | H03 | macOS 编译、配置与凭据绑定测试通过；localhost 连接现场验证待 M5 V2 |
 | ✅ S63 | `feat(ai): 翻译` | H01、草稿翻译 | macOS 编译与 `test_nagram` 通过；三种翻译来源和草稿写回的现场效果待 M5 V2 |
-| ☐ S64 | `feat(ai): 语音转写` | H02 | |
+| ✅ S64 | `feat(ai): 语音转写` | H02 | macOS 编译与 `test_nagram` 通过；localhost 上传和消息内显示待 M5 V2 |
 | ☐ S65 | `feat(ai): 系统 AI` | H04 | **V2** |
 
 ### M6 规则与截图（分栏 9、菜单）

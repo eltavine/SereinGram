@@ -287,3 +287,9 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_nagram_ prefix.
 "lng_nagram_translate_apply" = "Use in draft";
 "lng_nagram_translate_draft" = "Translate draft…";
 "lng_nagram_system_translation_unavailable" = "System translation is unavailable on this device or OS version. Choose Telegram or a configured service.";
+"lng_nagram_service_transcription" = "Voice transcription";
+"lng_nagram_transcribe_upload_about" = "Process this audio with {name}?\n{url}\n\nStarting sends the audio to this service. Closing this window cancels the upload/request.";
+"lng_nagram_transcribe_start" = "Transcribe / retry";
+"lng_nagram_transcribe_missing" = "This audio is no longer available. Close this window and reopen the message.";
+"lng_nagram_transcribe_download" = "Downloading this audio. Once its download finishes in the chat, press Transcribe again.";
+"lng_nagram_transcribe_cache_about" = "Results appear in the message and are kept for this account until the app closes. Changing services clears results. Only the 128 most recent results are retained.";

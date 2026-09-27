@@ -283,3 +283,9 @@
 "lng_nagram_translate_apply" = "应用到草稿";
 "lng_nagram_translate_draft" = "翻译草稿…";
 "lng_nagram_system_translation_unavailable" = "当前设备或系统版本不支持系统翻译。请选择 Telegram 或已配置的服务。";
+"lng_nagram_service_transcription" = "语音转写";
+"lng_nagram_transcribe_upload_about" = "使用 {name} 处理此音频？\n{url}\n\n开始后会将音频发送到此服务。关闭窗口将取消上传或请求。";
+"lng_nagram_transcribe_start" = "转写 / 重试";
+"lng_nagram_transcribe_missing" = "此音频已不可用。请关闭窗口并重新打开消息。";
+"lng_nagram_transcribe_download" = "正在下载音频。聊天中的下载完成后，请再次点击转写。";
+"lng_nagram_transcribe_cache_about" = "结果显示在消息内，仅为当前账号保留到应用退出。更换服务会清除结果，最多保留最近 128 条。";

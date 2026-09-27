@@ -14,8 +14,6 @@ namespace Nagram {
 class ViewRefresher final {
 public:
 	static void Attach(not_null<Main::Session*> session);
-
-private:
 	static void Refresh(Data::Session &data);
 };
 
