@@ -1,6 +1,7 @@
 #include "nagram/core/options.h"
 #include "nagram/core/exchange.h"
 #include "nagram/core/device_options.h"
+#include "nagram/interface/options.h"
 #include "nagram/messages/options.h"
 #include "nagram/chats/options.h"
 #include "nagram/compose/options.h"
@@ -110,6 +111,17 @@ void TestOptions() {
 		Flag::RefreshDialogList), "preview line refresh flag");
 	Require(!chats.HasFlag(Chats::kHideStories.key,
 		Flag::RefreshDialogList), "stories use widget refresh");
+	auto interface = Registry();
+	Interface::RegisterOptions(interface);
+	Require(interface.All().size() == 3, "interface option count");
+	Require(interface.HasFlag(Interface::kBubbleRoundness.key,
+		Flag::RequiresRestart), "roundness restart flag");
+	Require(Interface::kAvatarRoundness.validate(0)
+		&& Interface::kAvatarRoundness.validate(10)
+		&& Interface::kAvatarRoundness.validate(100)
+		&& !Interface::kAvatarRoundness.validate(9)
+		&& !Interface::kAvatarRoundness.validate(101),
+		"avatar roundness bounds");
 	auto compose = Registry();
 	Compose::RegisterOptions(compose);
 	Require(compose.All().size() == 21, "compose option count");

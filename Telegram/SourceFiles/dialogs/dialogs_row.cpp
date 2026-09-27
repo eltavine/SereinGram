@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "dialogs/dialogs_row.h"
+#include "nagram/interface/roundness.h"
 #include "nagram/chats/layout.h"
 
 #include "ui/chat/chat_theme.h" // CountAverageColor.
@@ -566,7 +567,12 @@ void Row::PaintCornerBadgeFrame(
 				segments.push_back({ storiesUnreadBrush, storiesUnread });
 			}
 		}
-		if (peer && (peer->forum() || peer->monoforum())) {
+		if (const auto radius = peer
+				? Nagram::Interface::AvatarRadius(
+					context.st->photoSize, peer->userpicShape())
+				: std::nullopt) {
+			Ui::PaintOutlineSegments(q, outline, *radius, segments);
+		} else if (peer && (peer->forum() || peer->monoforum())) {
 			const auto radius = context.st->photoSize
 				* Ui::ForumUserpicRadiusMultiplier();
 			Ui::PaintOutlineSegments(q, outline, radius, segments);

@@ -8,6 +8,13 @@
 "lng_nagram_settings" = "Nagram";
 "lng_nagram_source_code" = "源代码";
 "lng_nagram_settings_note" = "Nagram 设置默认跟随 Telegram 原有行为，只影响本机显示，除非条目另有说明。";
+"lng_nagram_interface" = "界面";
+"lng_nagram_roundness_and_shapes" = "圆角与形状";
+"lng_nagram_bubble_roundness" = "消息气泡圆角";
+"lng_nagram_avatar_roundness" = "头像圆角";
+"lng_nagram_uniform_avatar_shapes" = "论坛和频道私信也使用头像圆角";
+"lng_nagram_roundness_hint" = "10–100%；留空则跟随 Telegram";
+"lng_nagram_restart_required" = "重启后生效";
 "lng_nagram_messages" = "消息";
 "lng_nagram_chats" = "会话";
 "lng_nagram_chat_list" = "会话列表";

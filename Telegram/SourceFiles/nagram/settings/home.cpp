@@ -1,4 +1,5 @@
 #include "nagram/settings/home.h"
+#include "nagram/settings/interface.h"
 #include "nagram/settings/messages.h"
 #include "nagram/settings/menu.h"
 #include "nagram/settings/chats.h"
@@ -56,6 +57,12 @@ const auto kMeta = BuildHelper({
 		.onClick = [] {
 			UrlClickHandler::Open(u"https://github.com/NextAlone/Nagram-qt"_q);
 		},
+	});
+	builder.addSectionButton({
+		.title = tr::lng_nagram_interface(),
+		.targetSection = InterfaceId(),
+		.icon = { &st::menuIconChatBubble },
+		.keywords = { u"interface"_q, u"appearance"_q },
 	});
 	builder.addSectionButton({
 		.title = tr::lng_nagram_messages(),

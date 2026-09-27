@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "ui/peer/video_userpic_player.h"
+#include "nagram/interface/roundness.h"
 
 #include "data/data_peer.h"
 #include "data/data_photo.h"
@@ -60,15 +61,18 @@ QImage VideoUserpicPlayer::frame(
 	const auto ratio = style::DevicePixelRatio();
 	request.outer = request.resize = size * ratio;
 
-	const auto broadcast = peer->monoforumBroadcast();
+	const auto shape = peer->userpicShape();
+	const auto customRadius = Nagram::Interface::AvatarRadius(size.width(), shape);
+	const auto broadcast = peer->monoforumBroadcast() && !customRadius;
 
 	if (broadcast) {
 		if (_monoforumMask.isNull()) {
 			_monoforumMask = Ui::MonoforumShapeMask(request.resize);
 		}
-	} else if (peer->isForum()) {
-		const auto radius = int(
-			size.width() * Ui::ForumUserpicRadiusMultiplier());
+	} else if (const auto radius = customRadius.value_or(
+			peer->isForum()
+				? int(size.width() * Ui::ForumUserpicRadiusMultiplier())
+				: size.width() / 2); radius < size.width() / 2) {
 		if (_roundingCorners[0].width() != radius * ratio) {
 			_roundingCorners = Images::CornersMask(radius);
 		}

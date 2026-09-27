@@ -1,5 +1,6 @@
 #include "nagram/core/options.h"
 #include "nagram/core/device_options.h"
+#include "nagram/interface/options.h"
 #include "nagram/chats/options.h"
 #include "nagram/compose/options.h"
 #include "nagram/media/options.h"
@@ -89,6 +90,7 @@ const Registry &RegisteredOptions() {
 	static const auto registry = [] {
 		auto result = Registry();
 		Chats::RegisterOptions(result);
+		Interface::RegisterOptions(result);
 		Compose::RegisterOptions(result);
 		Media::RegisterOptions(result);
 		Menu::RegisterOptions(result);

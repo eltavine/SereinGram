@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "ui/controls/userpic_button.h"
+#include "nagram/interface/roundness.h"
 
 #include "apiwrap.h"
 #include "api/api_peer_photo.h"
@@ -715,15 +716,33 @@ void UserpicButton::paintEvent(QPaintEvent *e) {
 			.progressFg = st::historyFileThumbRadialFg,
 			.overlayFg = st::songCoverOverlayFg,
 			.cancelIcon = &st::userpicUploadCancel,
-			.roundRadius = useForumShape()
-				? (_st.photoSize * ForumUserpicRadiusMultiplier())
-				: 0.,
+			.roundRadius = double(Nagram::Interface::AvatarRadius(
+				_st.photoSize,
+				Nagram::Interface::ResolvedAvatarShape(_shape, _peer)).value_or(
+				useForumShape()
+					? int(_st.photoSize * ForumUserpicRadiusMultiplier()) : 0)),
 		});
 	}
 }
 
 void UserpicButton::paintUserpicFrame(Painter &p, QPoint photoPosition) {
 	checkStreamedIsStarted();
+	if (_streamed
+		&& _streamed->player().ready()
+		&& !_streamed->player().videoSize().isEmpty()) {
+		if (const auto radius = Nagram::Interface::AvatarRadius(
+				_st.photoSize,
+				Nagram::Interface::ResolvedAvatarShape(_shape, _peer))) {
+			const auto frame = Nagram::Interface::RoundedAvatarFrame(
+				*_streamed, _st.photoSize, *radius, _roundingCorners);
+			p.drawImage(QRect(photoPosition, Size(_st.photoSize)), frame);
+			if (!_controller || !_controller->isGifPausedAtLeastFor(
+					Window::GifPauseReason::RoundPlaying)) {
+				_streamed->markFrameShown();
+			}
+			return;
+		}
+	}
 	if (_streamed
 		&& _streamed->player().ready()
 		&& !_streamed->player().videoSize().isEmpty()) {
@@ -787,6 +806,11 @@ QPoint UserpicButton::countPhotoPosition() const {
 
 QImage UserpicButton::prepareRippleMask() const {
 	const auto size = QSize(_st.photoSize, _st.photoSize);
+	if (const auto radius = Nagram::Interface::AvatarRadius(
+			_st.photoSize,
+			Nagram::Interface::ResolvedAvatarShape(_shape, _peer))) {
+		return Ui::RippleAnimation::RoundRectMask(size, *radius);
+	}
 	return useForumShape()
 		? Ui::RippleAnimation::RoundRectMask(
 			size,
@@ -1138,7 +1162,12 @@ void UserpicButton::showCustom(QImage &&image) {
 			size * style::DevicePixelRatio(),
 			Qt::IgnoreAspectRatio,
 			Qt::SmoothTransformation);
-		_userpic = Ui::PixmapFromImage(useForumShape()
+		const auto radius = Nagram::Interface::AvatarRadius(
+			_st.photoSize,
+			Nagram::Interface::ResolvedAvatarShape(_shape, _peer));
+		_userpic = Ui::PixmapFromImage(radius
+			? Images::Round(std::move(small), Images::CornersMask(*radius))
+			: useForumShape()
 			? Images::Round(
 				std::move(small),
 				Images::CornersMask(_st.photoSize
@@ -1229,7 +1258,10 @@ void UserpicButton::fillShape(QPainter &p, QBrush brush) const {
 	p.setPen(Qt::NoPen);
 	p.setBrush(brush);
 	const auto size = _st.photoSize;
-	if (useForumShape()) {
+	if (const auto radius = Nagram::Interface::AvatarRadius(
+			size, Nagram::Interface::ResolvedAvatarShape(_shape, _peer))) {
+		p.drawRoundedRect(0, 0, size, size, *radius, *radius);
+	} else if (useForumShape()) {
 		const auto radius = size * Ui::ForumUserpicRadiusMultiplier();
 		p.drawRoundedRect(0, 0, size, size, radius, radius);
 	} else {
@@ -1265,7 +1297,11 @@ void UserpicButton::prepareUserpicPixmap() {
 						QSize(size, size) * ratio,
 						Qt::IgnoreAspectRatio,
 						Qt::SmoothTransformation);
-					image = useForumShape()
+					const auto radius = Nagram::Interface::AvatarRadius(
+						size, Nagram::Interface::ResolvedAvatarShape(_shape, _peer));
+					image = radius
+						? Images::Round(std::move(image), Images::CornersMask(*radius))
+						: useForumShape()
 						? Images::Round(
 							std::move(image),
 							Images::CornersMask(size
@@ -1281,7 +1317,10 @@ void UserpicButton::prepareUserpicPixmap() {
 					((user && user->isInaccessible())
 						? Ui::EmptyUserpic::InaccessibleName()
 						: _peer->name()));
-				if (useForumShape()) {
+				if (const auto radius = Nagram::Interface::AvatarRadius(
+						size, Nagram::Interface::ResolvedAvatarShape(_shape, _peer))) {
+					empty.paintRounded(p, 0, 0, size, size, *radius);
+				} else if (useForumShape()) {
 					empty.paintRounded(
 						p,
 						0,

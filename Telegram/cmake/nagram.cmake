@@ -8,6 +8,9 @@ set(nagram_sources
     nagram/core/exchange.cpp
     nagram/core/options.cpp
     nagram/display/view_refresher.cpp
+    nagram/interface/roundness.cpp
+    nagram/settings/interface.cpp
+    nagram/settings/restart.cpp
     nagram/menu/actions.cpp
     nagram/menu/batch.cpp
     nagram/menu/media.cpp

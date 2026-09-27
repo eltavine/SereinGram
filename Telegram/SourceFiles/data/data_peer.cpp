@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "data/data_peer.h"
+#include "nagram/interface/roundness.h"
 
 #include "api/api_sensitive_content.h"
 #include "data/data_user.h"
@@ -528,6 +529,9 @@ QImage PeerData::GenerateUserpicImage(
 			return image;
 		} else if (radius) {
 			return round(*radius);
+		} else if (const auto custom = Nagram::Interface::AvatarRadius(
+				size, peer->userpicShape())) {
+			return round(*custom);
 		} else if (peer->isForum()) {
 			return round(size * Ui::ForumUserpicRadiusMultiplier());
 		} else {
@@ -545,6 +549,10 @@ QImage PeerData::GenerateUserpicImage(
 	} else if (radius) {
 		const auto r = *radius;
 		peer->ensureEmptyUserpic()->paintRounded(p, 0, 0, size, size, r);
+	} else if (const auto custom = Nagram::Interface::AvatarRadius(
+			size, peer->userpicShape())) {
+		peer->ensureEmptyUserpic()->paintRounded(
+			p, 0, 0, size, size, *custom);
 	} else if (peer->isForum()) {
 		peer->ensureEmptyUserpic()->paintRounded(
 			p,

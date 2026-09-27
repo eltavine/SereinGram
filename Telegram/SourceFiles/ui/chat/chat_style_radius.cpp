@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "ui/chat/chat_style_radius.h"
+#include "nagram/interface/roundness.h"
 #include "ui/chat/chat_style.h"
 #include "base/options.h"
 
@@ -29,10 +30,13 @@ base::options::toggle UseSmallMsgBubbleRadius({
 const char kOptionUseSmallMsgBubbleRadius[] = "use-small-msg-bubble-radius";
 
 int BubbleRadiusSmall() {
-	return st::bubbleRadiusSmall;
+	return Nagram::Interface::AdjustBubbleRadius(st::bubbleRadiusSmall);
 }
 
 int BubbleRadiusLarge() {
+	if (Nagram::Interface::BubblePercent()) {
+		return Nagram::Interface::AdjustBubbleRadius(st::bubbleRadiusLarge);
+	}
 	static const auto result = [] {
 		if (UseSmallMsgBubbleRadius.value()) {
 			return st::bubbleRadiusSmall;
@@ -44,10 +48,13 @@ int BubbleRadiusLarge() {
 }
 
 int MsgFileThumbRadiusSmall() {
-	return st::msgFileThumbRadiusSmall;
+	return Nagram::Interface::AdjustBubbleRadius(st::msgFileThumbRadiusSmall);
 }
 
 int MsgFileThumbRadiusLarge() {
+	if (Nagram::Interface::BubblePercent()) {
+		return Nagram::Interface::AdjustBubbleRadius(st::msgFileThumbRadiusLarge);
+	}
 	static const auto result = [] {
 		if (UseSmallMsgBubbleRadius.value()) {
 			return st::msgFileThumbRadiusSmall;

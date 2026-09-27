@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "ui/userpic_view.h"
+#include "nagram/interface/roundness.h"
 
 #include "ui/empty_userpic.h"
 #include "ui/painter.h"
@@ -153,14 +154,21 @@ void ValidateUserpicCache(
 	view.empty = empty;
 	view.shape = shapeValue;
 	view.paletteVersion = version;
+	const auto customRadius = Nagram::Interface::AvatarRadius(size, shape);
 
 	if (cloud) {
 		view.cached = cloud->scaled(
 			full,
 			Qt::IgnoreAspectRatio,
 			Qt::SmoothTransformation);
-		if (shape == PeerUserpicShape::Monoforum) {
+		if (shape == PeerUserpicShape::Monoforum && !customRadius) {
 			view.cached = Ui::ApplyMonoforumShape(std::move(view.cached));
+		} else if (customRadius && *customRadius >= size / 2) {
+			view.cached = Images::Circle(std::move(view.cached));
+		} else if (customRadius) {
+			view.cached = Images::Round(
+				std::move(view.cached),
+				Images::CornersMask(*customRadius / style::DevicePixelRatio()));
 		} else if (shape == PeerUserpicShape::Forum) {
 			view.cached = Images::Round(
 				std::move(view.cached),
@@ -177,8 +185,12 @@ void ValidateUserpicCache(
 		view.cached.fill(Qt::transparent);
 
 		auto p = QPainter(&view.cached);
-		if (shape == PeerUserpicShape::Monoforum) {
+		if (shape == PeerUserpicShape::Monoforum && !customRadius) {
 			empty->paintMonoforum(p, 0, 0, size, size);
+		} else if (customRadius && *customRadius >= size / 2) {
+			empty->paintCircle(p, 0, 0, size, size);
+		} else if (customRadius) {
+			empty->paintRounded(p, 0, 0, size, size, *customRadius);
 		} else if (shape == PeerUserpicShape::Forum) {
 			empty->paintRounded(
 				p,

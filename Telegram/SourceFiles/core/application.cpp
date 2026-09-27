@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "core/application.h"
+#include "nagram/interface/roundness.h"
 
 #include "data/data_abstract_structure.h"
 #include "data/data_channel.h"
@@ -309,6 +310,7 @@ void Application::run() {
 	_notifications = std::make_unique<Window::Notifications::System>();
 
 	startLocalStorage();
+	Nagram::Interface::StartRoundness();
 
 	style::SetCustomFont(settings().customFontFamily());
 	style::internal::StartFonts();

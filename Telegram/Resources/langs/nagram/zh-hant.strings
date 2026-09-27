@@ -8,6 +8,13 @@
 "lng_nagram_settings" = "Nagram";
 "lng_nagram_source_code" = "原始碼";
 "lng_nagram_settings_note" = "Nagram 設定預設遵循 Telegram 原有行為，除非選項另有說明，否則只影響本機顯示。";
+"lng_nagram_interface" = "介面";
+"lng_nagram_roundness_and_shapes" = "圓角與形狀";
+"lng_nagram_bubble_roundness" = "訊息氣泡圓角";
+"lng_nagram_avatar_roundness" = "頭像圓角";
+"lng_nagram_uniform_avatar_shapes" = "論壇和頻道私訊也使用頭像圓角";
+"lng_nagram_roundness_hint" = "10–100%；留空則跟隨 Telegram";
+"lng_nagram_restart_required" = "重新啟動後生效";
 "lng_nagram_messages" = "訊息";
 "lng_nagram_chats" = "聊天";
 "lng_nagram_chat_list" = "聊天清單";
