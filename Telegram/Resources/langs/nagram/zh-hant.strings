@@ -203,3 +203,5 @@
 "lng_nagram_notification_delay" = "通知延遲";
 "lng_nagram_other_device_notification_delay" = "其他裝置活躍時的通知延遲";
 "lng_nagram_seconds_suffix" = " 秒";
+"lng_nagram_ui_text" = "介面文字";
+"lng_nagram_halfwidth_ui_punctuation" = "介面文字使用半形標點";

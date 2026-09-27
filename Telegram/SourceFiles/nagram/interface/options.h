@@ -59,6 +59,9 @@ inline constexpr auto kOtherDeviceNotificationDelay = Option<int>{
 	"nagram.otherDeviceNotificationDelay", Scope::Device, 0,
 	Category::Interface, "lng_nagram_other_device_notification_delay", 0,
 	kNotificationDelay.validate };
+inline constexpr auto kHalfwidthUiPunctuation = Option<bool>{
+	"nagram.halfwidthUiPunctuation", Scope::Device, false,
+	Category::Interface, "lng_nagram_halfwidth_ui_punctuation", kRestart };
 
 inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kBubbleRoundness));
@@ -74,6 +77,7 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kHideAppIconBadge));
 	Expects(registry.Add(kNotificationDelay));
 	Expects(registry.Add(kOtherDeviceNotificationDelay));
+	Expects(registry.Add(kHalfwidthUiPunctuation));
 }
 
 } // namespace Nagram::Interface

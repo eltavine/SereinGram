@@ -188,6 +188,7 @@ void AddToggle(
 		rpl::producer<QString> title,
 		QString id,
 		QStringList keywords) {
+	const auto controller = builder.controller();
 	const auto button = builder.addButton({
 		.id = std::move(id),
 		.title = std::move(title),
@@ -197,8 +198,11 @@ void AddToggle(
 	});
 	if (button) {
 		button->toggledChanges(
-		) | rpl::on_next([option](bool value) {
+		) | rpl::on_next([option, controller](bool value) {
 			Expects(ForDevice().Set(option, value));
+			if (option.flags & Interface::kRestart) {
+				ShowRestartPrompt(controller);
+			}
 		}, button->lifetime());
 	}
 }
@@ -304,6 +308,15 @@ const auto kMeta = BuildHelper({
 	AddDelay(builder, Interface::kOtherDeviceNotificationDelay,
 		tr::lng_nagram_other_device_notification_delay(),
 		u"nagram/interface/other-device-notification-delay"_q);
+	builder.addSubsectionTitle({
+		.id = u"nagram/interface/text"_q,
+		.title = tr::lng_nagram_ui_text(),
+		.keywords = { u"text"_q, u"punctuation"_q },
+	});
+	AddToggle(builder, Interface::kHalfwidthUiPunctuation,
+		tr::lng_nagram_halfwidth_ui_punctuation(),
+		u"nagram/interface/halfwidth-ui-punctuation"_q,
+		{ u"text"_q, u"punctuation"_q });
 });
 
 const SectionBuildMethod InterfaceSection::kBuild = kMeta.build;

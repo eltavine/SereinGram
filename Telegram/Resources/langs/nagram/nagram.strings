@@ -207,3 +207,5 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_nagram_ prefix.
 "lng_nagram_notification_delay" = "Notification delay";
 "lng_nagram_other_device_notification_delay" = "Delay when another device is active";
 "lng_nagram_seconds_suffix" = " s";
+"lng_nagram_ui_text" = "Interface text";
+"lng_nagram_halfwidth_ui_punctuation" = "Use halfwidth punctuation in interface text";

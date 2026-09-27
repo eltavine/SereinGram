@@ -11,6 +11,7 @@ set(nagram_sources
     nagram/interface/main_menu.cpp
     nagram/interface/main_menu_model.cpp
     nagram/interface/notifications.cpp
+    nagram/interface/text.cpp
     nagram/interface/roundness.cpp
     nagram/settings/interface.cpp
     nagram/settings/restart.cpp

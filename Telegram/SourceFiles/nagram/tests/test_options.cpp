@@ -114,7 +114,9 @@ void TestOptions() {
 		Flag::RefreshDialogList), "stories use widget refresh");
 	auto interface = Registry();
 	Interface::RegisterOptions(interface);
-	Require(interface.All().size() == 13, "interface option count");
+	Require(interface.All().size() == 14, "interface option count");
+	Require(interface.HasFlag(Interface::kHalfwidthUiPunctuation.key,
+		Flag::RequiresRestart), "interface text restart flag");
 	Require(interface.HasFlag(Interface::kBubbleRoundness.key,
 		Flag::RequiresRestart), "roundness restart flag");
 	Require(Interface::kAvatarRoundness.validate(0)
