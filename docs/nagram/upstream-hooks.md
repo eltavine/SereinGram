@@ -39,7 +39,7 @@
 | A09 | `history/view/history_view_reply.cpp` | 不加载、不绘制回复缩略图，并回收其宽度 | 读取 |
 | A10 | `window/section_widget.cpp`（对话主题与壁纸解析） | 解析对话主题时返回空，使用全局主题 | 读取 |
 | A11 | `window/window_main_menu.cpp`（`setupMenu`） | 标题替换账号名；菜单项按配置重排与隐藏；节日装饰条件（`CheckSpecialEvent`）增加开关 | 过滤 |
-| A12 | `main/main_domain.cpp`（未读角标计数）、`core/application.cpp` | 角标计数返回 0，托盘和窗口标题计数不变 | 替换 |
+| A12 | `platform/mac/main_window_mac.mm`、`platform/win/main_window_win.cpp`、`platform/linux/main_window_linux.cpp`、`window/main_window.cpp` | 应用图标角标按设置隐藏，托盘和窗口标题计数不变 | 替换 |
 | A13、A14 | `window/notifications_manager.cpp`（通知调度等待时间） | 等待时间改为配置值，保留合并消息所需的最短等待 | 替换 |
 | A15 | `lang/lang_instance.cpp`（取值出口） | 取出界面字符串时把全角 ASCII 与标点投影为半角 | 替换 |
 
@@ -51,11 +51,11 @@
 | B02 | `dialogs/ui/dialogs_layout.cpp`、`dialogs/dialogs_row.cpp` | 预览文字的最大行数与行高 | 替换 |
 | B03 | `dialogs/ui/dialogs_layout.cpp`、`dialogs/dialogs_inner_widget_accessibility.cpp` | 收藏夹与归档行不绘制预览文字，读屏文本同步脱敏 | 读取 |
 | B04 | `dialogs/dialogs_widget.cpp` | 即时隐藏动态条并收起已展开区域，保留内部对象（用户在 S30 确认沿用旧版行为） | 读取 |
-| B05 | `window/window_session_controller.cpp`（初始文件夹）、`data/data_chat_filters.cpp` | 账号启动时选择文件夹；记录上次打开的文件夹 | 替换 |
+| B05 | `window/window_session_controller.cpp`（初始文件夹） | 账号启动时选择文件夹；记录上次打开的文件夹 | 替换 |
 | B06 | `data/data_chat_filters.cpp`、`ui/widgets/chat_filters_tabs_strip.cpp`、`window/window_filters_menu.cpp` | 至少有一个可用的其他文件夹时，从显示列表去掉“全部会话”；保存排序时保持其原位置 | 过滤 |
 | B07 | `dialogs/dialogs_inner_widget.cpp` | 自定义文件夹列表顶部加入归档入口行 | 读取 |
 | B08 | `ui/widgets/chat_filters_tabs_strip.cpp`、`window/window_filters_menu.cpp` | 不绘制文件夹未读数，读屏文本同步 | 读取 |
-| B09 | `dialogs/dialogs_entry.cpp`、`dialogs/dialogs_list.cpp` | 会话排序键加入 Nagram 优先级（置顶之后、时间之前）；状态变化时更新该会话的位置 | 替换 |
+| B09 | `dialogs/dialogs_entry.cpp`、`history/history.cpp`、`window/window_session_controller.cpp` | 会话排序键加入 Nagram 优先级（置顶之后、时间之前）；状态变化时更新该会话的位置 | 替换 |
 | B10 | `data/components/sponsored_messages.cpp`、`dialogs/dialogs_inner_widget.cpp` | 不请求、注入赞助消息，切换时清除已显示的赞助消息；过滤搜索结果中的广告 | 读取 |
 | B11 | `data/components/promo_suggestions.cpp` | 忽略代理赞助频道 | 读取 |
 | B12、B13 | `dialogs/dialogs_top_bar_suggestion.cpp` | 顶部提示条不显示 Premium 推广与生日提示 | 过滤 |
