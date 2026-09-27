@@ -198,3 +198,8 @@
 "lng_nagram_main_menu_action_settings" = "设置";
 "lng_nagram_main_menu_action_night_mode" = "夜间模式";
 "lng_nagram_main_menu_changed" = "编辑期间菜单设置已变化。请重新打开此页编辑最新设置。";
+"lng_nagram_window_notification" = "窗口与通知";
+"lng_nagram_hide_app_icon_badge" = "隐藏应用图标角标";
+"lng_nagram_notification_delay" = "通知延迟";
+"lng_nagram_other_device_notification_delay" = "其他设备活跃时的通知延迟";
+"lng_nagram_seconds_suffix" = " 秒";

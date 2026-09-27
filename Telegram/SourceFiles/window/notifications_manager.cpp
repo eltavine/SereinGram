@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "window/notifications_manager.h"
+#include "nagram/interface/notifications.h"
 
 #include "base/options.h"
 #include "base/platform/base_platform_info.h"
@@ -400,11 +401,14 @@ System::Timing System::countTiming(
 	const bool isOnline = updates.lastWasOnline();
 	const auto otherNotOld = ((cOtherOnline() * 1000LL) + config.onlineCloudTimeout > t * 1000LL);
 	const bool otherLaterThanMe = (cOtherOnline() * 1000LL + (ms - updates.lastSetOnline()) > t * 1000LL);
-	if (!isOnline && otherNotOld && otherLaterThanMe) {
+	const auto cloudDelay = !isOnline && otherNotOld && otherLaterThanMe;
+	const auto otherActive = cloudDelay || cOtherOnline() >= t;
+	if (cloudDelay) {
 		delay = config.notifyCloudDelay;
 	} else if (cOtherOnline() >= t) {
 		delay = config.notifyDefaultDelay;
 	}
+	delay = Nagram::Interface::NotificationDelay(delay, minimalDelay, otherActive);
 	return {
 		.delay = delay,
 		.when = ms + delay,

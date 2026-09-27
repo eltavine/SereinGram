@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "platform/win/main_window_win.h"
+#include "nagram/interface/notifications.h"
 
 #include "platform/platform_specific.h"
 #include "platform/platform_notifications_manager.h"
@@ -597,7 +598,8 @@ void MainWindow::unreadCounterChangedHook() {
 }
 
 void MainWindow::updateTaskbarAndIconCounters() {
-	const auto counter = Core::App().unreadBadge();
+	const auto counter = Nagram::Interface::AppIconBadge(
+		Core::App().unreadBadge());
 	const auto muted = Core::App().unreadBadgeMuted();
 	const auto controller = sessionController();
 	const auto session = controller ? &controller->session() : nullptr;

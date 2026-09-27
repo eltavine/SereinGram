@@ -114,7 +114,7 @@ void TestOptions() {
 		Flag::RefreshDialogList), "stories use widget refresh");
 	auto interface = Registry();
 	Interface::RegisterOptions(interface);
-	Require(interface.All().size() == 10, "interface option count");
+	Require(interface.All().size() == 13, "interface option count");
 	Require(interface.HasFlag(Interface::kBubbleRoundness.key,
 		Flag::RequiresRestart), "roundness restart flag");
 	Require(Interface::kAvatarRoundness.validate(0)
@@ -138,6 +138,12 @@ void TestOptions() {
 		"settings cannot be hidden");
 	Require(!Interface::ValidMainMenuBytes(R"({"version":1,"order":["calls","calls"],"hidden":[],"title":"","seasonalDecorations":true})"),
 		"duplicate menu action accepted");
+	Require(Interface::kNotificationDelay.validate(0)
+		&& Interface::kNotificationDelay.validate(500)
+		&& Interface::kNotificationDelay.validate(60000)
+		&& !Interface::kNotificationDelay.validate(400)
+		&& !Interface::kNotificationDelay.validate(61000),
+		"notification delay bounds");
 	auto compose = Registry();
 	Compose::RegisterOptions(compose);
 	Require(compose.All().size() == 21, "compose option count");

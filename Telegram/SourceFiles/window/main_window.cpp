@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "window/main_window.h"
+#include "nagram/interface/options.h"
 
 #include "api/api_updates.h"
 #include "storage/localstorage.h"
@@ -422,6 +423,12 @@ MainWindow::MainWindow(not_null<Controller*> controller)
 		updateTitle();
 		unreadCounterChangedHook();
 		Core::App().tray().updateIconCounters();
+	}, lifetime());
+	Nagram::ForDevice().changes(
+	) | rpl::filter([](auto key) {
+		return key == Nagram::Interface::kHideAppIconBadge.key;
+	}) | rpl::on_next([=] {
+		unreadCounterChangedHook();
 	}, lifetime());
 
 	Core::App().settings().workModeChanges(

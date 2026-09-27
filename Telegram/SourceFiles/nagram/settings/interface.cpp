@@ -10,6 +10,7 @@
 #include "ui/layers/generic_box.h"
 #include "ui/vertical_list.h"
 #include "ui/widgets/buttons.h"
+#include "ui/widgets/checkbox.h"
 #include "ui/widgets/fields/input_field.h"
 #include "window/window_session_controller.h"
 #include "styles/style_menu_icons.h"
@@ -134,6 +135,53 @@ void TextWidthBox(not_null<Ui::GenericBox*> box) {
 	box->addButton(tr::lng_cancel(), [=] { box->closeBox(); });
 }
 
+QString DelayLabel(int milliseconds) {
+	return milliseconds
+		? QString::number(milliseconds / 1000.0)
+			+ tr::lng_nagram_seconds_suffix(tr::now)
+		: tr::lng_nagram_preview_follow(tr::now);
+}
+
+void DelayBox(
+		not_null<Ui::GenericBox*> box,
+		const Option<int> &option,
+		QString title) {
+	box->setTitle(std::move(title));
+	const auto group = std::make_shared<Ui::RadiobuttonGroup>(
+		ForDevice().Get(option));
+	for (const auto value : { 0, 500, 1000, 2000, 5000, 10000, 30000, 60000 }) {
+		box->addRow(object_ptr<Ui::Radiobutton>(
+			box, group, value, DelayLabel(value), st::settingsSendType),
+			st::settingsSendTypePadding);
+	}
+	group->setChangedCallback([=](int value) {
+		Expects(ForDevice().Set(option, value));
+		box->closeBox();
+	});
+}
+
+void AddDelay(
+		SectionBuilder &builder,
+		const Option<int> &option,
+		rpl::producer<QString> title,
+		QString id) {
+	const auto controller = builder.controller();
+	builder.addButton({
+		.id = std::move(id),
+		.title = std::move(title),
+		.st = &st::settingsButtonNoIcon,
+		.label = ForDevice().Value(option) | rpl::map(DelayLabel),
+		.onClick = [=] {
+			controller->show(Box([=](not_null<Ui::GenericBox*> box) {
+				DelayBox(box, option, option.key == Interface::kNotificationDelay.key
+					? tr::lng_nagram_notification_delay(tr::now)
+					: tr::lng_nagram_other_device_notification_delay(tr::now));
+			}));
+		},
+		.keywords = { u"notification"_q, u"delay"_q },
+	});
+}
+
 void AddToggle(
 		SectionBuilder &builder,
 		const Option<bool> &option,
@@ -241,6 +289,21 @@ const auto kMeta = BuildHelper({
 		.onClick = [=] { controller->show(Box(Interface::MainMenuBox)); },
 		.keywords = { u"menu"_q, u"order"_q, u"visibility"_q },
 	});
+	builder.addSubsectionTitle({
+		.id = u"nagram/interface/window-notification"_q,
+		.title = tr::lng_nagram_window_notification(),
+		.keywords = { u"window"_q, u"notification"_q },
+	});
+	AddToggle(builder, Interface::kHideAppIconBadge,
+		tr::lng_nagram_hide_app_icon_badge(),
+		u"nagram/interface/hide-app-icon-badge"_q,
+		{ u"dock"_q, u"icon"_q, u"badge"_q });
+	AddDelay(builder, Interface::kNotificationDelay,
+		tr::lng_nagram_notification_delay(),
+		u"nagram/interface/notification-delay"_q);
+	AddDelay(builder, Interface::kOtherDeviceNotificationDelay,
+		tr::lng_nagram_other_device_notification_delay(),
+		u"nagram/interface/other-device-notification-delay"_q);
 });
 
 const SectionBuildMethod InterfaceSection::kBuild = kMeta.build;

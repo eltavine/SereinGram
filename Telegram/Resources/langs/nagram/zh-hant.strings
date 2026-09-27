@@ -198,3 +198,8 @@
 "lng_nagram_main_menu_action_settings" = "設定";
 "lng_nagram_main_menu_action_night_mode" = "夜間模式";
 "lng_nagram_main_menu_changed" = "編輯期間選單設定已變更。請重新開啟此頁編輯最新設定。";
+"lng_nagram_window_notification" = "視窗與通知";
+"lng_nagram_hide_app_icon_badge" = "隱藏應用程式圖示角標";
+"lng_nagram_notification_delay" = "通知延遲";
+"lng_nagram_other_device_notification_delay" = "其他裝置活躍時的通知延遲";
+"lng_nagram_seconds_suffix" = " 秒";
