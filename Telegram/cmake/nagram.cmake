@@ -46,6 +46,8 @@ set(nagram_sources
     nagram/services/model.cpp
     nagram/services/store.cpp
     nagram/services/request.cpp
+    nagram/services/translation.cpp
+    nagram/services/draft_translation.cpp
 )
 
 if (nagram_sources)

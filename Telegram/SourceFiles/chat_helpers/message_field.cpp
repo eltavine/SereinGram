@@ -9,6 +9,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 
 #include "nagram/compose/options.h"
 #include "nagram/compose/text.h"
+#include "nagram/services/draft_translation.h"
 
 #include "history/history_widget.h"
 #include "history/history.h" // History::session
@@ -571,6 +572,9 @@ auto InitMessageFieldHandlers(MessageFieldHandlersArgs &&args)
 		return On(PowerSaving::kChatSpoiler) || paused();
 	});
 	Nagram::Compose::InstallQuickReplies(field);
+	if (args.show) {
+		Nagram::InstallDraftTranslation(field, args.show);
+	}
 	field->setInstantReplaces(Ui::InstantReplaces::Default());
 	field->setInstantReplacesEnabled(
 		Core::App().settings().replaceEmojiValue(),

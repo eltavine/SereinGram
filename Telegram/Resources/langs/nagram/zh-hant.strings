@@ -276,3 +276,10 @@
 "lng_nagram_service_use_key" = "使用 API 金鑰驗證";
 "lng_nagram_services" = "翻譯與轉寫服務";
 "lng_nagram_services_about" = "外部服務僅接收你手動請求處理的文字或音訊。自動聊天翻譯仍使用原服務。API 金鑰儲存在系統憑證庫，不隨設定匯出。";
+"lng_nagram_draft_changed" = "預覽期間草稿已變更。請關閉預覽並重新翻譯目前草稿。";
+"lng_nagram_inherit" = "跟隨上游";
+"lng_nagram_service_system" = "系統翻譯";
+"lng_nagram_service_translation" = "手動翻譯";
+"lng_nagram_translate_apply" = "套用到草稿";
+"lng_nagram_translate_draft" = "翻譯草稿…";
+"lng_nagram_system_translation_unavailable" = "目前裝置或系統版本不支援系統翻譯。請選擇 Telegram 或已設定的服務。";

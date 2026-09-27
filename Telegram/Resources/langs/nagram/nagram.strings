@@ -280,3 +280,10 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_nagram_ prefix.
 "lng_nagram_service_use_key" = "Authenticate with an API key";
 "lng_nagram_services" = "Translation and transcription services";
 "lng_nagram_services_about" = "External services receive only the text or audio you explicitly request to process. Automatic chat translation keeps its existing provider. API keys stay in the system credential store and are excluded from configuration exports.";
+"lng_nagram_draft_changed" = "The draft changed while this preview was open. Close it and translate the current draft again.";
+"lng_nagram_inherit" = "Inherit";
+"lng_nagram_service_system" = "System translation";
+"lng_nagram_service_translation" = "Manual translation";
+"lng_nagram_translate_apply" = "Use in draft";
+"lng_nagram_translate_draft" = "Translate draft…";
+"lng_nagram_system_translation_unavailable" = "System translation is unavailable on this device or OS version. Choose Telegram or a configured service.";

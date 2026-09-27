@@ -276,3 +276,10 @@
 "lng_nagram_service_use_key" = "使用 API 密钥认证";
 "lng_nagram_services" = "翻译与转写服务";
 "lng_nagram_services_about" = "外部服务仅接收你手动请求处理的文本或音频。自动聊天翻译仍使用原服务。API 密钥保存在系统凭据库，不随配置导出。";
+"lng_nagram_draft_changed" = "预览期间草稿已更改。请关闭预览并重新翻译当前草稿。";
+"lng_nagram_inherit" = "跟随上游";
+"lng_nagram_service_system" = "系统翻译";
+"lng_nagram_service_translation" = "手动翻译";
+"lng_nagram_translate_apply" = "应用到草稿";
+"lng_nagram_translate_draft" = "翻译草稿…";
+"lng_nagram_system_translation_unavailable" = "当前设备或系统版本不支持系统翻译。请选择 Telegram 或已配置的服务。";

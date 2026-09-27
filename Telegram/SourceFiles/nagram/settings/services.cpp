@@ -6,6 +6,7 @@
 #include "lang/lang_keys.h"
 #include "nagram/services/credentials.h"
 #include "nagram/services/request.h"
+#include "platform/platform_translate_provider.h"
 #include "settings/settings_builder.h"
 #include "settings/settings_common_session.h"
 #include "ui/boxes/confirm_box.h"
@@ -13,6 +14,7 @@
 #include "ui/widgets/fields/password_input.h"
 #include "ui/widgets/fields/input_field.h"
 #include "ui/widgets/buttons.h"
+#include "ui/widgets/checkbox.h"
 #include "ui/widgets/labels.h"
 #include "ui/vertical_list.h"
 #include "ui/wrap/vertical_layout.h"
@@ -23,6 +25,8 @@
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
 #include <QtCore/QUuid>
+
+#include <algorithm>
 
 #include "styles/style_layers.h"
 #include "styles/style_settings.h"
@@ -58,6 +62,75 @@ bool Current(not_null<Ui::GenericBox*> box, const QJsonObject &expected) {
 	}
 	box->showToast(tr::lng_nagram_config_changed_error(tr::now));
 	return false;
+}
+
+QString TranslationSelectionName(const std::optional<QJsonObject> &config) {
+	if (!config) {
+		return tr::lng_nagram_service_invalid(tr::now);
+	}
+	const auto id = config->value(u"translation"_q).toString();
+	if (id.isEmpty()) {
+		return tr::lng_nagram_inherit(tr::now);
+	} else if (id == u"telegram"_q) {
+		return u"Telegram"_q;
+	} else if (id == u"system"_q) {
+		return Platform::IsTranslateProviderAvailable()
+			? tr::lng_nagram_service_system(tr::now)
+			: tr::lng_nagram_system_translation_unavailable(tr::now);
+	}
+	const auto service = FindService(*config, id);
+	return service ? service->name : tr::lng_nagram_service_invalid(tr::now);
+}
+
+void TranslationSourceBox(not_null<Ui::GenericBox*> box) {
+	box->setTitle(tr::lng_nagram_service_translation());
+	const auto current = Services();
+	if (!current) {
+		box->addRow(object_ptr<Ui::FlatLabel>(
+			box, tr::lng_nagram_service_invalid(), st::boxLabel));
+		return;
+	}
+	auto ids = QStringList{ QString(), u"telegram"_q, u"system"_q };
+	auto titles = QStringList{
+		tr::lng_nagram_inherit(tr::now),
+		u"Telegram"_q,
+		tr::lng_nagram_service_system(tr::now),
+	};
+	for (const auto &value : current->value(u"instances"_q).toArray()) {
+		const auto service = ParseService(value.toObject());
+		if (service && service->kind == ServiceKind::Translation) {
+			ids.push_back(service->id);
+			titles.push_back(service->name);
+		}
+	}
+	const auto selected = std::max<qsizetype>(0, ids.indexOf(
+		current->value(u"translation"_q).toString()));
+	const auto group = std::make_shared<Ui::RadiobuttonGroup>(selected);
+	for (auto index = 0; index != ids.size(); ++index) {
+		const auto row = box->addRow(object_ptr<Ui::Radiobutton>(
+			box, group, index, titles[index], st::settingsSendType),
+			st::settingsSendTypePadding);
+		if (index == 2 && !Platform::IsTranslateProviderAvailable()) {
+			row->setDisabled(true);
+		}
+	}
+	if (!Platform::IsTranslateProviderAvailable()) {
+		box->addRow(object_ptr<Ui::FlatLabel>(box,
+			tr::lng_nagram_system_translation_unavailable(), st::boxLabel));
+	}
+	group->setChangedCallback([=](int value) {
+		if (!Current(box, *current)) {
+			return;
+		}
+		auto updated = *current;
+		updated.insert(u"translation"_q, ids[value]);
+		if (!SetServices(updated)) {
+			box->showToast(tr::lng_nagram_service_invalid(tr::now));
+			return;
+		}
+		Core::App().saveSettingsDelayed();
+		box->closeBox();
+	});
 }
 
 bool CredentialUsed(const QJsonObject &config, const QString &account) {
@@ -454,6 +527,17 @@ const auto kMeta = BuildHelper({
 	.icon = &st::menuIconTranslate,
 }, [](SectionBuilder &builder) {
 	const auto controller = builder.controller();
+	builder.addButton({
+		.id = u"nagram/services/translation"_q,
+		.title = tr::lng_nagram_service_translation(),
+		.st = &st::settingsButtonNoIcon,
+		.label = ForDevice().Value(kServicesConfig)
+			| rpl::map([](const QByteArray &) {
+				return TranslationSelectionName(Services());
+			}),
+		.onClick = [=] { controller->show(Box(TranslationSourceBox)); },
+		.keywords = { u"translation"_q, u"system"_q },
+	});
 	builder.addButton({
 		.id = u"nagram/services/instances"_q,
 		.title = tr::lng_nagram_services(),
