@@ -13,9 +13,14 @@ namespace Nagram {
 inline const auto kServicesConfig = Option<QByteArray>{
 	"nagram.services", Scope::Device, QByteArray(),
 	Category::Services, "lng_nagram_services", 0, ValidServicesBytes };
+inline constexpr auto kPreferSystemAi = Option<bool>{
+	"nagram.preferSystemAi", Scope::Device, false,
+	Category::Services, "lng_nagram_system_ai",
+	static_cast<unsigned>(Flag::RefreshComposeButtons) };
 
 inline void RegisterServiceOptions(Registry &registry) {
 	Expects(registry.Add(kServicesConfig));
+	Expects(registry.Add(kPreferSystemAi));
 }
 
 enum class ServiceKind {

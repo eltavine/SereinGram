@@ -6,6 +6,7 @@
 #include "lang/lang_keys.h"
 #include "nagram/services/credentials.h"
 #include "nagram/services/request.h"
+#include "nagram/services/system_ai.h"
 #include "platform/platform_translate_provider.h"
 #include "settings/settings_builder.h"
 #include "settings/settings_common_session.h"
@@ -601,6 +602,26 @@ const auto kMeta = BuildHelper({
 		.onClick = [=] { controller->show(Box(TranscriptionSourceBox)); },
 		.keywords = { u"transcription"_q, u"voice"_q },
 	});
+	const auto aiStatus = SystemAiAvailability();
+	const auto aiButton = builder.addButton({
+		.id = u"nagram/services/system-ai"_q,
+		.title = tr::lng_nagram_system_ai(),
+		.st = &st::settingsButtonNoIcon,
+		.toggled = ForDevice().Value(kPreferSystemAi),
+		.keywords = { u"Apple Intelligence"_q, u"AI"_q },
+	});
+	if (aiButton) {
+		aiButton->setDisabled(aiStatus != 0
+			&& !ForDevice().Get(kPreferSystemAi));
+		aiButton->toggledChanges(
+		) | rpl::on_next([](bool value) {
+			Expects(ForDevice().Set(kPreferSystemAi, value));
+		}, aiButton->lifetime());
+	}
+	builder.addDividerText(tr::lng_nagram_system_ai_about());
+	if (aiStatus != 0) {
+		builder.addDividerText(rpl::single(SystemAiStatusText(aiStatus)));
+	}
 	builder.addButton({
 		.id = u"nagram/services/instances"_q,
 		.title = tr::lng_nagram_services(),

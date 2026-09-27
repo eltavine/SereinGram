@@ -10,6 +10,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "base/options.h"
 #include "boxes/compose_ai_box.h"
 #include "core/mime_type.h"
+#include "nagram/services/model.h"
 #include "data/data_ai_compose_tones.h"
 #include "data/data_premium_limits.h"
 #include "data/data_session.h"
@@ -37,7 +38,8 @@ bool HasEnoughLinesForAi(
 		not_null<Main::Session*> session,
 		not_null<Ui::InputField*> field) {
 	if (HideAiButtonOption.value()
-		|| session->data().aiComposeTones().list().empty()) {
+		|| (session->data().aiComposeTones().list().empty()
+			&& !Nagram::ForDevice().Get(Nagram::kPreferSystemAi))) {
 		return false;
 	}
 	const auto &style = field->st().style;
@@ -165,6 +167,8 @@ auto SetupCaptionAiButton(SetupCaptionAiButtonArgs &&args)
 	button->setAccessibleName(tr::lng_ai_compose_title(tr::now));
 
 	button->setClickedCallback(crl::guard(field, [=] {
+		const auto original = field->getTextWithTags();
+		const auto weak = QPointer<Ui::InputField>(field);
 		const auto textWithTags = field->getTextWithAppliedMarkdown();
 		if (textWithTags.text.isEmpty()) {
 			return;
@@ -186,6 +190,9 @@ auto SetupCaptionAiButton(SetupCaptionAiButtonArgs &&args)
 					},
 					Ui::InputField::HistoryAction::NewEntry);
 			}),
+			.canApply = [=] {
+				return weak && weak->getTextWithTags() == original;
+			},
 		});
 	}));
 
@@ -202,7 +209,8 @@ auto SetupCaptionAiButton(SetupCaptionAiButtonArgs &&args)
 	rpl::merge(
 		field->heightChanges() | rpl::to_empty,
 		field->changes() | rpl::to_empty,
-		field->shownValue() | rpl::to_empty
+		field->shownValue() | rpl::to_empty,
+		Nagram::ForDevice().Value(Nagram::kPreferSystemAi) | rpl::to_empty
 	) | rpl::on_next([=] {
 		updateVisibility();
 	}, button->lifetime());
