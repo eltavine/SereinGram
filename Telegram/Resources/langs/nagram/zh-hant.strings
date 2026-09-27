@@ -208,3 +208,12 @@
 "lng_nagram_startup_folder" = "啟動時開啟的資料夾";
 "lng_nagram_startup_folder_last" = "上次開啟的資料夾";
 "lng_nagram_startup_folder_specific" = "指定資料夾";
+"lng_nagram_sorting" = "排序";
+"lng_nagram_chat_sort" = "會話排序";
+"lng_nagram_sort_unread" = "未讀";
+"lng_nagram_sort_unmuted" = "未靜音";
+"lng_nagram_sort_users" = "使用者";
+"lng_nagram_sort_contacts" = "聯絡人";
+"lng_nagram_sort_active_suffix" = " 項已啟用";
+"lng_nagram_sort_changed" = "編輯期間會話排序設定已變更，請重新開啟此頁。";
+"lng_nagram_sort_about" = "啟用規則並拖曳調整優先順序。置頂會話始終在最前。";

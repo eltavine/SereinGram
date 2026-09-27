@@ -212,3 +212,12 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_nagram_ prefix.
 "lng_nagram_startup_folder" = "Folder to open at startup";
 "lng_nagram_startup_folder_last" = "Last opened folder";
 "lng_nagram_startup_folder_specific" = "Specific folder";
+"lng_nagram_sorting" = "Sorting";
+"lng_nagram_chat_sort" = "Chat order";
+"lng_nagram_sort_unread" = "Unread";
+"lng_nagram_sort_unmuted" = "Unmuted";
+"lng_nagram_sort_users" = "Users";
+"lng_nagram_sort_contacts" = "Contacts";
+"lng_nagram_sort_active_suffix" = " active";
+"lng_nagram_sort_changed" = "Chat order changed while this page was open. Reopen it to edit the latest settings.";
+"lng_nagram_sort_about" = "Enable rules and drag rows to set their priority. Pinned chats stay first.";

@@ -208,3 +208,12 @@
 "lng_nagram_startup_folder" = "启动时打开的文件夹";
 "lng_nagram_startup_folder_last" = "上次打开的文件夹";
 "lng_nagram_startup_folder_specific" = "指定文件夹";
+"lng_nagram_sorting" = "排序";
+"lng_nagram_chat_sort" = "会话排序";
+"lng_nagram_sort_unread" = "未读";
+"lng_nagram_sort_unmuted" = "未静音";
+"lng_nagram_sort_users" = "用户";
+"lng_nagram_sort_contacts" = "联系人";
+"lng_nagram_sort_active_suffix" = " 项已启用";
+"lng_nagram_sort_changed" = "编辑期间会话排序设置已变化，请重新打开此页。";
+"lng_nagram_sort_about" = "启用规则并拖动调整优先级。置顶会话始终在最前。";

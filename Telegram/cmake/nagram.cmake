@@ -13,6 +13,7 @@ set(nagram_sources
     nagram/interface/notifications.cpp
     nagram/interface/text.cpp
     nagram/chats/startup_folder.cpp
+    nagram/chats/sort.cpp
     nagram/interface/roundness.cpp
     nagram/settings/interface.cpp
     nagram/settings/restart.cpp

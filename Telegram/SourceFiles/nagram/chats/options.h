@@ -43,6 +43,18 @@ inline constexpr auto kLastOpenedFolderId = Option<int>{
 	"nagram.lastOpenedFolderId", Scope::Account, 0,
 	Category::Chats, "lng_nagram_startup_folder", 0,
 	[](const int &value) { return value >= 0; } };
+inline constexpr auto kChatSort = Option<int>{
+	"nagram.chatSort", Scope::Device, 0,
+	Category::Chats, "lng_nagram_chat_sort", 0,
+	[](const int &value) {
+		if (value == 0) return true;
+		if (value < 0 || value > 0xFFF) return false;
+		auto seen = 0;
+		for (auto i = 0; i != 4; ++i) {
+			seen |= 1 << ((value >> (4 + i * 2)) & 3);
+		}
+		return seen == 0xF;
+	} };
 inline constexpr auto kHideSponsoredMessages = Option<bool>{
 	"nagram.hideSponsoredMessages", Scope::Device, false,
 	Category::Chats, "lng_nagram_hide_sponsored_messages" };
@@ -73,6 +85,7 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kStartupFolderMode));
 	Expects(registry.Add(kStartupFolderId));
 	Expects(registry.Add(kLastOpenedFolderId));
+	Expects(registry.Add(kChatSort));
 	Expects(registry.Add(kHideSponsoredMessages));
 	Expects(registry.Add(kHideProxySponsor));
 	Expects(registry.Add(kHidePremiumPromotions));

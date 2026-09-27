@@ -1,6 +1,7 @@
 #include "nagram/settings/chats.h"
 
 #include "nagram/chats/options.h"
+#include "nagram/chats/sort.h"
 #include "nagram/core/options.h"
 #include "nagram/settings/home.h"
 #include "data/data_chat_filters.h"
@@ -18,6 +19,8 @@
 #include "styles/style_menu_icons.h"
 #include "styles/style_settings.h"
 #include "styles/style_layers.h"
+
+#include <bit>
 
 namespace Nagram {
 namespace {
@@ -206,6 +209,24 @@ const auto kMeta = BuildHelper({
 		tr::lng_nagram_hide_folder_unread_counters(),
 		u"nagram/chats/hide-folder-unread"_q,
 		{ u"unread"_q, u"folders"_q });
+	builder.addSubsectionTitle({
+		.id = u"nagram/chats/sorting"_q,
+		.title = tr::lng_nagram_sorting(),
+		.keywords = { u"sort"_q, u"order"_q },
+	});
+	builder.addButton({
+		.id = u"nagram/chats/chat-sort"_q,
+		.title = tr::lng_nagram_chat_sort(),
+		.st = &st::settingsButtonNoIcon,
+		.label = ForDevice().Value(Chats::kChatSort) | rpl::map([](int value) {
+			const auto count = std::popcount(unsigned(value & 15));
+			return count
+				? QString::number(count) + tr::lng_nagram_sort_active_suffix(tr::now)
+				: tr::lng_nagram_preview_follow(tr::now);
+		}),
+		.onClick = [=] { controller->show(Box(Chats::ChatSortBox)); },
+		.keywords = { u"sort"_q, u"unread"_q, u"contacts"_q },
+	});
 	builder.addSubsectionTitle({
 		.id = u"nagram/chats/promotions"_q,
 		.title = tr::lng_nagram_promotions(),

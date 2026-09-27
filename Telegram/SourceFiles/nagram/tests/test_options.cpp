@@ -105,7 +105,12 @@ void TestOptions() {
 		"unknown refresh option");
 	auto chats = Registry();
 	Chats::RegisterOptions(chats);
-	Require(chats.All().size() == 16, "chat option count");
+	Require(chats.All().size() == 17, "chat option count");
+	Require(Chats::kChatSort.validate(0)
+		&& Chats::kChatSort.validate(0xE41)
+		&& !Chats::kChatSort.validate(1)
+		&& !Chats::kChatSort.validate(0x1000),
+		"chat sort encoding");
 	Require(Chats::kStartupFolderMode.scope == Scope::Account
 		&& Chats::kStartupFolderId.scope == Scope::Account
 		&& Chats::kLastOpenedFolderId.scope == Scope::Account,

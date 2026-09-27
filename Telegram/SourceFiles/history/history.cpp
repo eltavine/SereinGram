@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/history.h"
+#include "nagram/chats/sort.h"
 
 #include "history/view/history_view_element.h"
 #include "history/view/history_view_item_preview.h"
@@ -2368,6 +2369,7 @@ void History::setMuted(bool muted) {
 		const auto notifier = unreadStateChangeNotifier(notify);
 		Thread::setMuted(muted);
 	}
+	if (Nagram::Chats::SortingEnabled()) updateChatListSortPosition();
 	session().changes().peerUpdated(
 		peer,
 		Data::PeerUpdate::Flag::Notifications);
