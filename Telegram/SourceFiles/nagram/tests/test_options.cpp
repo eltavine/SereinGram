@@ -74,6 +74,8 @@ void TestOptions() {
 		"invalid menu state accepted");
 	Require(Menu::ReadVisibility({}, ActionId::Repeat) == Visibility::Hide,
 		"new menu action default");
+	Require(Menu::ReadVisibility({}, ActionId::Reading) == Visibility::Hide,
+		"reading menu action default");
 	const auto shownRepeat = Menu::WriteVisibility({}, ActionId::Repeat,
 		Visibility::Show);
 	Require(Menu::ReadVisibility(shownRepeat, ActionId::Repeat)
@@ -89,14 +91,19 @@ void TestOptions() {
 	Require(registry.All().size() == 1, "registry count");
 	auto messages = Registry();
 	Messages::RegisterOptions(messages);
-	Require(messages.All().size() == 24, "message option count");
+	Require(messages.All().size() == 26, "message option count");
 	auto refreshCount = 0;
 	for (const auto &entry : messages.All()) {
 		Require(entry.scope == Scope::Device, "message option scope");
 		Require(entry.category == Category::Messages, "message option category");
 		refreshCount += messages.HasFlag(entry.key, Flag::RefreshMessageView);
 	}
-	Require(refreshCount == 17, "message refresh option count");
+	Require(refreshCount == 19, "message refresh option count");
+	Require(Messages::kReadingChinese.validate(0)
+		&& Messages::kReadingChinese.validate(1)
+		&& Messages::kReadingChinese.validate(2)
+		&& !Messages::kReadingChinese.validate(3),
+		"reading conversion modes");
 	Require(messages.HasFlag(Messages::kSecondsInMessages.key,
 		Flag::RefreshMessageView), "message refresh option missing");
 	Require(!messages.HasFlag(Messages::kHideReactionMenu.key,

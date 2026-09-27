@@ -9,6 +9,8 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "nagram/messages/format.h"
 #include "nagram/messages/reactions.h"
 #include "nagram/messages/content.h"
+#include "nagram/messages/reading.h"
+#include "nagram/messages/options.h"
 
 #include "apiwrap.h"
 #include "api/api_transcribes.h"
@@ -2191,7 +2193,19 @@ void Element::setTextWithLinks(
 		const auto item = data();
 		const auto &options = Ui::ItemTextOptions(item);
 		clearSpecialOnlyEmoji();
-		_text.setMarkedText(st::messageTextStyle, text, options, context);
+		const auto spacing = Nagram::ForDevice().Get(
+			Nagram::Messages::kReadingSpacing);
+		const auto chinese = Nagram::ForDevice().Get(
+			Nagram::Messages::kReadingChinese);
+		if (!item->nagramOriginalShown() && (spacing || chinese)) {
+			if (!_nagramReading) {
+				_nagramReading = std::make_unique<Nagram::Messages::ReadingCache>();
+			}
+			_text.setMarkedText(st::messageTextStyle,
+				_nagramReading->Get(text, spacing, chinese), options, context);
+		} else {
+			_text.setMarkedText(st::messageTextStyle, text, options, context);
+		}
 		if (!item->_text.empty() && _text.isEmpty()){
 			// If server has allowed some text that we've trim-ed entirely,
 			// just replace it with something so that UI won't look buggy.

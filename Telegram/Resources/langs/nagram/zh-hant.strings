@@ -135,6 +135,15 @@
 "lng_nagram_hide_private_chat_activities" = "隱藏私人聊天中對方的輸入狀態";
 "lng_nagram_reveal_spoilers_note" = "付費、限時及敏感媒體仍遵循 Telegram 原有的顯示規則。";
 "lng_nagram_private_activities_note" = "只隱藏對方的狀態，不影響你送出的狀態。";
+"lng_nagram_reading_spacing" = "閱讀時在中西文之間加空格";
+"lng_nagram_reading_chinese" = "閱讀時簡繁轉換";
+"lng_nagram_reading_off" = "關閉";
+"lng_nagram_reading_simplified" = "轉為簡體";
+"lng_nagram_reading_traditional" = "轉為繁體";
+"lng_nagram_reading_unavailable" = "目前平台不支援";
+"lng_nagram_reading_chinese_note" = "轉換按單個字處理，個別詞可能轉換不準確。";
+"lng_nagram_reading_original" = "顯示原文";
+"lng_nagram_reading_apply" = "顯示轉換後文字";
 "lng_nagram_menu" = "訊息選單";
 "lng_nagram_menu_reply" = "回覆";
 "lng_nagram_menu_edit" = "編輯";
@@ -173,6 +182,7 @@
 "lng_nagram_menu_batch_unavailable" = "目標聊天不支援這項批次操作。";
 "lng_nagram_menu_selection_limit" = "選取的訊息太多。";
 "lng_nagram_menu_media_info" = "媒體資訊";
+"lng_nagram_menu_reading" = "顯示原文 / 轉換後文字";
 "lng_nagram_menu_media_filename" = "檔案名稱";
 "lng_nagram_menu_media_type" = "類型";
 "lng_nagram_menu_media_dimensions" = "尺寸";

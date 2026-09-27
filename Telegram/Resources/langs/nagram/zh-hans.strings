@@ -135,6 +135,15 @@
 "lng_nagram_hide_private_chat_activities" = "隐藏私聊中对方的输入状态";
 "lng_nagram_reveal_spoilers_note" = "付费、限时和敏感媒体仍按 Telegram 原规则处理。";
 "lng_nagram_private_activities_note" = "只隐藏对方的状态，不影响你发送的状态。";
+"lng_nagram_reading_spacing" = "阅读时在中西文之间加空格";
+"lng_nagram_reading_chinese" = "阅读时简繁转换";
+"lng_nagram_reading_off" = "关闭";
+"lng_nagram_reading_simplified" = "转为简体";
+"lng_nagram_reading_traditional" = "转为繁体";
+"lng_nagram_reading_unavailable" = "当前平台不支持";
+"lng_nagram_reading_chinese_note" = "转换按单个字处理，个别词可能转换不准确。";
+"lng_nagram_reading_original" = "显示原文";
+"lng_nagram_reading_apply" = "显示转换后文字";
 "lng_nagram_menu" = "消息菜单";
 "lng_nagram_menu_reply" = "回复";
 "lng_nagram_menu_edit" = "编辑";
@@ -173,6 +182,7 @@
 "lng_nagram_menu_batch_unavailable" = "目标聊天不支持此批量操作。";
 "lng_nagram_menu_selection_limit" = "选中的消息太多。";
 "lng_nagram_menu_media_info" = "媒体信息";
+"lng_nagram_menu_reading" = "显示原文 / 转换后文字";
 "lng_nagram_menu_media_filename" = "文件名";
 "lng_nagram_menu_media_type" = "类型";
 "lng_nagram_menu_media_dimensions" = "尺寸";

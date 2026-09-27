@@ -15,6 +15,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "ui/userpic_view.h"
 
 class History;
+namespace Nagram::Messages { class ReadingCache; }
 class HistoryBlock;
 class HistoryItem;
 class UserData;
@@ -846,6 +847,7 @@ private:
 
 	HistoryItem *_textItem = nullptr;
 	mutable Ui::Text::String _text;
+	std::unique_ptr<Nagram::Messages::ReadingCache> _nagramReading;
 	mutable uint32 _textWidth : 16 = 0;
 	mutable uint32 _textRealWidth : 16 = 0;
 	mutable int _textHeight = 0;

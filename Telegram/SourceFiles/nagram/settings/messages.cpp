@@ -2,6 +2,7 @@
 
 #include "nagram/core/options.h"
 #include "nagram/messages/options.h"
+#include "nagram/messages/reading.h"
 #include "nagram/settings/home.h"
 #include "lang/lang_keys.h"
 #include "settings/settings_builder.h"
@@ -9,6 +10,7 @@
 #include "ui/vertical_list.h"
 #include "ui/layers/generic_box.h"
 #include "ui/widgets/buttons.h"
+#include "ui/widgets/checkbox.h"
 #include "ui/widgets/fields/input_field.h"
 #include "ui/wrap/vertical_layout.h"
 #include "window/window_session_controller.h"
@@ -96,6 +98,29 @@ void EditMarkBox(not_null<Ui::GenericBox*> box) {
 	field->submits() | rpl::on_next(submit, field->lifetime());
 	box->addButton(tr::lng_settings_save(), submit);
 	box->addButton(tr::lng_cancel(), [=] { box->closeBox(); });
+}
+
+QString ReadingChineseLabel(int value) {
+	switch (value) {
+	case 1: return tr::lng_nagram_reading_simplified(tr::now);
+	case 2: return tr::lng_nagram_reading_traditional(tr::now);
+	default: return tr::lng_nagram_reading_off(tr::now);
+	}
+}
+
+void ReadingChineseBox(not_null<Ui::GenericBox*> box) {
+	box->setTitle(tr::lng_nagram_reading_chinese());
+	const auto group = std::make_shared<Ui::RadiobuttonGroup>(
+		ForDevice().Get(Messages::kReadingChinese));
+	for (auto value = 0; value != 3; ++value) {
+		box->addRow(object_ptr<Ui::Radiobutton>(
+			box, group, value, ReadingChineseLabel(value),
+			st::settingsSendType), st::settingsSendTypePadding);
+	}
+	group->setChangedCallback([=](int value) {
+		Expects(ForDevice().Set(Messages::kReadingChinese, value));
+		box->closeBox();
+	});
 }
 
 const auto kMeta = BuildHelper({
@@ -239,6 +264,26 @@ const auto kMeta = BuildHelper({
 		u"nagram/messages/hide-private-activity"_q,
 		{ u"typing"_q, u"recording"_q, u"private chat"_q });
 	builder.addDividerText(tr::lng_nagram_private_activities_note());
+	AddToggle(builder, Messages::kReadingSpacing,
+		tr::lng_nagram_reading_spacing(),
+		u"nagram/messages/reading-spacing"_q,
+		{ u"reading"_q, u"spacing"_q });
+	const auto chinese = builder.addButton({
+		.id = u"nagram/messages/reading-chinese"_q,
+		.title = tr::lng_nagram_reading_chinese(),
+		.st = &st::settingsButtonNoIcon,
+		.label = Messages::ChineseConversionAvailable()
+			? rpl::producer<QString>(ForDevice().Value(Messages::kReadingChinese)
+				| rpl::map([](int value) { return ReadingChineseLabel(value); }))
+			: rpl::producer<QString>(rpl::single(
+				tr::lng_nagram_reading_unavailable(tr::now))),
+		.onClick = [=] { controller->show(Box(ReadingChineseBox)); },
+		.keywords = { u"Chinese"_q, u"simplified"_q, u"traditional"_q },
+	});
+	if (chinese && !Messages::ChineseConversionAvailable()) {
+		chinese->setDisabled(true);
+	}
+	builder.addDividerText(tr::lng_nagram_reading_chinese_note());
 });
 
 const SectionBuildMethod MessagesSection::kBuild = kMeta.build;

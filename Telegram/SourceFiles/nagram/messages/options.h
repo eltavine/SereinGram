@@ -79,6 +79,13 @@ inline constexpr auto kHideSavedTags = Option<bool>{
 inline constexpr auto kHidePrivateChatActivities = Option<bool>{
 	"nagram.hidePrivateChatActivities", Scope::Device, false,
 	Category::Messages, "lng_nagram_hide_private_chat_activities" };
+inline constexpr auto kReadingSpacing = Option<bool>{
+	"nagram.readingSpacing", Scope::Device, false,
+	Category::Messages, "lng_nagram_reading_spacing", kRefreshMessageView };
+inline constexpr auto kReadingChinese = Option<int>{
+	"nagram.readingChinese", Scope::Device, 0,
+	Category::Messages, "lng_nagram_reading_chinese", kRefreshMessageView,
+	[](const int &value) { return value >= 0 && value <= 2; } };
 
 inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kSecondsInMessages));
@@ -105,6 +112,8 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kHidePremiumBadges));
 	Expects(registry.Add(kHideSavedTags));
 	Expects(registry.Add(kHidePrivateChatActivities));
+	Expects(registry.Add(kReadingSpacing));
+	Expects(registry.Add(kReadingChinese));
 }
 
 } // namespace Nagram::Messages

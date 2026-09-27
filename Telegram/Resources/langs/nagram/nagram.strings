@@ -139,6 +139,15 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_nagram_ prefix.
 "lng_nagram_hide_private_chat_activities" = "Hide typing activity in private chats";
 "lng_nagram_reveal_spoilers_note" = "Paid, expiring, and sensitive media still follow Telegram's visibility rules.";
 "lng_nagram_private_activities_note" = "Only hides the other person's activity. Your own activity is unaffected.";
+"lng_nagram_reading_spacing" = "Add spaces between Chinese and Latin text while reading";
+"lng_nagram_reading_chinese" = "Convert Chinese while reading";
+"lng_nagram_reading_off" = "Off";
+"lng_nagram_reading_simplified" = "Simplified Chinese";
+"lng_nagram_reading_traditional" = "Traditional Chinese";
+"lng_nagram_reading_unavailable" = "Not supported on this platform";
+"lng_nagram_reading_chinese_note" = "Conversion works one character at a time; some phrases may be inaccurate.";
+"lng_nagram_reading_original" = "Show original text";
+"lng_nagram_reading_apply" = "Show converted text";
 "lng_nagram_menu" = "Message menu";
 "lng_nagram_menu_reply" = "Reply";
 "lng_nagram_menu_edit" = "Edit";
@@ -177,6 +186,7 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_nagram_ prefix.
 "lng_nagram_menu_batch_unavailable" = "This batch action is unavailable in the destination.";
 "lng_nagram_menu_selection_limit" = "Too many messages are selected.";
 "lng_nagram_menu_media_info" = "Media information";
+"lng_nagram_menu_reading" = "Show original / converted text";
 "lng_nagram_menu_media_filename" = "File name";
 "lng_nagram_menu_media_type" = "Type";
 "lng_nagram_menu_media_dimensions" = "Dimensions";

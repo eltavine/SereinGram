@@ -25,12 +25,14 @@ set(nagram_sources
     nagram/menu/media.cpp
     nagram/menu/model.cpp
     nagram/menu/repeat.cpp
+    nagram/menu/reading.cpp
     nagram/menu/selection.cpp
     nagram/messages/format.cpp
     nagram/messages/content.cpp
     nagram/messages/badges.cpp
     nagram/messages/effects.cpp
     nagram/messages/reactions.cpp
+    nagram/messages/reading.cpp
     nagram/privacy/profile.cpp
     nagram/settings/home.cpp
     nagram/settings/chats.cpp

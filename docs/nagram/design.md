@@ -171,6 +171,8 @@ inline constexpr auto kHideStories = Option<bool>{
 | M7 其余与配置管理 | 演示模式、本地别名、GIF 与 MP4、贴纸目录、配置管理 | M3 |
 | P3 专项 | 回执/在线策略、本地历史、内容保护与锁、自动翻译继承与 LLM 上下文、规则继承与远程规则、网络调优与代理、外部媒体后端、云同步 | 对应 P2 完成；每项先单独写设计并确认 |
 
+C26 采用 macOS `CFStringTransform` 和 Windows `LCMapStringEx` 按字转换；Linux 显示不可用状态，菜单不插入 E22。OpenCC 的按词组转换可作为以后的改进，需单独立项。
+
 M1、M2、M3 之间没有依赖，但按计划顺序提交，避免并行分支的 rebase 成本。M3 的原型结论记录在本文件后再展开实现。
 
 ### 里程碑状态
