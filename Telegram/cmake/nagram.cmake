@@ -41,6 +41,11 @@ set(nagram_sources
     nagram/settings/menu.cpp
     nagram/settings/privacy.cpp
     nagram/settings/messages.cpp
+    nagram/settings/services.cpp
+    nagram/services/credentials.cpp
+    nagram/services/model.cpp
+    nagram/services/store.cpp
+    nagram/services/request.cpp
 )
 
 if (nagram_sources)
@@ -57,10 +62,12 @@ if (DESKTOP_APP_TEST_APPS)
         nagram/tests/test_lang.cpp
         nagram/tests/test_options.cpp
         nagram/tests/test_spacing.cpp
+        nagram/tests/test_services.cpp
         nagram/compose/spacing.cpp
         nagram/core/exchange.cpp
         nagram/interface/main_menu_model.cpp
         nagram/menu/model.cpp
+        nagram/services/model.cpp
     )
 
     target_include_directories(test_nagram PRIVATE ${src_loc})

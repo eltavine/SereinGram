@@ -6,6 +6,7 @@
 #include "nagram/settings/compose.h"
 #include "nagram/settings/media.h"
 #include "nagram/settings/privacy.h"
+#include "nagram/settings/services.h"
 
 #include "boxes/about_box.h"
 #include "core/click_handler_types.h"
@@ -99,6 +100,12 @@ const auto kMeta = BuildHelper({
 		.targetSection = PrivacyId(),
 		.icon = { &st::menuIconLock },
 		.keywords = { u"privacy"_q, u"phone"_q },
+	});
+	builder.addSectionButton({
+		.title = tr::lng_nagram_services(),
+		.targetSection = ServicesId(),
+		.icon = { &st::menuIconTranslate },
+		.keywords = { u"translation"_q, u"AI"_q, u"service"_q },
 	});
 	builder.addDividerText(tr::lng_nagram_settings_note());
 });

@@ -8,6 +8,7 @@
 
 void TestOptions();
 void TestSpacing();
+void TestServices();
 
 namespace {
 
@@ -85,6 +86,7 @@ int main() {
 	try {
 		TestOptions();
 		TestSpacing();
+		TestServices();
 		const auto root = std::string(NAGRAM_LANG_SOURCE_DIR);
 		const auto upstream = ReadStrings(root + "/lang.strings", false);
 		const auto english = ReadStrings(root + "/nagram/nagram.strings", true);
