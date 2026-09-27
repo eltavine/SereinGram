@@ -205,3 +205,6 @@
 "lng_nagram_seconds_suffix" = " 秒";
 "lng_nagram_ui_text" = "界面文字";
 "lng_nagram_halfwidth_ui_punctuation" = "界面文字使用半角标点";
+"lng_nagram_startup_folder" = "启动时打开的文件夹";
+"lng_nagram_startup_folder_last" = "上次打开的文件夹";
+"lng_nagram_startup_folder_specific" = "指定文件夹";

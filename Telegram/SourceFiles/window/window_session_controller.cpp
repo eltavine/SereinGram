@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "window/window_session_controller.h"
+#include "nagram/chats/startup_folder.h"
 
 #include "apiwrap.h"
 #include "api/api_cloud_password.h"
@@ -2041,6 +2042,7 @@ rpl::producer<> SessionController::filtersMenuChanged() const {
 }
 
 void SessionController::checkOpenedFilter() {
+	Nagram::Chats::VerifyStartupFolder(&session());
 	activateFirstChatsFilter();
 	if (const auto filterId = activeChatsFilterCurrent()) {
 		const auto &list = session().data().chatsFilters().list();
@@ -2060,7 +2062,8 @@ void SessionController::activateFirstChatsFilter() {
 		return;
 	}
 	_filtersActivated = true;
-	setActiveChatsFilter(session().data().chatsFilters().defaultId());
+	setActiveChatsFilter(Nagram::Chats::StartupFolder(
+		&session(), session().data().chatsFilters().defaultId()));
 }
 
 bool SessionController::uniqueChatsInSearchResults(
@@ -3320,6 +3323,7 @@ void SessionController::setActiveChatsFilter(
 		resetFakeUnreadWhileOpened();
 	}
 	_activeChatsFilter.force_assign(id);
+	Nagram::Chats::RememberFolder(&session(), id);
 	if (id || !changed) {
 		closeForum();
 		closeFolder();

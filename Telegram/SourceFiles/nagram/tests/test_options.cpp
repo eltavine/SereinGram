@@ -105,7 +105,11 @@ void TestOptions() {
 		"unknown refresh option");
 	auto chats = Registry();
 	Chats::RegisterOptions(chats);
-	Require(chats.All().size() == 13, "chat option count");
+	Require(chats.All().size() == 16, "chat option count");
+	Require(Chats::kStartupFolderMode.scope == Scope::Account
+		&& Chats::kStartupFolderId.scope == Scope::Account
+		&& Chats::kLastOpenedFolderId.scope == Scope::Account,
+		"startup folder must be account scoped");
 	Require(chats.HasFlag(Chats::kCompactList.key,
 		Flag::RefreshDialogList), "compact list refresh flag");
 	Require(chats.HasFlag(Chats::kPreviewLines.key,

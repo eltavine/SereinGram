@@ -31,6 +31,18 @@ inline constexpr auto kShowArchiveInFolders = Option<bool>{
 inline constexpr auto kHideFolderUnreadCounters = Option<bool>{
 	"nagram.hideFolderUnreadCounters", Scope::Device, false,
 	Category::Chats, "lng_nagram_hide_folder_unread_counters" };
+inline constexpr auto kStartupFolderMode = Option<int>{
+	"nagram.startupFolderMode", Scope::Account, 0,
+	Category::Chats, "lng_nagram_startup_folder", 0,
+	[](const int &value) { return value >= 0 && value <= 2; } };
+inline constexpr auto kStartupFolderId = Option<int>{
+	"nagram.startupFolderId", Scope::Account, 0,
+	Category::Chats, "lng_nagram_startup_folder", 0,
+	[](const int &value) { return value >= 0; } };
+inline constexpr auto kLastOpenedFolderId = Option<int>{
+	"nagram.lastOpenedFolderId", Scope::Account, 0,
+	Category::Chats, "lng_nagram_startup_folder", 0,
+	[](const int &value) { return value >= 0; } };
 inline constexpr auto kHideSponsoredMessages = Option<bool>{
 	"nagram.hideSponsoredMessages", Scope::Device, false,
 	Category::Chats, "lng_nagram_hide_sponsored_messages" };
@@ -58,6 +70,9 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kHideAllChatsFolder));
 	Expects(registry.Add(kShowArchiveInFolders));
 	Expects(registry.Add(kHideFolderUnreadCounters));
+	Expects(registry.Add(kStartupFolderMode));
+	Expects(registry.Add(kStartupFolderId));
+	Expects(registry.Add(kLastOpenedFolderId));
 	Expects(registry.Add(kHideSponsoredMessages));
 	Expects(registry.Add(kHideProxySponsor));
 	Expects(registry.Add(kHidePremiumPromotions));

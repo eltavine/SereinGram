@@ -205,3 +205,6 @@
 "lng_nagram_seconds_suffix" = " 秒";
 "lng_nagram_ui_text" = "介面文字";
 "lng_nagram_halfwidth_ui_punctuation" = "介面文字使用半形標點";
+"lng_nagram_startup_folder" = "啟動時開啟的資料夾";
+"lng_nagram_startup_folder_last" = "上次開啟的資料夾";
+"lng_nagram_startup_folder_specific" = "指定資料夾";

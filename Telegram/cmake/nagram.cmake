@@ -12,6 +12,7 @@ set(nagram_sources
     nagram/interface/main_menu_model.cpp
     nagram/interface/notifications.cpp
     nagram/interface/text.cpp
+    nagram/chats/startup_folder.cpp
     nagram/interface/roundness.cpp
     nagram/settings/interface.cpp
     nagram/settings/restart.cpp

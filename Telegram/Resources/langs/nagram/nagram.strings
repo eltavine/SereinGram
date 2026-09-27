@@ -209,3 +209,6 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_nagram_ prefix.
 "lng_nagram_seconds_suffix" = " s";
 "lng_nagram_ui_text" = "Interface text";
 "lng_nagram_halfwidth_ui_punctuation" = "Use halfwidth punctuation in interface text";
+"lng_nagram_startup_folder" = "Folder to open at startup";
+"lng_nagram_startup_folder_last" = "Last opened folder";
+"lng_nagram_startup_folder_specific" = "Specific folder";
