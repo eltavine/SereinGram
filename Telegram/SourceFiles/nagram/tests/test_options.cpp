@@ -105,7 +105,12 @@ void TestOptions() {
 		"unknown refresh option");
 	auto chats = Registry();
 	Chats::RegisterOptions(chats);
-	Require(chats.All().size() == 17, "chat option count");
+	Require(chats.All().size() == 18, "chat option count");
+	Require(Chats::kManagedFolderIds.scope == Scope::Account
+		&& Chats::kManagedFolderIds.validate(QString::fromLatin1("1,3,8"))
+		&& !Chats::kManagedFolderIds.validate(QString::fromLatin1("3,1"))
+		&& !Chats::kManagedFolderIds.validate(QString::fromLatin1("1,1")),
+		"managed folder ids must be account scoped and unique");
 	Require(Chats::kChatSort.validate(0)
 		&& Chats::kChatSort.validate(0xE41)
 		&& !Chats::kChatSort.validate(1)

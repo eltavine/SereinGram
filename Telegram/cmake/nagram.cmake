@@ -14,6 +14,7 @@ set(nagram_sources
     nagram/interface/text.cpp
     nagram/chats/startup_folder.cpp
     nagram/chats/sort.cpp
+    nagram/chats/managed_folders.cpp
     nagram/interface/roundness.cpp
     nagram/settings/interface.cpp
     nagram/settings/restart.cpp

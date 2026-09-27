@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "ui/widgets/chat_filters_tabs_strip.h"
+#include "nagram/chats/managed_folders.h"
 #include "nagram/chats/options.h"
 #include "nagram/core/options.h"
 
@@ -87,6 +88,7 @@ void ShowMenu(
 			tr::lng_filters_context_edit(tr::now),
 			[=] { EditExistingFilter(controller, id); },
 			&st::menuIconEdit);
+		Nagram::Chats::AddManagedOnlyAction(addAction, session, id);
 
 		MarkAsReadMenu::AddChatListAction(
 			controller,

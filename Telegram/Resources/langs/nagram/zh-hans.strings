@@ -217,3 +217,4 @@
 "lng_nagram_sort_active_suffix" = " 项已启用";
 "lng_nagram_sort_changed" = "编辑期间会话排序设置已变化，请重新打开此页。";
 "lng_nagram_sort_about" = "启用规则并拖动调整优先级。置顶会话始终在最前。";
+"lng_nagram_managed_only" = "仅显示我管理的群组和频道";

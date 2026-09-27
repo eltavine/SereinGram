@@ -217,3 +217,4 @@
 "lng_nagram_sort_active_suffix" = " 項已啟用";
 "lng_nagram_sort_changed" = "編輯期間會話排序設定已變更，請重新開啟此頁。";
 "lng_nagram_sort_about" = "啟用規則並拖曳調整優先順序。置頂會話始終在最前。";
+"lng_nagram_managed_only" = "僅顯示我管理的群組和頻道";

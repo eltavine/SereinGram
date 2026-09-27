@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "window/window_filters_menu.h"
+#include "nagram/chats/managed_folders.h"
 #include "nagram/chats/options.h"
 #include "nagram/core/options.h"
 
@@ -774,6 +775,7 @@ void FiltersMenu::showMenu(QPoint position, FilterId id) {
 			tr::lng_filters_context_edit(tr::now),
 			crl::guard(&_outer, [=] { EditExistingFilter(_session, id); }),
 			&st::menuIconEdit);
+		Nagram::Chats::AddManagedOnlyAction(addAction, &_session->session(), id);
 
 		auto filteredChats = [=] {
 			return _session->session().data().chatsFilters().chatsList(id);

@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "data/data_chat_filters.h"
+#include "nagram/chats/managed_folders.h"
 #include "nagram/chats/options.h"
 #include "nagram/core/options.h"
 #include "data/data_premium_limits.h"
@@ -342,6 +343,7 @@ const base::flat_set<not_null<History*>> &ChatFilter::never() const {
 bool ChatFilter::contains(
 		not_null<History*> history,
 		bool ignoreFakeUnread) const {
+	if (!Nagram::Chats::AllowedInFolder(history, _id)) return false;
 	const auto flag = [&] {
 		const auto peer = history->peer;
 		if (const auto user = peer->asUser()) {

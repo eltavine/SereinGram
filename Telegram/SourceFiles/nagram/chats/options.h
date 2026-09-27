@@ -55,6 +55,22 @@ inline constexpr auto kChatSort = Option<int>{
 		}
 		return seen == 0xF;
 	} };
+inline const auto kManagedFolderIds = Option<QString>{
+	"nagram.managedFolderIds", Scope::Account, QString(),
+	Category::Chats, "lng_nagram_managed_only", 0,
+	[](const QString &value) {
+		if (value.isEmpty()) return true;
+		auto previous = 0;
+		for (const auto &part : value.split(u',')) {
+			auto valid = false;
+			const auto id = part.toInt(&valid);
+			if (!valid || id <= previous || part != QString::number(id)) {
+				return false;
+			}
+			previous = id;
+		}
+		return true;
+	} };
 inline constexpr auto kHideSponsoredMessages = Option<bool>{
 	"nagram.hideSponsoredMessages", Scope::Device, false,
 	Category::Chats, "lng_nagram_hide_sponsored_messages" };
@@ -86,6 +102,7 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kStartupFolderId));
 	Expects(registry.Add(kLastOpenedFolderId));
 	Expects(registry.Add(kChatSort));
+	Expects(registry.Add(kManagedFolderIds));
 	Expects(registry.Add(kHideSponsoredMessages));
 	Expects(registry.Add(kHideProxySponsor));
 	Expects(registry.Add(kHidePremiumPromotions));
