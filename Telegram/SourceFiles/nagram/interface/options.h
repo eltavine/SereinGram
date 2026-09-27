@@ -4,6 +4,8 @@
 
 namespace Nagram::Interface {
 
+[[nodiscard]] bool ValidMainMenuBytes(const QByteArray &value);
+
 inline constexpr auto kRestart = static_cast<unsigned>(Flag::RequiresRestart);
 inline constexpr auto kBubbleRoundness = Option<int>{
 	"nagram.bubbleRoundness", Scope::Device, 0,
@@ -40,6 +42,10 @@ inline constexpr auto kHideReplyThumbnail = Option<bool>{
 inline constexpr auto kIgnoreChatTheme = Option<bool>{
 	"nagram.ignoreChatTheme", Scope::Device, false,
 	Category::Interface, "lng_nagram_ignore_chat_theme" };
+inline const auto kMainMenuConfig = Option<QByteArray>{
+	"nagram.mainMenu", Scope::Device, QByteArray(),
+	Category::Interface, "lng_nagram_main_menu", 0,
+	ValidMainMenuBytes };
 
 inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kBubbleRoundness));
@@ -51,6 +57,7 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kThemeReplyColors));
 	Expects(registry.Add(kHideReplyThumbnail));
 	Expects(registry.Add(kIgnoreChatTheme));
+	Expects(registry.Add(kMainMenuConfig));
 }
 
 } // namespace Nagram::Interface

@@ -8,6 +8,8 @@ set(nagram_sources
     nagram/core/exchange.cpp
     nagram/core/options.cpp
     nagram/display/view_refresher.cpp
+    nagram/interface/main_menu.cpp
+    nagram/interface/main_menu_model.cpp
     nagram/interface/roundness.cpp
     nagram/settings/interface.cpp
     nagram/settings/restart.cpp
@@ -46,6 +48,7 @@ if (DESKTOP_APP_TEST_APPS)
         nagram/tests/test_lang.cpp
         nagram/tests/test_options.cpp
         nagram/core/exchange.cpp
+        nagram/interface/main_menu_model.cpp
         nagram/menu/model.cpp
     )
 

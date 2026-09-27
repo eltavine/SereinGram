@@ -2,6 +2,7 @@
 #include "nagram/core/exchange.h"
 #include "nagram/core/device_options.h"
 #include "nagram/interface/options.h"
+#include "nagram/interface/main_menu.h"
 #include "nagram/messages/options.h"
 #include "nagram/chats/options.h"
 #include "nagram/compose/options.h"
@@ -113,7 +114,7 @@ void TestOptions() {
 		Flag::RefreshDialogList), "stories use widget refresh");
 	auto interface = Registry();
 	Interface::RegisterOptions(interface);
-	Require(interface.All().size() == 9, "interface option count");
+	Require(interface.All().size() == 10, "interface option count");
 	Require(interface.HasFlag(Interface::kBubbleRoundness.key,
 		Flag::RequiresRestart), "roundness restart flag");
 	Require(Interface::kAvatarRoundness.validate(0)
@@ -130,6 +131,13 @@ void TestOptions() {
 		"text width bounds");
 	Require(interface.HasFlag(Interface::kHideReplyThumbnail.key,
 		Flag::RefreshMessageView), "reply thumbnail refresh flag");
+	Require(Interface::ValidMainMenuBytes({}), "default menu config");
+	Require(Interface::ValidMainMenu(Interface::MainMenuDefaults()),
+		"default menu config invalid");
+	Require(!Interface::ValidMainMenuBytes(R"({"version":1,"order":[],"hidden":["settings"],"title":"","seasonalDecorations":true})"),
+		"settings cannot be hidden");
+	Require(!Interface::ValidMainMenuBytes(R"({"version":1,"order":["calls","calls"],"hidden":[],"title":"","seasonalDecorations":true})"),
+		"duplicate menu action accepted");
 	auto compose = Registry();
 	Compose::RegisterOptions(compose);
 	Require(compose.All().size() == 21, "compose option count");

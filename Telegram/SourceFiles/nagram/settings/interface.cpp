@@ -1,6 +1,7 @@
 #include "nagram/settings/interface.h"
 
 #include "nagram/interface/options.h"
+#include "nagram/interface/main_menu.h"
 #include "nagram/settings/home.h"
 #include "nagram/settings/restart.h"
 #include "lang/lang_keys.h"
@@ -228,6 +229,18 @@ const auto kMeta = BuildHelper({
 		tr::lng_nagram_ignore_chat_theme(),
 		u"nagram/interface/ignore-chat-theme"_q,
 		{ u"chat"_q, u"theme"_q, u"wallpaper"_q });
+	builder.addSubsectionTitle({
+		.id = u"nagram/interface/main-menu-heading"_q,
+		.title = tr::lng_nagram_main_menu(),
+		.keywords = { u"menu"_q, u"title"_q },
+	});
+	builder.addButton({
+		.id = u"nagram/interface/main-menu"_q,
+		.title = tr::lng_nagram_main_menu(),
+		.st = &st::settingsButtonNoIcon,
+		.onClick = [=] { controller->show(Box(Interface::MainMenuBox)); },
+		.keywords = { u"menu"_q, u"order"_q, u"visibility"_q },
+	});
 });
 
 const SectionBuildMethod InterfaceSection::kBuild = kMeta.build;
