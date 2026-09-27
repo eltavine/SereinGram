@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "window/section_widget.h"
+#include "nagram/interface/options.h"
 
 #include "mainwidget.h"
 #include "mainwindow.h"
@@ -577,10 +578,15 @@ auto ChatThemeValueFromPeer(
 
 	return rpl::combine(
 		std::move(cloud),
-		controller->peerThemeOverrideValue()
+		controller->peerThemeOverrideValue(),
+		Nagram::ForDevice().Value(Nagram::Interface::kIgnoreChatTheme)
 	) | rpl::map([=](
 			std::shared_ptr<Ui::ChatTheme> &&cloud,
-			PeerThemeOverride &&overriden) {
+			PeerThemeOverride &&overriden,
+			bool ignoreCustomTheme) {
+		if (ignoreCustomTheme) {
+			return controller->defaultChatTheme();
+		}
 		return (overriden.peer == peer.get()
 			&& peer->themeToken() != overriden.token)
 			? std::move(overriden.theme)

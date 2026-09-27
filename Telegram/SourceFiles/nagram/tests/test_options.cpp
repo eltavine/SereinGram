@@ -113,7 +113,7 @@ void TestOptions() {
 		Flag::RefreshDialogList), "stories use widget refresh");
 	auto interface = Registry();
 	Interface::RegisterOptions(interface);
-	Require(interface.All().size() == 3, "interface option count");
+	Require(interface.All().size() == 9, "interface option count");
 	Require(interface.HasFlag(Interface::kBubbleRoundness.key,
 		Flag::RequiresRestart), "roundness restart flag");
 	Require(Interface::kAvatarRoundness.validate(0)
@@ -122,6 +122,14 @@ void TestOptions() {
 		&& !Interface::kAvatarRoundness.validate(9)
 		&& !Interface::kAvatarRoundness.validate(101),
 		"avatar roundness bounds");
+	Require(Interface::kTextMessageWidth.validate(0)
+		&& Interface::kTextMessageWidth.validate(50)
+		&& Interface::kTextMessageWidth.validate(400)
+		&& !Interface::kTextMessageWidth.validate(49)
+		&& !Interface::kTextMessageWidth.validate(401),
+		"text width bounds");
+	Require(interface.HasFlag(Interface::kHideReplyThumbnail.key,
+		Flag::RefreshMessageView), "reply thumbnail refresh flag");
 	auto compose = Registry();
 	Compose::RegisterOptions(compose);
 	Require(compose.All().size() == 21, "compose option count");

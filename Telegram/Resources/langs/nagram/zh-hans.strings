@@ -15,6 +15,14 @@
 "lng_nagram_uniform_avatar_shapes" = "论坛和频道私信也使用头像圆角";
 "lng_nagram_roundness_hint" = "10–100%；留空则跟随 Telegram";
 "lng_nagram_restart_required" = "重启后生效";
+"lng_nagram_message_style" = "消息样式";
+"lng_nagram_text_message_width" = "文字消息宽度";
+"lng_nagram_text_width_hint" = "50–400%；留空则跟随 Telegram";
+"lng_nagram_wide_channel_posts" = "加宽频道文字消息";
+"lng_nagram_hide_bubble_tail" = "隐藏气泡尾巴";
+"lng_nagram_theme_reply_colors" = "回复和引用使用主题颜色";
+"lng_nagram_hide_reply_thumbnail" = "隐藏回复缩略图";
+"lng_nagram_ignore_chat_theme" = "忽略对话自定义主题和壁纸";
 "lng_nagram_messages" = "消息";
 "lng_nagram_chats" = "会话";
 "lng_nagram_chat_list" = "会话列表";

@@ -19,6 +19,14 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_nagram_ prefix.
 "lng_nagram_uniform_avatar_shapes" = "Use avatar roundness for forums and channel direct messages";
 "lng_nagram_roundness_hint" = "10–100%; leave empty to follow Telegram";
 "lng_nagram_restart_required" = "After restart";
+"lng_nagram_message_style" = "Message style";
+"lng_nagram_text_message_width" = "Text message width";
+"lng_nagram_text_width_hint" = "50–400%; leave empty to follow Telegram";
+"lng_nagram_wide_channel_posts" = "Widen channel text messages";
+"lng_nagram_hide_bubble_tail" = "Hide message bubble tails";
+"lng_nagram_theme_reply_colors" = "Use theme colors for replies and quotes";
+"lng_nagram_hide_reply_thumbnail" = "Hide reply thumbnails";
+"lng_nagram_ignore_chat_theme" = "Ignore custom chat themes and wallpapers";
 "lng_nagram_messages" = "Messages";
 "lng_nagram_chats" = "Chats";
 "lng_nagram_chat_list" = "Chat list";

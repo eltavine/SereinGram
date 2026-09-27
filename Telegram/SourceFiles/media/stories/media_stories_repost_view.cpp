@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "media/stories/media_stories_repost_view.h"
+#include "nagram/interface/options.h"
 
 #include "chat_helpers/compose/compose_show.h"
 #include "core/ui_integration.h"
@@ -77,7 +78,8 @@ void RepostView::draw(Painter &p, int x, int y, int availableWidth) {
 	const auto w = _lastWidth = std::min(int(_maxWidth), availableWidth);
 	const auto h = height() - (simple ? st::normalFont->height : 0);
 	const auto rect = QRect(x, y, w, h);
-	const auto backgroundEmojiId = (!simple && _sourcePeer)
+	const auto backgroundEmojiId = (!simple && _sourcePeer
+		&& !Nagram::ForDevice().Get(Nagram::Interface::kThemeReplyColors))
 		? _sourcePeer->backgroundEmojiId()
 		: DocumentId();
 	const auto cache = &_quoteCache;
@@ -207,7 +209,8 @@ void RepostView::recountDimensions() {
 	const auto owner = &_story->owner();
 	const auto repostId = _story->repost() ? _story->repostSourceId() : 0;
 
-	const auto colorIndexPlusOne = _sourcePeer
+	const auto colorIndexPlusOne = (_sourcePeer
+		&& !Nagram::ForDevice().Get(Nagram::Interface::kThemeReplyColors))
 		? (_sourcePeer->colorIndex() + 1)
 		: 1;
 	const auto dark = true;

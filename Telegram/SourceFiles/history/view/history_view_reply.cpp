@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/history_view_reply.h"
+#include "nagram/interface/options.h"
 
 #include "core/click_handler_types.h"
 #include "core/ui_integration.h"
@@ -409,7 +410,8 @@ void Reply::update(
 		|| (externalMedia && externalMedia->hasReplyPreview())
 		|| (pollMediaPtr
 			&& (pollMediaPtr->photo || pollMediaPtr->document));
-	_hasPreview = hasPreview ? 1 : 0;
+	_hasPreview = (hasPreview && !Nagram::ForDevice().Get(
+		Nagram::Interface::kHideReplyThumbnail)) ? 1 : 0;
 	_displaying = data->displaying() ? 1 : 0;
 	_multiline = data->multiline() ? 1 : 0;
 	const auto hasQuoteIcon = _displaying
@@ -817,18 +819,25 @@ void Reply::paint(
 	y += st::historyReplyTop;
 	const auto rect = QRect(x, y, w, _height);
 	const auto selected = context.selected();
-	const auto backgroundEmojiId = _colorPeer
+	const auto themeColors = Nagram::ForDevice().Get(
+		Nagram::Interface::kThemeReplyColors);
+	const auto backgroundEmojiId = (!themeColors && _colorPeer)
 		? _colorPeer->backgroundEmojiId()
 		: DocumentId();
-	const auto colorIndexPlusOne = _colorPeer
+	const auto colorIndexPlusOne = themeColors
+		? 0
+		: _colorPeer
 		? (_colorPeer->colorIndex() + 1)
 		: _hiddenSenderColorIndexPlusOne;
-	const auto &colorCollectible = _colorPeer
+	const auto &colorCollectible = (!themeColors && _colorPeer)
 		? _colorPeer->colorCollectible()
 		: nullptr;
-	const auto useColorCollectible = colorCollectible && !context.outbg;
+	const auto useColorCollectible = !themeColors
+		&& colorCollectible && !context.outbg;
 	const auto useColorIndex = colorIndexPlusOne && !context.outbg;
-	const auto colorPattern = colorCollectible
+	const auto colorPattern = themeColors
+		? 0
+		: colorCollectible
 		? st->collectiblePatternIndex(colorCollectible)
 		: colorIndexPlusOne
 		? st->colorPatternIndex(colorIndexPlusOne - 1)

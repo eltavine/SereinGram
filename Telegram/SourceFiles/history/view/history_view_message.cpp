@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/history_view_message.h"
+#include "nagram/interface/options.h"
 #include "nagram/messages/reactions.h"
 #include "nagram/messages/content.h"
 
@@ -6533,7 +6534,8 @@ Ui::BubbleRounding Message::countMessageRounding() const {
 	const auto media = smallBottom ? nullptr : this->media();
 	const auto item = data();
 	const auto keyboard = item->inlineReplyKeyboard();
-	const auto skipTail = smallBottom
+	const auto skipTail = Nagram::ForDevice().Get(
+		Nagram::Interface::kHideBubbleTail) || smallBottom
 		|| (media && media->skipBubbleTail())
 		|| (keyboard != nullptr)
 		|| item->isFakeAboutView()
@@ -6616,7 +6618,16 @@ int Message::resizeContentGetHeight(int newWidth) {
 		}
 	}
 	accumulate_min(contentWidth, maxWidth());
-	_bubbleWidthLimit = (UnlimitedMessageWidth.value() && !mediaDisplayed)
+	const auto textWidthPercent = Nagram::ForDevice().Get(
+		Nagram::Interface::kTextMessageWidth);
+	const auto wide = UnlimitedMessageWidth.value()
+		|| (item->history()->peer->isBroadcast()
+			&& Nagram::ForDevice().Get(
+				Nagram::Interface::kWideChannelPosts));
+	_bubbleWidthLimit = (textWidthPercent && !mediaDisplayed)
+		? std::max(st::msgMinWidth,
+			st::msgMaxWidth * textWidthPercent / 100)
+		: (wide && !mediaDisplayed)
 		? 0x3FFFFFF
 		: std::max({
 			st::msgMaxWidth,
