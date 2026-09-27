@@ -4,6 +4,8 @@ set(nagram_sources
     nagram/chats/promotions.cpp
     nagram/compose/confirm.cpp
     nagram/compose/placeholder.cpp
+    nagram/compose/spacing.cpp
+    nagram/compose/text.cpp
     nagram/core/language.cpp
     nagram/core/exchange.cpp
     nagram/core/options.cpp
@@ -52,6 +54,8 @@ if (DESKTOP_APP_TEST_APPS)
     nice_target_sources(test_nagram ${src_loc} PRIVATE
         nagram/tests/test_lang.cpp
         nagram/tests/test_options.cpp
+        nagram/tests/test_spacing.cpp
+        nagram/compose/spacing.cpp
         nagram/core/exchange.cpp
         nagram/interface/main_menu_model.cpp
         nagram/menu/model.cpp

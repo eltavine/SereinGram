@@ -7,6 +7,9 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "chat_helpers/message_field.h"
 
+#include "nagram/compose/options.h"
+#include "nagram/compose/text.h"
+
 #include "history/history_widget.h"
 #include "history/history.h" // History::session
 #include "history/history_item.h" // HistoryItem::originalText
@@ -567,17 +570,22 @@ auto InitMessageFieldHandlers(MessageFieldHandlersArgs &&args)
 	}, [paused] {
 		return On(PowerSaving::kChatSpoiler) || paused();
 	});
+	Nagram::Compose::InstallQuickReplies(field);
 	field->setInstantReplaces(Ui::InstantReplaces::Default());
 	field->setInstantReplacesEnabled(
 		Core::App().settings().replaceEmojiValue(),
 		Core::App().settings().systemTextReplaceValue());
-	field->setMarkdownReplacesEnabled(rpl::single(Ui::MarkdownEnabledState{
-		Ui::MarkdownEnabled{
-			std::move(args.allowMarkdownTags),
-			args.allowTypedMarkdown,
-			args.instantMarkdown
-		}
-	}));
+	field->setMarkdownReplacesEnabled(
+		Nagram::ForDevice().Value(Nagram::Compose::kDisableAutoMarkdown)
+		| rpl::map([
+			tags = std::move(args.allowMarkdownTags),
+			typed = args.allowTypedMarkdown,
+			instant = args.instantMarkdown
+		](bool disabled) {
+			return Ui::MarkdownEnabledState{ Ui::MarkdownEnabled{
+				tags, typed && !disabled, instant && !disabled
+			} };
+		}));
 	if (const auto &show = args.show) {
 		field->setEditLinkCallback(
 			DefaultEditLinkCallback(

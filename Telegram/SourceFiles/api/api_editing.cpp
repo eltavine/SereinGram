@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "api/api_editing.h"
+#include "nagram/compose/text.h"
 
 #include "apiwrap.h"
 #include "api/api_media.h"
@@ -295,12 +296,13 @@ mtpRequestId SuggestMessageOrMedia(
 template <typename DoneCallback, typename FailCallback>
 mtpRequestId EditMessage(
 		not_null<HistoryItem*> item,
-		const TextWithEntities &textWithEntities,
+		const TextWithEntities &originalText,
 		Data::WebPageDraft webpage,
 		SendOptions options,
 		DoneCallback &&done,
 		FailCallback &&fail,
 		std::optional<MTPInputMedia> inputMedia = std::nullopt) {
+	const auto textWithEntities = Nagram::Compose::PrepareText(originalText, true);
 	if (item->computeSuggestionActions()
 		== SuggestionActions::AcceptAndDecline) {
 		return SuggestMessageOrMedia(

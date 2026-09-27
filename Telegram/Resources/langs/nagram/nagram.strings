@@ -222,3 +222,14 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_nagram_ prefix.
 "lng_nagram_sort_changed" = "Chat order changed while this page was open. Reopen it to edit the latest settings.";
 "lng_nagram_sort_about" = "Enable rules and drag rows to set their priority. Pinned chats stay first.";
 "lng_nagram_managed_only" = "Show only groups and channels I manage";
+"lng_nagram_text_format" = "Text formatting";
+"lng_nagram_disable_auto_markdown" = "Disable automatic Markdown";
+"lng_nagram_disable_link_preview" = "Hide link previews by default";
+"lng_nagram_space_on_send" = "Add Chinese–Latin spacing when sending";
+"lng_nagram_space_on_edit" = "Add Chinese–Latin spacing when editing";
+"lng_nagram_default_code_language" = "Default code language";
+"lng_nagram_code_language_hint" = "Leave empty for automatic";
+"lng_nagram_quick_replies" = "Quick replies";
+"lng_nagram_quick_reply_one" = "Quick reply 1";
+"lng_nagram_quick_reply_two" = "Quick reply 2";
+"lng_nagram_quick_reply_insert" = "Insert quick reply {index}";

@@ -218,3 +218,14 @@
 "lng_nagram_sort_changed" = "编辑期间会话排序设置已变化，请重新打开此页。";
 "lng_nagram_sort_about" = "启用规则并拖动调整优先级。置顶会话始终在最前。";
 "lng_nagram_managed_only" = "仅显示我管理的群组和频道";
+"lng_nagram_text_format" = "文本格式";
+"lng_nagram_disable_auto_markdown" = "关闭自动 Markdown";
+"lng_nagram_disable_link_preview" = "默认不显示链接预览";
+"lng_nagram_space_on_send" = "发送时在中西文之间加空格";
+"lng_nagram_space_on_edit" = "编辑时在中西文之间加空格";
+"lng_nagram_default_code_language" = "默认代码语言";
+"lng_nagram_code_language_hint" = "留空表示自动选择";
+"lng_nagram_quick_replies" = "快捷回复";
+"lng_nagram_quick_reply_one" = "快捷回复 1";
+"lng_nagram_quick_reply_two" = "快捷回复 2";
+"lng_nagram_quick_reply_insert" = "插入快捷回复 {index}";

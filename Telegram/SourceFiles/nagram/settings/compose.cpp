@@ -1,6 +1,7 @@
 #include "nagram/settings/compose.h"
 
 #include "nagram/compose/options.h"
+#include "nagram/compose/text.h"
 #include "nagram/settings/home.h"
 #include "lang/lang_keys.h"
 #include "settings/settings_builder.h"
@@ -9,6 +10,7 @@
 #include "ui/layers/generic_box.h"
 #include "ui/widgets/buttons.h"
 #include "ui/widgets/checkbox.h"
+#include "ui/widgets/fields/input_field.h"
 #include "ui/wrap/vertical_layout.h"
 #include "window/window_session_controller.h"
 #include "styles/style_menu_icons.h"
@@ -83,6 +85,52 @@ void PlaceholderBox(not_null<Ui::GenericBox*> box) {
 	});
 }
 
+void CodeLanguageBox(not_null<Ui::GenericBox*> box) {
+	box->setTitle(tr::lng_nagram_default_code_language());
+	const auto current = ForDevice().Get(Compose::kDefaultCodeLanguage);
+	const auto field = box->addRow(object_ptr<Ui::InputField>(
+		box, st::defaultInputField,
+		tr::lng_nagram_code_language_hint(), current));
+	field->setMaxLength(32);
+	field->setInputMethodHints(Qt::ImhLatinOnly
+		| Qt::ImhNoAutoUppercase | Qt::ImhNoPredictiveText);
+	box->setFocusCallback([=] { field->setFocusFast(); });
+	const auto save = [=] {
+		const auto value = field->getLastText().trimmed();
+		if (!Compose::kDefaultCodeLanguage.validate(value)) {
+			field->showError();
+			return;
+		}
+		Expects(ForDevice().Set(Compose::kDefaultCodeLanguage, value));
+		box->closeBox();
+	};
+	field->submits(
+	) | rpl::on_next([=](auto) { save(); }, field->lifetime());
+	box->addButton(tr::lng_settings_save(), save);
+	box->addButton(tr::lng_cancel(), [=] { box->closeBox(); });
+}
+
+void QuickRepliesBox(not_null<Ui::GenericBox*> box) {
+	box->setTitle(tr::lng_nagram_quick_replies());
+	auto current = Compose::QuickReplies();
+	if (current.size() != 2) {
+		current = { QString(), QString() };
+	}
+	const auto first = box->addRow(object_ptr<Ui::InputField>(
+		box, st::defaultInputField,
+		tr::lng_nagram_quick_reply_one(), current[0]));
+	const auto second = box->addRow(object_ptr<Ui::InputField>(
+		box, st::defaultInputField,
+		tr::lng_nagram_quick_reply_two(), current[1]));
+	box->setFocusCallback([=] { first->setFocusFast(); });
+	box->addButton(tr::lng_settings_save(), [=] {
+		Expects(Compose::SetQuickReplies({
+			first->getLastText(), second->getLastText() }));
+		box->closeBox();
+	});
+	box->addButton(tr::lng_cancel(), [=] { box->closeBox(); });
+}
+
 const auto kMeta = BuildHelper({
 	.id = ComposeSection::Id(),
 	.parentId = HomeId(),
@@ -153,6 +201,47 @@ const auto kMeta = BuildHelper({
 			| rpl::map(PlaceholderLabel),
 		.onClick = [=] { controller->show(Box(PlaceholderBox)); },
 		.keywords = { u"placeholder"_q, u"hint"_q },
+	});
+	builder.addSubsectionTitle({
+		.id = u"nagram/compose/text-format"_q,
+		.title = tr::lng_nagram_text_format(),
+		.keywords = { u"text"_q, u"format"_q },
+	});
+	AddToggle(builder, Compose::kDisableAutoMarkdown,
+		tr::lng_nagram_disable_auto_markdown(),
+		u"nagram/compose/disable-auto-markdown"_q,
+		{ u"Markdown"_q });
+	AddToggle(builder, Compose::kDisableLinkPreview,
+		tr::lng_nagram_disable_link_preview(),
+		u"nagram/compose/disable-link-preview"_q,
+		{ u"link"_q, u"preview"_q });
+	AddToggle(builder, Compose::kSpaceOnSend,
+		tr::lng_nagram_space_on_send(),
+		u"nagram/compose/space-on-send"_q,
+		{ u"spacing"_q, u"send"_q });
+	AddToggle(builder, Compose::kSpaceOnEdit,
+		tr::lng_nagram_space_on_edit(),
+		u"nagram/compose/space-on-edit"_q,
+		{ u"spacing"_q, u"edit"_q });
+	builder.addButton({
+		.id = u"nagram/compose/default-code-language"_q,
+		.title = tr::lng_nagram_default_code_language(),
+		.st = &st::settingsButtonNoIcon,
+		.label = ForDevice().Value(Compose::kDefaultCodeLanguage)
+			| rpl::map([](const QString &value) {
+				return value.isEmpty()
+					? tr::lng_nagram_preview_follow(tr::now)
+					: value;
+			}),
+		.onClick = [=] { controller->show(Box(CodeLanguageBox)); },
+		.keywords = { u"code"_q, u"language"_q },
+	});
+	builder.addButton({
+		.id = u"nagram/compose/quick-replies"_q,
+		.title = tr::lng_nagram_quick_replies(),
+		.st = &st::settingsButtonNoIcon,
+		.onClick = [=] { controller->show(Box(QuickRepliesBox)); },
+		.keywords = { u"quick"_q, u"reply"_q },
 	});
 	builder.addSubsectionTitle({
 		.id = u"nagram/compose/send-confirmation"_q,

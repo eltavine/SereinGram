@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/controls/history_view_webpage_processor.h"
+#include "nagram/compose/options.h"
 
 #include "base/unixtime.h"
 #include "data/data_chat_participant_status.h"
@@ -219,6 +220,10 @@ WebpageProcessor::WebpageProcessor(
 		_parsedLinks = std::move(parsed);
 		checkPreview();
 	}, _lifetime);
+	Nagram::ForDevice().Value(Nagram::Compose::kDisableLinkPreview
+	) | rpl::skip(1) | rpl::on_next([=] {
+		checkNow(true);
+	}, _lifetime);
 
 	_resolver->resolved() | rpl::on_next([=](QString link) {
 		if (_link != link
@@ -363,6 +368,10 @@ void WebpageProcessor::checkPreview() {
 		_draft.removed = false;
 		return;
 	} else if (_draft.manual) {
+		return;
+	} else if (Nagram::ForDevice().Get(Nagram::Compose::kDisableLinkPreview)) {
+		apply({ .removed = true });
+		_draft.removed = false;
 		return;
 	} else if (_links == _parsedLinks) {
 		return;

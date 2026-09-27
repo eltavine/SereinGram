@@ -162,12 +162,26 @@ void TestOptions() {
 		"notification delay bounds");
 	auto compose = Registry();
 	Compose::RegisterOptions(compose);
-	Require(compose.All().size() == 21, "compose option count");
+	Require(compose.All().size() == 27, "compose option count");
+	Require(Compose::kDefaultCodeLanguage.validate(QString::fromLatin1("cpp"))
+		&& !Compose::kDefaultCodeLanguage.validate(QString::fromLatin1("c++!")),
+		"code language validation");
+	Require(Compose::kQuickReplies.validate(
+		R"({"version":1,"replies":["one","two"]})")
+		&& !Compose::kQuickReplies.validate(
+			R"({"version":1,"replies":["one"]})"),
+		"quick reply schema");
 	for (const auto &entry : compose.All()) {
 		if (entry.key != Compose::kDisableEmojiHover.key
 			&& entry.key != Compose::kDisableAttachHover.key
 			&& entry.key != Compose::kBotCommandsToDraft.key
 			&& entry.key != Compose::kInputPlaceholderMode.key
+			&& entry.key != Compose::kDisableAutoMarkdown.key
+			&& entry.key != Compose::kDisableLinkPreview.key
+			&& entry.key != Compose::kSpaceOnSend.key
+			&& entry.key != Compose::kSpaceOnEdit.key
+			&& entry.key != Compose::kDefaultCodeLanguage.key
+			&& entry.key != Compose::kQuickReplies.key
 			&& entry.key != Compose::kConfirmSticker.key
 			&& entry.key != Compose::kConfirmGif.key
 			&& entry.key != Compose::kPreviewVoice.key

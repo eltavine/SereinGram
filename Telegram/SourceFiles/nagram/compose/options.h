@@ -2,6 +2,8 @@
 
 #include "nagram/core/options.h"
 
+#include <QtCore/QJsonArray>
+
 namespace Nagram::Compose {
 
 inline constexpr auto kRefreshButtons = static_cast<unsigned>(
@@ -53,6 +55,49 @@ inline constexpr auto kInputPlaceholderMode = Option<int>{
 	"nagram.inputPlaceholderMode", Scope::Device, 0,
 	Category::Compose, "lng_nagram_input_placeholder", 0,
 	[](const int &value) { return value >= 0 && value <= 2; } };
+inline constexpr auto kDisableAutoMarkdown = Option<bool>{
+	"nagram.disableAutoMarkdown", Scope::Device, false,
+	Category::Compose, "lng_nagram_disable_auto_markdown" };
+inline constexpr auto kDisableLinkPreview = Option<bool>{
+	"nagram.disableLinkPreview", Scope::Device, false,
+	Category::Compose, "lng_nagram_disable_link_preview" };
+inline constexpr auto kSpaceOnSend = Option<bool>{
+	"nagram.spaceOnSend", Scope::Device, false,
+	Category::Compose, "lng_nagram_space_on_send" };
+inline constexpr auto kSpaceOnEdit = Option<bool>{
+	"nagram.spaceOnEdit", Scope::Device, false,
+	Category::Compose, "lng_nagram_space_on_edit" };
+inline const auto kDefaultCodeLanguage = Option<QString>{
+	"nagram.defaultCodeLanguage", Scope::Device, QString(),
+	Category::Compose, "lng_nagram_default_code_language", 0,
+	[](const QString &value) {
+		if (value.size() > 32) return false;
+		for (const auto ch : value) {
+			const auto code = ch.unicode();
+			if (!((code >= 'a' && code <= 'z')
+				|| (code >= 'A' && code <= 'Z')
+				|| (code >= '0' && code <= '9')
+				|| code == '+' || code == '-')) {
+				return false;
+			}
+		}
+		return true;
+	} };
+inline const auto kQuickReplies = Option<QByteArray>{
+	"nagram.quickReplies", Scope::Device,
+	QByteArray("{\"version\":1,\"replies\":[\"\",\"\"]}"),
+	Category::Compose, "lng_nagram_quick_replies", 0,
+	[](const QByteArray &value) {
+		const auto json = QJsonDocument::fromJson(value);
+		if (!json.isObject()) return false;
+		const auto object = json.object();
+		const auto replies = object.value(QString::fromLatin1("replies")).toArray();
+		return object.size() == 2
+			&& object.value(QString::fromLatin1("version")) == 1
+			&& replies.size() == 2
+			&& replies[0].isString()
+			&& replies[1].isString();
+	} };
 inline constexpr auto kConfirmSticker = Option<bool>{
 	"nagram.confirmSticker", Scope::Device, false,
 	Category::Compose, "lng_nagram_confirm_sticker" };
@@ -88,6 +133,12 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kDisableAttachHover));
 	Expects(registry.Add(kBotCommandsToDraft));
 	Expects(registry.Add(kInputPlaceholderMode));
+	Expects(registry.Add(kDisableAutoMarkdown));
+	Expects(registry.Add(kDisableLinkPreview));
+	Expects(registry.Add(kSpaceOnSend));
+	Expects(registry.Add(kSpaceOnEdit));
+	Expects(registry.Add(kDefaultCodeLanguage));
+	Expects(registry.Add(kQuickReplies));
 	Expects(registry.Add(kConfirmSticker));
 	Expects(registry.Add(kConfirmGif));
 	Expects(registry.Add(kPreviewVoice));
