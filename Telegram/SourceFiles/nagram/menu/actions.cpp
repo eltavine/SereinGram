@@ -4,6 +4,7 @@
 #include "nagram/menu/media.h"
 #include "nagram/menu/reading.h"
 #include "nagram/filters/menu.h"
+#include "nagram/snapshot/snapshot.h"
 
 #include "ui/widgets/popup_menu.h"
 
@@ -35,7 +36,8 @@ void Apply(
 		}
 		if (item || !selected.empty()) {
 			InsertBatchActions(menu, item, controller,
-				std::move(selected), std::move(selectAuthor));
+				selected, std::move(selectAuthor));
+			Snapshot::InsertAction(menu, controller, item, selected);
 		}
 		if (item) {
 			InsertMediaInfoAction(menu, item, controller);

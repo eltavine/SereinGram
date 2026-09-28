@@ -10,6 +10,7 @@
 #include "nagram/services/model.h"
 #include "nagram/filters/model.h"
 #include "nagram/links/model.h"
+#include "nagram/snapshot/snapshot.h"
 
 #include "core/application.h"
 #include "core/core_settings.h"
@@ -101,6 +102,7 @@ const Registry &RegisteredOptions() {
 		Messages::RegisterOptions(result);
 		Filters::RegisterOptions(result);
 		Links::RegisterOptions(result);
+		Snapshot::RegisterOptions(result);
 		RegisterServiceOptions(result);
 		return result;
 	}();

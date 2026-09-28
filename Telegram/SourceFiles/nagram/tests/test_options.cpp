@@ -76,6 +76,21 @@ void TestOptions() {
 		"new menu action default");
 	Require(Menu::ReadVisibility({}, ActionId::Reading) == Visibility::Hide,
 		"reading menu action default");
+	const auto oldReading = QByteArray(
+		R"({"version":1,"states":{"E21":"show","E23":"show"}})");
+	Require(Menu::ValidateConfig(oldReading), "old menu config valid");
+	Require(Menu::ReadVisibility(oldReading, ActionId::Reading)
+		== Visibility::Show, "old reading visibility");
+	Require(Menu::ReadVisibility(oldReading, ActionId::Screenshot)
+		== Visibility::Hide, "old config screenshot default");
+	const auto migrated = Menu::WriteVisibility(
+		oldReading, ActionId::Screenshot, Visibility::Show);
+	Require(Menu::ReadVisibility(migrated, ActionId::Reading)
+		== Visibility::Show, "reading visibility migrated");
+	Require(Menu::ReadVisibility(migrated, ActionId::Screenshot)
+		== Visibility::Show, "screenshot visibility saved");
+	Require(Menu::ReadVisibility(migrated, ActionId::FilterAuthor)
+		== Visibility::Show, "filter author visibility preserved");
 	const auto shownRepeat = Menu::WriteVisibility({}, ActionId::Repeat,
 		Visibility::Show);
 	Require(Menu::ReadVisibility(shownRepeat, ActionId::Repeat)

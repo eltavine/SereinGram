@@ -515,7 +515,8 @@ ClickHandlerPtr Media::spoilerTagLink(
 }
 
 void Media::createSpoilerLink(not_null<MediaSpoiler*> spoiler) {
-	spoiler->revealed = Nagram::Messages::RevealMediaSpoiler(parent()->data());
+	spoiler->revealed = parent()->delegate()->elementSpoilersRevealed(
+		).value_or(Nagram::Messages::RevealMediaSpoiler(parent()->data()));
 	const auto weak = base::make_weak(this);
 	spoiler->link = std::make_shared<LambdaClickHandler>([weak, spoiler](
 			const ClickContext &context) {

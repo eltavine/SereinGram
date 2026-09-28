@@ -41,6 +41,7 @@ set(nagram_sources
     nagram/links/model.cpp
     nagram/links/open.cpp
     nagram/links/settings.cpp
+    nagram/snapshot/snapshot.cpp
     nagram/privacy/profile.cpp
     nagram/settings/home.cpp
     nagram/settings/rules.cpp

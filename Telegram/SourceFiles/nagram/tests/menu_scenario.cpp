@@ -359,7 +359,9 @@ void AppendMenuScenario(not_null<Test::Runner*> runner) {
 			auto menu = state->originalMenu;
 			for (const auto id : { Menu::ActionId::Repeat,
 					Menu::ActionId::RepeatAsCopy,
-					Menu::ActionId::ForwardWithoutQuote }) {
+					Menu::ActionId::ForwardWithoutQuote,
+					Menu::ActionId::Screenshot,
+					Menu::ActionId::FilterAuthor }) {
 				menu = Menu::WriteVisibility(menu, id, Menu::Visibility::Show);
 			}
 			state->configured = true;
@@ -408,12 +410,15 @@ void AppendMenuScenario(not_null<Test::Runner*> runner) {
 						u"id=%1"_q.arg(static_cast<int>(id)));
 				}
 				for (auto value = int(Menu::ActionId::Batch);
-						value <= int(Menu::ActionId::Reading); ++value) {
+						value <= int(Menu::ActionId::FilterAuthor); ++value) {
 					Test::Note(u"NAGRAM_MENU action=%1 present=%2"_q
 						.arg(value)
 						.arg(HasAction(state->menu, Menu::ActionId(value))));
 				}
 				Test::Note(u"NAGRAM_MENU E24=configuration_not_action"_q);
+				Test::Check(HasAction(state->menu, Menu::ActionId::Screenshot)
+					&& HasAction(state->menu, Menu::ActionId::FilterAuthor),
+					u"E21 screenshot and E23 author filter actions are present"_q);
 				if (state->expectReading) {
 					Test::Check(HasAction(state->menu, Menu::ActionId::Reading),
 						u"E22 reading conversion action is present"_q);

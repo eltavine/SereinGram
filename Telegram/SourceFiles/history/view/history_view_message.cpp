@@ -5798,7 +5798,8 @@ bool Message::hasFromName() const {
 }
 
 bool Message::displayFromName() const {
-	if (!hasFromName() || isAttachedToPrevious() || data()->isSponsored()) {
+	if (delegate()->elementHideSenderNames()
+		|| !hasFromName() || isAttachedToPrevious() || data()->isSponsored()) {
 		return false;
 	}
 	return !Has<PsaTooltipState>();

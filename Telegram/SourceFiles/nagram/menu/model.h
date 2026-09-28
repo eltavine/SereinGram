@@ -27,7 +27,8 @@ enum class ActionId : int {
 	Batch,
 	SelectSender,
 	MediaInfo,
-	Reading,
+	Screenshot = 21,
+	Reading = 22,
 	FilterAuthor = 23,
 };
 
@@ -38,7 +39,7 @@ struct Entry {
 	const char *titleKey;
 };
 
-inline constexpr auto kEntries = std::array<Entry, 22>({{
+inline constexpr auto kEntries = std::array<Entry, 23>({{
 	{ ActionId::Reply, "lng_nagram_menu_reply" },
 	{ ActionId::Edit, "lng_nagram_menu_edit" },
 	{ ActionId::Copy, "lng_nagram_menu_copy" },
@@ -59,6 +60,7 @@ inline constexpr auto kEntries = std::array<Entry, 22>({{
 	{ ActionId::Batch, "lng_nagram_menu_batch" },
 	{ ActionId::SelectSender, "lng_nagram_menu_select_sender" },
 	{ ActionId::MediaInfo, "lng_nagram_menu_media_info" },
+	{ ActionId::Screenshot, "lng_nagram_menu_screenshot" },
 	{ ActionId::Reading, "lng_nagram_menu_reading" },
 	{ ActionId::FilterAuthor, "lng_nagram_filter_author_hide" },
 }});

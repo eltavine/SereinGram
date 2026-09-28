@@ -23,7 +23,8 @@ namespace HistoryView {
 
 void InitElementTextPart(not_null<Element*> view, Ui::Text::String &text) {
 	if (text.hasSpoilers()) {
-		text.setSpoilerRevealed(Nagram::Messages::RevealTextSpoilers(),
+		text.setSpoilerRevealed(view->delegate()->elementSpoilersRevealed(
+			).value_or(Nagram::Messages::RevealTextSpoilers()),
 			anim::type::instant);
 		text.setSpoilerLinkFilter([weak = base::make_weak(view)](
 				const ClickContext &context) {

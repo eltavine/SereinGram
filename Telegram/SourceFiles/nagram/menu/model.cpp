@@ -40,14 +40,16 @@ bool ValidateConfig(const QByteArray &raw) {
 		return false;
 	}
 	const auto root = document.object();
+	const auto version = root.value("version").toInt();
 	if (root.size() != 2 || !root.value("version").isDouble()
-		|| root.value("version").toInt() != 1
+		|| (version != 1 && version != 2)
 		|| !root.value("states").isObject()) {
 		return false;
 	}
 	const auto states = root.value("states").toObject();
 	for (auto it = states.begin(); it != states.end(); ++it) {
-		if (!KnownKey(it.key()) || !it.value().isString()) {
+		if (!KnownKey(it.key()) || (version == 1 && it.key() == u"E22")
+			|| !it.value().isString()) {
 			return false;
 		}
 		const auto value = it.value().toString();
@@ -63,7 +65,16 @@ Visibility ReadVisibility(const QByteArray &raw, ActionId id) {
 	if (raw.isEmpty() || !ValidateConfig(raw)) {
 		return DefaultVisibility(id);
 	}
-	const auto value = Parse(raw).value("states").toObject().value(
+	const auto root = Parse(raw);
+	if (root.value("version").toInt() == 1) {
+		if (id == ActionId::Screenshot) {
+			return DefaultVisibility(id);
+		}
+		if (id == ActionId::Reading) {
+			id = ActionId::Screenshot;
+		}
+	}
+	const auto value = root.value("states").toObject().value(
 		QString::fromLatin1(Key(id))).toString();
 	return (value == u"hide")
 		? Visibility::Hide
@@ -82,6 +93,12 @@ QByteArray WriteVisibility(
 	auto states = raw.isEmpty()
 		? QJsonObject()
 		: Parse(raw).value("states").toObject();
+	if (!raw.isEmpty() && Parse(raw).value("version").toInt() == 1) {
+		const auto oldReading = states.take(u"E21");
+		if (!oldReading.isUndefined()) {
+			states.insert(u"E22", oldReading);
+		}
+	}
 	const auto key = QString::fromLatin1(Key(id));
 	if (visibility == DefaultVisibility(id)) {
 		states.remove(key);
@@ -95,7 +112,7 @@ QByteArray WriteVisibility(
 		return QByteArray();
 	}
 	auto root = QJsonObject();
-	root.insert(u"version", 1);
+	root.insert(u"version", 2);
 	root.insert(u"states", states);
 	return QJsonDocument(root).toJson(QJsonDocument::Compact);
 }
