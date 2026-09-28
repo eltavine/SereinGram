@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "storage/localimageloader.h"
+#include "nagram/media/options.h"
 
 #include "api/api_text_entities.h"
 #include "api/api_sending.h"
@@ -785,6 +786,7 @@ void FileLoadTask::process(ProcessArgs &&args) {
 	auto isAnimation = false;
 	auto isSong = false;
 	auto isVideo = false;
+	auto fileVideoPreview = false;
 	auto isVoice = (_type == SendMediaType::Audio);
 	auto isRound = (_type == SendMediaType::Round);
 	auto isSticker = false;
@@ -1055,7 +1057,11 @@ void FileLoadTask::process(ProcessArgs &&args) {
 					crl::time(0),
 					video->duration);
 			}
-			if (!_forceFile) {
+			fileVideoPreview = _forceFile
+				&& Nagram::ForDevice().Get(Nagram::Media::kMp4FilePreview)
+				&& (filemime == u"video/mp4"_q)
+				&& coverWidth > 0 && coverHeight > 0 && realSeconds > 0;
+			if (!_forceFile || fileVideoPreview) {
 				if (gif && !_album && (filemime == u"video/mp4"_q)) {
 					attributes.push_back(MTP_documentAttributeAnimated());
 				}
@@ -1241,7 +1247,7 @@ void FileLoadTask::process(ProcessArgs &&args) {
 	_result->photo = photo;
 	_result->document = document;
 	_result->photoThumbs = photoThumbs;
-	_result->forceFile = _forceFile;
+	_result->forceFile = _forceFile && !fileVideoPreview;
 }
 
 void FileLoadTask::finish() {

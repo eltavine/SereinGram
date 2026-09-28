@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "media/view/media_view_overlay_widget.h"
+#include "nagram/media/options.h"
 
 #include "apiwrap.h"
 #include "api/api_attached_stickers.h"
@@ -1485,7 +1486,9 @@ QSize OverlayWidget::videoSize() const {
 bool OverlayWidget::streamingRequiresControls() const {
 	return !_stories
 		&& _document
-		&& (!_document->isAnimation() || _document->isVideoMessage());
+		&& (!_document->isAnimation()
+			|| _document->isVideoMessage()
+			|| Nagram::ForDevice().Get(Nagram::Media::kGifPlaybackControls));
 }
 
 QImage OverlayWidget::videoFrame() const {

@@ -90,6 +90,8 @@
 "lng_nagram_hide_gif_categories" = "隐藏 GIF 推荐分类";
 "lng_nagram_hide_greeting_sticker" = "隐藏新私聊的问候贴纸";
 "lng_nagram_disable_video_autoplay" = "关闭聊天中的视频自动播放";
+"lng_nagram_gif_playback_controls" = "显示 GIF 播放控制";
+"lng_nagram_mp4_file_preview" = "以文件发送 MP4 时保留视频预览";
 "lng_nagram_privacy" = "隐私与资料";
 "lng_nagram_hide_my_phone" = "遮盖我的手机号";
 "lng_nagram_hide_read_time" = "隐藏已读时间提示";

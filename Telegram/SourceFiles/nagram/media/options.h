@@ -38,6 +38,12 @@ inline constexpr auto kDisableVideoAutoplay = Option<bool>{
 	"nagram.disableVideoAutoplay", Scope::Device, false,
 	Category::Media, "lng_nagram_disable_video_autoplay",
 	static_cast<unsigned>(Flag::RefreshMessageView) };
+inline constexpr auto kGifPlaybackControls = Option<bool>{
+	"nagram.gifPlaybackControls", Scope::Device, false,
+	Category::Media, "lng_nagram_gif_playback_controls" };
+inline constexpr auto kMp4FilePreview = Option<bool>{
+	"nagram.mp4FilePreview", Scope::Device, false,
+	Category::Media, "lng_nagram_mp4_file_preview" };
 
 inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kStickerScale));
@@ -49,6 +55,8 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kHideGifCategories));
 	Expects(registry.Add(kHideGreetingSticker));
 	Expects(registry.Add(kDisableVideoAutoplay));
+	Expects(registry.Add(kGifPlaybackControls));
+	Expects(registry.Add(kMp4FilePreview));
 }
 
 } // namespace Nagram::Media

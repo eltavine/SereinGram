@@ -94,6 +94,8 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_nagram_ prefix.
 "lng_nagram_hide_gif_categories" = "Hide suggested GIF categories";
 "lng_nagram_hide_greeting_sticker" = "Hide greeting sticker in new private chats";
 "lng_nagram_disable_video_autoplay" = "Disable video autoplay in chats";
+"lng_nagram_gif_playback_controls" = "Show GIF playback controls";
+"lng_nagram_mp4_file_preview" = "Keep video preview for MP4 files";
 "lng_nagram_privacy" = "Privacy and profile";
 "lng_nagram_hide_my_phone" = "Hide my phone number";
 "lng_nagram_hide_read_time" = "Hide read time hints";

@@ -159,6 +159,14 @@ const auto kMeta = BuildHelper({
 		tr::lng_nagram_disable_video_autoplay(),
 		u"nagram/media/disable-video-autoplay"_q,
 		{ u"video"_q, u"autoplay"_q });
+	AddToggle(builder, Media::kGifPlaybackControls,
+		tr::lng_nagram_gif_playback_controls(),
+		u"nagram/media/gif-playback-controls"_q,
+		{ u"GIF"_q, u"playback"_q, u"controls"_q });
+	AddToggle(builder, Media::kMp4FilePreview,
+		tr::lng_nagram_mp4_file_preview(),
+		u"nagram/media/mp4-file-preview"_q,
+		{ u"MP4"_q, u"file"_q, u"preview"_q });
 });
 
 const SectionBuildMethod MediaSection::kBuild = kMeta.build;
