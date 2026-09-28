@@ -157,8 +157,10 @@
 
 | 编号 | 上游位置 | 需要处理的上游逻辑 | 方式 |
 | --- | --- | --- | --- |
-| I01 | `history/history_item.cpp`、`history/view/history_view_element.cpp` | 消息显示文本经过过滤投影；整条隐藏的消息不创建视图 | 替换 |
+| I01 | `history/view/history_view_element.cpp` | 消息显示文本经过过滤投影；整条隐藏时保留视图并显示本机占位文字 | 替换 |
 | I02 | `core/ui_integration.cpp`（外部链接打开） | 打开链接前按规则改写并确认 | 拦截 |
+
+E21 截图在 `history_view_element.h/.cpp`、`history_view_message.cpp`、`history_view_text_helper.cpp` 和 `history_view_media.cpp` 增加绘制代理挂钩，预览与导出逻辑留在 `nagram/snapshot/`。E23 通过既有两条消息菜单路径的 `Apply` 插入，作者列表只写入本机账号偏好。
 
 ### 2.10 配置管理
 
