@@ -132,11 +132,11 @@
 
 | 步骤 | 提交 | 条目 | 备注 |
 | --- | --- | --- | --- |
-| ☐ S80 | `feat(privacy): 演示模式` | G02 | |
-| ☐ S81 | `feat(privacy): 本地别名` | 资料页菜单 | 账号作用域 |
-| ☐ S82 | `feat(media): 播放控制与文件发送` | F10、F11 | |
-| ☐ S83 | `feat(media): 贴纸目录` | F12、F13 | |
-| ☐ S84 | `feat(config): 配置管理` | J01–J04 | **V2** |
+| ✅ S80 | `feat(privacy): 演示模式` | G02 | Debug 构建及 `test_nagram` 通过；窗口截屏保护和标题切换现场通过，列表与通知遮盖视觉效果未验证 |
+| ✅ S81 | `feat(privacy): 本地别名` | 资料页菜单 | 账号作用域；Debug 构建及 `test_nagram` 通过，修改其他会话的现场效果未验证 |
+| ✅ S82 | `feat(media): 播放控制与文件发送` | F10、F11 | Debug 构建及 `test_nagram` 通过；缺少 GIF 样本且本轮不发送文件，现场效果未验证 |
+| ✅ S83 | `feat(media): 贴纸目录` | F12、F13 | Debug 构建及 `test_nagram` 通过；未在账号中安装或重排贴纸包 |
+| ✅ S84 | `feat(config): 配置管理` | J01–J04 | Debug 构建及 `test_nagram` 通过；V2 现场核验见 design.md |
 
 ### P3
 
