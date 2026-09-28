@@ -382,3 +382,6 @@
 "lng_nagram_snapshot_album" = "請選取整個相簿後截圖。";
 "lng_nagram_snapshot_write_error" = "無法儲存圖片，請檢查目標位置和可用空間。";
 "lng_nagram_snapshot_changed" = "訊息或顯示設定已變更，請檢查更新的預覽後再匯出。";
+"lng_nagram_demo_mode" = "演示模式";
+"lng_nagram_demo_mode_note" = "要求系統在錄影中排除 Nagram 視窗，並遮蓋對話清單、標題和通知內容。部分錄影工具可能忽略此要求。";
+"lng_nagram_demo_hidden" = "演示模式已遮蓋";

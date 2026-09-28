@@ -8,6 +8,8 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "core/application.h"
 #include "nagram/interface/roundness.h"
 #include "nagram/interface/text.h"
+#include "nagram/core/options.h"
+#include "nagram/privacy/options.h"
 
 #include "data/data_abstract_structure.h"
 #include "data/data_channel.h"
@@ -188,6 +190,15 @@ Application::Application()
 	_private->proxyRotation = std::make_unique<ProxyRotationManager>();
 
 	_platformIntegration->init();
+	_screenshotProtection->addContentReason(
+		Nagram::ForDevice().Value(Nagram::Privacy::kDemoMode), _lifetime);
+	Nagram::ForDevice().Value(Nagram::Privacy::kDemoMode)
+		| rpl::on_next([=](bool) {
+			updateWindowTitles();
+			for (const auto widget : QApplication::allWidgets()) {
+				widget->update();
+			}
+		}, _lifetime);
 
 	passcodeLockChanges(
 	) | rpl::on_next([=](bool locked) {

@@ -7,6 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "window/notifications_manager.h"
 #include "nagram/interface/notifications.h"
+#include "nagram/privacy/options.h"
 
 #include "base/options.h"
 #include "base/platform/base_platform_info.h"
@@ -1555,7 +1556,12 @@ void NativeManager::doShowNotification(NotificationFields &&fields) {
 			? Data::ItemNotificationType::PollVote
 			: Data::ItemNotificationType::Reaction)
 		: Data::ItemNotificationType::Message;
-	const auto options = getNotificationOptions(fields.item, type);
+	auto options = getNotificationOptions(fields.item, type);
+	const auto demo = Nagram::Privacy::DemoMode();
+	if (demo) {
+		options.hideNameAndPhoto = true;
+		options.hideMessageText = true;
+	}
 	const auto item = fields.item;
 	const auto peer = item->history()->peer;
 	const auto reactionFrom = fields.reactionFrom;
@@ -1581,7 +1587,7 @@ void NativeManager::doShowNotification(NotificationFields &&fields) {
 		: (scheduled && peer->isSelf())
 		? tr::lng_notification_reminder(tr::now)
 		: subWithChat();
-	const auto fullTitle = addTargetAccountName(title, &peer->session());
+	const auto fullTitle = demo ? u"Nagram"_q : addTargetAccountName(title, &peer->session());
 	const auto hideReactionSender = reactionFrom
 		&& !peer->session().api().reactionsNotifySettings()
 			.showPreviewsCurrent();
@@ -1627,7 +1633,7 @@ void NativeManager::doShowNotification(NotificationFields &&fields) {
 		});
 	} : Fn<NotificationSound()>();
 	auto actions = std::vector<NotificationAction>();
-	if (AllowNotificationActions(peer) && !options.hideMarkAsRead) {
+	if (!demo && AllowNotificationActions(peer) && !options.hideMarkAsRead) {
 		if (const auto markup = item->inlineReplyMarkup()) {
 			using ButtonType = HistoryMessageMarkupButton::Type;
 			const auto &rows = markup->data.rows;

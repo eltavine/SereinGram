@@ -7,6 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "dialogs/ui/dialogs_layout.h"
 #include "nagram/chats/layout.h"
+#include "nagram/privacy/options.h"
 
 #include "base/options.h"
 #include "base/unixtime.h"
@@ -486,6 +487,16 @@ void PaintRow(
 		p.translate(swipeMirrored ? swipeTranslation : -swipeTranslation, 0);
 	}
 	p.fillRect(geometry, bg);
+	if (Nagram::Privacy::DemoMode()) {
+		p.setFont(st::semiboldFont);
+		p.setPen(st::dialogsNameFg);
+		p.drawTextLeft(
+			context.st->nameLeft,
+			context.st->nameTop,
+			context.width,
+			tr::lng_nagram_demo_hidden(tr::now));
+		return;
+	}
 	if (!(flags & Flag::TopicJumpRipple)) {
 		auto ripple = context.active
 			? st::dialogsRippleBgActive

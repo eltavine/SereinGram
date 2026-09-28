@@ -103,6 +103,11 @@ const auto kMeta = BuildHelper({
 			session->saveSettingsDelayed();
 		}, button->lifetime());
 	}
+	AddToggle(builder, Privacy::kDemoMode,
+		tr::lng_nagram_demo_mode(),
+		u"nagram/privacy/demo-mode"_q,
+		{ u"presentation"_q, u"capture"_q });
+	builder.addDividerText(tr::lng_nagram_demo_mode_note());
 	AddToggle(builder, Privacy::kHideReadTime,
 		tr::lng_nagram_hide_read_time(),
 		u"nagram/privacy/hide-read-time"_q,

@@ -7,6 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "window/main_window.h"
 #include "nagram/interface/options.h"
+#include "nagram/privacy/options.h"
 
 #include "api/api_updates.h"
 #include "storage/localstorage.h"
@@ -897,6 +898,10 @@ void MainWindow::updateTitle() {
 	}
 
 	const auto suffix = nativeTitleSuffix();
+	if (Nagram::Privacy::DemoMode()) {
+		setTitle(u"Nagram"_q + suffix);
+		return;
+	}
 	const auto settings = Core::App().settings().windowTitleContent();
 	const auto locked = Core::App().passcodeLocked();
 	const auto counter = settings.hideTotalUnread

@@ -4,6 +4,14 @@
 
 namespace Nagram::Privacy {
 
+inline constexpr auto kDemoMode = Option<bool>{
+	"nagram.demoMode", Scope::Device, false,
+	Category::Privacy, "lng_nagram_demo_mode" };
+
+[[nodiscard]] inline bool DemoMode() {
+	return ForDevice().Get(kDemoMode);
+}
+
 inline constexpr auto kHideReadTime = Option<bool>{
 	"nagram.hideReadTime", Scope::Device, false,
 	Category::Privacy, "lng_nagram_hide_read_time" };
@@ -25,6 +33,7 @@ inline constexpr auto kHideCreateTodo = Option<bool>{
 	Category::Privacy, "lng_nagram_hide_create_todo" };
 
 inline void RegisterOptions(Registry &registry) {
+	Expects(registry.Add(kDemoMode));
 	Expects(registry.Add(kHideReadTime));
 	Expects(registry.Add(kHideSharePhonePrompt));
 	Expects(registry.Add(kProfileIdFormat));

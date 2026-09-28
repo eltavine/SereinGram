@@ -382,3 +382,6 @@
 "lng_nagram_snapshot_album" = "请选中整个相册后截图。";
 "lng_nagram_snapshot_write_error" = "无法保存图片，请检查目标位置和可用空间。";
 "lng_nagram_snapshot_changed" = "消息或显示设置已变化，请检查刷新的预览后再导出。";
+"lng_nagram_demo_mode" = "演示模式";
+"lng_nagram_demo_mode_note" = "请求系统在录屏中排除 Nagram 窗口，并遮盖会话列表、标题和通知内容。部分录屏工具可能忽略该请求。";
+"lng_nagram_demo_hidden" = "演示模式已遮盖";
