@@ -27,6 +27,7 @@ set(nagram_sources
     nagram/menu/repeat.cpp
     nagram/menu/reading.cpp
     nagram/menu/selection.cpp
+	nagram/media/sticker_catalog.cpp
     nagram/messages/format.cpp
     nagram/messages/content.cpp
     nagram/messages/badges.cpp

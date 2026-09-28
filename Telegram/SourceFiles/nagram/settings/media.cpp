@@ -1,6 +1,7 @@
 #include "nagram/settings/media.h"
 
 #include "nagram/media/options.h"
+#include "nagram/media/sticker_catalog.h"
 #include "nagram/settings/home.h"
 #include "lang/lang_keys.h"
 #include "settings/settings_builder.h"
@@ -167,6 +168,13 @@ const auto kMeta = BuildHelper({
 		tr::lng_nagram_mp4_file_preview(),
 		u"nagram/media/mp4-file-preview"_q,
 		{ u"MP4"_q, u"file"_q, u"preview"_q });
+	builder.addButton({
+		.id = u"nagram/media/sticker-catalog"_q,
+		.title = tr::lng_nagram_catalog_title(),
+		.st = &st::settingsButtonNoIcon,
+		.onClick = [=] { ShowStickerCatalog(controller); },
+		.keywords = { u"sticker"_q, u"catalog"_q },
+	});
 });
 
 const SectionBuildMethod MediaSection::kBuild = kMeta.build;
