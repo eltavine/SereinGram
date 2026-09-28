@@ -416,3 +416,17 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_nagram_ prefix.
 "lng_nagram_catalog_submitted" = "Order submitted. Waiting for Telegram to confirm.";
 "lng_nagram_catalog_order_saved" = "Pack order saved.";
 "lng_nagram_catalog_order_failed" = "Telegram could not save part of the order. The installed lists will be refreshed from the server; reopen this preview to retry.";
+"lng_nagram_config_title" = "Configuration";
+"lng_nagram_config_scope" = "Back up changed Nagram preferences on this device. Accounts, messages, credentials and Telegram settings are excluded.";
+"lng_nagram_config_modified" = "Modified settings";
+"lng_nagram_config_diagnostics" = "Configuration diagnostics";
+"lng_nagram_config_preview" = "Import preview";
+"lng_nagram_config_changes" = "Changes: {amount}";
+"lng_nagram_config_unknown" = "Unsupported entries skipped: {amount} (up to 20 names shown)";
+"lng_nagram_config_apply" = "Apply changes";
+"lng_nagram_config_modified_about" = "Select a setting to open its original control.";
+"lng_nagram_config_no_changes" = "No modified settings.";
+"lng_nagram_config_on" = "On";
+"lng_nagram_config_invalid" = "Invalid stored value";
+"lng_nagram_config_diagnostic_report" = "Nagram {version}\nConfiguration format: 1\nManaged settings: {amount}\nModified settings: {value}\nInvalid stored values: {error}\n\nThis report contains only version and counts.";
+"lng_nagram_config_copy_report" = "Copy report";

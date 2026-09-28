@@ -4,6 +4,7 @@
 #include "nagram/settings/menu.h"
 #include "nagram/settings/chats.h"
 #include "nagram/settings/compose.h"
+#include "nagram/settings/config.h"
 #include "nagram/settings/media.h"
 #include "nagram/settings/privacy.h"
 #include "nagram/settings/services.h"
@@ -113,6 +114,12 @@ const auto kMeta = BuildHelper({
 		.targetSection = RulesId(),
 		.icon = { &st::menuIconChatBubble },
 		.keywords = { u"filter"_q, u"link"_q },
+	});
+	builder.addSectionButton({
+		.title = tr::lng_nagram_config_title(),
+		.targetSection = ConfigId(),
+		.icon = { &st::menuIconChatBubble },
+		.keywords = { u"backup"_q, u"import"_q, u"export"_q },
 	});
 	builder.addDividerText(tr::lng_nagram_settings_note());
 });

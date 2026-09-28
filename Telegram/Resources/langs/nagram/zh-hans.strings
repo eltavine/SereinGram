@@ -412,3 +412,17 @@
 "lng_nagram_catalog_submitted" = "顺序已提交，等待 Telegram 确认。";
 "lng_nagram_catalog_order_saved" = "包顺序已保存。";
 "lng_nagram_catalog_order_failed" = "Telegram 未能保存部分顺序。正在从服务器刷新已安装列表，请重新打开预览后重试。";
+"lng_nagram_config_title" = "配置管理";
+"lng_nagram_config_scope" = "备份本机已修改的 Nagram 设置，不包含账号、消息、凭据和 Telegram 设置。";
+"lng_nagram_config_modified" = "已修改的设置";
+"lng_nagram_config_diagnostics" = "配置诊断";
+"lng_nagram_config_preview" = "导入预览";
+"lng_nagram_config_changes" = "修改项：{amount}";
+"lng_nagram_config_unknown" = "将跳过不支持的项目：{amount}（最多显示 20 个名称）";
+"lng_nagram_config_apply" = "应用修改";
+"lng_nagram_config_modified_about" = "点击条目可跳转到原设置。";
+"lng_nagram_config_no_changes" = "没有已修改的设置。";
+"lng_nagram_config_on" = "开启";
+"lng_nagram_config_invalid" = "存储值无效";
+"lng_nagram_config_diagnostic_report" = "Nagram {version}\n配置格式：1\n管理的设置：{amount}\n已修改的设置：{value}\n无效存储值：{error}\n\n本报告只包含版本和数量。";
+"lng_nagram_config_copy_report" = "复制报告";

@@ -50,6 +50,7 @@ set(nagram_sources
     nagram/settings/rules.cpp
     nagram/settings/chats.cpp
     nagram/settings/compose.cpp
+	nagram/settings/config.cpp
     nagram/settings/media.cpp
     nagram/settings/menu.cpp
     nagram/settings/privacy.cpp
