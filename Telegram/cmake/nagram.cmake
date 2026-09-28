@@ -34,8 +34,13 @@ set(nagram_sources
     nagram/messages/reactions.cpp
     nagram/messages/reading.cpp
     nagram/tests/menu_scenario.cpp
+    nagram/filters/model.cpp
+    nagram/filters/view.cpp
+    nagram/filters/settings.cpp
+    nagram/filters/menu.cpp
     nagram/privacy/profile.cpp
     nagram/settings/home.cpp
+    nagram/settings/rules.cpp
     nagram/settings/chats.cpp
     nagram/settings/compose.cpp
     nagram/settings/media.cpp
@@ -110,14 +115,18 @@ if (DESKTOP_APP_TEST_APPS)
         nagram/tests/test_options.cpp
         nagram/tests/test_spacing.cpp
         nagram/tests/test_services.cpp
+        nagram/tests/test_filters.cpp
         nagram/compose/spacing.cpp
         nagram/core/exchange.cpp
         nagram/interface/main_menu_model.cpp
         nagram/menu/model.cpp
         nagram/services/model.cpp
+        nagram/filters/model.cpp
     )
 
-    target_include_directories(test_nagram PRIVATE ${src_loc})
+    target_include_directories(test_nagram PRIVATE
+        ${src_loc}
+        ${CMAKE_CURRENT_SOURCE_DIR}/lib_ui)
 
     target_link_libraries(test_nagram PRIVATE
         desktop-app::lib_base

@@ -138,6 +138,9 @@ public:
 		FullMsgId itemId,
 		const TextWithEntities &text) = 0;
 	virtual bool elementAnimationsPaused() = 0;
+	virtual bool elementHideReactions() { return false; }
+	virtual bool elementHideSenderNames() { return false; }
+	virtual std::optional<bool> elementSpoilersRevealed() { return std::nullopt; }
 	virtual bool elementHideReply(not_null<const Element*> view) = 0;
 	virtual bool elementShownUnread(not_null<const Element*> view) = 0;
 	virtual void elementSendBotCommand(

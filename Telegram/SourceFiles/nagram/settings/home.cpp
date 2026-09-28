@@ -7,6 +7,7 @@
 #include "nagram/settings/media.h"
 #include "nagram/settings/privacy.h"
 #include "nagram/settings/services.h"
+#include "nagram/settings/rules.h"
 
 #include "boxes/about_box.h"
 #include "core/click_handler_types.h"
@@ -106,6 +107,12 @@ const auto kMeta = BuildHelper({
 		.targetSection = ServicesId(),
 		.icon = { &st::menuIconTranslate },
 		.keywords = { u"translation"_q, u"AI"_q, u"service"_q },
+	});
+	builder.addSectionButton({
+		.title = tr::lng_nagram_rules(),
+		.targetSection = RulesId(),
+		.icon = { &st::menuIconChatBubble },
+		.keywords = { u"filter"_q, u"link"_q },
 	});
 	builder.addDividerText(tr::lng_nagram_settings_note());
 });

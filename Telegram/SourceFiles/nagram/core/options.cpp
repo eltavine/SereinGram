@@ -8,6 +8,7 @@
 #include "nagram/privacy/options.h"
 #include "nagram/messages/options.h"
 #include "nagram/services/model.h"
+#include "nagram/filters/model.h"
 
 #include "core/application.h"
 #include "core/core_settings.h"
@@ -97,6 +98,7 @@ const Registry &RegisteredOptions() {
 		Menu::RegisterOptions(result);
 		Privacy::RegisterOptions(result);
 		Messages::RegisterOptions(result);
+		Filters::RegisterOptions(result);
 		RegisterServiceOptions(result);
 		return result;
 	}();

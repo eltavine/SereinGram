@@ -1,0 +1,316 @@
+#include "nagram/filters/model.h"
+
+#include <QtCore/QElapsedTimer>
+#include <QtCore/QJsonArray>
+#include <QtCore/QJsonDocument>
+#include <QtCore/QRegularExpression>
+#include <QtCore/QSet>
+#include <QtCore/QUuid>
+
+#include <algorithm>
+
+namespace Nagram::Filters {
+namespace {
+
+constexpr auto kMaxRules = 32;
+constexpr auto kMaxText = 16384;
+constexpr auto kMaxMatches = 256;
+constexpr auto kMaxWorkMs = 20;
+constexpr auto kMaxConfigBytes = 128 * 1024;
+
+QString RegexPrefix() {
+	return u"(*NO_JIT)(*LIMIT_MATCH=10000)(*LIMIT_DEPTH=64)(*LIMIT_HEAP=1024)"_q;
+}
+
+QRegularExpression Compile(const QJsonObject &rule) {
+	return QRegularExpression(
+		RegexPrefix() + rule.value(u"pattern"_q).toString(),
+		QRegularExpression::UseUnicodePropertiesOption
+			| (rule.value(u"caseInsensitive"_q).toBool()
+				? QRegularExpression::CaseInsensitiveOption
+				: QRegularExpression::NoPatternOption));
+}
+
+bool IdList(const QJsonValue &value) {
+	if (!value.isArray() || value.toArray().size() > 1000) {
+		return false;
+	}
+	auto seen = QSet<QString>();
+	for (const auto entry : value.toArray()) {
+		const auto id = entry.toString();
+		auto ok = false;
+		const auto number = id.toULongLong(&ok);
+		if (!entry.isString() || !ok || !number
+			|| QString::number(number) != id || seen.contains(id)) {
+			return false;
+		}
+		seen.insert(id);
+	}
+	return true;
+}
+
+bool ValidText(const QJsonValue &value, int limit, bool allowEmpty) {
+	if (!value.isString()) {
+		return false;
+	}
+	const auto text = value.toString();
+	return (allowEmpty || !text.isEmpty()) && text.size() <= limit
+		&& !text.contains(QChar(0))
+		&& QString::fromUtf8(text.toUtf8()) == text;
+}
+
+bool ValidObject(const QJsonObject &config) {
+	if (config.keys() != Defaults().keys()
+		|| config.value(u"version"_q) != 1
+		|| QJsonDocument(config).toJson(QJsonDocument::Compact).size()
+			> kMaxConfigBytes) {
+		return false;
+	}
+	for (const auto &key : { u"enabled"_q, u"filterOutgoing"_q,
+			u"hideBlocked"_q, u"stripZalgo"_q }) {
+		if (!config.value(key).isBool()) {
+			return false;
+		}
+	}
+	if (!IdList(config.value(u"hiddenAuthors"_q))
+		|| !IdList(config.value(u"excludedPeers"_q))
+		|| !config.value(u"rules"_q).isArray()
+		|| config.value(u"rules"_q).toArray().size() > kMaxRules) {
+		return false;
+	}
+	auto seen = QSet<QString>();
+	for (const auto entry : config.value(u"rules"_q).toArray()) {
+		if (!entry.isObject()) {
+			return false;
+		}
+		const auto rule = entry.toObject();
+		const auto id = rule.value(u"id"_q).toString();
+		const auto action = rule.value(u"action"_q).toString();
+		const auto uuid = QUuid(id);
+		if (rule.size() != 8 || uuid.isNull()
+			|| uuid.toString(QUuid::WithoutBraces) != id
+			|| seen.contains(id)
+			|| !ValidText(rule.value(u"title"_q), 128, false)
+			|| !ValidText(rule.value(u"pattern"_q), 2048, false)
+			|| !ValidText(rule.value(u"replacement"_q), 4096, true)
+			|| !rule.value(u"enabled"_q).isBool()
+			|| !rule.value(u"caseInsensitive"_q).isBool()
+			|| !rule.value(u"reversed"_q).isBool()
+			|| (action != u"mask"_q && action != u"replace"_q
+				&& action != u"hide"_q)
+			|| (rule.value(u"reversed"_q).toBool()
+				&& action != u"hide"_q)
+			|| !Compile(rule).isValid()) {
+			return false;
+		}
+		seen.insert(id);
+	}
+	return true;
+}
+
+struct Edit {
+	int start = 0;
+	int end = 0;
+	QString replacement;
+};
+
+bool ApplyEdits(TextWithEntities &text, const std::vector<Edit> &edits) {
+	const auto original = text;
+	auto offsets = std::vector<int>(original.text.size() + 1, -1);
+	auto result = TextWithEntities();
+	auto cursor = 0;
+	for (const auto &edit : edits) {
+		if (edit.start < cursor || edit.end <= edit.start
+			|| edit.end > original.text.size()) {
+			return false;
+		}
+		for (; cursor < edit.start; ++cursor) {
+			offsets[cursor] = result.text.size();
+			result.text += original.text[cursor];
+		}
+		offsets[edit.start] = result.text.size();
+		result.text += edit.replacement;
+		cursor = edit.end;
+		offsets[cursor] = result.text.size();
+	}
+	for (; cursor < original.text.size(); ++cursor) {
+		offsets[cursor] = result.text.size();
+		result.text += original.text[cursor];
+	}
+	offsets.back() = result.text.size();
+	if (result.text.size() > kMaxText) {
+		return false;
+	}
+	for (const auto &entity : original.entities) {
+		if (!entity.validForText(original.text.size())) {
+			return false;
+		}
+		const auto start = entity.offset();
+		const auto end = start + entity.length();
+		const auto overlaps = std::any_of(edits.begin(), edits.end(), [&](const Edit &edit) {
+			return edit.start < end && edit.end > start;
+		});
+		if (overlaps || offsets[start] < 0 || offsets[end] < offsets[start]) {
+			continue;
+		}
+		auto adjusted = entity;
+		adjusted.shiftLeft(start - offsets[start]);
+		adjusted.shrinkFromRight(entity.length()
+			- (offsets[end] - offsets[start]));
+		result.entities.push_back(std::move(adjusted));
+	}
+	text = std::move(result);
+	return true;
+}
+
+std::vector<Edit> ZalgoEdits(const QString &text) {
+	auto edits = std::vector<Edit>();
+	auto marks = 0;
+	for (auto i = 0; i < text.size();) {
+		const auto start = i;
+		auto scalar = uint(text[i++].unicode());
+		if (QChar::isHighSurrogate(scalar) && i < text.size()) {
+			scalar = QChar::surrogateToUcs4(QChar(scalar), text[i++]);
+		}
+		const auto category = QChar::category(scalar);
+		const auto combining = category == QChar::Mark_NonSpacing
+			|| category == QChar::Mark_SpacingCombining
+			|| category == QChar::Mark_Enclosing;
+		marks = combining ? marks + 1 : 0;
+		if (marks > 3 && scalar != 0xFE0E && scalar != 0xFE0F
+			&& scalar != 0x20E3
+			&& !(scalar >= 0xE0100 && scalar <= 0xE01EF)) {
+			edits.push_back({ start, i, QString() });
+		}
+	}
+	return edits;
+}
+
+} // namespace
+
+QJsonObject Defaults() {
+	return {
+		{ u"version"_q, 1 },
+		{ u"enabled"_q, false },
+		{ u"filterOutgoing"_q, false },
+		{ u"hideBlocked"_q, false },
+		{ u"stripZalgo"_q, false },
+		{ u"hiddenAuthors"_q, QJsonArray() },
+		{ u"excludedPeers"_q, QJsonArray() },
+		{ u"rules"_q, QJsonArray() },
+	};
+}
+
+bool Validate(const QByteArray &raw) {
+	if (raw.isEmpty()) {
+		return true;
+	}
+	auto error = QJsonParseError();
+	const auto document = QJsonDocument::fromJson(raw, &error);
+	return error.error == QJsonParseError::NoError
+		&& document.isObject() && ValidObject(document.object());
+}
+
+Result Apply(
+		const QByteArray &raw,
+		const TextWithEntities &source,
+		const QString &author,
+		const QString &peer,
+		bool blocked,
+		bool outgoing,
+		const QString &searchable) {
+	auto result = Result{ .text = source };
+	if (raw.isEmpty()) {
+		return result;
+	}
+	if (!Validate(raw)) {
+		result.error = u"invalid filter configuration"_q;
+		return result;
+	}
+	const auto config = QJsonDocument::fromJson(raw).object();
+	if (!config.value(u"enabled"_q).toBool()
+		|| config.value(u"excludedPeers"_q).toArray().contains(peer)
+		|| (outgoing && !config.value(u"filterOutgoing"_q).toBool())) {
+		return result;
+	}
+	if ((blocked && config.value(u"hideBlocked"_q).toBool())
+		|| config.value(u"hiddenAuthors"_q).toArray().contains(author)) {
+		result.hidden = true;
+		return result;
+	}
+	if (source.text.size() > kMaxText
+		|| (!searchable.isNull() && searchable.size() > kMaxText)) {
+		result.error = u"filter text length limit"_q;
+		return result;
+	}
+	auto timer = QElapsedTimer();
+	timer.start();
+	if (config.value(u"stripZalgo"_q).toBool()
+		&& !ApplyEdits(result.text, ZalgoEdits(result.text.text))) {
+		result.error = u"filter Zalgo edit failed"_q;
+		return { .text = source, .error = result.error };
+	}
+	for (const auto entry : config.value(u"rules"_q).toArray()) {
+		const auto rule = entry.toObject();
+		if (!rule.value(u"enabled"_q).toBool()) {
+			continue;
+		}
+		const auto expression = Compile(rule);
+		const auto action = rule.value(u"action"_q).toString();
+		const auto text = action == u"hide" && !searchable.isNull()
+			? searchable : result.text.text;
+		auto edits = std::vector<Edit>();
+		auto matched = false;
+		for (auto offset = 0; offset <= text.size();) {
+			if (timer.elapsed() >= kMaxWorkMs) {
+				result.error = u"filter runtime limit"_q;
+				break;
+			}
+			const auto match = expression.match(text, offset);
+			if (!match.isValid()) {
+				result.error = u"filter regex work limit"_q;
+				break;
+			}
+			if (!match.hasMatch()) {
+				break;
+			}
+			if (++result.matches > kMaxMatches) {
+				result.error = u"filter match count limit"_q;
+				break;
+			}
+			matched = true;
+			if (action == u"hide"_q) {
+				break;
+			}
+			const auto start = int(match.capturedStart());
+			const auto end = int(match.capturedEnd());
+			if (end <= start) {
+				offset = end + 1;
+				continue;
+			}
+			edits.push_back({ start, end,
+				action == u"mask"_q ? u"•••"_q
+					: rule.value(u"replacement"_q).toString() });
+			offset = end;
+		}
+		if (!result.error.isEmpty()) {
+			break;
+		}
+		if (action == u"hide"_q) {
+			if (matched != rule.value(u"reversed"_q).toBool()) {
+				result.hidden = true;
+				return result;
+			}
+		} else if (!ApplyEdits(result.text, edits)) {
+			result.error = u"filter replacement limit"_q;
+			break;
+		}
+	}
+	if (!result.error.isEmpty()) {
+		return { .text = source, .error = result.error,
+			.matches = result.matches };
+	}
+	return result;
+}
+
+} // namespace Nagram::Filters

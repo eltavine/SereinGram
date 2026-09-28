@@ -3,6 +3,7 @@
 #include "nagram/menu/batch.h"
 #include "nagram/menu/media.h"
 #include "nagram/menu/reading.h"
+#include "nagram/filters/menu.h"
 
 #include "ui/widgets/popup_menu.h"
 
@@ -39,6 +40,7 @@ void Apply(
 		if (item) {
 			InsertMediaInfoAction(menu, item, controller);
 			InsertReadingAction(menu, item, controller);
+			Filters::InsertAuthorAction(menu, item, controller);
 		}
 	}
 	const auto config = ForDevice().Get(kMenuConfig);

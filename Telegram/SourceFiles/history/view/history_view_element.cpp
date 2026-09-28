@@ -11,6 +11,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "nagram/messages/content.h"
 #include "nagram/messages/reading.h"
 #include "nagram/messages/options.h"
+#include "nagram/filters/view.h"
 
 #include "apiwrap.h"
 #include "api/api_transcribes.h"
@@ -1627,6 +1628,10 @@ void Element::refreshMedia(Element *replacing) {
 	_flags &= ~Flag::HiddenByGroup;
 
 	const auto item = data();
+	if (Nagram::Filters::Hidden(item)) {
+		_media = nullptr;
+		return;
+	}
 	if (!item->computeUnavailableReason().isEmpty()) {
 		_media = nullptr;
 		return;
@@ -2191,6 +2196,8 @@ void Element::setTextWithLinks(
 		}
 	} else {
 		const auto item = data();
+		const auto filtered = Nagram::Filters::Project(item, text);
+		const auto display = Nagram::Filters::DisplayText(filtered);
 		const auto &options = Ui::ItemTextOptions(item);
 		clearSpecialOnlyEmoji();
 		const auto spacing = Nagram::ForDevice().Get(
@@ -2202,9 +2209,9 @@ void Element::setTextWithLinks(
 				_nagramReading = std::make_unique<Nagram::Messages::ReadingCache>();
 			}
 			_text.setMarkedText(st::messageTextStyle,
-				_nagramReading->Get(text, spacing, chinese), options, context);
+				_nagramReading->Get(display, spacing, chinese), options, context);
 		} else {
-			_text.setMarkedText(st::messageTextStyle, text, options, context);
+			_text.setMarkedText(st::messageTextStyle, display, options, context);
 		}
 		if (!item->_text.empty() && _text.isEmpty()){
 			// If server has allowed some text that we've trim-ed entirely,
@@ -2875,6 +2882,10 @@ void Element::setupReactions(Element *replacing) {
 
 void Element::refreshReactions() {
 	using namespace Reactions;
+	if (delegate()->elementHideReactions()) {
+		setReactions(nullptr);
+		return;
+	}
 	auto reactionsData = Nagram::Messages::FilterInlineReactions(
 		this, InlineListDataFromMessage(this));
 	if (reactionsData.reactions.empty()) {

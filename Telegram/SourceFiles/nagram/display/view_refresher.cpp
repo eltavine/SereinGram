@@ -17,6 +17,13 @@ void ViewRefresher::Attach(not_null<Main::Session*> session) {
 	) | rpl::on_next([session](std::string_view) {
 		Refresh(session->data());
 	}, session->lifetime());
+	ForAccount(session).changes(
+	) | rpl::filter([](std::string_view key) {
+		return RegisteredOptions().HasFlag(key, Flag::RefreshMessageView);
+	}
+	) | rpl::on_next([session](std::string_view) {
+		Refresh(session->data());
+	}, session->lifetime());
 }
 
 void ViewRefresher::Refresh(Data::Session &data) {
