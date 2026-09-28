@@ -43,6 +43,8 @@ set(nagram_sources
     nagram/links/settings.cpp
     nagram/snapshot/snapshot.cpp
     nagram/privacy/profile.cpp
+    nagram/privacy/alias.cpp
+    nagram/privacy/alias_model.cpp
     nagram/settings/home.cpp
     nagram/settings/rules.cpp
     nagram/settings/chats.cpp

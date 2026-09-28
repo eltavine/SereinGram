@@ -7,6 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "data/data_peer.h"
 #include "nagram/interface/roundness.h"
+#include "nagram/privacy/alias.h"
 
 #include "api/api_sensitive_content.h"
 #include "data/data_user.h"
@@ -1097,6 +1098,7 @@ void PeerData::fillNames() {
 	};
 
 	appendToIndex(name());
+	appendToIndex(Nagram::Privacy::Alias(this));
 	const auto appendTranslit = !toIndexList.isEmpty()
 		&& cRussianLetters().match(toIndexList.front()).hasMatch();
 	if (appendTranslit) {
@@ -1326,12 +1328,24 @@ ChannelData *PeerData::broadcastMonoforum() const {
 const QString &PeerData::topBarNameText() const {
 	if (const auto to = migrateTo()) {
 		return to->topBarNameText();
+	}
+	const auto &alias = Nagram::Privacy::Alias(this);
+	if (!alias.isEmpty()) {
+		return alias;
 	} else if (const auto user = asUser()) {
 		if (!user->nameOrPhone.isEmpty()) {
 			return user->nameOrPhone;
 		}
 	}
 	return _name;
+}
+
+void PeerData::localNameChanged() {
+	auto previous = nameFirstLetters();
+	++_nameVersion;
+	fillNames();
+	session().changes().nameUpdated(this, std::move(previous));
+	session().changes().peerUpdated(this, UpdateFlag::Name);
 }
 
 int PeerData::nameVersion() const {

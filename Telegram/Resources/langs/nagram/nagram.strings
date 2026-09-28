@@ -389,3 +389,7 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_nagram_ prefix.
 "lng_nagram_demo_mode" = "Presentation mode";
 "lng_nagram_demo_mode_note" = "Ask the system to exclude Nagram windows from capture. Chat rows, titles and notifications hide details. Some capture tools may ignore the system request.";
 "lng_nagram_demo_hidden" = "Hidden in presentation mode";
+"lng_nagram_peer_alias" = "Set local name";
+"lng_nagram_alias_about" = "This name is visible only in this account on this device. Leave it empty to restore the original name.";
+"lng_nagram_alias_invalid" = "The local name is invalid or the list is full.";
+"lng_nagram_alias_changed" = "The local name changed. Reopen this dialog and try again.";

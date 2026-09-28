@@ -7,6 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "window/window_peer_menu.h"
 #include "nagram/privacy/options.h"
+#include "nagram/privacy/alias.h"
 
 #include "base/call_delayed.h"
 #include "menu/menu_check_item.h"
@@ -334,6 +335,7 @@ private:
 	void addNewContact();
 	void addShareContact();
 	void addEditContact();
+	void addLocalAlias();
 	void addBotToGroup();
 	void addNewMembers();
 	void addDeleteContact();
@@ -1162,6 +1164,17 @@ void Filler::addEditContact() {
 		&st::menuIconEdit);
 }
 
+void Filler::addLocalAlias() {
+	if (_topic || _peer->isSelf() || _peer->migrateTo()) {
+		return;
+	}
+	const auto peer = _peer;
+	const auto show = _controller->uiShow();
+	_addAction(tr::lng_nagram_peer_alias(tr::now), [=] {
+		Nagram::Privacy::ShowAlias(show, peer);
+	}, &st::menuIconEdit);
+}
+
 void Filler::addBotToGroup() {
 	const auto user = _peer->asUser();
 	if (!user) {
@@ -1950,6 +1963,7 @@ void Filler::fillProfileActions() {
 	addNewContact();
 	addShareContact();
 	addEditContact();
+	addLocalAlias();
 	addBotToGroup();
 	addNewMembers();
 	addSendGift();

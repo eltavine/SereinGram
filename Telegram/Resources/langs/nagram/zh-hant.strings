@@ -385,3 +385,7 @@
 "lng_nagram_demo_mode" = "演示模式";
 "lng_nagram_demo_mode_note" = "要求系統在錄影中排除 Nagram 視窗，並遮蓋對話清單、標題和通知內容。部分錄影工具可能忽略此要求。";
 "lng_nagram_demo_hidden" = "演示模式已遮蓋";
+"lng_nagram_peer_alias" = "設定本機名稱";
+"lng_nagram_alias_about" = "此名稱只在本機的目前帳號中顯示。留空可恢復原名。";
+"lng_nagram_alias_invalid" = "本機名稱無效，或名稱清單已滿。";
+"lng_nagram_alias_changed" = "本機名稱已變更，請重新開啟此視窗。";

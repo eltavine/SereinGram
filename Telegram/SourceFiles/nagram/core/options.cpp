@@ -6,6 +6,7 @@
 #include "nagram/media/options.h"
 #include "nagram/menu/model.h"
 #include "nagram/privacy/options.h"
+#include "nagram/privacy/alias.h"
 #include "nagram/messages/options.h"
 #include "nagram/services/model.h"
 #include "nagram/filters/model.h"
@@ -99,6 +100,7 @@ const Registry &RegisteredOptions() {
 		Media::RegisterOptions(result);
 		Menu::RegisterOptions(result);
 		Privacy::RegisterOptions(result);
+		Privacy::RegisterAliasOptions(result);
 		Messages::RegisterOptions(result);
 		Filters::RegisterOptions(result);
 		Links::RegisterOptions(result);
