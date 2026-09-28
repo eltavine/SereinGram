@@ -38,7 +38,7 @@
 | V2 里程碑 | 每个里程碑最后一个提交后 | rebase 到最新上游 `dev`；本地完整构建；三平台 CI（`nagram-mac/win/linux.yml`）通过；隔离数据目录启动冒烟（登录页、设置页、打开一个聊天）；在 `design.md` 更新里程碑状态 |
 | V0 首次 | S10 | 第一次完整构建，同时验证已提交但尚未编译的文案管线（S01）、品牌（S02）与构建配置（S04）；发现的问题并入对应提交 |
 
-构建目录使用仓库外或 `out/` 下的独立目录；API 凭据来自环境变量 `NAGRAM_API_ID` / `NAGRAM_API_HASH` 或 `Telegram/build/api_credentials.local.cmake`（见该目录下的 `.example`），本地调试也可用 `-D TDESKTOP_API_TEST=ON`。
+构建目录使用仓库外或 `out/` 下的独立目录；本地登录测试的 API 凭据来自环境变量 `NAGRAM_API_ID` / `NAGRAM_API_HASH` 或忽略提交的 `Telegram/build/api_credentials.local.cmake`（见该目录下的 `.example`），并设置 `-D TDESKTOP_API_TEST=OFF`。公开测试凭据 `17349` 不用于本地登录测试。
 
 ## 4. 步骤
 
@@ -124,8 +124,8 @@
 
 | 步骤 | 提交 | 条目 | 备注 |
 | --- | --- | --- | --- |
-| ✅ S70 | `feat(rules): 消息过滤` | I01、E23 | 账号作用域；正则预算与性能测试通过，现场效果待补验 |
-| ✅ S71 | `feat(rules): 链接规则` | I02 | Debug 构建与规则测试通过；外链确认框待现场补验 |
+| ✅ S70 | `feat(rules): 消息过滤` | I01、E23 | 账号作用域；正则预算与性能测试通过，收藏夹现场遮盖、占位与关闭恢复通过；E23 动作未验证 |
+| ✅ S71 | `feat(rules): 链接规则` | I02 | Debug 构建与规则测试通过，现场本地预览通过；真实外链确认框未验证 |
 | ✅ S72 | `feat(menu): 消息截图` | E21 | Debug 构建、菜单出现测试通过；预览／复制／保存未验证，简化引用未实现，V2 部分完成 |
 
 ### M7 其余条目与配置管理
