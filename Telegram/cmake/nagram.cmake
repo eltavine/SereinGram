@@ -33,6 +33,7 @@ set(nagram_sources
     nagram/messages/effects.cpp
     nagram/messages/reactions.cpp
     nagram/messages/reading.cpp
+    nagram/tests/menu_scenario.cpp
     nagram/privacy/profile.cpp
     nagram/settings/home.cpp
     nagram/settings/chats.cpp
