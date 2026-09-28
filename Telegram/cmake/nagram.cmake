@@ -38,6 +38,9 @@ set(nagram_sources
     nagram/filters/view.cpp
     nagram/filters/settings.cpp
     nagram/filters/menu.cpp
+    nagram/links/model.cpp
+    nagram/links/open.cpp
+    nagram/links/settings.cpp
     nagram/privacy/profile.cpp
     nagram/settings/home.cpp
     nagram/settings/rules.cpp
@@ -116,12 +119,14 @@ if (DESKTOP_APP_TEST_APPS)
         nagram/tests/test_spacing.cpp
         nagram/tests/test_services.cpp
         nagram/tests/test_filters.cpp
+        nagram/tests/test_links.cpp
         nagram/compose/spacing.cpp
         nagram/core/exchange.cpp
         nagram/interface/main_menu_model.cpp
         nagram/menu/model.cpp
         nagram/services/model.cpp
         nagram/filters/model.cpp
+        nagram/links/model.cpp
     )
 
     target_include_directories(test_nagram PRIVATE

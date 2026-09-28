@@ -2,6 +2,7 @@
 
 #include "nagram/settings/home.h"
 #include "nagram/filters/settings.h"
+#include "nagram/links/settings.h"
 #include "lang/lang_keys.h"
 #include "settings/settings_builder.h"
 #include "settings/settings_common_session.h"
@@ -50,6 +51,15 @@ const auto kMeta = BuildHelper({
 			controller->show(Box(Filters::SettingsBox, &controller->session()));
 		},
 		.keywords = { u"filter"_q, u"regex"_q },
+	});
+	builder.addButton({
+		.id = u"nagram/rules/links"_q,
+		.title = tr::lng_nagram_link_rules(),
+		.st = &st::settingsButtonNoIcon,
+		.onClick = [=] {
+			controller->show(Box(Links::SettingsBox));
+		},
+		.keywords = { u"link"_q, u"URL"_q },
 	});
 });
 
