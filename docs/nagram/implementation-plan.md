@@ -48,26 +48,26 @@
 
 | 步骤 | 提交 | 内容 | 验证 |
 | --- | --- | --- | --- |
-| ✅ S00 | `docs: Nagram 需求整理与重新设计路线` | 需求、来源目录、设计与路线 | — |
+| ✅ S00 | `docs: Nagram 需求整理与重新设计路线` | 需求、来源目录、设计与路线 | 需求、来源与路线文档已提交；里程碑状态与收尾清单见 `design.md` |
 | ✅ S01 | `build: 独立的 Nagram 文案文件` | `langs/nagram/nagram.strings` 在配置阶段与上游 `lang.strings` 合并 | 合并脚本单独运行，输出与直接拼接一致；V0 macOS 编译通过 |
 | ✅ S02 | `feat: Nagram 品牌与应用标识` | 应用名、应用 ID、图标、打包配置、关于页与托盘文案；关闭上游自动更新和崩溃上报 | 静态核对文案键与资源；V0 macOS 编译通过 |
-| ✅ S03 | `docs: Nagram 设置页、上游处理点与实施计划` | 设置页设计、上游处理点、本计划 | — |
+| ✅ S03 | `docs: Nagram 设置页、上游处理点与实施计划` | 设置页设计、上游处理点、本计划 | 设置页、上游处理点和本计划已提交并在 M0–M7 实施中持续核对 |
 | ✅ S04 | `build: Nagram 构建配置与 API 凭据来源` | `Telegram/cmake/nagram_api.cmake`；本地凭据文件模板与忽略规则；`nagram-mac/win/linux.yml` 工作流 | 凭据解析 7 种场景用 CMake 单独验证；工作流通过 YAML 解析与 actionlint；V0 macOS 编译通过，首次 CI 待验证 |
 | ✅ S10 | `build: Nagram 源文件清单与单元测试目标` | `Telegram/cmake/nagram.cmake`（`Telegram/CMakeLists.txt` 一行引入）；`test_nagram` 目标，先只含文案一致性测试；三个工作流加入 `test_nagram` 构建与运行 | V0：macOS arm64 Debug 完整构建与 `test_nagram` 通过 |
 | ✅ S11 | `feat(core): 选项注册表与本机存储` | `Option<T>` 句柄、`Get/Value/Set`、校验、读取失败保留原值、变更通知；`Core::Settings` 偏好 | V1；单元测试覆盖默认值、往返、校验、通知去重 |
 | ✅ S12 | `feat(core): 账号作用域存储` | `Storage::Account` 偏好读写；账号切换与退出的生命周期 | V1；双账号隔离单元测试；真实双账号场景待验证 |
 | ✅ S13 | `feat(lang): 简繁内置文案` | `langs/nagram/zh-hans.strings`、`zh-hant.strings`；`lang_instance.cpp` 一处挂钩；含品牌文案译文 | V1；三语键与占位符一致性测试；缺少任一简繁文件时 `test_nagram` 必须失败 |
-| ✅ S14 | `feat(settings): Nagram 设置入口与首页` | 设置主页顶部入口；首页头部；分栏在有条目后显示；搜索注册 | V1 编译与登录页冒烟通过；账号内设置页和 125%/200% 缩放待验证；**V2（M0 结束）** |
+| ✅ S14 | `feat(settings): Nagram 设置入口与首页` | 设置主页顶部入口；首页头部；分栏在有条目后显示；搜索注册 | macOS 构建通过；账号内首页、搜索跳转及 125%／200% 下英／简／繁布局已通过 |
 
 ### M1 消息（分栏 3）
 
 | 步骤 | 提交 | 条目 | 备注 |
 | --- | --- | --- | --- |
-| ✅ S20 | `feat(messages): 时间与信息` | C01–C04 | 消息视图刷新已接入；V1 macOS 编译和纯逻辑测试通过，账号内场景待 M1 V2 验证 |
-| ✅ S21 | `feat(messages): 标记与计数` | C05–C09 | V1 macOS 编译与 `test_nagram` 通过；账号内场景待 M1 V2 验证 |
-| ✅ S22 | `feat(messages): 反应` | C10–C15 | V1 macOS 编译与 `test_nagram` 通过；账号内场景待 M1 V2 验证 |
-| ✅ S23 | `feat(messages): 特效` | C16–C18 | V1 macOS 编译与 `test_nagram` 通过；账号内场景待 M1 V2 验证 |
-| ✅ S24 | `feat(messages): 内容显示` | C19–C24 | C25、C26 在 M5（依赖文本投影）；V1 macOS 编译与 `test_nagram` 通过；账号内场景待 V2 验证 |
+| ✅ S20 | `feat(messages): 时间与信息` | C01–C04 | macOS 构建及 `test_nagram` 通过；C01 现场通过，C02–C04 缺少合适样本或对照 |
+| ✅ S21 | `feat(messages): 标记与计数` | C05–C09 | macOS 构建及 `test_nagram` 通过；C06 现场通过，C05、C07–C09 的实际消息效果未验证 |
+| ✅ S22 | `feat(messages): 反应` | C10–C15 | macOS 构建及 `test_nagram` 通过；C10、C13 频道场景通过，其余反应场景未验证 |
+| ✅ S23 | `feat(messages): 特效` | C16–C18 | macOS 构建及 `test_nagram` 通过；C16–C18 缺少互动与特效样本，现场效果未验证 |
+| ✅ S24 | `feat(messages): 内容显示` | C19–C24 | macOS 构建及 `test_nagram` 通过；C20、C22 的部分位置通过，其余样本未验证；C25、C26 随 M5 实施 |
 
 ### M2 列表、输入、媒体、资料（分栏 2、4、6、7）
 
@@ -75,15 +75,15 @@
 | --- | --- | --- | --- |
 | ✅ S30 | `feat(chats): 列表布局` | B01–B04 | 随附会话列表刷新机制；macOS Debug 构建与 `test_nagram` 通过，指定测试目录内开关与列表即时刷新已验证；B04 按用户确认保留动态条内部对象 |
 | ✅ S31 | `feat(chats): 文件夹` | B06–B08 | B05 在 M4；macOS Debug 构建与 `test_nagram` 通过，指定测试目录内侧栏隐藏、未读数和文件夹归档入口即时切换已验证 |
-| ✅ S32 | `feat(chats): 推广内容` | B10–B13 | macOS Debug 构建与 `test_nagram` 通过，四项设置切换并恢复；测试账号缺少赞助、代理和生日提示样本，实际内容效果待 M2 V2 验证 |
-| ✅ S33 | `feat(chats): 滚动导航` | B14、B15 | macOS Debug 构建与 `test_nagram` 通过；指定测试目录内两个开关可切换并恢复，实际滚动切换场景待 M2 V2 验证 |
-| ✅ S34 | `feat(compose): 输入框按钮` | D01–D11 | 随附输入区按钮可见性机制；macOS Debug 构建与 `test_nagram` 通过，指定测试目录内 D01–D03 即时显隐与恢复已验证，其余按钮缺少场景样本，待 M2 V2 验证 |
-| ✅ S35 | `feat(compose): 输入行为` | D12–D15 | macOS Debug 构建与 `test_nagram` 通过；D15 在已打开聊天即时切换三种占位文字并恢复默认，D12–D14 实际交互待 M2 V2 验证 |
-| ✅ S36 | `feat(compose): 发送确认` | D22–D26 | macOS Debug 构建与 `test_nagram` 通过；指定测试目录内五个开关可切换并恢复默认。遵守不发送、不通话约束，确认弹窗与试听预览的实际动作待 M2 V2 验证 |
-| ✅ S37 | `feat(compose): 转发` | D27 | macOS Debug 构建与 `test_nagram` 通过；指定测试目录内开关可切换并恢复默认。遵守不发送约束，实际消息顺序待 M2 V2 验证 |
-| ✅ S38 | `feat(media): 贴纸与表情` | F01–F08 | macOS Debug 构建与 `test_nagram` 通过；指定测试目录内 F01 的 150%／100% 和 F02 的时间显隐在已打开聊天即时生效；F03 数值写入与默认恢复、F04–F08 开关切换与恢复已验证。缺少可辨识的推荐、群组和新私聊样本，F03–F08 实际内容效果待 M2 V2 验证 |
-| ✅ S39 | `feat(media): 播放` | F09 | F10 在 M7；macOS Debug 构建与 `test_nagram` 通过，指定测试目录内开关可切换并恢复默认；缺少视频与圆形视频样本，实际播放效果待 M2 V2 验证 |
-| ✅ S3A | `feat(privacy): 本机隐私` | G01、G03、G04 | G02（演示模式）在 M7；macOS Debug 构建与 `test_nagram` 通过，三个选项在指定测试目录可切换并恢复默认；缺少可辨识的已读时间与分享手机号提示样本，实际效果待 M2 V2 验证 |
+| ✅ S32 | `feat(chats): 推广内容` | B10–B13 | macOS 构建及 `test_nagram` 通过；开关往返通过，B10–B13 缺少推广内容样本 |
+| ✅ S33 | `feat(chats): 滚动导航` | B14、B15 | macOS 构建及 `test_nagram` 通过；开关往返通过，B14、B15 的滚动导航未操作 |
+| ✅ S34 | `feat(compose): 输入框按钮` | D01–D11 | macOS 构建及 `test_nagram` 通过；D01–D03 即时显隐通过，D04–D11 缺少按钮样本 |
+| ✅ S35 | `feat(compose): 输入行为` | D12–D15 | macOS 构建及 `test_nagram` 通过；D15 占位文字现场通过，D12–D14 交互未验证 |
+| ✅ S36 | `feat(compose): 发送确认` | D22–D26 | macOS 构建及 `test_nagram` 通过；D22、D23 仅向收藏夹发送确认通过，D26 取消通话通过；D24、D25 预览未验证 |
+| ✅ S37 | `feat(compose): 转发` | D27 | macOS 构建及 `test_nagram` 通过；D27 开关往返通过，转发与附言顺序未验证 |
+| ✅ S38 | `feat(media): 贴纸与表情` | F01–F08 | macOS 构建及 `test_nagram` 通过；F01、F02 现场通过，F03–F08 只验证设置往返或缺少样本 |
+| ✅ S39 | `feat(media): 播放` | F09 | macOS 构建及 `test_nagram` 通过；F09 开关往返通过，自动播放缺少视频样本；F10 随 M7 实施 |
+| ✅ S3A | `feat(privacy): 本机隐私` | G01、G03、G04 | macOS 构建及 `test_nagram` 通过；G01、G03、G04 开关往返通过，实际提示缺少对照；G02 随 M7 实施 |
 | ✅ S3B | `feat(privacy): 资料信息` | G05–G08 | macOS Debug 构建与 `test_nagram` 通过；G05 两种 ID 格式、G06 头像 DC、G07 已打开资料页礼物显隐通过；G08 设置往返通过，实际菜单缺少样本。**M2 V2：现场结果见 `design.md`，三平台 CI 与双账号隔离未验证** |
 
 ### M3 消息菜单（分栏 5）
@@ -94,14 +94,14 @@
 | ✅ S41 | `feat(menu): 复读与无引用转发` | E15–E17、E24 | 新增项默认隐藏；macOS Debug 构建与 `test_nagram` 通过 |
 | ✅ S42 | `feat(menu): 批量与选择` | E18、E19 | 预览后放入草稿，不自动发送；macOS Debug 构建与 `test_nagram` 通过 |
 | ✅ S43 | `feat(menu): 媒体信息` | E20 | macOS Debug 构建与 `test_nagram` 通过 |
-| ✅ S44 | `feat(core): 结构化配置与导出核心` | — | 菜单配置为首个结构化对象；版本化 JSON 校验与差异预览核心，不含界面；macOS Debug 构建与 `test_nagram` 通过；**V2 待现场验证** |
+| ✅ S44 | `feat(core): 结构化配置与导出核心` | — | `test_nagram` 的版本化 JSON、非法值、差异预览与通知测试通过；本步按计划不含导入导出界面 |
 
 ### M4 界面与导航（分栏 1、2 其余）
 
 | 步骤 | 提交 | 条目 | 备注 |
 | --- | --- | --- | --- |
 | ✅ S50 | `feat(interface): 圆角与形状` | A02–A04 | 随附重启提示机制；A01 已取消；A02、A03 真实重启通过，A04 未验证 |
-| ✅ S51 | `feat(interface): 消息样式` | A05–A10 | 增量构建通过，实际效果待核对 |
+| ✅ S51 | `feat(interface): 消息样式` | A05–A10 | macOS 构建及 `test_nagram` 通过；A07 气泡尾巴现场通过，A05、A06、A08–A10 缺少样本 |
 | ✅ S52 | `feat(interface): 主菜单` | A11 | 显隐往返通过，排序等效果待核对 |
 | ✅ S53 | `feat(interface): 窗口与通知` | A12–A14 | 独立提交、编译与 `test_nagram` 通过；现场效果未验证 |
 | ✅ S54 | `feat(interface): 界面文本` | A15 | 独立提交、编译与 `test_nagram` 通过；中文文案效果未验证 |
@@ -113,12 +113,12 @@
 
 | 步骤 | 提交 | 条目 | 备注 |
 | --- | --- | --- | --- |
-| ✅ S60 | `feat(compose): 文本格式` | D16–D21 | 间距算法与实体偏移测试通过；现场效果待 M5 V2 |
-| ✅ S61 | `feat(messages): 阅读显示转换` | C25、C26、E22 | macOS 编译与 `test_nagram` 通过；现场效果待 M5 V2 |
-| ✅ S62 | `feat(ai): 服务实例与系统凭据` | H03 | macOS 编译、配置与凭据绑定测试通过；localhost 连接现场验证待 M5 V2 |
-| ✅ S63 | `feat(ai): 翻译` | H01、草稿翻译 | macOS 编译与 `test_nagram` 通过；三种翻译来源和草稿写回的现场效果待 M5 V2 |
-| ✅ S64 | `feat(ai): 语音转写` | H02 | macOS 编译与 `test_nagram` 通过；localhost 上传和消息内显示待 M5 V2 |
-| ✅ S65 | `feat(ai): 系统 AI` | H04 | Swift 桥接、macOS Debug 构建与 `test_nagram` 通过；可用性、预览与草稿写回待 M5 V2 |
+| ✅ S60 | `feat(compose): 文本格式` | D16–D21 | 间距算法与实体偏移测试通过；用户手动确认 D16、D18 的效果及 D21 输入框右键菜单项；D17、D19、D20 的现场效果未验证 |
+| ✅ S61 | `feat(messages): 阅读显示转换` | C25、C26、E22 | macOS 构建及 `test_nagram` 通过；C26 繁体方向和 E22 气泡右键切换经用户手动确认，C25、简体方向与故障路径未验证 |
+| ✅ S62 | `feat(ai): 服务实例与系统凭据` | H03 | macOS 构建及 `test_nagram` 通过；H03 的 localhost 模型列表与翻译请求通过，钥匙串真实密钥读写未验证 |
+| ✅ S63 | `feat(ai): 翻译与草稿翻译` | H01、草稿翻译 | macOS 构建及 `test_nagram` 通过；用户手动确认输入框菜单项及草稿翻译预览，草稿写回未验证 |
+| ✅ S64 | `feat(ai): 语音转写` | H02 | macOS 构建及 `test_nagram` 通过；localhost 转写上传与结果显示通过，气泡入口与缓存未验证 |
+| ✅ S65 | `feat(ai): 系统 AI 草稿预览` | H04 | Swift 桥接、macOS 构建及 `test_nagram` 通过；当前 Mac 不支持 Apple Intelligence，预览与写回未验证 |
 
 ### M6 规则与截图（分栏 9、菜单）
 
@@ -133,10 +133,12 @@
 | 步骤 | 提交 | 条目 | 备注 |
 | --- | --- | --- | --- |
 | ✅ S80 | `feat(privacy): 演示模式` | G02 | Debug 构建及 `test_nagram` 通过；窗口截屏保护和标题切换现场通过，列表与通知遮盖视觉效果未验证 |
-| ✅ S81 | `feat(privacy): 本地别名` | 资料页菜单 | 账号作用域；Debug 构建及 `test_nagram` 通过，修改其他会话的现场效果未验证 |
+| ✅ S81 | `feat(privacy): 本地备注名称` | 资料页菜单 | 账号作用域；Debug 构建及 `test_nagram` 通过，修改其他会话的现场效果未验证 |
 | ✅ S82 | `feat(media): 播放控制与文件发送` | F10、F11 | Debug 构建及 `test_nagram` 通过；缺少 GIF 样本且本轮不发送文件，现场效果未验证 |
 | ✅ S83 | `feat(media): 贴纸目录` | F12、F13 | Debug 构建及 `test_nagram` 通过；未在账号中安装或重排贴纸包 |
-| ✅ S84 | `feat(config): 配置管理` | J01–J04 | Debug 构建及 `test_nagram` 通过；V2 现场核验见 design.md |
+| ✅ S84 | `feat(config): 配置管理` | J01–J04 | `test_nagram` 的导出、校验、差异计划和预览失效测试通过；配置管理界面因锁屏未验证 |
+
+收尾核对：表中 54 个步骤均为 ✅，提交标题逐项匹配 `dev..nagram-next` 的实际提交；上游同步后的 macOS Debug 完整目标编译和 `test_nagram` 八组检查通过。各步骤现场验证的剩余缺口汇总在 `design.md` 第 8 节。未获得推送授权，三平台 CI 未运行。
 
 ### P3
 

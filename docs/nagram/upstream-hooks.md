@@ -100,7 +100,7 @@
 | D17 | `history/view/controls/history_view_webpage_processor.cpp` | 输入时不请求预览；发送时带无预览标志；手动选择的预览保留 | 读取 |
 | D18、D19 | `api/api_sending.cpp`、`api/api_editing.cpp`、`apiwrap.cpp`、`data/components/ephemeral_messages.cpp` | 发送与编辑前对文本做间距处理，保持实体偏移 | 替换 |
 | D20、D21 | `chat_helpers/message_field.cpp` | 代码块默认语言；输入框菜单加入快捷回复 | 读取 |
-| D22、D23 | `history/history_widget.cpp`、`history/view/history_view_chat_section.cpp` | 发送贴纸 / GIF 前弹出确认，回调只执行一次 | 拦截 |
+| D22、D23 | `history/history_widget.cpp`、`history/view/history_view_chat_section.cpp` | 普通文档与内联结果发送前各一行调用 `Nagram::Compose::ConfirmBeforeSend`；确认后重新发送，付费确认的重入不再次弹框；不改上游函数签名 | 拦截 |
 | D24、D25 | `history/view/controls/history_view_voice_record_bar.cpp` | 录制结束后进入上游的试听界面而不是直接发送 | 读取 |
 | D26 | `calls/calls_instance.cpp` | 发起私聊通话前进入上游确认 | 拦截 |
 | D27 | `apiwrap.cpp`、`boxes/share_box.cpp` | 转发与附言的发送顺序 | 替换 |
@@ -148,7 +148,7 @@
 | 编号 | 上游位置 | 需要处理的上游逻辑 | 方式 |
 | --- | --- | --- | --- |
 | H01 | `boxes/translate_box.cpp` | 翻译请求交给所选服务；失败时显示错误，不改用其他服务 | 替换 |
-| H02 | `api/api_transcribes.cpp`、`history/view/history_view_transcribe_button.cpp`、`history/view/media/history_view_document.cpp` | 转写请求交给所选服务；结果在原位置显示 | 替换 |
+| H02 | `api/api_transcribes.cpp`、`history/view/history_view_transcribe_button.cpp`、`history/view/media/history_view_document.cpp` | `Api::Transcribes` 的 `isRated`／`rate`／`entry` 各一行交给 `Nagram::TranscriptionOverride`；外部转写缓存按会话保存在 `nagram/services/transcription.cpp`，头文件不新增成员 | 替换 |
 | H03 | 无上游改动 | — | — |
 | H04 | `boxes/compose_ai_box.cpp`、`ui/controls/compose_ai_button_factory.cpp` | 草稿 AI 入口改由系统模型处理 | 拦截 |
 | 草稿翻译 | `chat_helpers/message_field.cpp` | 输入框菜单加入“翻译草稿” | 读取 |
@@ -177,3 +177,15 @@ E21 截图在 `history_view_element.h/.cpp`、`history_view_message.cpp`、`hist
 | `history/view/history_view_element.cpp` | C03、C04、C10–C13、C19、C21、C25、C26、F02、I01 等约 13 项 |
 | `history/view/history_view_bottom_info.cpp` | C01、C02、C05–C09、F02 |
 | `history/history_inner_widget.cpp`、`history/view/history_view_context_menu.cpp` | 消息菜单（E01–E23） |
+
+## 4. 私有成员依赖
+
+以下 Nagram 类通过上游头文件中的一行 `friend` 声明访问私有成员。上游重命名或删除这些成员时编译会失败，同步上游后按此表核对。
+
+| 上游类 | Nagram 类 | 依赖的私有成员 |
+| --- | --- | --- |
+| `Data::Session`（`data/data_session.h`） | `Nagram::ViewRefresher` | `_messages` |
+| `Dialogs::InnerWidget`（`dialogs/dialogs_inner_widget.h`） | `Nagram::ListRefresher` | `_geometryInited`、`_narrowRatio`、`_filterResults`、`setNarrowRatio`、`refreshFilterResults`、`refreshWithCollapsedRows` |
+| `HistoryInner`（`history/history_inner_widget.h`） | `Nagram::Menu::Selection` | 选择状态（`_selected`、`changeSelection`、`SelectAction` 等） |
+| `HistoryView::ListWidget`（`history/view/history_view_list_widget.h`） | `Nagram::Menu::Selection` | 选择状态（`changeSelection`、`pushSelectedItems`、`SelectAction` 等） |
+| `HistoryView::EmojiInteractions`（`history/view/history_view_emoji_interactions.h`） | `Nagram::Messages::Effects` | `_plays`、`_delayed`、`_pendingEffects`、`_downloadLifetime` |
