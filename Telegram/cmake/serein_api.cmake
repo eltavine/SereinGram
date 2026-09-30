@@ -31,3 +31,6 @@ if (NOT TDESKTOP_API_TEST
     set(SEREIN_API_FROM_LOCAL ON CACHE INTERNAL "api_id and api_hash were taken from SEREIN_API_*.")
     message(STATUS "Serein: using api_id ${SEREIN_API_ID} from the environment or local credentials file.")
 endif()
+
+# SereinGram updates through GitHub Releases, never Telegram's update channel.
+set(DESKTOP_APP_DISABLE_AUTOUPDATE ON CACHE BOOL "Disable autoupdate." FORCE)
