@@ -93,7 +93,7 @@ inline constexpr auto kFadeDeletedMessages = Option<bool>{
 inline constexpr auto kShowChannelBadge = Option<bool>{
 	"serein.showChannelBadge",
 	Scope::Device,
-	true,
+	false,
 	Category::Messages,
 	"lng_serein_show_channel_badge",
 	static_cast<unsigned>(Flag::RefreshMessageView) };

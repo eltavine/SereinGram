@@ -149,7 +149,7 @@ inline constexpr auto kSpaceOnEdit = Option<bool>{
 inline constexpr auto kMentionMenu = Option<bool>{
 	"serein.mentionMenu",
 	Scope::Device,
-	true,
+	false,
 	Category::Compose,
 	"lng_serein_mention_menu",
 	0 };

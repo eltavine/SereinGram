@@ -89,7 +89,6 @@ message MessagesSettings {
   ];
   optional bool show_channel_badge = 29 [
     (serein.options.v1.field) = {
-      default_bool: true
       keywords: ["channel", "badge", "sender"]
       refresh: REFRESH_MESSAGE_VIEW
     }

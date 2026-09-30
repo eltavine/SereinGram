@@ -113,7 +113,6 @@ message ComposeSettings {
     keywords: ["spacing", "edit"]
   }];
   optional bool mention_menu = 29 [(serein.options.v1.field) = {
-    default_bool: true
     keywords: ["mention", "format"]
   }];
   optional string default_code_language = 20 [

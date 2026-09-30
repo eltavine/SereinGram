@@ -268,8 +268,9 @@ void TestOptions() {
 	Require(compose.All().size() == 30, "compose option count");
 	Require(Compose::kMentionMenu.key == "serein.mentionMenu"
 		&& Compose::kMentionMenu.scope == Scope::Device
-		&& Compose::kMentionMenu.fallback,
-		"mention menu is not a device option shown by default");
+		&& !Compose::kMentionMenu.fallback
+		&& !Messages::kShowChannelBadge.fallback,
+		"UI additions must stay off until enabled");
 	Require(Compose::kDefaultCodeLanguage.validate(QString::fromLatin1("cpp"))
 		&& !Compose::kDefaultCodeLanguage.validate(QString::fromLatin1("c++!")),
 		"code language validation");
