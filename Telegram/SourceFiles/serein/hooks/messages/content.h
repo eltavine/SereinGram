@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QtCore/QString>
+
 #include <gsl/pointers>
 #include <rpl/rpl.h>
 
@@ -36,5 +38,6 @@ namespace Serein::Messages {
 	const std::vector<Data::ReactionId> &added);
 [[nodiscard]] bool HidePrivateActivity(const PeerData *peer);
 void AttachActivityRefresh(not_null<Ui::RpWidget*> widget);
+[[nodiscard]] QString ChannelSenderBadge(not_null<const HistoryItem*> item);
 
 } // namespace Serein::Messages

@@ -122,6 +122,7 @@
 "lng_serein_edited_mark" = "“已编辑”标记文字";
 "lng_serein_deleted_mark_title" = "已删除标记文字";
 "lng_serein_fade_deleted_messages" = "淡化已删除消息";
+"lng_serein_show_channel_badge" = "以频道身份发送的消息显示“频道”标记";
 "lng_serein_reactions" = "反应";
 "lng_serein_hide_reactions" = "隐藏消息反应";
 "lng_serein_hide_private_reactions" = "私聊";

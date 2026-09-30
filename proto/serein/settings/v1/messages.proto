@@ -87,6 +87,13 @@ message MessagesSettings {
       refresh: REFRESH_MESSAGE_VIEW
     }
   ];
+  optional bool show_channel_badge = 29 [
+    (serein.options.v1.field) = {
+      default_bool: true
+      keywords: ["channel", "badge", "sender"]
+      refresh: REFRESH_MESSAGE_VIEW
+    }
+  ];
   optional bool hide_reactions = 10 [
     (serein.options.v1.field) = {
       section: {title: "lng_serein_reactions" id: "reactions" keywords: ["reactions"]}

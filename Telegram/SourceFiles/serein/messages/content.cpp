@@ -7,6 +7,7 @@
 #include "data/data_peer.h"
 #include "history/history_item.h"
 #include "history/view/media/history_view_similar_channels.h"
+#include "lang/lang_keys.h"
 #include "ui/rp_widget.h"
 
 #include <algorithm>
@@ -68,6 +69,12 @@ void AttachActivityRefresh(not_null<Ui::RpWidget*> widget) {
 	}) | rpl::on_next([widget](std::string_view) {
 		widget->update();
 	}, widget->lifetime());
+}
+
+QString ChannelSenderBadge(not_null<const HistoryItem*> item) {
+	return (ForDevice().Get(kShowChannelBadge) && item->author()->isBroadcast())
+		? tr::lng_channel_badge(tr::now)
+		: QString();
 }
 
 } // namespace Serein::Messages

@@ -90,6 +90,13 @@ inline constexpr auto kFadeDeletedMessages = Option<bool>{
 	Category::Messages,
 	"lng_serein_fade_deleted_messages",
 	static_cast<unsigned>(Flag::RefreshMessageView) };
+inline constexpr auto kShowChannelBadge = Option<bool>{
+	"serein.showChannelBadge",
+	Scope::Device,
+	true,
+	Category::Messages,
+	"lng_serein_show_channel_badge",
+	static_cast<unsigned>(Flag::RefreshMessageView) };
 inline constexpr auto kHideReactions = Option<bool>{
 	"serein.hideReactions",
 	Scope::Device,
@@ -226,6 +233,7 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kEditedMark));
 	Expects(registry.Add(kDeletedMark));
 	Expects(registry.Add(kFadeDeletedMessages));
+	Expects(registry.Add(kShowChannelBadge));
 	Expects(registry.Add(kHideReactions));
 	Expects(registry.Add(kHidePrivateReactions));
 	Expects(registry.Add(kHideGroupReactions));

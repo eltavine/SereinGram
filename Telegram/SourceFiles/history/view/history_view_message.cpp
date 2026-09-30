@@ -1065,7 +1065,7 @@ void Message::refreshRightBadge() {
 			return { QString(), BadgeRole::User, false };
 		}
 		if (!user) {
-			return { QString(), BadgeRole::User, false };
+			return { Serein::Messages::ChannelSenderBadge(item), BadgeRole::User, false };
 		}
 		const auto info = channel->mgInfo.get();
 		const auto userId = peerToUser(user->id);
