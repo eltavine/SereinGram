@@ -5,6 +5,7 @@
 #include <vector>
 
 class HistoryItem;
+class QPainter;
 struct TextWithEntities;
 
 namespace Main {
@@ -26,5 +27,19 @@ void OnBeforeEdition(
 [[nodiscard]] Ports::HistoryStore *HistoryStoreFor(
 	gsl::not_null<Main::Session*> session);
 void PruneHistory(gsl::not_null<Main::Session*> session);
+
+class FadedPaint final {
+public:
+	FadedPaint(QPainter &p, gsl::not_null<const HistoryItem*> item);
+	FadedPaint(const FadedPaint &) = delete;
+	FadedPaint &operator=(const FadedPaint &) = delete;
+	~FadedPaint();
+
+private:
+	QPainter &_p;
+	double _opacity = 1.;
+	bool _faded = false;
+
+};
 
 } // namespace Serein::Hooks

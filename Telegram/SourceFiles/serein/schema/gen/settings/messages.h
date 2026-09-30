@@ -83,6 +83,13 @@ inline const auto kDeletedMark = Option<QString>{
 		return (value == QString())
 			|| ((value.toUcs4().size() <= 64));
 	} };
+inline constexpr auto kFadeDeletedMessages = Option<bool>{
+	"serein.fadeDeletedMessages",
+	Scope::Device,
+	true,
+	Category::Messages,
+	"lng_serein_fade_deleted_messages",
+	static_cast<unsigned>(Flag::RefreshMessageView) };
 inline constexpr auto kHideReactions = Option<bool>{
 	"serein.hideReactions",
 	Scope::Device,
@@ -218,6 +225,7 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kHideEditedBadge));
 	Expects(registry.Add(kEditedMark));
 	Expects(registry.Add(kDeletedMark));
+	Expects(registry.Add(kFadeDeletedMessages));
 	Expects(registry.Add(kHideReactions));
 	Expects(registry.Add(kHidePrivateReactions));
 	Expects(registry.Add(kHideGroupReactions));

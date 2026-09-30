@@ -125,6 +125,7 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_hide_edited_badge" = "Hide edited label";
 "lng_serein_edited_mark" = "Edited label text";
 "lng_serein_deleted_mark_title" = "Deleted label text";
+"lng_serein_fade_deleted_messages" = "Fade deleted messages";
 "lng_serein_reactions" = "Reactions";
 "lng_serein_hide_reactions" = "Hide message reactions";
 "lng_serein_hide_private_reactions" = "Private chats";

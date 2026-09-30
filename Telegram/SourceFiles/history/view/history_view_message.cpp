@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/history_view_message.h"
+#include "serein/hooks/history.h"
 #include "serein/hooks/gen/interface.h"
 #include "serein/hooks/messages/reactions.h"
 #include "serein/hooks/messages/content.h"
@@ -1768,6 +1769,7 @@ void Message::draw(Painter &p, const PaintContext &context) const {
 	if (isHidden()) {
 		return;
 	}
+	const auto faded = Serein::Hooks::FadedPaint(p, item);
 
 	const auto entry = logEntryOriginal();
 	const auto check = factcheckBlock();

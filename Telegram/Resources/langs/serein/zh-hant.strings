@@ -121,6 +121,7 @@
 "lng_serein_hide_edited_badge" = "隱藏「已編輯」標記";
 "lng_serein_edited_mark" = "「已編輯」標記文字";
 "lng_serein_deleted_mark_title" = "已刪除標記文字";
+"lng_serein_fade_deleted_messages" = "淡化已刪除訊息";
 "lng_serein_reactions" = "回應";
 "lng_serein_hide_reactions" = "隱藏訊息回應";
 "lng_serein_hide_private_reactions" = "私人聊天";
