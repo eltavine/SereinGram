@@ -151,7 +151,8 @@ jobs:
         run: |
           cd $REPO_NAME/out/Debug
           mkdir artifact
-          mv SereinGram.app artifact/
+          lipo SereinGram.app/Contents/MacOS/SereinGram -verify_arch x86_64 arm64
+          hdiutil create -volname SereinGram -srcfolder SereinGram.app -ov -format UDZO artifact/SereinGram.dmg
       - uses: actions/upload-artifact@v7
         if: env.UPLOAD_ARTIFACT == 'true'
         name: Upload artifact.
