@@ -92,6 +92,8 @@ enum class Command {
 	SupportScrollToCurrent,
 	SupportHistoryBack,
 	SupportHistoryForward,
+	SereinToggleGhostMode,
+	SereinToggleDemoMode,
 };
 
 [[maybe_unused]] constexpr auto kShowFolder = {

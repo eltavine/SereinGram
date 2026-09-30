@@ -8,7 +8,6 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "window/window_session_controller.h"
 #include "serein/hooks/chats/startup_folder.h"
 #include "serein/hooks/gen/privacy.h"
-#include "serein/hooks/chats/sort.h"
 
 #include "apiwrap.h"
 #include "api/api_cloud_password.h"
@@ -1587,7 +1586,6 @@ SessionController::SessionController(
 , _defaultChatTheme(std::make_shared<Ui::ChatTheme>())
 , _chatStyle(std::make_unique<Ui::ChatStyle>(session->colorIndicesValue())) {
 	init();
-	if (_isPrimary) Serein::Chats::WatchSorting(session, lifetime());
 
 	_chatStyleTheme = _defaultChatTheme;
 	_chatStyle->apply(_defaultChatTheme.get());

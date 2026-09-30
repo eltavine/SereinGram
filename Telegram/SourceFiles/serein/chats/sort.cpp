@@ -157,16 +157,14 @@ uint64 SortKey(const Dialogs::Entry &entry, uint64 original) {
 		| (original & 0x0FFFFFFFULL);
 }
 
-void WatchSorting(
-		gsl::not_null<Main::Session*> session,
-		rpl::lifetime &lifetime) {
+void WatchSorting(gsl::not_null<Main::Session*> session) {
 	ForDevice().changes(
 	) | rpl::filter([](auto key) {
 		return key == kChatSort.key;
 	}) | rpl::on_next([=] {
 		SortConfig() = ForDevice().Get(kChatSort);
 		RefreshSorting(session);
-	}, lifetime);
+	}, session->lifetime());
 }
 
 void ChatSortBox(gsl::not_null<Ui::GenericBox*> box) {
