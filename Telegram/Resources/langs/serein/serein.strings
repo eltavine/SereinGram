@@ -451,6 +451,10 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_unblock_all_confirm" = "Unblock all";
 "lng_serein_unblock_all_done" = "Unblocked: {amount}";
 "lng_serein_unblock_all_failed" = "Stopped after unblocking {amount}. Try again later.";
+"lng_serein_upgrade_supergroup" = "Upgrade to supergroup";
+"lng_serein_upgrade_supergroup_sure" = "Upgrade this group to a supergroup? Members keep their messages, and the change cannot be undone.";
+"lng_serein_upgrade_supergroup_confirm" = "Upgrade";
+"lng_serein_upgrade_supergroup_done" = "The group is now a supergroup.";
 "lng_serein_alias_about" = "This name is visible only in this account on this device. Leave it empty to restore the original name.";
 "lng_serein_alias_invalid" = "The local name is invalid or the list is full.";
 "lng_serein_alias_changed" = "The local name changed. Reopen this dialog and try again.";

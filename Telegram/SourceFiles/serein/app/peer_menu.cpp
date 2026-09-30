@@ -1,6 +1,7 @@
 #include "serein/hooks/peer_menu.h"
 
 #include "serein/admin/delete_mine.h"
+#include "serein/admin/upgrade.h"
 #include "serein/features/history/viewer.h"
 #include "serein/hooks/privacy/alias.h"
 #include "data/data_forum_topic.h"
@@ -61,6 +62,11 @@ void FillProfileMenu(
 	addAction(tr::lng_serein_peer_alias(tr::now), [=] {
 		Privacy::ShowAlias(show, peer);
 	}, &st::menuIconEdit);
+	if (Admin::CanUpgradeToSupergroup(peer)) {
+		addAction(tr::lng_serein_upgrade_supergroup(tr::now), [=] {
+			Admin::ConfirmUpgradeToSupergroup(controller, peer);
+		}, &st::menuIconGroups);
+	}
 }
 
 } // namespace Serein::Hooks

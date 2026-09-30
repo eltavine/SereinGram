@@ -447,6 +447,10 @@
 "lng_serein_unblock_all_confirm" = "全部解除";
 "lng_serein_unblock_all_done" = "已解除封鎖：{amount}";
 "lng_serein_unblock_all_failed" = "已解除 {amount} 個後停止，請稍後再試。";
+"lng_serein_upgrade_supergroup" = "升級為超級群組";
+"lng_serein_upgrade_supergroup_sure" = "要把這個群組升級為超級群組嗎？成員的訊息會保留，升級後無法復原。";
+"lng_serein_upgrade_supergroup_confirm" = "升級";
+"lng_serein_upgrade_supergroup_done" = "群組已升級為超級群組。";
 "lng_serein_alias_about" = "此名稱只在本機的目前帳號中顯示。留空可恢復原名。";
 "lng_serein_alias_invalid" = "本機名稱無效，或名稱清單已滿。";
 "lng_serein_alias_changed" = "本機名稱已變更，請重新開啟此視窗。";
