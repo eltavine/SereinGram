@@ -7,6 +7,7 @@
 
 #include <span>
 #include <type_traits>
+#include <vector>
 
 namespace Serein {
 
@@ -33,6 +34,16 @@ struct NumberRow {
 	int maximum = 0;
 	tr::phrase<> zeroLabel;
 	Fn<QString(int)> format;
+};
+
+struct ChoiceRow {
+	const Option<int> *option = nullptr;
+	tr::phrase<> title;
+	QString id;
+	QStringList keywords;
+	std::vector<int> values;
+	std::vector<tr::phrase<>> labels;
+	QString suffix;
 };
 
 class CustomRow final {
@@ -64,6 +75,9 @@ void AddSection(
 void AddNumber(
 	::Settings::Builder::SectionBuilder &builder,
 	const NumberRow &row);
+void AddChoice(
+	::Settings::Builder::SectionBuilder &builder,
+	const ChoiceRow &row);
 void AddNote(
 	::Settings::Builder::SectionBuilder &builder,
 	tr::phrase<> text);

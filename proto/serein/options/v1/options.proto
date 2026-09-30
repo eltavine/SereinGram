@@ -68,6 +68,15 @@ message FieldOptions {
   string disabled_by = 15;
   // Generates a number input row for an int32 option with gte and lte rules.
   NumberInput number = 16;
+  // Generates a single choice row for an int32 option.
+  ChoiceInput choice = 17;
+}
+
+message ChoiceInput {
+  // Lang keys for the values 0, 1, 2 and so on, matching gte 0 and lte.
+  repeated string labels = 1;
+  // Appended to each value of the in rule when there are no labels.
+  string suffix = 2;
 }
 
 message NumberInput {

@@ -42,29 +42,6 @@ public:
 	static const SectionBuildMethod kBuild;
 };
 
-QString PlaceholderLabel(int value) {
-	switch (value) {
-	case 1: return tr::lng_serein_placeholder_chat(tr::now);
-	case 2: return tr::lng_serein_placeholder_sender(tr::now);
-	default: return tr::lng_serein_preview_follow(tr::now);
-	}
-}
-
-void PlaceholderBox(not_null<Ui::GenericBox*> box) {
-	box->setTitle(tr::lng_serein_input_placeholder());
-	const auto group = std::make_shared<Ui::RadiobuttonGroup>(
-		ForDevice().Get(Compose::kInputPlaceholderMode));
-	for (auto value = 0; value != 3; ++value) {
-		box->addRow(object_ptr<Ui::Radiobutton>(
-			box, group, value, PlaceholderLabel(value), st::settingsSendType),
-			st::settingsSendTypePadding);
-	}
-	group->setChangedCallback([=](int value) {
-		Expects(ForDevice().Set(Compose::kInputPlaceholderMode, value));
-		box->closeBox();
-	});
-}
-
 void CodeLanguageBox(not_null<Ui::GenericBox*> box) {
 	box->setTitle(tr::lng_serein_default_code_language());
 	const auto current = ForDevice().Get(Compose::kDefaultCodeLanguage);
@@ -119,17 +96,6 @@ const auto kMeta = BuildHelper({
 }, [](SectionBuilder &builder) {
 	const auto controller = builder.controller();
 	Compose::AddLayout(builder, {
-		.inputPlaceholderMode = [&] {
-			builder.addButton({
-				.id = u"serein/compose/input-placeholder"_q,
-				.title = tr::lng_serein_input_placeholder(),
-				.st = &st::settingsButtonNoIcon,
-				.label = ForDevice().Value(Compose::kInputPlaceholderMode)
-					| rpl::map(PlaceholderLabel),
-				.onClick = [=] { controller->show(Box(PlaceholderBox)); },
-				.keywords = { u"placeholder"_q, u"hint"_q },
-			});
-		},
 		.defaultCodeLanguage = [&] {
 			builder.addButton({
 				.id = u"serein/compose/default-code-language"_q,

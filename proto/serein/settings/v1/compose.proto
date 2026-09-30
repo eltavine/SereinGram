@@ -92,6 +92,10 @@ message ComposeSettings {
   optional int32 input_placeholder_mode = 15 [
     (serein.options.v1.field) = {
       title: "lng_serein_input_placeholder"
+      keywords: ["placeholder", "hint"]
+      choice: {
+        labels: ["lng_serein_preview_follow", "lng_serein_placeholder_chat", "lng_serein_placeholder_sender"]
+      }
     },
     (buf.validate.field).int32 = {gte: 0, lte: 2}
   ];

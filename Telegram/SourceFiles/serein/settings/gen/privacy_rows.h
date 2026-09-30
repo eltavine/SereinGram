@@ -55,18 +55,20 @@ inline const auto kToggleRows = std::array<ToggleRow, 7>{ {
 	},
 } };
 
-struct CustomRows {
-	CustomRow profileIdFormat;
-};
-
 inline void AddLayout(
-		::Settings::Builder::SectionBuilder &builder,
-		const CustomRows &custom) {
+		::Settings::Builder::SectionBuilder &builder) {
 	AddToggle(builder, kToggleRows[0]);
 	AddNote(builder, tr::lng_serein_demo_mode_note);
 	AddToggle(builder, kToggleRows[1]);
 	AddToggle(builder, kToggleRows[2]);
-	custom.profileIdFormat();
+	AddChoice(builder, {
+		.option = &kProfileIdFormat,
+		.title = tr::lng_serein_profile_id_format,
+		.id = u"serein/privacy/profile-id-format"_q,
+		.keywords = { u"profile"_q, u"ID"_q },
+		.values = { 0, 1, 2 },
+		.labels = { tr::lng_serein_id_off, tr::lng_serein_id_bot_api, tr::lng_serein_id_raw },
+	});
 	AddToggle(builder, kToggleRows[3]);
 	AddToggle(builder, kToggleRows[4]);
 	AddToggle(builder, kToggleRows[5]);

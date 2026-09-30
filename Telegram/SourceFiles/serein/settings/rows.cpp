@@ -3,11 +3,14 @@
 #include "serein/settings/restart.h"
 #include "ui/layers/generic_box.h"
 #include "ui/widgets/buttons.h"
+#include "ui/widgets/checkbox.h"
 #include "ui/widgets/fields/input_field.h"
 #include "window/window_session_controller.h"
 #include "styles/style_layers.h"
 #include "styles/style_settings.h"
 #include "styles/style_widgets.h"
+
+#include <algorithm>
 
 namespace Serein {
 namespace {
@@ -54,6 +57,35 @@ void NumberBox(
 	) | rpl::on_next([=](auto) { submit(); }, field->lifetime());
 	box->addButton(tr::lng_settings_save(), submit);
 	box->addButton(tr::lng_cancel(), [=] { box->closeBox(); });
+}
+
+[[nodiscard]] QString ChoiceLabel(const ChoiceRow &row, int value) {
+	const auto i = std::find(row.values.begin(), row.values.end(), value);
+	const auto index = int(i - row.values.begin());
+	return (index < int(row.labels.size()))
+		? row.labels[index](tr::now)
+		: (QString::number(value) + row.suffix);
+}
+
+void ChoiceBox(
+		not_null<Ui::GenericBox*> box,
+		ChoiceRow row,
+		Fn<Options&()> store) {
+	box->setTitle(row.title());
+	const auto group = std::make_shared<Ui::RadiobuttonGroup>(
+		store().Get(*row.option));
+	for (const auto value : row.values) {
+		box->addRow(object_ptr<Ui::Radiobutton>(
+			box,
+			group,
+			value,
+			ChoiceLabel(row, value),
+			st::settingsSendType), st::settingsSendTypePadding);
+	}
+	group->setChangedCallback([=](int value) {
+		Expects(store().Set(*row.option, value));
+		box->closeBox();
+	});
 }
 
 } // namespace
@@ -124,6 +156,30 @@ void AddNumber(
 		.onClick = [=] {
 			if (controller) {
 				controller->show(Box(NumberBox, row, store));
+			}
+		},
+		.keywords = row.keywords,
+	});
+}
+
+void AddChoice(
+		::Settings::Builder::SectionBuilder &builder,
+		const ChoiceRow &row) {
+	Expects(row.option != nullptr);
+	Expects(!row.values.empty());
+
+	const auto store = StoreFor(builder, *row.option);
+	const auto controller = builder.controller();
+	builder.addButton({
+		.id = row.id,
+		.title = row.title(),
+		.st = &st::settingsButtonNoIcon,
+		.label = store().Value(*row.option) | rpl::map([=](int value) {
+			return ChoiceLabel(row, value);
+		}),
+		.onClick = [=] {
+			if (controller) {
+				controller->show(Box(ChoiceBox, row, store));
 			}
 		},
 		.keywords = row.keywords,

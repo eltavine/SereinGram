@@ -179,6 +179,31 @@ class ModelTest(unittest.TestCase):
             model.build_pages(image(field("flag", "flag", options={
                 model.FIELD_EXTENSION: {"number": {"zeroLabel": "lng_z"}}})))
 
+    def test_choice_inputs(self):
+        labeled = model.build_pages(image(field("mode", "mode", "TYPE_INT32", {
+            model.FIELD_EXTENSION: {"choice": {"labels": ["lng_a", "lng_b"]}},
+            model.RULES_EXTENSION: {"int32": {"gte": 0, "lte": 1}},
+        })))[0].layout[0]
+        self.assertEqual((labeled.kind, labeled.values, labeled.labels),
+                         ("choice", [0, 1], ["lng_a", "lng_b"]))
+        suffixed = model.build_pages(image(field("scale", "scale", "TYPE_INT32", {
+            model.FIELD_EXTENSION: {"choice": {"suffix": "%"}},
+            model.RULES_EXTENSION: {"int32": {"in": [50, 100]}},
+        })))[0].layout[0]
+        self.assertEqual((suffixed.values, suffixed.suffix), ([50, 100], "%"))
+
+    def test_choice_inputs_are_validated(self):
+        with self.assertRaisesRegex(model.SchemaError, "gte 0 and lte 1"):
+            model.build_pages(image(field("mode", "mode", "TYPE_INT32", {
+                model.FIELD_EXTENSION: {"choice": {"labels": ["lng_a", "lng_b"]}},
+                model.RULES_EXTENSION: {"int32": {"gte": 0, "lte": 2}},
+            })))
+        with self.assertRaisesRegex(model.SchemaError, "labels or an in rule"):
+            model.build_pages(image(field("mode", "mode", "TYPE_INT32", {
+                model.FIELD_EXTENSION: {"choice": {}},
+                model.RULES_EXTENSION: {"int32": {"gte": 0, "lte": 2}},
+            })))
+
     def test_page_without_visible_options_has_no_rows_header(self):
         page = model.build_pages(image(field("secret_flag", "secretFlag", options={
             model.FIELD_EXTENSION: {"hidden": True}})))[0]
@@ -268,6 +293,16 @@ class RenderTest(unittest.TestCase):
         self.assertIn("\t\t.maximum = 365,", rows)
         self.assertIn("return tr::lng_days(tr::now, lt_count, value);", rows)
         self.assertNotIn("CustomRows", rows)
+
+    def test_renders_choice_inputs(self):
+        import generate
+        output = generate.render(image(field("mode", "mode", "TYPE_INT32", {
+            model.FIELD_EXTENSION: {"choice": {"labels": ["lng_a", "lng_b"]}},
+            model.RULES_EXTENSION: {"int32": {"gte": 0, "lte": 1}},
+        })), known_strings={"lng_serein_mode", "lng_a", "lng_b"})
+        rows = output["settings/gen/messages_rows.h"]
+        self.assertIn("\t\t.values = { 0, 1 },", rows)
+        self.assertIn("\t\t.labels = { tr::lng_a, tr::lng_b },", rows)
 
     def test_renders_custom_rows(self):
         import generate

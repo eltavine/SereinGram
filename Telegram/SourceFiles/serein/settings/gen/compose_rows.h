@@ -158,7 +158,6 @@ inline const auto kToggleRows = std::array<ToggleRow, 24>{ {
 } };
 
 struct CustomRows {
-	CustomRow inputPlaceholderMode;
 	CustomRow defaultCodeLanguage;
 	CustomRow quickReplies;
 };
@@ -190,7 +189,14 @@ inline void AddLayout(
 	AddToggle(builder, kToggleRows[11]);
 	AddToggle(builder, kToggleRows[12]);
 	AddToggle(builder, kToggleRows[13]);
-	custom.inputPlaceholderMode();
+	AddChoice(builder, {
+		.option = &kInputPlaceholderMode,
+		.title = tr::lng_serein_input_placeholder,
+		.id = u"serein/compose/input-placeholder-mode"_q,
+		.keywords = { u"placeholder"_q, u"hint"_q },
+		.values = { 0, 1, 2 },
+		.labels = { tr::lng_serein_preview_follow, tr::lng_serein_placeholder_chat, tr::lng_serein_placeholder_sender },
+	});
 	AddSection(builder, {
 		u"serein/compose/text-format"_q,
 		tr::lng_serein_text_format,

@@ -67,14 +67,16 @@ inline const auto kToggleRows = std::array<ToggleRow, 9>{ {
 	},
 } };
 
-struct CustomRows {
-	CustomRow stickerScale;
-};
-
 inline void AddLayout(
-		::Settings::Builder::SectionBuilder &builder,
-		const CustomRows &custom) {
-	custom.stickerScale();
+		::Settings::Builder::SectionBuilder &builder) {
+	AddChoice(builder, {
+		.option = &kStickerScale,
+		.title = tr::lng_serein_sticker_scale,
+		.id = u"serein/media/sticker-scale"_q,
+		.keywords = { u"sticker"_q, u"size"_q },
+		.values = { 50, 75, 100, 125, 150, 175, 200 },
+		.suffix = u"%"_q,
+	});
 	AddToggle(builder, kToggleRows[0]);
 	AddNumber(builder, {
 		.option = &kRecentStickerLimit,

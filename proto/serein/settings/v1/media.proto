@@ -16,6 +16,8 @@ message MediaSettings {
     (serein.options.v1.field) = {
       refresh: REFRESH_MESSAGE_VIEW
       default_int: 100
+      keywords: ["sticker", "size"]
+      choice: {suffix: "%"}
     },
     (buf.validate.field).int32 = {in: [50, 75, 100, 125, 150, 175, 200]}
   ];

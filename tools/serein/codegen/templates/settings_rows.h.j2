@@ -65,6 +65,20 @@ inline void AddLayout(
 		},
 {% endif %}
 	});
+{% elif item.kind == "choice" %}
+	AddChoice(builder, {
+		.option = &{{ item.cpp_name }},
+		.title = tr::{{ item.title }},
+		.id = u"{{ item.id }}"_q,
+		.keywords = { {{ item.keywords }} },
+		.values = { {{ item.values | join(", ") }} },
+{% if item.labels %}
+		.labels = { {% for label in item.labels %}tr::{{ label }}{{ ", " if not loop.last }}{% endfor %} },
+{% endif %}
+{% if item.suffix %}
+		.suffix = u{{ item.suffix | tojson }}_q,
+{% endif %}
+	});
 {% elif item.kind == "custom" %}
 	custom.{{ item.member }}();
 {% else %}

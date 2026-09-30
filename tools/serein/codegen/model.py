@@ -117,6 +117,9 @@ class LayoutItem:
     maximum: int = 0
     zero_label: str = ""
     count_format: str = ""
+    values: list = field(default_factory=list)
+    labels: list = field(default_factory=list)
+    suffix: str = ""
 
 
 @dataclass
@@ -319,6 +322,8 @@ def build_layout(message, options, stem, where):
                 keywords=cpp_keywords(section.get("keywords", []))))
         if "number" in custom and not option.custom_ui:
             layout.append(number_item(item, option, custom["number"], stem, place))
+        elif "choice" in custom and not option.custom_ui:
+            layout.append(choice_item(item, option, custom["choice"], stem, place))
         elif option.toggle:
             disabled_by = custom.get("disabledBy", "")
             if disabled_by:
@@ -360,7 +365,7 @@ def build_pages(image):
         raise SchemaError(f"duplicate storage keys: {duplicates}")
     ids = [row.id for page in pages for row in page.rows]
     ids += [item.id for page in pages for item in page.layout
-            if item.kind in ("section", "number")]
+            if item.kind in ("section", "number", "choice")]
     duplicates = sorted({id for id in ids if ids.count(id) > 1})
     if duplicates:
         raise SchemaError(f"duplicate settings row ids: {duplicates}")
@@ -388,10 +393,37 @@ def number_item(item, option, number, stem, place):
     )
 
 
+def choice_item(item, option, choice, stem, place):
+    if option.ctype != "int":
+        raise SchemaError(f"{place}: choice inputs need an int32 option")
+    rules = item.get("options", {}).get(RULES_EXTENSION, {}).get("int32", {})
+    labels = list(choice.get("labels", []))
+    if labels:
+        if (int(rules.get("gte", -1)), int(rules.get("lte", -1))) != (0, len(labels) - 1):
+            raise SchemaError(f"{place}: choice labels need gte 0 and lte {len(labels) - 1}")
+        values = list(range(len(labels)))
+    elif rules.get("in"):
+        values = [int(value) for value in rules["in"]]
+    else:
+        raise SchemaError(f"{place}: choice inputs need labels or an in rule")
+    return LayoutItem(
+        "choice",
+        id=f"serein/{stem}/{option.name.replace('_', '-')}",
+        title=option.title,
+        keywords=cpp_keywords(option.keywords),
+        cpp_name=option.cpp_name,
+        values=values,
+        labels=labels,
+        suffix=choice.get("suffix", ""),
+    )
+
+
 def check_titles(pages, known):
     titles = {row.title for page in pages for row in page.rows}
     titles |= {item.title for page in pages for item in page.layout
-               if item.kind in ("section", "note", "number")}
+               if item.kind in ("section", "note", "number", "choice")}
+    titles |= {label for page in pages for item in page.layout
+               for label in item.labels}
     titles |= {label for page in pages for item in page.layout
                for label in (item.zero_label, item.count_format) if label}
     missing = sorted(title for title in titles if title not in known)

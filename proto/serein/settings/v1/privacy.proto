@@ -23,6 +23,12 @@ message PrivacySettings {
     keywords: ["share", "phone"]
   }];
   optional int32 profile_id_format = 4 [
+    (serein.options.v1.field) = {
+      keywords: ["profile", "ID"]
+      choice: {
+        labels: ["lng_serein_id_off", "lng_serein_id_bot_api", "lng_serein_id_raw"]
+      }
+    },
     (buf.validate.field).int32 = {gte: 0, lte: 2}
   ];
   optional bool show_profile_dc = 5 [(serein.options.v1.field) = {

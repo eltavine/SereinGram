@@ -40,21 +40,6 @@ public:
 	static const SectionBuildMethod kBuild;
 };
 
-void StickerScaleBox(not_null<Ui::GenericBox*> box) {
-	box->setTitle(tr::lng_serein_sticker_scale());
-	const auto group = std::make_shared<Ui::RadiobuttonGroup>(
-		ForDevice().Get(Media::kStickerScale));
-	for (auto value = 50; value <= 200; value += 25) {
-		box->addRow(object_ptr<Ui::Radiobutton>(
-			box, group, value, QString::number(value) + '%',
-			st::settingsSendType), st::settingsSendTypePadding);
-	}
-	group->setChangedCallback([=](int value) {
-		Expects(ForDevice().Set(Media::kStickerScale, value));
-		box->closeBox();
-	});
-}
-
 const auto kMeta = BuildHelper({
 	.id = MediaSection::Id(),
 	.parentId = HomeId(),
@@ -62,21 +47,7 @@ const auto kMeta = BuildHelper({
 	.icon = &st::menuIconChatBubble,
 }, [](SectionBuilder &builder) {
 	const auto controller = builder.controller();
-	Media::AddLayout(builder, {
-		.stickerScale = [&] {
-			builder.addButton({
-				.id = u"serein/media/sticker-scale"_q,
-				.title = tr::lng_serein_sticker_scale(),
-				.st = &st::settingsButtonNoIcon,
-				.label = ForDevice().Value(Media::kStickerScale)
-					| rpl::map([](int value) {
-						return QString::number(value) + '%';
-					}),
-				.onClick = [=] { controller->show(Box(StickerScaleBox)); },
-				.keywords = { u"sticker"_q, u"size"_q },
-			});
-		},
-	});
+	Media::AddLayout(builder);
 	builder.addButton({
 		.id = u"serein/media/sticker-catalog"_q,
 		.title = tr::lng_serein_catalog_title(),

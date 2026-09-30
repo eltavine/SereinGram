@@ -41,29 +41,6 @@ public:
 	static const SectionBuildMethod kBuild;
 };
 
-QString ProfileIdFormatLabel(int format) {
-	return (format == 1)
-		? tr::lng_serein_id_bot_api(tr::now)
-		: (format == 2)
-		? tr::lng_serein_id_raw(tr::now)
-		: tr::lng_serein_id_off(tr::now);
-}
-
-void ProfileIdFormatBox(not_null<Ui::GenericBox*> box) {
-	box->setTitle(tr::lng_serein_profile_id_format());
-	const auto group = std::make_shared<Ui::RadiobuttonGroup>(
-		ForDevice().Get(Privacy::kProfileIdFormat));
-	for (auto value = 0; value != 3; ++value) {
-		box->addRow(object_ptr<Ui::Radiobutton>(
-			box, group, value, ProfileIdFormatLabel(value),
-			st::settingsSendType), st::settingsSendTypePadding);
-	}
-	group->setChangedCallback([=](int value) {
-		Expects(ForDevice().Set(Privacy::kProfileIdFormat, value));
-		box->closeBox();
-	});
-}
-
 const auto kMeta = BuildHelper({
 	.id = PrivacySection::Id(),
 	.parentId = HomeId(),
@@ -87,20 +64,7 @@ const auto kMeta = BuildHelper({
 	}
 	Ghost::AddLayout(builder);
 	HistorySettings::AddLayout(builder);
-	const auto controller = builder.controller();
-	Privacy::AddLayout(builder, {
-		.profileIdFormat = [&] {
-			builder.addButton({
-				.id = u"serein/privacy/profile-id-format"_q,
-				.title = tr::lng_serein_profile_id_format(),
-				.st = &st::settingsButtonNoIcon,
-				.label = ForDevice().Value(Privacy::kProfileIdFormat)
-					| rpl::map(ProfileIdFormatLabel),
-				.onClick = [=] { controller->show(Box(ProfileIdFormatBox)); },
-				.keywords = { u"profile"_q, u"ID"_q },
-			});
-		},
-	});
+	Privacy::AddLayout(builder);
 });
 
 const SectionBuildMethod PrivacySection::kBuild = kMeta.build;
