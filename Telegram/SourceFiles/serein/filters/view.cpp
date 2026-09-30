@@ -13,10 +13,9 @@
 #include "lang/lang_keys.h"
 #include "main/main_session.h"
 
-#include <QtCore/QJsonDocument>
-#include <QtCore/QJsonArray>
 #include <QtCore/QCache>
 
+#include <algorithm>
 #include <array>
 
 namespace Serein::Filters {
@@ -84,14 +83,16 @@ QString Searchable(not_null<HistoryItem*> item) {
 	if (raw.isEmpty()) {
 		return { .text = source };
 	}
-	const auto config = QJsonDocument::fromJson(raw).object();
+	const auto config = ParseFilterRules(raw);
 	const auto forwarded = item->Get<HistoryMessageForwarded>();
 	const auto sources = std::array<PeerData*, 3>{
 		item->from().get(),
 		forwarded ? forwarded->originalSender : nullptr,
 		item->viaBot(),
 	};
-	const auto hiddenAuthors = config.value(u"hiddenAuthors"_q).toArray();
+	const auto hiddenAuthors = config
+		? config->hiddenAuthors
+		: std::vector<QString>();
 	auto author = QString();
 	auto blocked = false;
 	for (const auto source : sources) {
@@ -100,7 +101,8 @@ QString Searchable(not_null<HistoryItem*> item) {
 		}
 		blocked = blocked || source->isBlocked();
 		const auto id = QString::number(SerializePeerId(source->id));
-		if (hiddenAuthors.contains(id)) {
+		if (std::find(hiddenAuthors.begin(), hiddenAuthors.end(), id)
+			!= hiddenAuthors.end()) {
 			author = id;
 		}
 	}
@@ -175,8 +177,10 @@ bool HiddenPeer(PeerData *peer) {
 	}
 	const auto raw = ForAccount(&peer->session()).Get(
 		Serein::Filters::kRules);
-	return !raw.isEmpty() && QJsonDocument::fromJson(raw).object().value(
-		u"hideBlocked"_q).toBool();
+	const auto config = raw.isEmpty()
+		? std::nullopt
+		: Serein::Filters::ParseFilterRules(raw);
+	return config && config->enabled && config->hideBlocked;
 }
 
 } // namespace Serein::Hooks::Filters

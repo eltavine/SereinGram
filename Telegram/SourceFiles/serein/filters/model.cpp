@@ -2,7 +2,6 @@
 
 #include <QtCore/QElapsedTimer>
 #include <QtCore/QJsonArray>
-#include <QtCore/QJsonDocument>
 #include <QtCore/QRegularExpression>
 #include <QtCore/QSet>
 #include <QtCore/QUuid>
@@ -28,12 +27,6 @@ QRegularExpression CompilePattern(const QString &pattern, bool caseInsensitive) 
 			| (caseInsensitive
 				? QRegularExpression::CaseInsensitiveOption
 				: QRegularExpression::NoPatternOption));
-}
-
-QRegularExpression Compile(const QJsonObject &rule) {
-	return CompilePattern(
-		rule.value(u"pattern"_q).toString(),
-		rule.value(u"caseInsensitive"_q).toBool());
 }
 
 bool ValidId(const QString &id) {
@@ -179,18 +172,21 @@ Result Apply(
 	if (raw.isEmpty()) {
 		return result;
 	}
-	if (!Validate(raw)) {
+	const auto config = ParseFilterRules(raw);
+	if (!config) {
 		result.error = u"invalid filter configuration"_q;
 		return result;
 	}
-	const auto config = QJsonDocument::fromJson(raw).object();
-	if (!config.value(u"enabled"_q).toBool()
-		|| config.value(u"excludedPeers"_q).toArray().contains(peer)
-		|| (outgoing && !config.value(u"filterOutgoing"_q).toBool())) {
+	const auto contains = [](const std::vector<QString> &list, const QString &id) {
+		return std::find(list.begin(), list.end(), id) != list.end();
+	};
+	if (!config->enabled
+		|| contains(config->excludedPeers, peer)
+		|| (outgoing && !config->filterOutgoing)) {
 		return result;
 	}
-	if ((blocked && config.value(u"hideBlocked"_q).toBool())
-		|| config.value(u"hiddenAuthors"_q).toArray().contains(author)) {
+	if ((blocked && config->hideBlocked)
+		|| contains(config->hiddenAuthors, author)) {
 		result.hidden = true;
 		return result;
 	}
@@ -201,18 +197,19 @@ Result Apply(
 	}
 	auto timer = QElapsedTimer();
 	timer.start();
-	if (config.value(u"stripZalgo"_q).toBool()
+	if (config->stripZalgo
 		&& !ApplyEdits(result.text, ZalgoEdits(result.text.text))) {
 		result.error = u"filter Zalgo edit failed"_q;
 		return { .text = source, .error = result.error };
 	}
-	for (const auto entry : config.value(u"rules"_q).toArray()) {
-		const auto rule = entry.toObject();
-		if (!rule.value(u"enabled"_q).toBool()) {
+	for (const auto &rule : config->rules) {
+		if (!rule.enabled) {
 			continue;
 		}
-		const auto expression = Compile(rule);
-		const auto action = rule.value(u"action"_q).toString();
+		const auto expression = CompilePattern(
+			rule.pattern,
+			rule.caseInsensitive);
+		const auto &action = rule.action;
 		const auto text = action == u"hide" && !searchable.isNull()
 			? searchable : result.text.text;
 		auto edits = std::vector<Edit>();
@@ -245,15 +242,14 @@ Result Apply(
 				continue;
 			}
 			edits.push_back({ start, end,
-				action == u"mask"_q ? u"•••"_q
-					: rule.value(u"replacement"_q).toString() });
+				action == u"mask"_q ? u"•••"_q : rule.replacement });
 			offset = end;
 		}
 		if (!result.error.isEmpty()) {
 			break;
 		}
 		if (action == u"hide"_q) {
-			if (matched != rule.value(u"reversed"_q).toBool()) {
+			if (matched != rule.reversed) {
 				result.hidden = true;
 				return result;
 			}
