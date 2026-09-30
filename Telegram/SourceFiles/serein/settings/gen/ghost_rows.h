@@ -10,7 +10,7 @@
 
 namespace Serein::Ghost {
 
-inline const auto kToggleRows = std::array<ToggleRow, 7>{ {
+inline const auto kToggleRows = std::array<ToggleRow, 8>{ {
 	{
 		&kGhostMode,
 		tr::lng_serein_ghost_mode,
@@ -53,6 +53,12 @@ inline const auto kToggleRows = std::array<ToggleRow, 7>{ {
 		u"serein/ghost/ghost-mark-read-after-sending"_q,
 		{ u"ghost"_q, u"read"_q, u"send"_q },
 	},
+	{
+		&kGhostUseScheduledMessages,
+		tr::lng_serein_ghost_use_scheduled_messages,
+		u"serein/ghost/ghost-use-scheduled-messages"_q,
+		{ u"ghost"_q, u"scheduled"_q, u"send"_q },
+	},
 } };
 
 inline void AddLayout(
@@ -64,6 +70,7 @@ inline void AddLayout(
 	AddToggle(builder, kToggleRows[4]);
 	AddToggle(builder, kToggleRows[5]);
 	AddToggle(builder, kToggleRows[6]);
+	AddToggle(builder, kToggleRows[7]);
 	AddNote(builder, tr::lng_serein_ghost_note);
 }
 

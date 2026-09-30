@@ -7,6 +7,10 @@
 class History;
 struct MsgId;
 
+namespace Api {
+struct SendOptions;
+} // namespace Api
+
 namespace Main {
 class Session;
 } // namespace Main
@@ -23,7 +27,6 @@ namespace Serein::Hooks {
 [[nodiscard]] bool AllowStoryView(gsl::not_null<Main::Session*> session);
 [[nodiscard]] bool AllowViewIncrement(gsl::not_null<Main::Session*> session);
 
-
 class ForcedReadReceipt final {
 public:
 	ForcedReadReceipt();
@@ -34,6 +37,9 @@ public:
 };
 
 void OnSendingMessage(gsl::not_null<History*> history);
+void ApplyGhostSchedule(
+	gsl::not_null<History*> history,
+	Api::SendOptions &options);
 
 [[nodiscard]] bool ReadInboxLocally(
 	gsl::not_null<History*> history,

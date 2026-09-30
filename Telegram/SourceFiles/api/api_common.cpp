@@ -11,6 +11,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "data/data_histories.h"
 #include "data/data_thread.h"
 #include "history/history.h"
+#include "serein/hooks/ghost.h"
 
 namespace Api {
 
@@ -32,6 +33,7 @@ SendAction::SendAction(
 , options(options)
 , replyTo({ .messageId = { history->peer->id, thread->topicRootId() } }) {
 	replyTo.topicRootId = replyTo.messageId.msg;
+	Serein::Hooks::ApplyGhostSchedule(history, this->options);
 }
 
 SendOptions DefaultSendWhenOnlineOptions() {
