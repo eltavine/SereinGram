@@ -5,8 +5,9 @@ Run from the repository root on a clean worktree:
     python3 tools/serein/upstream_sync.py v6.3.0
 
 A clean merge is committed on a sync/<ref> branch with the upstream budget
-baseline moved to the merged ref. On conflicts the merge is left in progress
-and the conflicted files are grouped by who owns them.
+baseline moved to the merged ref. Submodule pointer conflicts resolve to the
+side whose commit contains the other. On other conflicts the merge is left in
+progress and the conflicted files are grouped by who owns them.
 """
 
 import argparse
@@ -51,6 +52,35 @@ def classify(conflicts, owned, hooked):
     return groups
 
 
+def resolve_submodules(root, conflicts):
+    remaining = []
+    for path in conflicts:
+        stages = {}
+        for line in git(root, "ls-files", "-u", "--", path).stdout.splitlines():
+            meta, _name = line.split("\t", 1)
+            mode, sha, stage = meta.split()
+            stages[stage] = (mode, sha)
+        module = Path(root) / path
+        if ({mode for mode, _sha in stages.values()} != {"160000"}
+                or "2" not in stages or "3" not in stages
+                or not (module / ".git").exists()):
+            remaining.append(path)
+            continue
+        ours, theirs = stages["2"][1], stages["3"][1]
+        git(module, "fetch", "-q", "--no-tags", "origin", theirs, check=False)
+        if git(module, "merge-base", "--is-ancestor", ours, theirs,
+               check=False).returncode == 0:
+            chosen = theirs
+        elif git(module, "merge-base", "--is-ancestor", theirs, ours,
+                 check=False).returncode == 0:
+            chosen = ours
+        else:
+            remaining.append(path)
+            continue
+        git(root, "update-index", "--cacheinfo", f"160000,{chosen},{path}")
+    return remaining
+
+
 def commit_message(ref, old, new, metrics):
     lines = [
         f"chore(upstream): merge Telegram Desktop {ref}",
@@ -86,7 +116,10 @@ def sync(root, ref, policy_path, owned_policy_path, url=None):
     git(root, "switch", "-q", "-c", branch_name(ref))
     merge = git(root, "merge", "--no-ff", "--no-commit", new, check=False)
     conflicts = git(root, "diff", "--name-only", "--diff-filter=U").stdout.split()
-    if merge.returncode or conflicts:
+    if merge.returncode and not conflicts:
+        raise SyncError(f"git merge failed: {merge.stderr.strip()}")
+    conflicts = resolve_submodules(root, conflicts)
+    if conflicts:
         return classify(conflicts, patterns, hooked), None
     policy["base"] = new
     policy_path.write_text(json.dumps(policy, indent=2, ensure_ascii=False) + "\n",
