@@ -149,7 +149,16 @@ message MessagesSettings {
 | schema 兼容 | `buf lint`；`tools/serein/proto_breaking.sh` 与推送前的提交或 PR 目标分支比较（`FILE` 级） | 已实施 |
 | 生成代码漂移 | `uv run tools/serein/codegen/generate.py --check` | 已实施 |
 | 三语文案一致 | `test_serein` | 已有 |
+| 核心逻辑测试（只依赖 Qt） | `tools/serein/core_tests` 独立 CMake 工程，与主构建共用 `Telegram/cmake/serein_tests.cmake` 的测试清单 | 已实施 |
 | 构建与单元测试 | `serein-{mac,win,linux}.yml` | 已有 |
+
+本机运行核心逻辑测试（macOS 用 Homebrew 的 qtbase）：
+
+```bash
+cmake -S tools/serein/core_tests -B out/serein-core-tests -G Ninja \
+    -DCMAKE_PREFIX_PATH="$(brew --prefix qtbase)"
+cmake --build out/serein-core-tests && ctest --test-dir out/serein-core-tests
+```
 
 ## 8. 迁移步骤
 

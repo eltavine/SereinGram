@@ -120,23 +120,8 @@ if (DESKTOP_APP_TEST_APPS)
     add_executable(test_serein)
     init_target(test_serein "(tests)")
 
-    nice_target_sources(test_serein ${src_loc} PRIVATE
-        serein/tests/test_lang.cpp
-        serein/tests/test_options.cpp
-        serein/tests/test_spacing.cpp
-        serein/tests/test_services.cpp
-        serein/tests/test_filters.cpp
-        serein/tests/test_links.cpp
-        serein/chats/validators.cpp
-        serein/compose/spacing.cpp
-        serein/compose/validators.cpp
-        serein/core/exchange.cpp
-        serein/interface/main_menu_model.cpp
-        serein/menu/model.cpp
-        serein/services/model.cpp
-        serein/filters/model.cpp
-        serein/links/model.cpp
-    )
+    include(cmake/serein_tests.cmake)
+    nice_target_sources(test_serein ${src_loc} PRIVATE ${serein_test_sources})
 
     target_include_directories(test_serein PRIVATE
         ${src_loc}

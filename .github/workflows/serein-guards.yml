@@ -57,3 +57,31 @@ jobs:
 
       - name: Generated code matches the schema.
         run: uv run tools/serein/codegen/generate.py --check
+
+  core-tests:
+    name: Core tests (Qt only)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clone.
+        uses: actions/checkout@v7
+
+      - name: Fetch the submodules the core needs.
+        run: |
+          git submodule update --init --depth 1 \
+            Telegram/lib_base Telegram/lib_crl Telegram/lib_rpl Telegram/lib_ui \
+            Telegram/ThirdParty/GSL Telegram/ThirdParty/range-v3 Telegram/ThirdParty/expected
+
+      - name: Set up Qt.
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: 6.11.2
+          cache: true
+
+      - name: Build.
+        run: |
+          cmake -S tools/serein/core_tests -B out/serein-core-tests -DCMAKE_BUILD_TYPE=Debug
+          cmake --build out/serein-core-tests --parallel
+
+      - name: Test.
+        run: ctest --test-dir out/serein-core-tests --output-on-failure
