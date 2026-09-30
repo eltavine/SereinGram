@@ -192,7 +192,7 @@ SG-HIST-05 的“已编辑”标记文字已由 C09 实现，删除标记随 SG-
 | SG-MENU-03 | 合并、反序、去署名后填入草稿，批量存入收藏夹；选择此人的消息（E18、E19） | Ni Na | Implemented | P2 |
 | SG-MENU-04 | 媒体信息、消息截图、阅读转换切换（E20–E22） | Ad Ni | Implemented | P2 |
 | SG-MENU-05 | 消息截图的简化引用样式 | Ni | Planned | P3 |
-| SG-MENU-06 | 查看编辑历史、查看已删除内容（随 SG-HIST-01／02） | Ad Aa | Planned | P1 |
+| SG-MENU-06 | 查看编辑历史、查看已删除内容（随 SG-HIST-01／02） | Ad Aa | In Progress | P1 |
 | SG-MENU-07 | 读到此处、复制回调数据、消息详情等 AyuGram 菜单项及其显隐 | Ad | Planned | P2 |
 | SG-MENU-08 | 区间选择、批量取消置顶、快捷评价文本、提及时附带 @用户名 | Na | Planned | P2 |
 

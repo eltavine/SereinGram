@@ -32,6 +32,7 @@ set(serein_sources
     serein/menu/actions.cpp
     serein/menu/batch.cpp
     serein/menu/media.cpp
+    serein/menu/history.cpp
     serein/menu/model.cpp
     serein/menu/repeat.cpp
     serein/menu/reading.cpp

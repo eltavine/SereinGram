@@ -87,6 +87,11 @@ struct Backend {
 	return result;
 }
 
+[[nodiscard]] QString DatabasePath(not_null<Main::Session*> session) {
+	return QFileInfo(session->local().supportModePath()).absolutePath()
+		+ u"/serein_history.sqlite3"_q;
+}
+
 [[nodiscard]] std::unique_ptr<Backend> OpenBackend(
 		not_null<Main::Session*> session) {
 	const auto key = session->local().peekLegacyLocalKey();
@@ -101,10 +106,9 @@ struct Backend {
 	if (!backend->cipher) {
 		return nullptr;
 	}
-	const auto directory = QFileInfo(session->local().supportModePath()).absolutePath();
 	auto error = QString();
 	backend->store = Adapters::SqlHistoryStore::Open(
-		directory + u"/serein_history.sqlite3"_q,
+		DatabasePath(session),
 		*backend->cipher,
 		&error);
 	if (!backend->store) {
@@ -118,16 +122,25 @@ struct Backend {
 	return backend;
 }
 
-[[nodiscard]] HistoryFeature::Recorder *RecorderFor(not_null<Main::Session*> session) {
+[[nodiscard]] Backend *BackendFor(
+		not_null<Main::Session*> session,
+		bool create) {
 	static auto backends = std::map<Main::Session*, std::unique_ptr<Backend>>();
-	const auto i = backends.find(session);
-	if (i != backends.end()) {
-		return i->second ? i->second->recorder.get() : nullptr;
+	if (const auto i = backends.find(session); i != backends.end()) {
+		return i->second.get();
+	} else if (!create && !QFileInfo::exists(DatabasePath(session))) {
+		return nullptr;
 	}
 	auto &slot = backends[session];
 	slot = OpenBackend(session);
 	session->lifetime().add([=] { backends.erase(session); });
-	return slot ? slot->recorder.get() : nullptr;
+	return slot.get();
+}
+
+[[nodiscard]] HistoryFeature::Recorder *RecorderFor(
+		not_null<Main::Session*> session) {
+	const auto backend = BackendFor(session, true);
+	return backend ? backend->recorder.get() : nullptr;
 }
 
 } // namespace
@@ -154,6 +167,11 @@ void OnBeforeEdition(
 	} else if (const auto recorder = RecorderFor(session)) {
 		recorder->recordEdit(policy, TakeSnapshot(item));
 	}
+}
+
+Ports::HistoryStore *HistoryStoreFor(gsl::not_null<Main::Session*> session) {
+	const auto backend = BackendFor(session, false);
+	return backend ? backend->store.get() : nullptr;
 }
 
 } // namespace Serein::Hooks

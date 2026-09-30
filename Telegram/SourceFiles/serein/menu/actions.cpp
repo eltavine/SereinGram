@@ -3,6 +3,7 @@
 #include "serein/menu/batch.h"
 #include "serein/menu/media.h"
 #include "serein/menu/reading.h"
+#include "serein/menu/history.h"
 #include "serein/filters/menu.h"
 #include "serein/snapshot/snapshot.h"
 
@@ -17,6 +18,17 @@ namespace {
 constexpr auto kActionIdProperty = "sereinMenuActionId";
 
 } // namespace
+
+int DeleteActionIndex(Ui::PopupMenu *menu) {
+	Expects(menu != nullptr);
+	for (auto index = 0; index != int(menu->actions().size()); ++index) {
+		const auto value = menu->actions()[index]->property(kActionIdProperty);
+		if (value.isValid() && value.toInt() == int(ActionId::Delete)) {
+			return index;
+		}
+	}
+	return int(menu->actions().size());
+}
 
 void Tag(QAction *action, ActionId id) {
 	Expects(action != nullptr);
@@ -43,6 +55,7 @@ void Apply(
 			InsertMediaInfoAction(menu, item, controller);
 			InsertReadingAction(menu, item, controller);
 			Filters::InsertAuthorAction(menu, item, controller);
+			InsertEditHistoryAction(menu, item, controller);
 		}
 	}
 	const auto config = ForDevice().Get(kMenuConfig);

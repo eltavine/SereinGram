@@ -26,6 +26,9 @@ QJsonObject Parse(const QByteArray &raw) {
 } // namespace
 
 Visibility DefaultVisibility(ActionId id) {
+	if (id == ActionId::EditHistory) {
+		return Visibility::Show;
+	}
 	return static_cast<int>(id) >= static_cast<int>(ActionId::Repeat)
 		? Visibility::Hide : Visibility::Show;
 }
