@@ -157,9 +157,9 @@ jobs:
           if [ -n "${{ matrix.defines }}" ]; then
             DEFINE="-D ${{ matrix.defines }}=ON"
             echo Define from matrix: $DEFINE
-            echo "ARTIFACT_NAME=Serein ${{ matrix.defines }}" >> $GITHUB_ENV
+            echo "ARTIFACT_NAME=SereinGram ${{ matrix.defines }}" >> $GITHUB_ENV
           else
-            echo "ARTIFACT_NAME=Serein" >> $GITHUB_ENV
+            echo "ARTIFACT_NAME=SereinGram" >> $GITHUB_ENV
           fi
 
           ccache -z
@@ -218,7 +218,7 @@ jobs:
       - name: Check.
         if: env.ONLY_CACHE == 'false'
         run: |
-          filePath="out/Debug/Serein"
+          filePath="out/Debug/SereinGram"
           if test -f "$filePath"; then
             echo "Build successfully done! :)"
 
@@ -234,7 +234,7 @@ jobs:
         run: |
           cd out/Debug
           mkdir artifact
-          mv Serein artifact/
+          mv SereinGram artifact/
       - uses: actions/upload-artifact@v7
         if: env.UPLOAD_ARTIFACT == 'true'
         name: Upload artifact.

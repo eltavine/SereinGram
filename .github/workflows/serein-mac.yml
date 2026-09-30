@@ -130,9 +130,9 @@ jobs:
           if [ -n "${{ matrix.defines }}" ]; then
             DEFINE="-D ${{ matrix.defines }}=ON"
             echo Define from matrix: $DEFINE
-            echo "ARTIFACT_NAME=Serein ${{ matrix.defines }}" >> $GITHUB_ENV
+            echo "ARTIFACT_NAME=SereinGram ${{ matrix.defines }}" >> $GITHUB_ENV
           else
-            echo "ARTIFACT_NAME=Serein" >> $GITHUB_ENV
+            echo "ARTIFACT_NAME=SereinGram" >> $GITHUB_ENV
           fi
 
           ./configure.sh \
@@ -151,7 +151,7 @@ jobs:
         run: |
           cd $REPO_NAME/out/Debug
           mkdir artifact
-          mv Serein.app artifact/
+          mv SereinGram.app artifact/
       - uses: actions/upload-artifact@v7
         if: env.UPLOAD_ARTIFACT == 'true'
         name: Upload artifact.

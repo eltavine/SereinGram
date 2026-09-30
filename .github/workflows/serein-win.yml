@@ -204,7 +204,7 @@ jobs:
         env:
           SEREIN_API_ID: ${{ secrets.SEREIN_API_ID }}
         run: |
-          ARTIFACT_NAME="Serein"
+          ARTIFACT_NAME="SereinGram"
 
           ARCH=""
           if [ -n "${{ matrix.arch }}" ]; then
