@@ -262,6 +262,7 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_service_add_deeplx" = "Add DeepLX (self-hosted)";
 "lng_serein_service_add_yandex" = "Add Yandex Translate";
 "lng_serein_service_add_transmart" = "Add Tencent Transmart";
+"lng_serein_service_add_azure" = "Microsoft Translator (Azure)";
 "lng_serein_service_add_openai" = "Add OpenAI-compatible translation";
 "lng_serein_service_add_transcription" = "Add OpenAI-compatible transcription";
 "lng_serein_service_audio_filter" = "Audio (*.flac *.mp3 *.mp4 *.mpeg *.mpga *.m4a *.ogg *.wav *.webm)";
@@ -288,6 +289,7 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_service_size_error" = "This request exceeds SereinGram’s limit: 128 KiB for text requests, 24 MiB for audio or 2 MiB for responses. Use a smaller selection or file.";
 "lng_serein_service_system_prompt" = "System prompt";
 "lng_serein_service_temperature" = "Temperature (blank uses service default)";
+"lng_serein_service_region" = "Region (leave empty for a global resource)";
 "lng_serein_service_test" = "Test saved service…";
 "lng_serein_service_test_about" = "Uses this service’s saved address, credentials, model and prompts. Text tests translate “Hello, world!” into Chinese. Tests may be billed by the service. Closing cancels the current request.";
 "lng_serein_service_test_audio" = "Choose test audio…";

@@ -2,7 +2,9 @@
 
 #include "serein/hooks/services/model.h"
 
+#include <QtCore/QJsonDocument>
 #include <QtCore/QPointer>
+#include <QtCore/QUrlQuery>
 #include <QtCore/QTimer>
 #include <QtNetwork/QNetworkAccessManager>
 
@@ -39,7 +41,8 @@ public:
 	void cancel();
 	void json(
 		const ServiceDefinition &service,
-		const QJsonObject &body,
+		const QJsonDocument &body,
+		const QUrlQuery &query,
 		Fn<void(ServiceResult)> done);
 	void translate(
 		const ServiceDefinition &service,

@@ -160,6 +160,19 @@ constexpr auto kAnthropicMaxTokens = 4096;
 		: QJsonArray();
 }
 
+[[nodiscard]] QJsonArray AzureValues(const QJsonArray &root) {
+	auto values = QJsonArray();
+	for (const auto &entry : root) {
+		const auto translations = entry.toObject()
+			.value(u"translations"_q).toArray();
+		if (translations.size() != 1) {
+			return {};
+		}
+		values.push_back(translations[0].toObject().value(u"text"_q));
+	}
+	return values;
+}
+
 [[nodiscard]] QJsonArray GoogleValues(const QJsonObject &root) {
 	const auto sentences = root.value(u"sentences"_q).toArray();
 	auto text = QString();
@@ -204,30 +217,42 @@ TranslationCall BuildTranslationCall(
 	}
 	const auto array = QJsonArray::fromStringList(texts);
 	if (Is(service, u"deepl")) {
-		return { .json = QJsonObject{
+		return { .json = QJsonDocument(QJsonObject{
 			{ u"text"_q, array },
 			{ u"target_lang"_q, to.toUpper() },
-		} };
+		}) };
 	} else if (Is(service, u"deeplx")) {
-		return { .json = QJsonObject{
+		return { .json = QJsonDocument(QJsonObject{
 			{ u"text"_q, texts.front() },
 			{ u"source_lang"_q, u"auto"_q },
 			{ u"target_lang"_q, to.toUpper() },
-		} };
+		}) };
 	} else if (Is(service, u"anthropic")) {
-		return { .json = AnthropicBody(service, array, to) };
+		return { .json = QJsonDocument(AnthropicBody(service, array, to)) };
 	} else if (Is(service, u"transmart")) {
-		return { .json = TransmartBody(array, to) };
+		return { .json = QJsonDocument(TransmartBody(array, to)) };
+	} else if (Is(service, u"azure")) {
+		auto query = QUrlQuery();
+		query.addQueryItem(u"api-version"_q, u"3.0"_q);
+		query.addQueryItem(u"to"_q, (to == u"zh"_q) ? u"zh-Hans"_q : to);
+		auto body = QJsonArray();
+		for (const auto &text : texts) {
+			body.push_back(QJsonObject{ { u"Text"_q, text } });
+		}
+		return { .json = QJsonDocument(body), .query = query };
 	}
-	return { .json = ChatBody(service, array, to) };
+	return { .json = QJsonDocument(ChatBody(service, array, to)) };
 }
 
 std::optional<QStringList> ParseTranslationResponse(
 		const ServiceDefinition &service,
 		const QByteArray &body,
 		int expected) {
-	const auto root = QJsonDocument::fromJson(body).object();
-	const auto values = Is(service, u"google")
+	const auto document = QJsonDocument::fromJson(body);
+	const auto root = document.object();
+	const auto values = Is(service, u"azure")
+		? AzureValues(document.array())
+		: Is(service, u"google")
 		? GoogleValues(root)
 		: Is(service, u"yandex")
 		? YandexValues(root)

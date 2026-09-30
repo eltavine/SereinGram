@@ -100,6 +100,23 @@ void TestServices() {
 	auto extraRoot = ServicesDefaults();
 	extraRoot.insert(u"extra"_q, 1);
 	Require(!ValidServices(extraRoot), "services config with an unknown key accepted");
+	auto legacy = config;
+	legacy.insert(u"version"_q, 1);
+	legacy.insert(u"transcription"_q, QString());
+	auto legacyInstance = serialized;
+	legacyInstance.remove(u"region"_q);
+	legacy.insert(u"instances"_q, QJsonArray{ legacyInstance });
+	Require(ValidServices(legacy)
+		&& ValidServicesBytes(QJsonDocument(legacy).toJson()),
+		"version 1 services config rejected");
+	const auto upgraded = UpgradeServices(legacy);
+	Require(upgraded.value(u"version"_q) == QJsonValue(2)
+		&& upgraded.value(u"instances"_q).toArray()[0].toObject()
+			.value(u"region"_q) == QString(),
+		"version 1 services config not upgraded");
+	auto unversioned = legacy;
+	unversioned.insert(u"version"_q, 3);
+	Require(!ValidServices(unversioned), "future services config accepted");
 	std::cout << "PASS: Serein service config and credential binding" << std::endl;
 }
 
@@ -156,7 +173,7 @@ void TestTranslationProtocols() {
 		"empty google response accepted");
 
 	const auto batch = BuildTranslationCall(chat, { u"a"_q, u"b"_q }, u"de"_q);
-	Require(!batch.form && batch.json.value(u"model"_q) == u"stub"_q,
+	Require(!batch.form && batch.json.object().value(u"model"_q) == u"stub"_q,
 		"wrong chat body");
 	const auto reply = QByteArray(R"({"choices": [{
 		"finish_reason": "stop",
@@ -171,7 +188,7 @@ void TestTranslationProtocols() {
 	auto deepl = chat;
 	deepl.protocol = u"deepl"_q;
 	const auto deeplCall = BuildTranslationCall(deepl, { u"a"_q }, u"de"_q);
-	Require(deeplCall.json.value(u"target_lang"_q) == u"DE"_q,
+	Require(deeplCall.json.object().value(u"target_lang"_q) == u"DE"_q,
 		"wrong deepl body");
 	const auto deeplParsed = ParseTranslationResponse(
 		deepl,
@@ -217,8 +234,8 @@ void TestTranslationProtocols() {
 		"deeplx service rejected");
 	Require(TranslationBatchLimit(deeplx) == 1, "deeplx batches texts");
 	const auto deeplxCall = BuildTranslationCall(deeplx, { u"a"_q }, u"zh"_q);
-	Require(deeplxCall.json.value(u"text"_q) == u"a"_q
-		&& deeplxCall.json.value(u"target_lang"_q) == u"ZH"_q,
+	Require(deeplxCall.json.object().value(u"text"_q) == u"a"_q
+		&& deeplxCall.json.object().value(u"target_lang"_q) == u"ZH"_q,
 		"wrong deeplx body");
 	const auto deeplxParsed = ParseTranslationResponse(
 		deeplx,
@@ -245,9 +262,9 @@ void TestTranslationProtocols() {
 		anthropic,
 		{ u"a"_q },
 		u"de"_q);
-	Require(anthropicCall.json.value(u"max_tokens"_q).toInt() > 0
-		&& anthropicCall.json.value(u"system"_q) == u"You translate."_q
-		&& anthropicCall.json.value(u"messages"_q).toArray().size() == 1,
+	Require(anthropicCall.json.object().value(u"max_tokens"_q).toInt() > 0
+		&& anthropicCall.json.object().value(u"system"_q) == u"You translate."_q
+		&& anthropicCall.json.object().value(u"messages"_q).toArray().size() == 1,
 		"wrong anthropic body");
 	const auto anthropicReply = QByteArray(R"({
 		"content": [{ "type": "text", "text": "[\"b\"]" }],
@@ -287,13 +304,13 @@ void TestTranslationProtocols() {
 		transmart,
 		{ u"a"_q, u"b"_q },
 		u"zh"_q);
-	const auto source = transmartCall.json.value(u"source"_q).toObject();
+	const auto source = transmartCall.json.object().value(u"source"_q).toObject();
 	Require(!transmartCall.form
 		&& source.value(u"lang"_q) == u"auto"_q
 		&& source.value(u"text_list"_q).toArray().size() == 2
-		&& transmartCall.json.value(u"target"_q).toObject()
+		&& transmartCall.json.object().value(u"target"_q).toObject()
 			.value(u"lang"_q) == u"zh"_q
-		&& transmartCall.json.value(u"header"_q).toObject()
+		&& transmartCall.json.object().value(u"header"_q).toObject()
 			.value(u"client_key"_q).toString().startsWith(u"browser-"_q),
 		"wrong transmart body");
 	const auto transmartParsed = ParseTranslationResponse(transmart, R"({
@@ -306,5 +323,69 @@ void TestTranslationProtocols() {
 		"header": { "ret_code": "error" },
 		"auto_translation": ["x", "y"]
 	})", 2), "failed transmart response accepted");
+
+	auto azure = deepl;
+	azure.model = QString();
+	azure.systemPrompt = QString();
+	azure.prompt = QString();
+	azure.temperature = std::nullopt;
+	azure.useKey = true;
+	azure.protocol = u"azure"_q;
+	azure.baseUrl = QUrl(u"https://api.cognitive.microsofttranslator.com/"_q);
+	azure.endpoint = u"translate"_q;
+	azure.region = u"eastasia"_q;
+	Require(ParseService(SerializeService(azure)).has_value(),
+		"azure service rejected");
+	const auto azureCall = BuildTranslationCall(
+		azure,
+		{ u"a"_q, u"b"_q },
+		u"zh"_q);
+	Require(!azureCall.form
+		&& azureCall.json.isArray()
+		&& azureCall.json.array().size() == 2
+		&& azureCall.json.array()[1].toObject().value(u"Text"_q) == u"b"_q
+		&& azureCall.query.queryItemValue(u"api-version"_q) == u"3.0"_q
+		&& azureCall.query.queryItemValue(u"to"_q) == u"zh-Hans"_q,
+		"wrong azure request");
+	const auto azureParsed = ParseTranslationResponse(azure, R"([
+		{ "translations": [ { "text": "x", "to": "zh-Hans" } ] },
+		{ "translations": [ { "text": "y", "to": "zh-Hans" } ] }
+	])", 2);
+	Require(azureParsed && azureParsed->back() == u"y"_q,
+		"azure response not parsed");
+	Require(!ParseTranslationResponse(azure, R"({
+		"error": { "code": 401000, "message": "denied" }
+	})", 2), "azure error response accepted");
+	const auto azureHeaders = ServiceHeaders(azure);
+	Require(azureHeaders.size() == 1
+		&& azureHeaders.front().first == "Ocp-Apim-Subscription-Region"
+		&& azureHeaders.front().second == "eastasia",
+		"missing azure region header");
+	Require(ServiceAuthorization(azure, "k").first
+			== "Ocp-Apim-Subscription-Key",
+		"wrong azure auth header");
+	auto global = azure;
+	global.region = QString();
+	Require(ParseService(SerializeService(global)).has_value()
+		&& ServiceHeaders(global).empty(),
+		"global azure resource rejected");
+	auto keyless = azure;
+	keyless.useKey = false;
+	Require(!ParseService(SerializeService(keyless)),
+		"azure without a key accepted");
+	auto regional = azure;
+	regional.protocol = u"deepl"_q;
+	regional.baseUrl = QUrl(u"https://api.deepl.com/v2/"_q);
+	Require(!ParseService(SerializeService(regional)),
+		"region accepted for a non-azure service");
+	regional.region = QString();
+	Require(ParseService(SerializeService(regional)).has_value(),
+		"deepl service without a region rejected");
+	regional.region = u"eastasia"_q;
+	Require(!ParseService(SerializeService(regional)),
+		"region accepted for a non-azure service");
+	auto badRegion = SerializeService(azure);
+	badRegion.insert(u"region"_q, u"East Asia"_q);
+	Require(!ParseService(badRegion), "malformed azure region accepted");
 	std::cout << "PASS: Serein translation protocols" << std::endl;
 }

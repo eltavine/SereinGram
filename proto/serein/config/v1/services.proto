@@ -10,7 +10,7 @@ option (serein.options.v1.file) = {cpp_namespace: "ServicesSchema"};
 // Translation and transcription services; API keys live in the system keychain.
 message ServicesConfig {
   option (serein.options.v1.document) = {
-    version: 1
+    version: 2
     validator: "ValidServicesConfig"
   };
   option (serein.options.v1.codec) = {require_fields: true};
@@ -29,7 +29,7 @@ message ServiceInstance {
     in: ["translation", "transcription"]
   }];
   string protocol = 4 [(buf.validate.field).string = {
-    in: ["openai", "anthropic", "deepl", "deeplx", "google", "yandex", "transmart"]
+    in: ["openai", "anthropic", "deepl", "deeplx", "google", "yandex", "transmart", "azure"]
   }];
   string base_url = 5;
   string endpoint = 6;
@@ -43,4 +43,6 @@ message ServiceInstance {
     gte: 0
     lte: 2
   }];
+  // Azure resource region; empty for global resources and other protocols.
+  string region = 14 [(buf.validate.field).string.pattern = "^([a-z0-9]{1,32})?$"];
 }

@@ -18,7 +18,7 @@ std::optional<QJsonObject> Services() {
 		LOG(("Serein Error: Invalid services configuration; external services disabled."));
 		return std::nullopt;
 	}
-	return document.object();
+	return UpgradeServices(document.object());
 }
 
 bool SetServices(const QJsonObject &value) {

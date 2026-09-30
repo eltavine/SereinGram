@@ -19,6 +19,7 @@ struct ServiceInstance {
 	QString prompt;
 	QString language;
 	std::optional<double> temperature;
+	QString region;
 
 	friend bool operator==(const ServiceInstance &, const ServiceInstance &) = default;
 };

@@ -258,6 +258,7 @@
 "lng_serein_service_add_deeplx" = "新增 DeepLX（自架）";
 "lng_serein_service_add_yandex" = "新增 Yandex 翻譯";
 "lng_serein_service_add_transmart" = "新增騰訊互動翻譯";
+"lng_serein_service_add_azure" = "微軟翻譯（Azure）";
 "lng_serein_service_add_openai" = "新增 OpenAI 相容翻譯";
 "lng_serein_service_add_transcription" = "新增 OpenAI 相容轉寫";
 "lng_serein_service_audio_filter" = "音訊 (*.flac *.mp3 *.mp4 *.mpeg *.mpga *.m4a *.ogg *.wav *.webm)";
@@ -284,6 +285,7 @@
 "lng_serein_service_size_error" = "此請求超過 SereinGram 限制：文字請求 128 KiB、音訊 24 MiB、回應 2 MiB。請縮小選取範圍或使用較小檔案。";
 "lng_serein_service_system_prompt" = "系統提示詞";
 "lng_serein_service_temperature" = "溫度（留空使用服務預設值）";
+"lng_serein_service_region" = "區域（全域資源請留空）";
 "lng_serein_service_test" = "測試已儲存的服務…";
 "lng_serein_service_test_about" = "使用此服務已儲存的位址、憑證、模型及提示詞。文字測試會將「Hello, world!」翻譯為中文，服務可能計費。關閉視窗取消目前請求。";
 "lng_serein_service_test_audio" = "選擇測試音訊…";

@@ -96,9 +96,10 @@ std::optional<QNetworkRequest> ServiceRequest::prepare(
 
 void ServiceRequest::json(
 		const ServiceDefinition &service,
-		const QJsonObject &body,
+		const QJsonDocument &body,
+		const QUrlQuery &query,
 		Fn<void(ServiceResult)> done) {
-	const auto bytes = QJsonDocument(body).toJson(QJsonDocument::Compact);
+	const auto bytes = body.toJson(QJsonDocument::Compact);
 	if (bytes.size() > kMaximumJson) {
 		cancel();
 		done({ .error = ServiceError::TooLarge });
@@ -107,6 +108,11 @@ void ServiceRequest::json(
 	auto request = prepare(service, done);
 	if (!request) {
 		return;
+	}
+	if (!query.isEmpty()) {
+		auto url = request->url();
+		url.setQuery(query);
+		request->setUrl(url);
 	}
 	request->setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 	start(_network.post(*request, bytes), std::move(done));
@@ -117,7 +123,7 @@ void ServiceRequest::translate(
 		const TranslationCall &call,
 		Fn<void(ServiceResult)> done) {
 	if (!call.form) {
-		json(service, call.json, std::move(done));
+		json(service, call.json, call.query, std::move(done));
 		return;
 	} else if (call.form->size() > kMaximumJson) {
 		cancel();

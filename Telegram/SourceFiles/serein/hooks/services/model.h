@@ -44,9 +44,11 @@ struct ServiceDefinition {
 	QString prompt;
 	QString language;
 	std::optional<double> temperature;
+	QString region;
 };
 
 [[nodiscard]] QJsonObject ServicesDefaults();
+[[nodiscard]] QJsonObject UpgradeServices(QJsonObject value);
 [[nodiscard]] std::optional<ServiceDefinition> ParseService(const QJsonObject &value);
 [[nodiscard]] QJsonObject SerializeService(const ServiceDefinition &value);
 [[nodiscard]] bool ValidServices(const QJsonObject &value);

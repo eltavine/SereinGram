@@ -26,6 +26,7 @@ bool Read(
 			QLatin1StringView("prompt"),
 			QLatin1StringView("language"),
 			QLatin1StringView("temperature"),
+			QLatin1StringView("region"),
 		}, error, path)) {
 		return false;
 	} else if (!Codec::RequiredKeys(object, {
@@ -42,6 +43,7 @@ bool Read(
 			QLatin1StringView("prompt"),
 			QLatin1StringView("language"),
 			QLatin1StringView("temperature"),
+			QLatin1StringView("region"),
 		}, error, path)) {
 		return false;
 	}
@@ -59,7 +61,8 @@ bool Read(
 		&& Codec::ReadField(object, QLatin1StringView("systemPrompt"), result.systemPrompt, error, path)
 		&& Codec::ReadField(object, QLatin1StringView("prompt"), result.prompt, error, path)
 		&& Codec::ReadField(object, QLatin1StringView("language"), result.language, error, path)
-		&& Codec::ReadField(object, QLatin1StringView("temperature"), result.temperature, error, path);
+		&& Codec::ReadField(object, QLatin1StringView("temperature"), result.temperature, error, path)
+		&& Codec::ReadField(object, QLatin1StringView("region"), result.region, error, path);
 }
 
 QJsonValue Write(const ServiceInstance &value) {
@@ -77,6 +80,7 @@ QJsonValue Write(const ServiceInstance &value) {
 	Codec::WriteField(object, QLatin1StringView("prompt"), value.prompt);
 	Codec::WriteField(object, QLatin1StringView("language"), value.language);
 	Codec::WriteNullableField(object, QLatin1StringView("temperature"), value.temperature);
+	Codec::WriteField(object, QLatin1StringView("region"), value.region);
 	return object;
 }
 
@@ -90,7 +94,7 @@ bool Validate(
 	if (!((value.kind == QString::fromUtf8("translation") || value.kind == QString::fromUtf8("transcription")))) {
 		return Codec::Fail(error, Codec::Child(path, QLatin1StringView("kind")), QString::fromLatin1("violates the schema rules"));
 	}
-	if (!((value.protocol == QString::fromUtf8("openai") || value.protocol == QString::fromUtf8("anthropic") || value.protocol == QString::fromUtf8("deepl") || value.protocol == QString::fromUtf8("deeplx") || value.protocol == QString::fromUtf8("google") || value.protocol == QString::fromUtf8("yandex") || value.protocol == QString::fromUtf8("transmart")))) {
+	if (!((value.protocol == QString::fromUtf8("openai") || value.protocol == QString::fromUtf8("anthropic") || value.protocol == QString::fromUtf8("deepl") || value.protocol == QString::fromUtf8("deeplx") || value.protocol == QString::fromUtf8("google") || value.protocol == QString::fromUtf8("yandex") || value.protocol == QString::fromUtf8("transmart") || value.protocol == QString::fromUtf8("azure")))) {
 		return Codec::Fail(error, Codec::Child(path, QLatin1StringView("protocol")), QString::fromLatin1("violates the schema rules"));
 	}
 	if (!(Codec::Matches(value.credentialRef, QString::fromUtf8("^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$")))) {
@@ -101,6 +105,9 @@ bool Validate(
 	}
 	if (!(!value.temperature || ((*value.temperature) <= 2.0 && (*value.temperature) >= 0.0))) {
 		return Codec::Fail(error, Codec::Child(path, QLatin1StringView("temperature")), QString::fromLatin1("violates the schema rules"));
+	}
+	if (!(Codec::Matches(value.region, QString::fromUtf8("^([a-z0-9]{1,32})?$")))) {
+		return Codec::Fail(error, Codec::Child(path, QLatin1StringView("region")), QString::fromLatin1("violates the schema rules"));
 	}
 	return true;
 }
@@ -163,7 +170,7 @@ std::optional<ServicesConfig> ParseServicesConfig(
 	auto object = Codec::ParseObject(raw, out);
 	if (!object) {
 		return std::nullopt;
-	} else if (object->value(QLatin1StringView("version")) != QJsonValue(1)) {
+	} else if (object->value(QLatin1StringView("version")) != QJsonValue(2)) {
 		Codec::Fail(out, QString::fromLatin1("version"), QString::fromLatin1("unsupported version"));
 		return std::nullopt;
 	}
@@ -180,7 +187,7 @@ std::optional<ServicesConfig> ParseServicesConfig(
 
 QByteArray SerializeServicesConfig(const ServicesConfig &value) {
 	auto object = Write(value).toObject();
-	object.insert(QLatin1StringView("version"), 1);
+	object.insert(QLatin1StringView("version"), 2);
 	return Codec::Serialize(object);
 }
 

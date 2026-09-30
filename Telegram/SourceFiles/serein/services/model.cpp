@@ -61,7 +61,9 @@ std::optional<ServiceDefinition> Definition(
 			|| value.temperature))
 		|| (!translation && !value.systemPrompt.isEmpty())
 		|| (translation && !value.language.isEmpty())
-		|| (hotter && (!translation || value.protocol == u"anthropic"_q))) {
+		|| (hotter && (!translation || value.protocol == u"anthropic"_q))
+		|| (value.protocol != u"azure"_q && !value.region.isEmpty())
+		|| (value.protocol == u"azure"_q && !value.useKey)) {
 		return std::nullopt;
 	}
 	const auto url = QUrl(value.baseUrl, QUrl::StrictMode);
@@ -82,6 +84,7 @@ std::optional<ServiceDefinition> Definition(
 		.prompt = value.prompt,
 		.language = value.language,
 		.temperature = value.temperature,
+		.region = value.region,
 	};
 }
 
@@ -101,6 +104,8 @@ std::vector<std::pair<QByteArray, QByteArray>> ServiceHeaders(
 		const ServiceDefinition &service) {
 	if (service.protocol == u"anthropic"_q) {
 		return { { "anthropic-version", "2023-06-01" } };
+	} else if (service.protocol == u"azure"_q && !service.region.isEmpty()) {
+		return { { "Ocp-Apim-Subscription-Region", service.region.toLatin1() } };
 	}
 	return {};
 }
@@ -112,17 +117,36 @@ std::pair<QByteArray, QByteArray> ServiceAuthorization(
 		return { "x-api-key", secret };
 	} else if (service.protocol == u"deepl"_q) {
 		return { "Authorization", "DeepL-Auth-Key " + secret };
+	} else if (service.protocol == u"azure"_q) {
+		return { "Ocp-Apim-Subscription-Key", secret };
 	}
 	return { "Authorization", "Bearer " + secret };
 }
 
 QJsonObject ServicesDefaults() {
 	return {
-		{ u"version"_q, 1 },
+		{ u"version"_q, 2 },
 		{ u"translation"_q, QString() },
 		{ u"transcription"_q, QString() },
 		{ u"instances"_q, QJsonArray() },
 	};
+}
+
+QJsonObject UpgradeServices(QJsonObject value) {
+	if (value.value(u"version"_q) != QJsonValue(1)) {
+		return value;
+	}
+	auto instances = QJsonArray();
+	for (const auto &entry : value.value(u"instances"_q).toArray()) {
+		auto instance = entry.toObject();
+		if (!instance.contains(u"region"_q)) {
+			instance.insert(u"region"_q, QString());
+		}
+		instances.push_back(instance);
+	}
+	value.insert(u"instances"_q, instances);
+	value.insert(u"version"_q, 2);
+	return value;
 }
 
 QJsonObject SerializeService(const ServiceDefinition &value) {
@@ -142,6 +166,7 @@ QJsonObject SerializeService(const ServiceDefinition &value) {
 	instance.prompt = value.prompt;
 	instance.language = value.language;
 	instance.temperature = value.temperature;
+	instance.region = value.region;
 	return ServicesSchema::Write(instance).toObject();
 }
 
@@ -156,12 +181,16 @@ std::optional<ServiceDefinition> ParseService(const QJsonObject &value) {
 }
 
 bool ValidServices(const QJsonObject &value) {
-	return ServicesSchema::ParseServicesConfig(
-		QJsonDocument(value).toJson(QJsonDocument::Compact)).has_value();
+	return ServicesSchema::ParseServicesConfig(QJsonDocument(
+		UpgradeServices(value)).toJson(QJsonDocument::Compact)).has_value();
 }
 
 bool ValidServicesBytes(const QByteArray &raw) {
-	return raw.isEmpty() || ServicesSchema::ParseServicesConfig(raw).has_value();
+	if (raw.isEmpty()) {
+		return true;
+	}
+	const auto document = QJsonDocument::fromJson(raw);
+	return document.isObject() && ValidServices(document.object());
 }
 
 std::optional<ServiceDefinition> FindService(const QJsonObject &settings, const QString &id) {

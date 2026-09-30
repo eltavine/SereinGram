@@ -258,6 +258,7 @@
 "lng_serein_service_add_deeplx" = "添加 DeepLX（自建）";
 "lng_serein_service_add_yandex" = "添加 Yandex 翻译";
 "lng_serein_service_add_transmart" = "添加腾讯交互翻译";
+"lng_serein_service_add_azure" = "微软翻译（Azure）";
 "lng_serein_service_add_openai" = "添加 OpenAI 兼容翻译";
 "lng_serein_service_add_transcription" = "添加 OpenAI 兼容转写";
 "lng_serein_service_audio_filter" = "音频 (*.flac *.mp3 *.mp4 *.mpeg *.mpga *.m4a *.ogg *.wav *.webm)";
@@ -284,6 +285,7 @@
 "lng_serein_service_size_error" = "此请求超过 SereinGram 限制：文本请求 128 KiB、音频 24 MiB、响应 2 MiB。请缩小选区或使用较小文件。";
 "lng_serein_service_system_prompt" = "系统提示词";
 "lng_serein_service_temperature" = "温度（留空使用服务默认值）";
+"lng_serein_service_region" = "区域（全局资源请留空）";
 "lng_serein_service_test" = "测试已保存的服务…";
 "lng_serein_service_test_about" = "使用此服务已保存的地址、凭据、模型及提示词。文本测试会将“Hello, world!”翻译为中文，服务可能计费。关闭窗口取消当前请求。";
 "lng_serein_service_test_audio" = "选择测试音频…";

@@ -379,6 +379,9 @@ void ServiceBox(
 		? add(tr::lng_serein_service_system_prompt(), original.systemPrompt, true) : nullptr;
 	const auto prompt = openai ? add(tr::lng_serein_service_prompt(), original.prompt, true) : nullptr;
 	const auto language = !translation ? add(tr::lng_serein_service_language(), original.language) : nullptr;
+	const auto region = (original.protocol == u"azure"_q)
+		? add(tr::lng_serein_service_region(), original.region)
+		: nullptr;
 	const auto temperature = openai ? add(tr::lng_serein_service_temperature(),
 		original.temperature ? QString::number(*original.temperature) : QString()) : nullptr;
 	const auto keyed = !IsKeylessProtocol(original.protocol);
@@ -413,6 +416,9 @@ void ServiceBox(
 		service.systemPrompt = system ? system->getLastText() : QString();
 		service.prompt = prompt ? prompt->getLastText() : QString();
 		service.language = language ? language->getLastText().trimmed() : QString();
+		service.region = region
+			? region->getLastText().trimmed().toLower()
+			: QString();
 		service.useKey = *enabled;
 		service.temperature = std::nullopt;
 		if (temperature && !temperature->getLastText().trimmed().isEmpty()) {
@@ -578,6 +584,9 @@ void ServicesBox(not_null<Ui::GenericBox*> box, QJsonObject initial) {
 			Preset{ tr::lng_serein_service_add_yandex, u"yandex"_q,
 				u"https://translate.yandex.net/api/v1/tr.json/"_q, u"translate"_q,
 				QString(), ServiceKind::Translation, false },
+			Preset{ tr::lng_serein_service_add_azure, u"azure"_q,
+				u"https://api.cognitive.microsofttranslator.com/"_q,
+				u"translate"_q },
 			Preset{ tr::lng_serein_service_add_transmart, u"transmart"_q,
 				u"https://transmart.qq.com/"_q, u"api/imt"_q,
 				QString(), ServiceKind::Translation, false },

@@ -2,6 +2,7 @@
 
 #include "serein/hooks/services/model.h"
 
+#include <QtCore/QJsonDocument>
 #include <QtCore/QStringList>
 #include <QtCore/QUrlQuery>
 
@@ -10,7 +11,7 @@
 namespace Serein {
 
 struct TranslationCall {
-	QJsonObject json;
+	QJsonDocument json;
 	QUrlQuery query;
 	std::optional<QByteArray> form;
 };
