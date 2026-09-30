@@ -7,7 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "core/application.h"
 #include "serein/interface/roundness.h"
-#include "serein/interface/text.h"
+#include "serein/hooks/interface/text.h"
 #include "serein/core/options.h"
 #include "serein/hooks/gen/privacy.h"
 

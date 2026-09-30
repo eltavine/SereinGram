@@ -6,8 +6,8 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/history.h"
-#include "serein/chats/sort.h"
-#include "serein/privacy/alias.h"
+#include "serein/hooks/chats/sort.h"
+#include "serein/hooks/privacy/alias.h"
 
 #include "history/view/history_view_element.h"
 #include "history/view/history_view_item_preview.h"

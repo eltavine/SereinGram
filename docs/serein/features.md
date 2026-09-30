@@ -43,7 +43,7 @@ Nagram 的品牌政策要求分支使用不同品牌并替换 Nagram 名称与�
 | SG-CORE-01 | proto3 schema 作为设置、结构化配置、导出包与历史记录的唯一声明来源；Buf lint 与 breaking 检查（6 个设置页、103 个选项已迁移） | D | In Progress | P0 |
 | SG-CORE-02 | 代码生成器：注册表元数据、C++ 值类型、JSON 编解码、校验（均已生成；既有结构化配置已迁移 4 个：链接规则、快捷回复、消息过滤、主菜单） | D | In Progress | P0 |
 | SG-CORE-03 | 存储端口与适配器：设备偏好、账号偏好、历史库 | D | In Progress | P0 |
-| SG-CORE-04 | 上游挂钩门面 `serein/hooks`，上游文件只调用门面（设置选项的门面由 proto 生成到 `serein/hooks/gen`，直接包含内部头文件的上游文件已从 87 降到 63） | D | In Progress | P0 |
+| SG-CORE-04 | 上游挂钩门面 `serein/hooks`，上游文件只调用门面（设置选项的门面由 proto 生成到 `serein/hooks/gen`，面向上游的 23 个薄接口头文件已移入 `serein/hooks/<领域>/`；直接包含内部头文件的上游文件已从 87 降到 30） | D | In Progress | P0 |
 | SG-CORE-05 | 功能模块注册与生命周期（应用、会话、窗口作用域） | D | Planned | P0 |
 | SG-CORE-06 | 设置页与搜索索引由 schema 元数据生成（开关、选项、数值、文本、子页）：开关行、小标题、说明、依赖开关与自定义行位置已由 proto 生成 `AddLayout`，界面、聊天、消息、写作、媒体、隐私（含幽灵与历史）六页已迁移；数值与选项控件待生成 | D | In Progress | P0 |
 | SG-CORE-07 | 英文、简体、繁体内置文案与一致性检查 | Ni Na | Implemented | P0 |

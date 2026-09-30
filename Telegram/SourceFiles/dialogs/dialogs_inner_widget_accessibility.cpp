@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "dialogs/dialogs_inner_widget_accessibility.h"
-#include "serein/chats/layout.h"
+#include "serein/hooks/chats/layout.h"
 #include "serein/messages/badges.h"
 
 #include "data/notify/data_notify_settings.h"

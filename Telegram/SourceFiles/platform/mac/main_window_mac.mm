@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "platform/mac/main_window_mac.h"
-#include "serein/interface/notifications.h"
+#include "serein/hooks/interface/notifications.h"
 
 #include "data/data_session.h"
 #include "core/application.h"

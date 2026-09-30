@@ -3,11 +3,11 @@
 #include "serein/tests/menu_scenario.h"
 
 #include "serein/compose/options.h"
-#include "serein/compose/text.h"
+#include "serein/hooks/compose/text.h"
 #include "serein/core/options.h"
 #include "serein/menu/model.h"
 #include "serein/messages/options.h"
-#include "serein/messages/reading.h"
+#include "serein/hooks/messages/reading.h"
 #include "test/test_log.h"
 #include "test/test_menu.h"
 #include "test/test_widgets.h"

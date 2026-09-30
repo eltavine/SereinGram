@@ -1,7 +1,7 @@
 #include "serein/settings/interface.h"
 
 #include "serein/interface/options.h"
-#include "serein/interface/main_menu.h"
+#include "serein/hooks/interface/main_menu.h"
 #include "serein/settings/gen/interface_rows.h"
 #include "serein/settings/home.h"
 #include "serein/settings/restart.h"

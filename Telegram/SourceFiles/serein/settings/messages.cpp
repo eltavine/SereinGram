@@ -2,7 +2,7 @@
 
 #include "serein/core/options.h"
 #include "serein/messages/options.h"
-#include "serein/messages/reading.h"
+#include "serein/hooks/messages/reading.h"
 #include "serein/settings/gen/messages_rows.h"
 #include "serein/settings/home.h"
 #include "lang/lang_keys.h"

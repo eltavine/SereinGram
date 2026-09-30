@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/reactions/history_view_reactions_selector.h"
-#include "serein/messages/reactions.h"
+#include "serein/hooks/messages/reactions.h"
 
 #include "ui/widgets/labels.h"
 #include "ui/widgets/scroll_area.h"

@@ -1,4 +1,4 @@
-#include "serein/display/view_refresher.h"
+#include "serein/hooks/display/view_refresher.h"
 
 #include "serein/core/options.h"
 #include "data/data_session.h"

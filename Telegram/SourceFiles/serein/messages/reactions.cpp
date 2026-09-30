@@ -1,8 +1,8 @@
-#include "serein/messages/reactions.h"
+#include "serein/hooks/messages/reactions.h"
 
 #include "serein/core/options.h"
 #include "serein/messages/options.h"
-#include "serein/messages/content.h"
+#include "serein/hooks/messages/content.h"
 #include "data/data_peer.h"
 #include "data/data_message_reactions.h"
 #include "history/history_item.h"

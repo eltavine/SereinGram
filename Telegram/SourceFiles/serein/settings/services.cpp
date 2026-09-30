@@ -7,7 +7,7 @@
 #include "serein/services/credentials.h"
 #include "serein/services/request.h"
 #include "serein/services/translation_protocol.h"
-#include "serein/services/system_ai.h"
+#include "serein/hooks/services/system_ai.h"
 #include "platform/platform_translate_provider.h"
 #include "settings/settings_builder.h"
 #include "settings/settings_common_session.h"

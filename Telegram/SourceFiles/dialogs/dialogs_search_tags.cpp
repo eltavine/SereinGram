@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "dialogs/dialogs_search_tags.h"
-#include "serein/messages/content.h"
+#include "serein/hooks/messages/content.h"
 
 #include "base/qt/qt_key_modifiers.h"
 #include "boxes/premium_preview_box.h"

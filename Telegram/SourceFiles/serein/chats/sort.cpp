@@ -1,4 +1,4 @@
-#include "serein/chats/sort.h"
+#include "serein/hooks/chats/sort.h"
 
 #include "serein/chats/options.h"
 #include "data/data_chat_filters.h"

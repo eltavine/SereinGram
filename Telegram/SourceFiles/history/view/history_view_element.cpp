@@ -7,9 +7,9 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/history_view_element.h"
 #include "serein/messages/format.h"
-#include "serein/messages/reactions.h"
-#include "serein/messages/content.h"
-#include "serein/messages/reading.h"
+#include "serein/hooks/messages/reactions.h"
+#include "serein/hooks/messages/content.h"
+#include "serein/hooks/messages/reading.h"
 #include "serein/hooks/gen/messages.h"
 #include "serein/filters/view.h"
 

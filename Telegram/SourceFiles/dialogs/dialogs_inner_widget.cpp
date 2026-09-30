@@ -7,10 +7,10 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "dialogs/dialogs_inner_widget.h"
 #include "serein/hooks/gen/privacy.h"
-#include "serein/chats/list_refresher.h"
-#include "serein/chats/layout.h"
-#include "serein/chats/promotions.h"
-#include "serein/messages/content.h"
+#include "serein/hooks/chats/list_refresher.h"
+#include "serein/hooks/chats/layout.h"
+#include "serein/hooks/chats/promotions.h"
+#include "serein/hooks/messages/content.h"
 #include "serein/messages/badges.h"
 
 #include "dialogs/dialogs_three_state_icon.h"

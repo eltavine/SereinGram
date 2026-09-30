@@ -1,4 +1,4 @@
-#include "serein/interface/main_menu.h"
+#include "serein/hooks/interface/main_menu.h"
 
 #include "serein/interface/options.h"
 #include "lang/lang_keys.h"

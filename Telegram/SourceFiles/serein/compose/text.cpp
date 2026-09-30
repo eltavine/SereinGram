@@ -1,4 +1,4 @@
-#include "serein/compose/text.h"
+#include "serein/hooks/compose/text.h"
 
 #include "serein/compose/options.h"
 #include "serein/compose/spacing.h"

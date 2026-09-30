@@ -1,4 +1,4 @@
-#include "serein/chats/layout.h"
+#include "serein/hooks/chats/layout.h"
 
 #include "serein/chats/options.h"
 #include "styles/style_dialogs.h"

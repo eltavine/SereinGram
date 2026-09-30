@@ -8,8 +8,8 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "chat_helpers/message_field.h"
 
 #include "serein/hooks/gen/compose.h"
-#include "serein/compose/text.h"
-#include "serein/services/draft_translation.h"
+#include "serein/hooks/compose/text.h"
+#include "serein/hooks/services/draft_translation.h"
 
 #include "history/history_widget.h"
 #include "history/history.h" // History::session

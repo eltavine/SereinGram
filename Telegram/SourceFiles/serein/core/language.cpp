@@ -1,4 +1,4 @@
-#include "serein/core/language.h"
+#include "serein/hooks/core/language.h"
 
 #include "lang/lang_file_parser.h"
 #include "lang/lang_instance.h"

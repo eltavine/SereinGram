@@ -1,4 +1,4 @@
-#include "serein/compose/placeholder.h"
+#include "serein/hooks/compose/placeholder.h"
 
 #include "serein/compose/options.h"
 #include "data/data_changes.h"

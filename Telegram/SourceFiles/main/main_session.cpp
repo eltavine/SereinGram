@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "main/main_session.h"
-#include "serein/display/view_refresher.h"
+#include "serein/hooks/display/view_refresher.h"
 #include "serein/messages/badges.h"
 
 #include "apiwrap.h"

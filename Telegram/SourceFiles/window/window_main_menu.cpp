@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "window/window_main_menu.h"
-#include "serein/interface/main_menu.h"
+#include "serein/hooks/interface/main_menu.h"
 
 #include "apiwrap.h"
 #include "base/event_filter.h"

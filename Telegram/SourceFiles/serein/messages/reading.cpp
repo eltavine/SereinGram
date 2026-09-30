@@ -1,6 +1,6 @@
-#include "serein/messages/reading.h"
+#include "serein/hooks/messages/reading.h"
 
-#include "serein/compose/text.h"
+#include "serein/hooks/compose/text.h"
 #include "ui/text/text_utilities.h"
 
 #ifdef Q_OS_MAC

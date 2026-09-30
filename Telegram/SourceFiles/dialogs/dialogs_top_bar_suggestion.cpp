@@ -7,7 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "dialogs/dialogs_top_bar_suggestion.h"
 #include "serein/hooks/gen/chats.h"
-#include "serein/chats/promotions.h"
+#include "serein/hooks/chats/promotions.h"
 #include "serein/core/options.h"
 
 #include "api/api_authorizations.h"

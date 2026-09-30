@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "info/profile/info_profile_actions.h"
-#include "serein/privacy/profile.h"
+#include "serein/hooks/privacy/profile.h"
 
 #include "api/api_blocked_peers.h"
 #include "api/api_chat_participants.h"

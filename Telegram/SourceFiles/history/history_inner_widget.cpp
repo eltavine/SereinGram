@@ -6,9 +6,9 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/history_inner_widget.h"
-#include "serein/messages/reactions.h"
+#include "serein/hooks/messages/reactions.h"
 #include "serein/menu/actions.h"
-#include "serein/menu/selection.h"
+#include "serein/hooks/menu/selection.h"
 
 #include "api/api_polls.h"
 #include "chat_helpers/stickers_emoji_pack.h"

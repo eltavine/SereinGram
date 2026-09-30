@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/history_view_top_bar_widget.h"
-#include "serein/messages/content.h"
+#include "serein/hooks/messages/content.h"
 
 #include "history/history.h"
 #include "history/view/history_view_send_action.h"

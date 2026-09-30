@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "data/components/promo_suggestions.h"
-#include "serein/chats/promotions.h"
+#include "serein/hooks/chats/promotions.h"
 
 #include "api/api_text_entities.h"
 #include "apiwrap.h"

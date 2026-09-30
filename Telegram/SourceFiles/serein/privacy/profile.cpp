@@ -1,4 +1,4 @@
-#include "serein/privacy/profile.h"
+#include "serein/hooks/privacy/profile.h"
 
 #include "serein/privacy/options.h"
 #include "data/data_changes.h"

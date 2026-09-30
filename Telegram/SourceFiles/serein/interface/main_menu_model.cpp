@@ -1,4 +1,4 @@
-#include "serein/interface/main_menu.h"
+#include "serein/hooks/interface/main_menu.h"
 #include "base/basic_types.h"
 
 #include <QtCore/QJsonArray>

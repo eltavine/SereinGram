@@ -1,6 +1,6 @@
 #pragma once
 
-#include "serein/services/model.h"
+#include "serein/hooks/services/model.h"
 
 #include <QtCore/QStringList>
 #include <QtCore/QUrlQuery>

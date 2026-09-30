@@ -1,4 +1,4 @@
-#include "serein/messages/content.h"
+#include "serein/hooks/messages/content.h"
 
 #include "serein/core/options.h"
 #include "serein/messages/options.h"

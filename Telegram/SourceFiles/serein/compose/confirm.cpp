@@ -1,4 +1,4 @@
-#include "serein/compose/confirm.h"
+#include "serein/hooks/compose/confirm.h"
 
 #include "data/data_document.h"
 #include "lang/lang_keys.h"

@@ -10,7 +10,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "base/options.h"
 #include "boxes/compose_ai_box.h"
 #include "core/mime_type.h"
-#include "serein/services/model.h"
+#include "serein/hooks/services/model.h"
 #include "data/data_ai_compose_tones.h"
 #include "data/data_premium_limits.h"
 #include "data/data_session.h"

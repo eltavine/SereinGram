@@ -1,4 +1,4 @@
-#include "serein/privacy/alias.h"
+#include "serein/hooks/privacy/alias.h"
 
 #include "data/data_peer.h"
 #include "data/data_channel.h"

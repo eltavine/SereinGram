@@ -3,7 +3,7 @@
 #include "serein/core/exchange.h"
 #include "serein/core/device_options.h"
 #include "serein/interface/options.h"
-#include "serein/interface/main_menu.h"
+#include "serein/hooks/interface/main_menu.h"
 #include "serein/messages/options.h"
 #include "serein/chats/options.h"
 #include "serein/compose/options.h"

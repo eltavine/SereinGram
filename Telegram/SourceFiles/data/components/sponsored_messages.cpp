@@ -7,7 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "data/components/sponsored_messages.h"
 #include "serein/hooks/gen/chats.h"
-#include "serein/chats/promotions.h"
+#include "serein/hooks/chats/promotions.h"
 
 #include "api/api_text_entities.h"
 #include "api/api_peer_search.h" // SponsoredSearchResult

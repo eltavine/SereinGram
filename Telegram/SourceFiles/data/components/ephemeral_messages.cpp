@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "data/components/ephemeral_messages.h"
-#include "serein/compose/text.h"
+#include "serein/hooks/compose/text.h"
 
 #include "api/api_common.h"
 #include "api/api_text_entities.h"

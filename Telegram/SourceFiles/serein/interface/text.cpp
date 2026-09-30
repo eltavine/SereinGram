@@ -1,4 +1,4 @@
-#include "serein/interface/text.h"
+#include "serein/hooks/interface/text.h"
 
 #include "serein/interface/options.h"
 

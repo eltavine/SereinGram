@@ -7,7 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/history_view_context_menu.h"
 #include "serein/menu/actions.h"
-#include "serein/menu/selection.h"
+#include "serein/hooks/menu/selection.h"
 
 #include "api/api_attached_stickers.h"
 #include "api/api_editing.h"

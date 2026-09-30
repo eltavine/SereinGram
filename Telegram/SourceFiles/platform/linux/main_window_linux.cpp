@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "platform/linux/main_window_linux.h"
-#include "serein/interface/notifications.h"
+#include "serein/hooks/interface/notifications.h"
 
 #include "platform/linux/specific_linux.h"
 #include "history/history.h"

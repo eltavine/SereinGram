@@ -7,7 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "window/window_session_controller.h"
 #include "serein/chats/startup_folder.h"
-#include "serein/chats/sort.h"
+#include "serein/hooks/chats/sort.h"
 
 #include "apiwrap.h"
 #include "api/api_cloud_password.h"

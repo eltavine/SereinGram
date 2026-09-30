@@ -1,4 +1,4 @@
-#include "serein/services/system_ai.h"
+#include "serein/hooks/services/system_ai.h"
 
 #include "base/timer.h"
 #include "boxes/compose_ai_box.h"

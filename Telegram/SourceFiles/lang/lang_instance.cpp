@@ -7,8 +7,8 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "lang/lang_instance.h"
 
-#include "serein/core/language.h"
-#include "serein/interface/text.h"
+#include "serein/hooks/core/language.h"
+#include "serein/hooks/interface/text.h"
 
 #include "core/application.h"
 #include "storage/serialize_common.h"

@@ -2,7 +2,7 @@
 
 #include "serein/menu/actions.h"
 #include "serein/messages/options.h"
-#include "serein/messages/reading.h"
+#include "serein/hooks/messages/reading.h"
 #include "data/data_session.h"
 #include "history/history.h"
 #include "history/history_item.h"

@@ -1,7 +1,7 @@
 #include "serein/settings/config.h"
 
 #include "serein/core/exchange.h"
-#include "serein/core/language.h"
+#include "serein/hooks/core/language.h"
 #include "serein/settings/chats.h"
 #include "serein/settings/compose.h"
 #include "serein/settings/home.h"

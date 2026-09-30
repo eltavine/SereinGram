@@ -6,8 +6,8 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "boxes/compose_ai_box.h"
-#include "serein/services/model.h"
-#include "serein/services/system_ai.h"
+#include "serein/hooks/services/model.h"
+#include "serein/hooks/services/system_ai.h"
 
 #include "api/api_compose_with_ai.h"
 #include "apiwrap.h"

@@ -7,7 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "window/window_peer_menu.h"
 #include "serein/hooks/gen/privacy.h"
-#include "serein/privacy/alias.h"
+#include "serein/hooks/privacy/alias.h"
 
 #include "base/call_delayed.h"
 #include "menu/menu_check_item.h"

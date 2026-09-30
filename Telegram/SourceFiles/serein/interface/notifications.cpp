@@ -1,4 +1,4 @@
-#include "serein/interface/notifications.h"
+#include "serein/hooks/interface/notifications.h"
 
 #include "serein/interface/options.h"
 

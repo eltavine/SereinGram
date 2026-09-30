@@ -1,4 +1,4 @@
-#include "serein/links/open.h"
+#include "serein/hooks/links/open.h"
 
 #include "serein/links/model.h"
 #include "core/application.h"

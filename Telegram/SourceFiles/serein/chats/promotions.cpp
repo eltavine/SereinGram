@@ -1,4 +1,4 @@
-#include "serein/chats/promotions.h"
+#include "serein/hooks/chats/promotions.h"
 
 #include "serein/chats/options.h"
 #include "dialogs/suggestions/suggestion.h"

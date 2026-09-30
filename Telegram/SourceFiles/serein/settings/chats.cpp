@@ -1,7 +1,7 @@
 #include "serein/settings/chats.h"
 
 #include "serein/chats/options.h"
-#include "serein/chats/sort.h"
+#include "serein/hooks/chats/sort.h"
 #include "serein/core/options.h"
 #include "serein/settings/gen/chats_rows.h"
 #include "serein/settings/home.h"

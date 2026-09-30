@@ -1,4 +1,4 @@
-#include "serein/chats/list_refresher.h"
+#include "serein/hooks/chats/list_refresher.h"
 
 #include "serein/chats/options.h"
 #include "dialogs/dialogs_inner_widget.h"

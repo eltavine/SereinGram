@@ -1,7 +1,7 @@
 #include "serein/settings/compose.h"
 
 #include "serein/compose/options.h"
-#include "serein/compose/text.h"
+#include "serein/hooks/compose/text.h"
 #include "serein/settings/gen/compose_rows.h"
 #include "serein/settings/home.h"
 #include "lang/lang_keys.h"
