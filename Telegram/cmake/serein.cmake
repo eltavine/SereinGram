@@ -60,6 +60,7 @@ set(serein_sources
     serein/menu/reading.cpp
     serein/menu/selection.cpp
 	serein/media/sticker_catalog.cpp
+	serein/media/sticker_catalog_rules.cpp
     serein/messages/format.cpp
     serein/messages/content.cpp
     serein/messages/badges.cpp

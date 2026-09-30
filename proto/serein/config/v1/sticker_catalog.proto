@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package serein.config.v1;
+
+import "buf/validate/validate.proto";
+import "serein/options/v1/options.proto";
+
+option (serein.options.v1.file) = {cpp_namespace: "MediaSchema"};
+
+// Exported list of installed sticker, mask and emoji sets.
+message StickerCatalogFile {
+  option (serein.options.v1.document) = {
+    version: 1
+    validator: "ValidStickerCatalogFile"
+  };
+  option (serein.options.v1.codec) = {require_fields: true};
+
+  string format = 1 [(buf.validate.field).string.const = "serein-sticker-catalog"];
+  repeated StickerCatalogSet sets = 2 [(buf.validate.field).repeated.max_items = 1000];
+}
+
+message StickerCatalogSet {
+  option (serein.options.v1.codec) = {require_fields: true};
+
+  string short_name = 1 [(buf.validate.field).string.pattern = "^[a-zA-Z0-9_]{1,64}$"];
+  string title = 2 [(buf.validate.field).string.max_len = 256];
+  string type = 3 [(buf.validate.field).string = {
+    in: ["stickers", "masks", "emoji"]
+  }];
+}

@@ -1,5 +1,7 @@
 #include "serein/media/sticker_catalog.h"
 
+#include "serein/schema/gen/config/sticker_catalog.h"
+
 #include "apiwrap.h"
 #include "boxes/sticker_set_box.h"
 #include "core/application.h"
@@ -15,10 +17,7 @@
 #include "window/window_session_controller.h"
 
 #include <QtCore/QFile>
-#include <QtCore/QJsonArray>
 #include <QtCore/QJsonDocument>
-#include <QtCore/QJsonObject>
-#include <QtCore/QRegularExpression>
 #include <QtCore/QSaveFile>
 
 #include "styles/style_layers.h"
@@ -27,7 +26,6 @@
 namespace Serein {
 namespace {
 
-constexpr auto kMaximumCatalogEntries = 1000;
 constexpr auto kMaximumCatalogBytes = 1024 * 1024;
 constexpr auto kTypes = std::array{
 	Data::StickersType::Stickers,
@@ -56,16 +54,12 @@ const Data::StickersSetsOrder &InstalledOrder(
 		: stickers.setsOrder();
 }
 
-bool ValidEntry(const StickerCatalogEntry &entry) {
-	static const auto slug = QRegularExpression(u"\\A[a-zA-Z0-9_]{1,64}\\z"_q);
-	return slug.match(entry.shortName).hasMatch()
-		&& entry.title.size() <= 256
-		&& QString::fromUtf8(entry.title.toUtf8()) == entry.title
-		&& ranges::none_of(entry.title, [](QChar ch) {
-			return ch.category() == QChar::Other_Control
-				|| ch.category() == QChar::Separator_Line
-				|| ch.category() == QChar::Separator_Paragraph;
-		});
+Data::StickersType TypeFromName(const QString &name) {
+	return (name == u"emoji"_q)
+		? Data::StickersType::Emoji
+		: (name == u"masks"_q)
+		? Data::StickersType::Masks
+		: Data::StickersType::Stickers;
 }
 
 Orders CurrentOrders(not_null<Main::Session*> session) {
@@ -141,59 +135,37 @@ std::optional<StickerCatalog> ParseStickerCatalog(const QByteArray &bytes) {
 	if (bytes.size() > kMaximumCatalogBytes) {
 		return std::nullopt;
 	}
-	const auto document = QJsonDocument::fromJson(bytes);
-	const auto object = document.object();
-	const auto sets = object.value(u"sets"_q);
-	if (!document.isObject() || object.size() != 3
-		|| object.value(u"format"_q) != u"serein-sticker-catalog"_q
-		|| object.value(u"version"_q) != QJsonValue(1)
-		|| !sets.isArray() || sets.toArray().size() > kMaximumCatalogEntries) {
+	const auto file = MediaSchema::ParseStickerCatalogFile(bytes);
+	if (!file) {
 		return std::nullopt;
 	}
 	auto result = StickerCatalog();
-	auto seen = QSet<QString>();
-	for (const auto &value : sets.toArray()) {
-		const auto fields = value.toObject();
-		const auto type = fields.value(u"type"_q).toString();
-		if (!value.isObject() || fields.size() != 3
-			|| !fields.value(u"shortName"_q).isString()
-			|| !fields.value(u"title"_q).isString()
-			|| (type != u"stickers"_q && type != u"masks"_q && type != u"emoji"_q)) {
-			return std::nullopt;
-		}
-		auto entry = StickerCatalogEntry{
-			.shortName = fields.value(u"shortName"_q).toString(),
-			.title = fields.value(u"title"_q).toString(),
-			.type = type == u"emoji"_q
-				? Data::StickersType::Emoji
-				: type == u"masks"_q
-				? Data::StickersType::Masks
-				: Data::StickersType::Stickers,
-		};
-		const auto key = entry.shortName.toLower();
-		if (!ValidEntry(entry) || seen.contains(key)) {
-			return std::nullopt;
-		}
-		seen.insert(key);
-		result.push_back(std::move(entry));
+	result.reserve(file->sets.size());
+	for (const auto &set : file->sets) {
+		result.push_back({
+			.shortName = set.shortName,
+			.title = set.title,
+			.type = TypeFromName(set.type),
+		});
 	}
 	return result;
 }
 
 QByteArray SerializeStickerCatalog(const StickerCatalog &catalog) {
-	auto sets = QJsonArray();
+	auto file = MediaSchema::StickerCatalogFile{
+		.format = u"serein-sticker-catalog"_q,
+	};
+	file.sets.reserve(catalog.size());
 	for (const auto &entry : catalog) {
-		sets.push_back(QJsonObject{
-			{ u"shortName"_q, entry.shortName },
-			{ u"title"_q, entry.title },
-			{ u"type"_q, TypeName(entry.type) },
+		file.sets.push_back({
+			.shortName = entry.shortName,
+			.title = entry.title,
+			.type = TypeName(entry.type),
 		});
 	}
-	return QJsonDocument(QJsonObject{
-		{ u"format"_q, u"serein-sticker-catalog"_q },
-		{ u"version"_q, 1 },
-		{ u"sets"_q, sets },
-	}).toJson(QJsonDocument::Indented);
+	return QJsonDocument::fromJson(
+		MediaSchema::SerializeStickerCatalogFile(file)
+	).toJson(QJsonDocument::Indented);
 }
 
 std::variant<StickerCatalog, QString> CurrentStickerCatalog(

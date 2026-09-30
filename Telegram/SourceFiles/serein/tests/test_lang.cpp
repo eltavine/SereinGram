@@ -16,6 +16,7 @@ void TestStickers();
 void TestRecentChats();
 void TestChinese();
 void TestAliases();
+void TestStickerCatalog();
 void TestFilters();
 void TestLinks();
 void TestCodec();
@@ -107,6 +108,7 @@ int main() {
 		TestRecentChats();
 		TestChinese();
 		TestAliases();
+		TestStickerCatalog();
 		TestFilters();
 		TestLinks();
 		TestCodec();

@@ -10,6 +10,7 @@ set(serein_test_sources
     serein/tests/test_recent_chats.cpp
     serein/tests/test_chinese.cpp
     serein/tests/test_aliases.cpp
+    serein/tests/test_sticker_catalog.cpp
     serein/tests/test_filters.cpp
     serein/tests/test_links.cpp
     serein/tests/test_codec.cpp
@@ -24,6 +25,7 @@ set(serein_test_sources
     serein/chats/recent.cpp
     serein/messages/chinese.cpp
     serein/privacy/alias_rules.cpp
+    serein/media/sticker_catalog_rules.cpp
     serein/compose/spacing.cpp
     serein/compose/validators.cpp
     serein/core/exchange.cpp
