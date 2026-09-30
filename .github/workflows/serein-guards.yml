@@ -37,6 +37,9 @@ jobs:
       - name: Module boundaries hold.
         run: python3 tools/serein/check_boundaries.py
 
+      - name: Feature matrix uses defined statuses.
+        run: python3 tools/serein/check_features.py
+
       - name: Fetch comparison baselines.
         env:
           SCHEMA_BASELINE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}

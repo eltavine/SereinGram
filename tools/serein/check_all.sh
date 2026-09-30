@@ -27,4 +27,5 @@ uv run --quiet --with jinja2==3.1.6 python -m unittest discover -s tools/serein/
 python3 tools/serein/check_file_size.py
 python3 tools/serein/check_boundaries.py
 python3 tools/serein/upstream_budget.py
+python3 tools/serein/check_features.py
 echo "All local SereinGram checks passed."
