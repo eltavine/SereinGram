@@ -109,6 +109,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "storage/download_manager_mtproto.h"
 #include "storage/file_upload.h"
 #include "storage/storage_account.h"
+#include "serein/hooks/ghost.h"
 
 namespace {
 
@@ -1453,6 +1454,9 @@ void ApiWrap::markContentsRead(
 			markedIds.push_back(MTP_int(item->id));
 		}
 	}
+	if (!Serein::Hooks::AllowReadReceipt(&session())) {
+		return;
+	}
 	if (!markedIds.isEmpty()) {
 		request(MTPmessages_ReadMessageContents(
 			MTP_vector<MTPint>(markedIds)
@@ -1469,7 +1473,9 @@ void ApiWrap::markContentsRead(
 }
 
 void ApiWrap::markContentsRead(not_null<HistoryItem*> item) {
-	if (!item->markContentsRead(true) || !item->isRegular()) {
+	if (!item->markContentsRead(true)
+		|| !item->isRegular()
+		|| !Serein::Hooks::AllowReadReceipt(&session())) {
 		return;
 	}
 	const auto ids = MTP_vector<MTPint>(1, MTP_int(item->id));
