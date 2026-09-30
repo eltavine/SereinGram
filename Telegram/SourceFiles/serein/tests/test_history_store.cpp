@@ -1,7 +1,6 @@
 #include "serein/adapters/qtsql/history_store.h"
 #include "base/basic_types.h"
 
-#include <QtCore/QCoreApplication>
 #include <QtCore/QTemporaryDir>
 #include <QtSql/QSqlDatabase>
 #include <QtSql/QSqlQuery>
@@ -54,13 +53,6 @@ public:
 void TestHistoryStore() {
 	using namespace Serein;
 	using Kind = History::RecordKind;
-	auto argc = 1;
-	char name[] = "test_serein";
-	char *argv[] = { name, nullptr };
-	auto application = std::optional<QCoreApplication>();
-	if (!QCoreApplication::instance()) {
-		application.emplace(argc, argv);
-	}
 	auto directory = QTemporaryDir();
 	Require(directory.isValid(), "temporary directory");
 	const auto path = directory.filePath(u"history.sqlite3"_q);

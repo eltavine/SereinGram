@@ -10,6 +10,7 @@ set(serein_test_sources
     serein/tests/test_codec.cpp
     serein/tests/test_ghost.cpp
     serein/features/ghost/model/policy.cpp
+    serein/features/history/model/recorder.cpp
     serein/schema/codec.cpp
     serein/chats/validators.cpp
     serein/compose/spacing.cpp
@@ -26,4 +27,5 @@ list(APPEND serein_test_sources ${serein_generated_sources})
 set(serein_sql_test_sources
     serein/adapters/qtsql/history_store.cpp
     serein/tests/test_history_store.cpp
+    serein/tests/test_history_recorder.cpp
 )

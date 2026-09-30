@@ -1,3 +1,4 @@
+#include <QtCore/QCoreApplication>
 #include <fstream>
 #include <iostream>
 #include <map>
@@ -14,6 +15,7 @@ void TestLinks();
 void TestCodec();
 void TestGhost();
 void TestHistoryStore();
+void TestHistoryRecorder();
 
 namespace {
 
@@ -97,7 +99,12 @@ int main() {
 		TestCodec();
 		TestGhost();
 #ifdef SEREIN_HAVE_QT_SQL
+		auto argc = 1;
+		char name[] = "test_serein";
+		char *argv[] = { name, nullptr };
+		QCoreApplication application(argc, argv);
 		TestHistoryStore();
+		TestHistoryRecorder();
 #endif // SEREIN_HAVE_QT_SQL
 		const auto root = std::string(SEREIN_LANG_SOURCE_DIR);
 		const auto upstream = ReadStrings(root + "/lang.strings", false);

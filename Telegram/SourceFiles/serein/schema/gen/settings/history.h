@@ -1,0 +1,60 @@
+// Generated from proto/serein/settings/v1/history.proto by tools/serein/codegen; do not edit.
+#pragma once
+
+#include "serein/core/options.h"
+
+namespace Serein::HistorySettings {
+
+inline constexpr auto kHistorySaveDeleted = Option<bool>{
+	"serein.historySaveDeleted",
+	Scope::Account,
+	false,
+	Category::Privacy,
+	"lng_serein_history_save_deleted",
+	0 };
+inline constexpr auto kHistorySaveEdits = Option<bool>{
+	"serein.historySaveEdits",
+	Scope::Account,
+	false,
+	Category::Privacy,
+	"lng_serein_history_save_edits",
+	0 };
+inline constexpr auto kHistoryIncludeBots = Option<bool>{
+	"serein.historyIncludeBots",
+	Scope::Account,
+	false,
+	Category::Privacy,
+	"lng_serein_history_include_bots",
+	0 };
+inline constexpr auto kHistoryRetentionDays = Option<int>{
+	"serein.historyRetentionDays",
+	Scope::Account,
+	0,
+	Category::Privacy,
+	"lng_serein_history_retention_days",
+	0,
+	[](const int &value) {
+		return (value == 0)
+			|| ((value >= 0) && (value <= 3650));
+	} };
+inline constexpr auto kHistoryMaxRecords = Option<int>{
+	"serein.historyMaxRecords",
+	Scope::Account,
+	0,
+	Category::Privacy,
+	"lng_serein_history_max_records",
+	0,
+	[](const int &value) {
+		return (value == 0)
+			|| ((value >= 0) && (value <= 10000000));
+	} };
+
+inline void RegisterOptions(Registry &registry) {
+	Expects(registry.Add(kHistorySaveDeleted));
+	Expects(registry.Add(kHistorySaveEdits));
+	Expects(registry.Add(kHistoryIncludeBots));
+	Expects(registry.Add(kHistoryRetentionDays));
+	Expects(registry.Add(kHistoryMaxRecords));
+}
+
+} // namespace Serein::HistorySettings

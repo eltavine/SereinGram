@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package serein.settings.v1;
+
+import "buf/validate/validate.proto";
+import "serein/options/v1/options.proto";
+
+message HistorySettings {
+  option (serein.options.v1.page) = {
+    cpp_namespace: "HistorySettings"
+    scope: SCOPE_ACCOUNT
+    category: CATEGORY_PRIVACY
+  };
+
+  optional bool history_save_deleted = 1;
+  optional bool history_save_edits = 2;
+  optional bool history_include_bots = 3;
+  // Zero keeps records until they are cleared by hand.
+  optional int32 history_retention_days = 4 [(buf.validate.field).int32 = {
+    gte: 0
+    lte: 3650
+  }];
+  // Zero keeps any number of records.
+  optional int32 history_max_records = 5 [(buf.validate.field).int32 = {
+    gte: 0
+    lte: 10000000
+  }];
+}

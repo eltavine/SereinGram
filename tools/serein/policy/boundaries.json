@@ -39,6 +39,16 @@
       "app": false,
       "libraries": true
     },
+    "serein/features/history/model/": {
+      "own": [
+        "serein/features/history/model/",
+        "serein/core/options.h",
+        "serein/schema/",
+        "serein/ports/"
+      ],
+      "app": false,
+      "libraries": true
+    },
     "serein/hooks/": {
       "own": [
         "serein/hooks/",
