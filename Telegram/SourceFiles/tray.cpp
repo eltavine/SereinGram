@@ -6,6 +6,8 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "tray.h"
+
+#include "serein/hooks/tray.h"
 #include "tray_accounts_menu.h"
 
 #include "core/application.h"
@@ -108,6 +110,7 @@ void Tray::rebuildMenu() {
 			[=] { toggleSoundNotifications(); });
 	}
 
+	Serein::Hooks::FillTrayMenu(_tray);
 	_tray.addAction(tr::lng_serein_quit_from_tray(), [] { Core::Quit(); });
 
 	TrayAccountsMenu::Fill(_tray);

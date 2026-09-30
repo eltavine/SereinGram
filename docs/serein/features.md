@@ -107,7 +107,7 @@ SG-HIST-05 的“已编辑”标记文字已由 C09 实现，删除标记随 SG-
 | ID | 功能 | 来源 | 状态 | 优先级 |
 | --- | --- | --- | --- | --- |
 | SG-PRIV-01 | 主播模式：截屏录屏排除窗口，遮盖会话列表、标题与通知（G02） | Ad Ni | Implemented | P1 |
-| SG-PRIV-02 | 主播模式快捷键与菜单、托盘入口 | Ad | In Progress | P1 |
+| SG-PRIV-02 | 主播模式快捷键与菜单、托盘入口（主菜单开关与托盘菜单“开启/关闭演示模式”已接入，托盘项由 `serein/app/tray_menu.cpp` 提供；全局快捷键待做） | Ad | In Progress | P1 |
 | SG-PRIV-03 | 遮盖本机手机号（G01） | Ni Na | Implemented | P1 |
 | SG-PRIV-04 | 本地备注名称 | Ni | Implemented | P2 |
 | SG-PRIV-05 | 默认隐藏赞助消息与代理赞助频道（B10、B11） | Ad Ni | Implemented | P1 |

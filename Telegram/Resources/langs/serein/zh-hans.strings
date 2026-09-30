@@ -398,6 +398,8 @@
 "lng_serein_snapshot_write_error" = "无法保存图片，请检查目标位置和可用空间。";
 "lng_serein_snapshot_changed" = "消息或显示设置已变化，请检查刷新的预览后再导出。";
 "lng_serein_demo_mode" = "演示模式";
+"lng_serein_demo_mode_enable" = "开启演示模式";
+"lng_serein_demo_mode_disable" = "关闭演示模式";
 "lng_serein_demo_mode_note" = "请求系统在录屏中排除 SereinGram 窗口，并遮盖会话列表、标题和通知内容。部分录屏工具可能忽略该请求。";
 "lng_serein_demo_hidden" = "演示模式已遮盖";
 "lng_serein_peer_alias" = "设置本地名称";
