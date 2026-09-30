@@ -15,6 +15,7 @@ set(serein_sources
     serein/features/history/model/recorder.cpp
     serein/adapters/openssl/aes_gcm_cipher.cpp
     serein/hooks/ghost.cpp
+    serein/app/ghost_read.cpp
     serein/display/view_refresher.cpp
     serein/interface/main_menu.cpp
     serein/interface/main_menu_model.cpp

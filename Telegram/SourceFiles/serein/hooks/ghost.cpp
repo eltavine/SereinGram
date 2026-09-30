@@ -17,6 +17,10 @@ bool AllowOnline(gsl::not_null<Main::Session*> session) {
 	return Allows(session, Ghost::Activity::Online);
 }
 
+bool AllowReadReceipt(gsl::not_null<Main::Session*> session) {
+	return Allows(session, Ghost::Activity::ReadReceipt);
+}
+
 bool AllowTyping(gsl::not_null<Main::Session*> session) {
 	return Allows(session, Ghost::Activity::Typing);
 }

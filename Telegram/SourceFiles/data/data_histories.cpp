@@ -33,6 +33,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "history/view/history_view_element.h"
 #include "core/application.h"
 #include "apiwrap.h"
+#include "serein/hooks/ghost.h"
 
 namespace Data {
 namespace {
@@ -307,6 +308,9 @@ void Histories::readInboxTill(
 		DEBUG_LOG(("Reading: count didn't change so just update till %1"
 			).arg(tillId.bare));
 		history->setInboxReadTill(tillId);
+		return;
+	}
+	if (Serein::Hooks::ReadInboxLocally(history, tillId, stillUnread)) {
 		return;
 	}
 	auto &state = maybeState ? *maybeState : _states[history];

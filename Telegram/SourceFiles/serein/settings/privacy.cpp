@@ -131,6 +131,10 @@ const auto kMeta = BuildHelper({
 		tr::lng_serein_ghost_mode(),
 		u"serein/privacy/ghost-mode"_q,
 		{ u"ghost"_q, u"online"_q, u"typing"_q });
+	AddAccountToggle(builder, Ghost::kGhostHideReadReceipts,
+		tr::lng_serein_ghost_hide_read_receipts(),
+		u"serein/privacy/ghost-hide-read-receipts"_q,
+		{ u"ghost"_q, u"read"_q, u"receipts"_q });
 	AddAccountToggle(builder, Ghost::kGhostHideOnline,
 		tr::lng_serein_ghost_hide_online(),
 		u"serein/privacy/ghost-hide-online"_q,
