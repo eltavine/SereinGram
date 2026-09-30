@@ -80,7 +80,7 @@ Nagram 的品牌政策要求分支使用不同品牌并替换 Nagram 名称与�
 | SG-HIST-04 | 保留期限、容量上限、单对话清理与全部清理（保留天数与条数上限已有设置行） | Na | In Progress | P1 |
 | SG-HIST-05 | 自定义已删除、已编辑标记文字；已删除消息半透明 | Aa Na | In Progress | P2 |
 | SG-HIST-06 | 按对话浏览已删除消息 | Ad Aa | In Progress | P2 |
-| SG-HIST-07 | 是否记录机器人消息；按对话排除 | Na | Planned | P2 |
+| SG-HIST-07 | 是否记录机器人消息；按对话排除（“记录机器人消息”为隐私页开关；消息菜单“不记录此对话的历史”按账号维护排除列表，列表格式由 `config/v1/history_exclusions.proto` 声明） | Na | Implemented | P2 |
 | SG-HIST-08 | 已下载媒体不随删除清除，历史中可继续打开 | Ad Aa | Planned | P2 |
 | SG-HIST-09 | 限时图片、视频过期后仍可查看 | Ad Aa | Planned | P2 |
 | SG-HIST-10 | 保留被移出或封禁的群组、频道的本地记录 | Aa | Planned | P3 |

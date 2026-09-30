@@ -54,4 +54,12 @@ rpl::producer<int> HistoryMaxRecordsValue(gsl::not_null<Main::Session*> session)
 	return ForAccount(session).Value(Serein::HistorySettings::kHistoryMaxRecords);
 }
 
+QByteArray HistoryExcludedPeers(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Get(Serein::HistorySettings::kHistoryExcludedPeers);
+}
+
+rpl::producer<QByteArray> HistoryExcludedPeersValue(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Value(Serein::HistorySettings::kHistoryExcludedPeers);
+}
+
 } // namespace Serein::Hooks::HistorySettings

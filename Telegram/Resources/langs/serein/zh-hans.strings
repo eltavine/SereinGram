@@ -459,3 +459,5 @@
 "lng_serein_menu_edit_history" = "编辑历史";
 "lng_serein_menu_deleted_messages" = "已删除的消息";
 "lng_serein_menu_read_until_here" = "读到此处";
+"lng_serein_menu_history_exclude" = "不记录此对话的历史";
+"lng_serein_menu_history_include" = "恢复记录此对话的历史";

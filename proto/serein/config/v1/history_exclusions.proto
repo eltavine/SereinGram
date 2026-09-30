@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package serein.config.v1;
+
+import "buf/validate/validate.proto";
+import "serein/options/v1/options.proto";
+
+option (serein.options.v1.file) = {cpp_namespace: "HistoryFeature"};
+
+// Chats whose deleted and edited messages are never recorded.
+message HistoryExclusions {
+  option (serein.options.v1.document) = {version: 1};
+
+  repeated string peers = 1 [(buf.validate.field).repeated = {
+    max_items: 10000
+    unique: true
+    items: {
+      string: {pattern: "^[1-9][0-9]*$"}
+    }
+  }];
+}

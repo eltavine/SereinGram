@@ -1,6 +1,7 @@
 // Generated from proto/serein/settings/v1/history.proto by tools/serein/codegen; do not edit.
 #pragma once
 
+#include <QtCore/QByteArray>
 #include <gsl/pointers>
 #include <rpl/producer.h>
 
@@ -22,5 +23,7 @@ namespace Serein::Hooks::HistorySettings {
 [[nodiscard]] rpl::producer<int> HistoryRetentionDaysValue(gsl::not_null<Main::Session*> session);
 [[nodiscard]] int HistoryMaxRecords(gsl::not_null<Main::Session*> session);
 [[nodiscard]] rpl::producer<int> HistoryMaxRecordsValue(gsl::not_null<Main::Session*> session);
+[[nodiscard]] QByteArray HistoryExcludedPeers(gsl::not_null<Main::Session*> session);
+[[nodiscard]] rpl::producer<QByteArray> HistoryExcludedPeersValue(gsl::not_null<Main::Session*> session);
 
 } // namespace Serein::Hooks::HistorySettings

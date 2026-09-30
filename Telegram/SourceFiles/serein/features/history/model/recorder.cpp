@@ -7,8 +7,22 @@ namespace {
 
 constexpr auto kSecondsPerDay = qint64(86400);
 
+[[nodiscard]] std::set<qint64> ReadExclusions(Options &account) {
+	auto result = std::set<qint64>();
+	const auto parsed = ParseHistoryExclusions(
+		account.Get(HistorySettings::kHistoryExcludedPeers));
+	for (const auto &peer : parsed ? parsed->peers : std::vector<QString>()) {
+		auto ok = false;
+		if (const auto id = peer.toLongLong(&ok); ok) {
+			result.emplace(id);
+		}
+	}
+	return result;
+}
+
 [[nodiscard]] bool Wanted(const Policy &policy, const Snapshot &snapshot) {
 	return (policy.includeBots || !snapshot.fromBot)
+		&& !policy.excludedPeers.contains(snapshot.peerId)
 		&& snapshot.peerId != 0
 		&& snapshot.messageId > 0
 		&& (!snapshot.text.isEmpty() || !snapshot.mediaSummary.isEmpty());
@@ -24,7 +38,28 @@ Policy Read(Options &account) {
 		.includeBots = account.Get(kHistoryIncludeBots),
 		.retentionDays = account.Get(kHistoryRetentionDays),
 		.maxRecords = account.Get(kHistoryMaxRecords),
+		.excludedPeers = ReadExclusions(account),
 	};
+}
+
+bool Excluded(Options &account, qint64 peerId) {
+	return ReadExclusions(account).contains(peerId);
+}
+
+bool SetExcluded(Options &account, qint64 peerId, bool excluded) {
+	auto peers = ReadExclusions(account);
+	if (excluded) {
+		peers.emplace(peerId);
+	} else {
+		peers.erase(peerId);
+	}
+	auto value = HistoryExclusions();
+	for (const auto peer : peers) {
+		value.peers.push_back(QString::number(peer));
+	}
+	return account.Set(
+		HistorySettings::kHistoryExcludedPeers,
+		value.peers.empty() ? QByteArray() : SerializeHistoryExclusions(value));
 }
 
 Recorder::Recorder(Ports::HistoryStore &store, std::function<qint64()> now)
@@ -71,3 +106,12 @@ bool Recorder::record(History::RecordKind kind, const Snapshot &snapshot) {
 }
 
 } // namespace Serein::HistoryFeature
+
+namespace Serein::HistorySettings {
+
+bool ValidHistoryExclusions(const QByteArray &value) {
+	return value.isEmpty()
+		|| HistoryFeature::ParseHistoryExclusions(value).has_value();
+}
+
+} // namespace Serein::HistorySettings

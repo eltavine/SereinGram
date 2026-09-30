@@ -1,5 +1,6 @@
 #include "serein/menu/history.h"
 
+#include "serein/features/history/model/recorder.h"
 #include "serein/hooks/history.h"
 #include "serein/menu/actions.h"
 #include "serein/ports/history_store.h"
@@ -131,6 +132,37 @@ void InsertDeletedMessagesAction(
 		&st::menuIconInfo, &st::menuIconInfo);
 	Tag(menu->insertAction(DeleteActionIndex(menu), std::move(widget)),
 		ActionId::DeletedMessages);
+}
+
+void InsertHistoryExclusionAction(
+		Ui::PopupMenu *menu,
+		HistoryItem *item,
+		Window::SessionController *controller) {
+	if (!menu || !item || !controller) {
+		return;
+	}
+	const auto session = &controller->session();
+	const auto policy = HistoryFeature::Read(ForAccount(session));
+	if (!policy.saveDeleted && !policy.saveEdits) {
+		return;
+	}
+	const auto peerId = qint64(item->history()->peer->id.value);
+	const auto excluded = policy.excludedPeers.contains(peerId);
+	const auto action = Ui::Menu::CreateAction(menu,
+		(excluded
+			? tr::lng_serein_menu_history_include
+			: tr::lng_serein_menu_history_exclude)(tr::now),
+		crl::guard(controller, [=] {
+			Expects(HistoryFeature::SetExcluded(
+				ForAccount(session),
+				peerId,
+				!excluded));
+		}));
+	auto widget = base::make_unique_q<Ui::Menu::Action>(
+		menu->menu(), menu->menu()->st(), action,
+		&st::menuIconArchive, &st::menuIconArchive);
+	Tag(menu->insertAction(DeleteActionIndex(menu), std::move(widget)),
+		ActionId::HistoryExclusion);
 }
 
 } // namespace Serein::Menu

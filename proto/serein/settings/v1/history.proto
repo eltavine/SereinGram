@@ -37,4 +37,8 @@ message HistorySettings {
       lte: 10000000
     }
   ];
+  optional bytes history_excluded_peers = 7 [(serein.options.v1.field) = {
+    hidden: true
+    validator: "ValidHistoryExclusions"
+  }];
 }

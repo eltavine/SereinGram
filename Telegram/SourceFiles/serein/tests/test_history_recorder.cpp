@@ -58,6 +58,22 @@ void TestHistoryRecorder() {
 	Require(!recorder.recordDeleted(policy, Message(2, true)), "bots are skipped by default");
 	policy.includeBots = true;
 	Require(recorder.recordDeleted(policy, Message(2, true)), "bots can be included");
+	policy.excludedPeers = { 555 };
+	Require(!recorder.recordDeleted(policy, Message(40)), "excluded chats are skipped");
+	Require(!recorder.recordEdit(policy, Message(41)), "excluded chat edits are skipped");
+	policy.excludedPeers.clear();
+	using HistorySettings::ValidHistoryExclusions;
+	Require(ValidHistoryExclusions({}), "empty exclusions rejected");
+	Require(ValidHistoryExclusions(R"({"version":1,"peers":["555","777"]})"),
+		"valid exclusions rejected");
+	Require(!ValidHistoryExclusions(R"({"version":1,"peers":["0"]})"),
+		"zero peer id accepted");
+	Require(!ValidHistoryExclusions(R"({"version":1,"peers":["5","5"]})"),
+		"duplicate peer ids accepted");
+	Require(!ValidHistoryExclusions(R"({"version":1,"peers":["-5"]})"),
+		"negative peer id accepted");
+	Require(!ValidHistoryExclusions(R"({"peers":["5"]})"),
+		"exclusions without a version accepted");
 	Require(!recorder.recordDeleted(policy, Snapshot()), "empty snapshots are skipped");
 
 	Require(recorder.recordEdit(policy, Message(3)), "first edit is saved");

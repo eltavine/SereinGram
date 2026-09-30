@@ -59,6 +59,7 @@ void Apply(
 			InsertEditHistoryAction(menu, item, controller);
 			InsertDeletedMessagesAction(menu, item, controller);
 			InsertReadUntilHereAction(menu, item, controller);
+			InsertHistoryExclusionAction(menu, item, controller);
 		}
 	}
 	const auto config = ForDevice().Get(kMenuConfig);

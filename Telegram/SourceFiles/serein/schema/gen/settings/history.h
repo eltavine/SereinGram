@@ -5,6 +5,8 @@
 
 namespace Serein::HistorySettings {
 
+[[nodiscard]] bool ValidHistoryExclusions(const QByteArray &value);
+
 inline constexpr auto kHistorySaveDeleted = Option<bool>{
 	"serein.historySaveDeleted",
 	Scope::Account,
@@ -55,6 +57,14 @@ inline constexpr auto kHistoryMaxRecords = Option<int>{
 		return (value == 0)
 			|| ((value >= 0) && (value <= 10000000));
 	} };
+inline const auto kHistoryExcludedPeers = Option<QByteArray>{
+	"serein.historyExcludedPeers",
+	Scope::Account,
+	QByteArray(),
+	Category::Privacy,
+	"lng_serein_history_excluded_peers",
+	static_cast<unsigned>(Flag::Hidden),
+	&ValidHistoryExclusions };
 
 inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kHistorySaveDeleted));
@@ -63,6 +73,7 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kHistoryIncludeBots));
 	Expects(registry.Add(kHistoryRetentionDays));
 	Expects(registry.Add(kHistoryMaxRecords));
+	Expects(registry.Add(kHistoryExcludedPeers));
 }
 
 } // namespace Serein::HistorySettings

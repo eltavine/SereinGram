@@ -463,3 +463,5 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_menu_edit_history" = "Edit history";
 "lng_serein_menu_deleted_messages" = "Deleted messages";
 "lng_serein_menu_read_until_here" = "Read until here";
+"lng_serein_menu_history_exclude" = "Don't save this chat's history";
+"lng_serein_menu_history_include" = "Save this chat's history again";

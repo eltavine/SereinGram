@@ -1,9 +1,11 @@
 #pragma once
 
 #include "serein/ports/history_store.h"
+#include "serein/schema/gen/config/history_exclusions.h"
 #include "serein/schema/gen/settings/history.h"
 
 #include <functional>
+#include <set>
 
 namespace Serein::HistoryFeature {
 
@@ -25,9 +27,12 @@ struct Policy {
 	bool includeBots = false;
 	int retentionDays = 0;
 	int maxRecords = 0;
+	std::set<qint64> excludedPeers;
 };
 
 [[nodiscard]] Policy Read(Options &account);
+[[nodiscard]] bool Excluded(Options &account, qint64 peerId);
+[[nodiscard]] bool SetExcluded(Options &account, qint64 peerId, bool excluded);
 
 class Recorder final {
 public:

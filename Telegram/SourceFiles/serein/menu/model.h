@@ -33,6 +33,7 @@ enum class ActionId : int {
 	EditHistory = 24,
 	DeletedMessages = 25,
 	ReadUntilHere = 26,
+	HistoryExclusion = 27,
 };
 
 enum class Visibility { Show, Hide, WithOption };
@@ -42,7 +43,7 @@ struct Entry {
 	const char *titleKey;
 };
 
-inline constexpr auto kEntries = std::array<Entry, 26>({{
+inline constexpr auto kEntries = std::array<Entry, 27>({{
 	{ ActionId::Reply, "lng_serein_menu_reply" },
 	{ ActionId::Edit, "lng_serein_menu_edit" },
 	{ ActionId::Copy, "lng_serein_menu_copy" },
@@ -69,6 +70,7 @@ inline constexpr auto kEntries = std::array<Entry, 26>({{
 	{ ActionId::EditHistory, "lng_serein_menu_edit_history" },
 	{ ActionId::DeletedMessages, "lng_serein_menu_deleted_messages" },
 	{ ActionId::ReadUntilHere, "lng_serein_menu_read_until_here" },
+	{ ActionId::HistoryExclusion, "lng_serein_menu_history_exclude" },
 }});
 
 [[nodiscard]] Visibility DefaultVisibility(ActionId id);

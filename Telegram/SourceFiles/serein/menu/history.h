@@ -22,4 +22,9 @@ void InsertDeletedMessagesAction(
 	HistoryItem *item,
 	Window::SessionController *controller);
 
+void InsertHistoryExclusionAction(
+	Ui::PopupMenu *menu,
+	HistoryItem *item,
+	Window::SessionController *controller);
+
 } // namespace Serein::Menu
