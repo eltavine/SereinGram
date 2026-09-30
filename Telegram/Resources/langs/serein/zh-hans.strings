@@ -249,6 +249,12 @@
 "lng_serein_sorting" = "排序";
 "lng_serein_chat_sort" = "会话排序";
 "lng_serein_recent_chats" = "最近会话";
+"lng_serein_local_pinning" = "本地置顶";
+"lng_serein_local_pinning_note" = "在对话菜单加入“本地置顶”。本地置顶的对话在本设备上排在已置顶对话下方，不受服务器数量限制，最多 50 个。";
+"lng_serein_local_pins" = "本地置顶的对话";
+"lng_serein_local_pin" = "本地置顶";
+"lng_serein_local_unpin" = "取消本地置顶";
+"lng_serein_local_pin_limit" = "最多可以本地置顶 50 个对话。";
 "lng_serein_remember_reading_position" = "记住阅读位置";
 "lng_serein_remember_reading_position_note" = "重启后第一次打开没有未读消息的对话时，从上次读到的位置继续，而不是跳到最新消息。";
 "lng_serein_reading_positions" = "已保存的阅读位置";

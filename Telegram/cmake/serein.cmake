@@ -53,6 +53,7 @@ set(serein_sources
     serein/chats/recent.cpp
     serein/chats/reading_positions.cpp
     serein/chats/quick_actions.cpp
+    serein/chats/local_pins.cpp
     serein/app/reading_positions.cpp
     serein/chats/managed_folders.cpp
     serein/interface/roundness.cpp

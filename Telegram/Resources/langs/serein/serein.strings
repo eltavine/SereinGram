@@ -253,6 +253,12 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_sorting" = "Sorting";
 "lng_serein_chat_sort" = "Chat order";
 "lng_serein_recent_chats" = "Recent chats";
+"lng_serein_local_pinning" = "Local pinning";
+"lng_serein_local_pinning_note" = "Adds “Pin locally” to the chat menu. Locally pinned chats stay right below your pinned chats on this device, without the server limit, up to 50.";
+"lng_serein_local_pins" = "Locally pinned chats";
+"lng_serein_local_pin" = "Pin locally";
+"lng_serein_local_unpin" = "Unpin locally";
+"lng_serein_local_pin_limit" = "You can pin up to 50 chats locally.";
 "lng_serein_remember_reading_position" = "Remember reading position";
 "lng_serein_remember_reading_position_note" = "When a chat without unread messages is opened for the first time after a restart, it continues where you stopped reading instead of at the latest message.";
 "lng_serein_reading_positions" = "Saved reading positions";

@@ -174,6 +174,14 @@ rpl::producer<bool> ManagementShortcutsValue() {
 	return ForDevice().Value(Serein::Chats::kManagementShortcuts);
 }
 
+bool LocalPinning() {
+	return ForDevice().Get(Serein::Chats::kLocalPinning);
+}
+
+rpl::producer<bool> LocalPinningValue() {
+	return ForDevice().Value(Serein::Chats::kLocalPinning);
+}
+
 QString RecentChats(gsl::not_null<Main::Session*> session) {
 	return ForAccount(session).Get(Serein::Chats::kRecentChats);
 }
@@ -188,6 +196,14 @@ QString ReadingPositions(gsl::not_null<Main::Session*> session) {
 
 rpl::producer<QString> ReadingPositionsValue(gsl::not_null<Main::Session*> session) {
 	return ForAccount(session).Value(Serein::Chats::kReadingPositions);
+}
+
+QString LocalPins(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Get(Serein::Chats::kLocalPins);
+}
+
+rpl::producer<QString> LocalPinsValue(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Value(Serein::Chats::kLocalPins);
 }
 
 } // namespace Serein::Hooks::Chats

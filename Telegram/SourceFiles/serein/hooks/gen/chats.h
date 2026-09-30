@@ -53,9 +53,13 @@ namespace Serein::Hooks::Chats {
 [[nodiscard]] rpl::producer<bool> ChatQuickActionsValue();
 [[nodiscard]] bool ManagementShortcuts();
 [[nodiscard]] rpl::producer<bool> ManagementShortcutsValue();
+[[nodiscard]] bool LocalPinning();
+[[nodiscard]] rpl::producer<bool> LocalPinningValue();
 [[nodiscard]] QString RecentChats(gsl::not_null<Main::Session*> session);
 [[nodiscard]] rpl::producer<QString> RecentChatsValue(gsl::not_null<Main::Session*> session);
 [[nodiscard]] QString ReadingPositions(gsl::not_null<Main::Session*> session);
 [[nodiscard]] rpl::producer<QString> ReadingPositionsValue(gsl::not_null<Main::Session*> session);
+[[nodiscard]] QString LocalPins(gsl::not_null<Main::Session*> session);
+[[nodiscard]] rpl::producer<QString> LocalPinsValue(gsl::not_null<Main::Session*> session);
 
 } // namespace Serein::Hooks::Chats

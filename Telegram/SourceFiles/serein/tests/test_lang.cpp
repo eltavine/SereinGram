@@ -17,6 +17,7 @@ void TestRecentChats();
 void TestMentionQuery();
 void TestRecorders();
 void TestReadingPositions();
+void TestLocalPins();
 void TestChinese();
 void TestAliases();
 void TestStickerCatalog();
@@ -115,6 +116,7 @@ int main() {
 		TestMentionQuery();
 		TestRecorders();
 		TestReadingPositions();
+		TestLocalPins();
 		TestChinese();
 		TestAliases();
 		TestStickerCatalog();

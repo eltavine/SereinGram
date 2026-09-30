@@ -249,6 +249,12 @@
 "lng_serein_sorting" = "排序";
 "lng_serein_chat_sort" = "會話排序";
 "lng_serein_recent_chats" = "最近會話";
+"lng_serein_local_pinning" = "本機置頂";
+"lng_serein_local_pinning_note" = "在對話選單加入「本機置頂」。本機置頂的對話在本裝置上排在已置頂對話下方，不受伺服器數量限制，最多 50 個。";
+"lng_serein_local_pins" = "本機置頂的對話";
+"lng_serein_local_pin" = "本機置頂";
+"lng_serein_local_unpin" = "取消本機置頂";
+"lng_serein_local_pin_limit" = "最多可以本機置頂 50 個對話。";
 "lng_serein_remember_reading_position" = "記住閱讀位置";
 "lng_serein_remember_reading_position_note" = "重新啟動後第一次開啟沒有未讀訊息的對話時，從上次讀到的位置繼續，而不是跳到最新訊息。";
 "lng_serein_reading_positions" = "已儲存的閱讀位置";

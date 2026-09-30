@@ -164,7 +164,12 @@ void TestOptions() {
 		"unknown refresh option");
 	auto chats = Registry();
 	Chats::RegisterOptions(chats);
-	Require(chats.All().size() == 23, "chat option count");
+	Require(chats.All().size() == 25, "chat option count");
+	Require(!Chats::kLocalPinning.fallback
+		&& Chats::kLocalPins.scope == Scope::Account
+		&& Chats::kLocalPins.validate(QString::fromLatin1("7,9"))
+		&& !Chats::kLocalPins.validate(QString::fromLatin1("7,7")),
+		"local pinning must be an opt-in with account scoped pins");
 	Require(!Chats::kManagementShortcuts.fallback, "management shortcuts must be opt-in");
 	Require(!Chats::kChatQuickActions.fallback, "chat quick actions must be opt-in");
 	Require(!Chats::kRememberReadingPosition.fallback

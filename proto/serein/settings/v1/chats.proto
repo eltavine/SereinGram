@@ -123,6 +123,10 @@ message ChatsSettings {
     keywords: ["admin", "members", "recent actions", "group"]
     note: "lng_serein_management_shortcuts_note"
   }];
+  optional bool local_pinning = 24 [(serein.options.v1.field) = {
+    keywords: ["pin", "top", "local"]
+    note: "lng_serein_local_pinning_note"
+  }];
   // Serialized peer ids of recently opened chats, newest first.
   optional string recent_chats = 19 [
     (serein.options.v1.field) = {
@@ -139,6 +143,15 @@ message ChatsSettings {
       title: "lng_serein_reading_positions"
       scope: SCOPE_ACCOUNT
       validator: "ValidReadingPositions"
+    }
+  ];
+  // Serialized peer ids of locally pinned chats, in pin order.
+  optional string local_pins = 25 [
+    (serein.options.v1.field) = {
+      hidden: true
+      title: "lng_serein_local_pins"
+      scope: SCOPE_ACCOUNT
+      validator: "ValidLocalPins"
     }
   ];
 }

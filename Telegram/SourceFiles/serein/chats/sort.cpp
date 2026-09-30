@@ -1,5 +1,6 @@
 #include "serein/hooks/chats/sort.h"
 
+#include "serein/chats/local_pins.h"
 #include "serein/chats/options.h"
 #include "data/data_chat_filters.h"
 #include "data/data_peer.h"
@@ -27,6 +28,7 @@
 #include <algorithm>
 #include <array>
 #include <bit>
+#include <map>
 #include <set>
 
 #include "styles/style_settings.h"
@@ -37,9 +39,30 @@ namespace {
 
 constexpr auto kMime = "application/x-serein-chat-sort-rule";
 
+// Below server pins (0xFFFFFFFF000000FF minus index), above date keys.
+constexpr auto kLocalPinBase = 0xFFFFFFFE00000000ULL;
+
 int &SortConfig() {
 	static auto value = ForDevice().Get(kChatSort);
 	return value;
+}
+
+std::map<Main::Session*, std::vector<quint64>> &LocalPins() {
+	static auto value = std::map<Main::Session*, std::vector<quint64>>();
+	return value;
+}
+
+void ReadLocalPins(gsl::not_null<Main::Session*> session) {
+	LocalPins()[session] = ForDevice().Get(kLocalPinning)
+		? ParseLocalPins(ForAccount(session).Get(kLocalPins))
+		: std::vector<quint64>();
+}
+
+[[nodiscard]] bool HasLocalPins() {
+	return std::any_of(LocalPins().begin(), LocalPins().end(), [](
+			const auto &entry) {
+		return !entry.second.empty();
+	});
 }
 
 std::array<int, 4> Order(int value) {
@@ -126,15 +149,28 @@ void RefreshSorting(gsl::not_null<Main::Session*> session) {
 } // namespace
 
 bool SortingEnabled() {
-	return (SortConfig() & 15) != 0;
+	return (SortConfig() & 15) != 0 || HasLocalPins();
 }
 
 uint64 SortKey(const Dialogs::Entry &entry, uint64 original) {
+	const auto history = entry.asHistory();
+	const auto peer = history ? history->peer.get() : nullptr;
+	if (peer) {
+		const auto i = LocalPins().find(&history->session());
+		if (i != LocalPins().end()) {
+			const auto &pins = i->second;
+			const auto pin = std::find(
+				pins.begin(),
+				pins.end(),
+				SerializePeerId(peer->id));
+			if (pin != pins.end()) {
+				return kLocalPinBase + uint64(pins.end() - pin);
+			}
+		}
+	}
 	const auto config = SortConfig();
 	const auto enabled = config & 15;
 	if (!enabled) return original;
-	const auto history = entry.asHistory();
-	const auto peer = history ? history->peer.get() : nullptr;
 	const auto state = entry.chatListUnreadState();
 	const auto matches = std::array<bool, 4>{
 		state.messages || state.marks || state.reactions || state.mentions,
@@ -158,13 +194,26 @@ uint64 SortKey(const Dialogs::Entry &entry, uint64 original) {
 }
 
 void WatchSorting(gsl::not_null<Main::Session*> session) {
+	ReadLocalPins(session);
+	session->lifetime().add([=] { LocalPins().erase(session); });
 	ForDevice().changes(
 	) | rpl::filter([](auto key) {
-		return key == kChatSort.key;
+		return key == kChatSort.key || key == kLocalPinning.key;
 	}) | rpl::on_next([=] {
 		SortConfig() = ForDevice().Get(kChatSort);
+		ReadLocalPins(session);
 		RefreshSorting(session);
 	}, session->lifetime());
+	ForAccount(session).changes(
+	) | rpl::filter([](auto key) {
+		return key == kLocalPins.key;
+	}) | rpl::on_next([=] {
+		ReadLocalPins(session);
+		RefreshSorting(session);
+	}, session->lifetime());
+	if (HasLocalPins()) {
+		RefreshSorting(session);
+	}
 }
 
 void ChatSortBox(gsl::not_null<Ui::GenericBox*> box) {

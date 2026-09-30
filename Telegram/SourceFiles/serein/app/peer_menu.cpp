@@ -3,12 +3,15 @@
 #include "serein/admin/delete_mine.h"
 #include "serein/admin/shortcuts.h"
 #include "serein/admin/upgrade.h"
+#include "serein/chats/local_pins.h"
+#include "serein/chats/options.h"
 #include "serein/chats/quick_actions.h"
 #include "serein/features/history/viewer.h"
 #include "serein/hooks/privacy/alias.h"
 #include "data/data_forum_topic.h"
 #include "data/data_peer.h"
 #include "lang/lang_keys.h"
+#include "main/main_session.h"
 #include "ui/widgets/menu/menu_add_action_callback.h"
 #include "window/window_session_controller.h"
 #include "styles/style_menu_icons.h"
@@ -36,6 +39,27 @@ void FillHistoryMenu(
 	}, &st::menuIconShowInChat);
 	if (!topic) {
 		Chats::FillQuickActions(addAction, controller, peer);
+	}
+	if (!topic && ForDevice().Get(Chats::kLocalPinning)) {
+		const auto id = SerializePeerId(peer->id);
+		const auto pins = Chats::ParseLocalPins(
+			ForAccount(&controller->session()).Get(Chats::kLocalPins));
+		const auto pinned = std::find(pins.begin(), pins.end(), id)
+			!= pins.end();
+		const auto full = int(pins.size()) >= Chats::kLocalPinsLimit;
+		addAction(pinned
+			? tr::lng_serein_local_unpin(tr::now)
+			: tr::lng_serein_local_pin(tr::now), [=] {
+			if (!pinned && full) {
+				controller->uiShow()->showToast(
+					tr::lng_serein_local_pin_limit(tr::now));
+				return;
+			}
+			auto &options = ForAccount(&controller->session());
+			Expects(options.Set(
+				Chats::kLocalPins,
+				Chats::ToggleLocalPin(options.Get(Chats::kLocalPins), id)));
+		}, pinned ? &st::menuIconUnpin : &st::menuIconPin);
 	}
 	if (!topic
 		&& HistoryFeature::HasDeletedMessages(&controller->session(), peer)) {

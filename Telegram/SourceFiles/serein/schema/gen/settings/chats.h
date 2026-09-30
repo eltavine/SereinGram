@@ -9,6 +9,7 @@ namespace Serein::Chats {
 [[nodiscard]] bool ValidManagedFolderIds(const QString &value);
 [[nodiscard]] bool ValidRecentChats(const QString &value);
 [[nodiscard]] bool ValidReadingPositions(const QString &value);
+[[nodiscard]] bool ValidLocalPins(const QString &value);
 
 inline constexpr auto kCompactList = Option<bool>{
 	"serein.chatListCompact",
@@ -175,6 +176,13 @@ inline constexpr auto kManagementShortcuts = Option<bool>{
 	Category::Chats,
 	"lng_serein_management_shortcuts",
 	0 };
+inline constexpr auto kLocalPinning = Option<bool>{
+	"serein.localPinning",
+	Scope::Device,
+	false,
+	Category::Chats,
+	"lng_serein_local_pinning",
+	0 };
 inline const auto kRecentChats = Option<QString>{
 	"serein.recentChats",
 	Scope::Account,
@@ -191,6 +199,14 @@ inline const auto kReadingPositions = Option<QString>{
 	"lng_serein_reading_positions",
 	static_cast<unsigned>(Flag::Hidden),
 	&ValidReadingPositions };
+inline const auto kLocalPins = Option<QString>{
+	"serein.localPins",
+	Scope::Account,
+	QString(),
+	Category::Chats,
+	"lng_serein_local_pins",
+	static_cast<unsigned>(Flag::Hidden),
+	&ValidLocalPins };
 
 inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kCompactList));
@@ -214,8 +230,10 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kRememberReadingPosition));
 	Expects(registry.Add(kChatQuickActions));
 	Expects(registry.Add(kManagementShortcuts));
+	Expects(registry.Add(kLocalPinning));
 	Expects(registry.Add(kRecentChats));
 	Expects(registry.Add(kReadingPositions));
+	Expects(registry.Add(kLocalPins));
 }
 
 } // namespace Serein::Chats
