@@ -20,6 +20,7 @@ set(serein_sources
     serein/app/ghost_read.cpp
     serein/app/lifecycle.cpp
     serein/app/modules.cpp
+    serein/app/peer_menu.cpp
     serein/app/ghost_menu.cpp
     serein/app/ghost_send.cpp
     serein/display/view_refresher.cpp

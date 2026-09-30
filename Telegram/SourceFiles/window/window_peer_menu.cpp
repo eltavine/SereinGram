@@ -7,7 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "window/window_peer_menu.h"
 #include "serein/hooks/gen/privacy.h"
-#include "serein/hooks/privacy/alias.h"
+#include "serein/hooks/peer_menu.h"
 
 #include "base/call_delayed.h"
 #include "menu/menu_check_item.h"
@@ -335,7 +335,6 @@ private:
 	void addNewContact();
 	void addShareContact();
 	void addEditContact();
-	void addLocalAlias();
 	void addBotToGroup();
 	void addNewMembers();
 	void addDeleteContact();
@@ -1164,17 +1163,6 @@ void Filler::addEditContact() {
 		&st::menuIconEdit);
 }
 
-void Filler::addLocalAlias() {
-	if (_topic || _peer->isSelf() || _peer->migrateTo()) {
-		return;
-	}
-	const auto peer = _peer;
-	const auto show = _controller->uiShow();
-	_addAction(tr::lng_serein_peer_alias(tr::now), [=] {
-		Serein::Privacy::ShowAlias(show, peer);
-	}, &st::menuIconEdit);
-}
-
 void Filler::addBotToGroup() {
 	const auto user = _peer->asUser();
 	if (!user) {
@@ -1937,6 +1925,7 @@ void Filler::fillHistoryActions() {
 	addToggleMuteSubmenu(true);
 	addCreateTopic();
 	addInfo();
+	Serein::Hooks::FillHistoryMenu(_addAction, _controller, _peer, _topic);
 	addViewAsTopics();
 	addManageChat();
 	addStoryArchive();
@@ -1962,7 +1951,7 @@ void Filler::fillProfileActions() {
 	addNewContact();
 	addShareContact();
 	addEditContact();
-	addLocalAlias();
+	Serein::Hooks::FillProfileMenu(_addAction, _controller, _peer, _topic);
 	addBotToGroup();
 	addNewMembers();
 	addSendGift();
