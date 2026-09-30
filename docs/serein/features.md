@@ -206,9 +206,9 @@ SG-HIST-05 的“已编辑”标记文字已由 C09 实现，删除标记随 SG-
 | SG-MEDIA-04 | 贴纸包列表导出与导入（F12、F13） | Na | Implemented | P2 |
 | SG-MEDIA-05 | 查询贴纸包、表情包作者并打开资料（贴纸包与表情包窗口右上角菜单“作者”：由贴纸包 ID 推算作者用户 ID，本地已知该用户时打开资料页，否则复制 ID；按 ID 远程解析未知用户待做） | Ad | In Progress | P2 |
 | SG-MEDIA-06 | 下载时保留原始文件名（先核对上游现状）（由上游提供：`DocumentFileNameForSave` 默认使用原始文件名，核对于 2026-09-30） | Na | Implemented | P2 |
-| SG-MEDIA-07 | 不经贴纸包收藏单个贴纸、收藏去重 | Na | Planned | P3 |
+| SG-MEDIA-07 | 不经贴纸包收藏单个贴纸、收藏去重（由上游覆盖：消息中贴纸的右键菜单“添加到收藏”无需添加整个贴纸包，收藏列表由服务器按贴纸文档维护，不会重复） | Na | Implemented | P3 |
 | SG-MEDIA-08 | 通话与录音降噪、语音增强（通话由上游覆盖：私人通话的 tgcalls 配置始终开启降噪，群组通话有上游的降噪开关；语音消息录制的降噪待做） | Na | In Progress | P3 |
-| SG-MEDIA-09 | 自定义表情资源包 | Na | Planned | P3 |
+| SG-MEDIA-09 | 自定义表情资源包（由上游覆盖：设置中的“选择表情样式”可下载并切换多套表情图形资源，由 `chat_helpers/emoji_sets_manager` 管理；导入第三方资源包不在范围内） | Na | Implemented | P3 |
 | SG-MEDIA-10 | 音乐封面服务与已保存音乐 | Ad Ni | Planned | P3 |
 
 ## TRANS 翻译、转写与 AI
