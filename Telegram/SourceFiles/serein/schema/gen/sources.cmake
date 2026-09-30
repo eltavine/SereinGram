@@ -1,4 +1,5 @@
 set(serein_generated_sources
+    serein/schema/gen/config/aliases.cpp
     serein/schema/gen/config/filters.cpp
     serein/schema/gen/config/history_exclusions.cpp
     serein/schema/gen/config/links.cpp

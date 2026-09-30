@@ -1,60 +1,44 @@
 #include "serein/privacy/alias.h"
 
+#include "serein/schema/gen/config/aliases.h"
 #include "data/data_peer_id.h"
-
-#include <QtCore/QJsonDocument>
-#include <QtCore/QJsonObject>
 
 namespace Serein::Privacy {
 namespace {
 
-constexpr auto kMaximumAliases = 1000;
-constexpr auto kMaximumAliasLength = 96;
+constexpr auto kMaximumRawSize = 512 * 1024;
+
+[[nodiscard]] std::optional<PeerId> AliasPeer(const QString &key) {
+	auto ok = false;
+	const auto id = DeserializePeerId(key.toULongLong(&ok));
+	if (!ok || !id
+		|| (!peerIsUser(id) && !peerIsChat(id) && !peerIsChannel(id))
+		|| peerToBareMTPInt(id).v <= 0
+		|| QString::number(SerializePeerId(id)) != key) {
+		return std::nullopt;
+	}
+	return id;
+}
 
 } // namespace
-
-bool ValidAlias(const QString &value) {
-	return value.size() <= kMaximumAliasLength
-		&& value == value.trimmed()
-		&& QString::fromUtf8(value.toUtf8()) == value
-		&& ranges::none_of(value, [](QChar ch) {
-			return ch.category() == QChar::Other_Control
-				|| ch.category() == QChar::Separator_Line
-				|| ch.category() == QChar::Separator_Paragraph;
-		});
-}
 
 std::optional<PeerAliases> ParseAliases(const QByteArray &raw) {
 	if (raw.isEmpty()) {
 		return PeerAliases();
-	} else if (raw.size() > 512 * 1024) {
+	} else if (raw.size() > kMaximumRawSize) {
 		return std::nullopt;
 	}
-	const auto document = QJsonDocument::fromJson(raw);
-	const auto object = document.object();
-	const auto names = object.value(u"names"_q);
-	if (!document.isObject() || object.size() != 2
-		|| object.value(u"version"_q) != QJsonValue(1)
-		|| !names.isObject()
-		|| names.toObject().size() > kMaximumAliases) {
+	const auto config = ParsePeerAliasesConfig(raw);
+	if (!config) {
 		return std::nullopt;
 	}
 	auto result = PeerAliases();
-	const auto entries = names.toObject();
-	for (auto i = entries.begin(); i != entries.end(); ++i) {
-		auto ok = false;
-		const auto serialized = i.key().toULongLong(&ok);
-		const auto id = DeserializePeerId(serialized);
-		const auto value = i.value().toString();
-		if (!ok || !id
-			|| (!peerIsUser(id) && !peerIsChat(id) && !peerIsChannel(id))
-			|| peerToBareMTPInt(id).v <= 0
-			|| QString::number(SerializePeerId(id)) != i.key()
-			|| !i.value().isString() || value.isEmpty()
-			|| !ValidAlias(value)) {
+	for (const auto &[key, value] : config->names) {
+		const auto peer = AliasPeer(key);
+		if (!peer) {
 			return std::nullopt;
 		}
-		result.emplace(id, value);
+		result.emplace(*peer, value);
 	}
 	return result;
 }
@@ -63,14 +47,11 @@ QByteArray SerializeAliases(const PeerAliases &aliases) {
 	if (aliases.empty()) {
 		return {};
 	}
-	auto names = QJsonObject();
+	auto config = PeerAliasesConfig();
 	for (const auto &[id, value] : aliases) {
-		names.insert(QString::number(SerializePeerId(id)), value);
+		config.names.emplace(QString::number(SerializePeerId(id)), value);
 	}
-	return QJsonDocument(QJsonObject{
-		{ u"version"_q, 1 },
-		{ u"names"_q, names },
-	}).toJson(QJsonDocument::Compact);
+	return SerializePeerAliasesConfig(config);
 }
 
 } // namespace Serein::Privacy

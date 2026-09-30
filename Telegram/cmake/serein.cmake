@@ -80,6 +80,7 @@ set(serein_sources
     serein/privacy/profile.cpp
     serein/privacy/alias.cpp
     serein/privacy/alias_model.cpp
+    serein/privacy/alias_rules.cpp
     serein/settings/home.cpp
     serein/settings/rules.cpp
     serein/settings/chats.cpp

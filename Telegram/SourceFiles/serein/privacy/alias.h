@@ -3,12 +3,12 @@
 #include "base/basic_types.h"
 #include "serein/core/options.h"
 #include "serein/hooks/privacy/alias.h"
+#include "serein/privacy/alias_rules.h"
 
 namespace Serein::Privacy {
 
 using PeerAliases = base::flat_map<PeerId, QString>;
 
-[[nodiscard]] bool ValidAlias(const QString &value);
 [[nodiscard]] std::optional<PeerAliases> ParseAliases(const QByteArray &raw);
 [[nodiscard]] QByteArray SerializeAliases(const PeerAliases &aliases);
 [[nodiscard]] QString SetAlias(

@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package serein.config.v1;
+
+import "buf/validate/validate.proto";
+import "serein/options/v1/options.proto";
+
+option (serein.options.v1.file) = {cpp_namespace: "Privacy"};
+
+// Local display names for peers, keyed by serialized peer id.
+message PeerAliasesConfig {
+  option (serein.options.v1.document) = {
+    version: 1
+    validator: "ValidPeerAliasesConfig"
+  };
+  option (serein.options.v1.codec) = {require_fields: true};
+
+  map<string, string> names = 1 [(buf.validate.field).map = {
+    max_pairs: 1000
+    keys: {
+      string: {pattern: "^[1-9][0-9]{0,19}$"}
+    }
+    values: {
+      string: {min_len: 1, max_len: 96}
+    }
+  }];
+}
