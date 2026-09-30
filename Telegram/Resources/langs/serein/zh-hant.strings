@@ -461,3 +461,4 @@
 "lng_serein_menu_read_until_here" = "讀到此處";
 "lng_serein_menu_history_exclude" = "不記錄此對話的歷史";
 "lng_serein_menu_history_include" = "恢復記錄此對話的歷史";
+"lng_serein_menu_button_data" = "按鈕資料";
