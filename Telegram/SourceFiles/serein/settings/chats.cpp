@@ -3,6 +3,7 @@
 #include "serein/chats/options.h"
 #include "serein/chats/sort.h"
 #include "serein/core/options.h"
+#include "serein/settings/gen/chats_rows.h"
 #include "serein/settings/home.h"
 #include "data/data_chat_filters.h"
 #include "data/data_session.h"
@@ -45,27 +46,6 @@ public:
 
 	static const SectionBuildMethod kBuild;
 };
-
-void AddToggle(
-		SectionBuilder &builder,
-		const Option<bool> &option,
-		rpl::producer<QString> title,
-		QString id,
-		QStringList keywords) {
-	const auto button = builder.addButton({
-		.id = std::move(id),
-		.title = std::move(title),
-		.st = &st::settingsButtonNoIcon,
-		.toggled = ForDevice().Value(option),
-		.keywords = std::move(keywords),
-	});
-	if (button) {
-		button->toggledChanges(
-		) | rpl::on_next([option](bool value) {
-			Expects(ForDevice().Set(option, value));
-		}, button->lifetime());
-	}
-}
 
 QString PreviewLinesLabel(int value) {
 	switch (value) {
@@ -149,118 +129,55 @@ const auto kMeta = BuildHelper({
 	.title = &tr::lng_serein_chats,
 	.icon = &st::menuIconChatBubble,
 }, [](SectionBuilder &builder) {
-	builder.addSubsectionTitle({
-		.id = u"serein/chats/list"_q,
-		.title = tr::lng_serein_chat_list(),
-		.keywords = { u"list"_q, u"layout"_q },
-	});
-	AddToggle(builder, Chats::kCompactList,
-		tr::lng_serein_compact_chat_list(),
-		u"serein/chats/compact"_q,
-		{ u"compact"_q, u"list"_q });
 	const auto controller = builder.controller();
-	builder.addButton({
-		.id = u"serein/chats/preview-lines"_q,
-		.title = tr::lng_serein_chat_preview_lines(),
-		.st = &st::settingsButtonNoIcon,
-		.label = ForDevice().Value(Chats::kPreviewLines)
-			| rpl::map(PreviewLinesLabel),
-		.onClick = [=] { controller->show(Box(PreviewLinesBox)); },
-		.keywords = { u"preview"_q, u"lines"_q },
-	});
-	AddToggle(builder, Chats::kHideSavedAndArchivedPreviews,
-		tr::lng_serein_hide_saved_and_archived_previews(),
-		u"serein/chats/hide-special-previews"_q,
-		{ u"saved"_q, u"archive"_q, u"preview"_q });
-	AddToggle(builder, Chats::kHideStories,
-		tr::lng_serein_hide_stories(),
-		u"serein/chats/hide-stories"_q,
-		{ u"stories"_q });
-	builder.addSubsectionTitle({
-		.id = u"serein/chats/folders"_q,
-		.title = tr::lng_serein_folders(),
-		.keywords = { u"folders"_q },
-	});
-	const auto session = &controller->session();
-	builder.addButton({
-		.id = u"serein/chats/startup-folder"_q,
-		.title = tr::lng_serein_startup_folder(),
-		.st = &st::settingsButtonNoIcon,
-		.label = rpl::single(StartupFolderLabel(session)) | rpl::then(
-			ForAccount(session).changes() | rpl::map([=](auto) {
-				return StartupFolderLabel(session);
-			})),
-		.onClick = [=] {
-			controller->show(Box([=](not_null<Ui::GenericBox*> box) {
-				StartupFolderBox(box, session);
-			}));
+	Chats::AddLayout(builder, {
+		.chatPreviewLines = [&] {
+			builder.addButton({
+				.id = u"serein/chats/preview-lines"_q,
+				.title = tr::lng_serein_chat_preview_lines(),
+				.st = &st::settingsButtonNoIcon,
+				.label = ForDevice().Value(Chats::kPreviewLines)
+					| rpl::map(PreviewLinesLabel),
+				.onClick = [=] { controller->show(Box(PreviewLinesBox)); },
+				.keywords = { u"preview"_q, u"lines"_q },
+			});
 		},
-		.keywords = { u"startup"_q, u"folder"_q },
+		.startupFolderMode = [&] {
+			const auto session = &controller->session();
+			builder.addButton({
+				.id = u"serein/chats/startup-folder"_q,
+				.title = tr::lng_serein_startup_folder(),
+				.st = &st::settingsButtonNoIcon,
+				.label = rpl::single(StartupFolderLabel(session)) | rpl::then(
+					ForAccount(session).changes() | rpl::map([=](auto) {
+						return StartupFolderLabel(session);
+					})),
+				.onClick = [=] {
+					controller->show(Box([=](not_null<Ui::GenericBox*> box) {
+						StartupFolderBox(box, session);
+					}));
+				},
+				.keywords = { u"startup"_q, u"folder"_q },
+			});
+		},
+		.chatSort = [&] {
+			builder.addButton({
+				.id = u"serein/chats/chat-sort"_q,
+				.title = tr::lng_serein_chat_sort(),
+				.st = &st::settingsButtonNoIcon,
+				.label = ForDevice().Value(Chats::kChatSort)
+					| rpl::map([](int value) {
+						const auto count = std::popcount(unsigned(value & 15));
+						return count
+							? QString::number(count)
+								+ tr::lng_serein_sort_active_suffix(tr::now)
+							: tr::lng_serein_preview_follow(tr::now);
+					}),
+				.onClick = [=] { controller->show(Box(Chats::ChatSortBox)); },
+				.keywords = { u"sort"_q, u"unread"_q, u"contacts"_q },
+			});
+		},
 	});
-	AddToggle(builder, Chats::kHideAllChatsFolder,
-		tr::lng_serein_hide_all_chats_folder(),
-		u"serein/chats/hide-all"_q,
-		{ u"all chats"_q, u"folders"_q });
-	AddToggle(builder, Chats::kShowArchiveInFolders,
-		tr::lng_serein_show_archive_in_folders(),
-		u"serein/chats/archive-in-folders"_q,
-		{ u"archive"_q, u"folders"_q });
-	AddToggle(builder, Chats::kHideFolderUnreadCounters,
-		tr::lng_serein_hide_folder_unread_counters(),
-		u"serein/chats/hide-folder-unread"_q,
-		{ u"unread"_q, u"folders"_q });
-	builder.addSubsectionTitle({
-		.id = u"serein/chats/sorting"_q,
-		.title = tr::lng_serein_sorting(),
-		.keywords = { u"sort"_q, u"order"_q },
-	});
-	builder.addButton({
-		.id = u"serein/chats/chat-sort"_q,
-		.title = tr::lng_serein_chat_sort(),
-		.st = &st::settingsButtonNoIcon,
-		.label = ForDevice().Value(Chats::kChatSort) | rpl::map([](int value) {
-			const auto count = std::popcount(unsigned(value & 15));
-			return count
-				? QString::number(count) + tr::lng_serein_sort_active_suffix(tr::now)
-				: tr::lng_serein_preview_follow(tr::now);
-		}),
-		.onClick = [=] { controller->show(Box(Chats::ChatSortBox)); },
-		.keywords = { u"sort"_q, u"unread"_q, u"contacts"_q },
-	});
-	builder.addSubsectionTitle({
-		.id = u"serein/chats/promotions"_q,
-		.title = tr::lng_serein_promotions(),
-		.keywords = { u"promotions"_q, u"ads"_q },
-	});
-	AddToggle(builder, Chats::kHideSponsoredMessages,
-		tr::lng_serein_hide_sponsored_messages(),
-		u"serein/chats/hide-sponsored"_q,
-		{ u"sponsored"_q, u"search ads"_q });
-	AddToggle(builder, Chats::kHideProxySponsor,
-		tr::lng_serein_hide_proxy_sponsor(),
-		u"serein/chats/hide-proxy-sponsor"_q,
-		{ u"proxy"_q, u"sponsored channel"_q });
-	AddToggle(builder, Chats::kHidePremiumPromotions,
-		tr::lng_serein_hide_premium_promotions(),
-		u"serein/chats/hide-premium-promotions"_q,
-		{ u"Premium"_q, u"promotions"_q });
-	AddToggle(builder, Chats::kHideBirthdaySuggestions,
-		tr::lng_serein_hide_birthday_suggestions(),
-		u"serein/chats/hide-birthday"_q,
-		{ u"birthday"_q, u"suggestion"_q });
-	builder.addSubsectionTitle({
-		.id = u"serein/chats/scroll-navigation"_q,
-		.title = tr::lng_serein_scroll_navigation(),
-		.keywords = { u"scroll"_q, u"navigation"_q },
-	});
-	AddToggle(builder, Chats::kDisableScrollToNextChannel,
-		tr::lng_serein_disable_scroll_to_next_channel(),
-		u"serein/chats/disable-next-channel"_q,
-		{ u"scroll"_q, u"channel"_q });
-	AddToggle(builder, Chats::kDisableScrollToNextTopic,
-		tr::lng_serein_disable_scroll_to_next_topic(),
-		u"serein/chats/disable-next-topic"_q,
-		{ u"scroll"_q, u"topic"_q });
 });
 
 const SectionBuildMethod ChatsSection::kBuild = kMeta.build;

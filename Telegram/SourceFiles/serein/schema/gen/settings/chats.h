@@ -40,6 +40,39 @@ inline constexpr auto kHideStories = Option<bool>{
 	Category::Chats,
 	"lng_serein_hide_stories",
 	0 };
+inline constexpr auto kStartupFolderMode = Option<int>{
+	"serein.startupFolderMode",
+	Scope::Account,
+	0,
+	Category::Chats,
+	"lng_serein_startup_folder",
+	0,
+	[](const int &value) {
+		return (value == 0)
+			|| ((value >= 0) && (value <= 2));
+	} };
+inline constexpr auto kStartupFolderId = Option<int>{
+	"serein.startupFolderId",
+	Scope::Account,
+	0,
+	Category::Chats,
+	"lng_serein_startup_folder",
+	static_cast<unsigned>(Flag::Hidden),
+	[](const int &value) {
+		return (value == 0)
+			|| ((value >= 0));
+	} };
+inline constexpr auto kLastOpenedFolderId = Option<int>{
+	"serein.lastOpenedFolderId",
+	Scope::Account,
+	0,
+	Category::Chats,
+	"lng_serein_startup_folder",
+	static_cast<unsigned>(Flag::Hidden),
+	[](const int &value) {
+		return (value == 0)
+			|| ((value >= 0));
+	} };
 inline constexpr auto kHideAllChatsFolder = Option<bool>{
 	"serein.hideAllChatsFolder",
 	Scope::Device,
@@ -61,39 +94,6 @@ inline constexpr auto kHideFolderUnreadCounters = Option<bool>{
 	Category::Chats,
 	"lng_serein_hide_folder_unread_counters",
 	0 };
-inline constexpr auto kStartupFolderMode = Option<int>{
-	"serein.startupFolderMode",
-	Scope::Account,
-	0,
-	Category::Chats,
-	"lng_serein_startup_folder",
-	0,
-	[](const int &value) {
-		return (value == 0)
-			|| ((value >= 0) && (value <= 2));
-	} };
-inline constexpr auto kStartupFolderId = Option<int>{
-	"serein.startupFolderId",
-	Scope::Account,
-	0,
-	Category::Chats,
-	"lng_serein_startup_folder",
-	0,
-	[](const int &value) {
-		return (value == 0)
-			|| ((value >= 0));
-	} };
-inline constexpr auto kLastOpenedFolderId = Option<int>{
-	"serein.lastOpenedFolderId",
-	Scope::Account,
-	0,
-	Category::Chats,
-	"lng_serein_startup_folder",
-	0,
-	[](const int &value) {
-		return (value == 0)
-			|| ((value >= 0));
-	} };
 inline constexpr auto kChatSort = Option<int>{
 	"serein.chatSort",
 	Scope::Device,
@@ -108,7 +108,7 @@ inline const auto kManagedFolderIds = Option<QString>{
 	QString(),
 	Category::Chats,
 	"lng_serein_managed_only",
-	0,
+	static_cast<unsigned>(Flag::Hidden),
 	&ValidManagedFolderIds };
 inline constexpr auto kHideSponsoredMessages = Option<bool>{
 	"serein.hideSponsoredMessages",
@@ -158,12 +158,12 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kPreviewLines));
 	Expects(registry.Add(kHideSavedAndArchivedPreviews));
 	Expects(registry.Add(kHideStories));
-	Expects(registry.Add(kHideAllChatsFolder));
-	Expects(registry.Add(kShowArchiveInFolders));
-	Expects(registry.Add(kHideFolderUnreadCounters));
 	Expects(registry.Add(kStartupFolderMode));
 	Expects(registry.Add(kStartupFolderId));
 	Expects(registry.Add(kLastOpenedFolderId));
+	Expects(registry.Add(kHideAllChatsFolder));
+	Expects(registry.Add(kShowArchiveInFolders));
+	Expects(registry.Add(kHideFolderUnreadCounters));
 	Expects(registry.Add(kChatSort));
 	Expects(registry.Add(kManagedFolderIds));
 	Expects(registry.Add(kHideSponsoredMessages));
