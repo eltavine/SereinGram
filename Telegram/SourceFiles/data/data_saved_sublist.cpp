@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "data/data_saved_sublist.h"
+#include "serein/hooks/ghost.h"
 
 #include "api/api_unread_things.h"
 #include "apiwrap.h"
@@ -708,6 +709,7 @@ void SavedSublist::sendReadTillRequest() {
 	api->request(base::take(_readRequestId)).cancel();
 
 	_sentReadTill = computeInboxReadTillFull();
+	if (!Serein::Hooks::AllowReadReceipt(&_parent->session())) return;
 	_readRequestId = api->request(MTPmessages_ReadSavedHistory(
 		parentChat->input(),
 		sublistPeer()->input(),

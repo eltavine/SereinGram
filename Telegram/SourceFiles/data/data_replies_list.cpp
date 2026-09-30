@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "data/data_replies_list.h"
+#include "serein/hooks/ghost.h"
 
 #include "history/history.h"
 #include "history/history_item.h"
@@ -1005,6 +1006,7 @@ void RepliesList::sendReadTillRequest() {
 	const auto api = &_history->session().api();
 	api->request(base::take(_readRequestId)).cancel();
 
+	if (!Serein::Hooks::AllowReadReceipt(&_history->session())) return;
 	_readRequestId = api->request(MTPmessages_ReadDiscussion(
 		_history->peer->input(),
 		MTP_int(_rootId),
