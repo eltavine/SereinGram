@@ -222,7 +222,7 @@ SG-HIST-05 的“已编辑”标记文字已由 C09 实现，删除标记随 SG-
 | SG-TRANS-05 | 语音转写服务（H02） | Ni | Implemented | P2 |
 | SG-TRANS-06 | 系统 AI 草稿预览（H04，macOS） | Ni | Implemented | P2 |
 | SG-TRANS-07 | Instant View 与选中文本翻译（聊天中选中文本的“翻译”与消息翻译统一使用所选翻译服务；Instant View 页面翻译待做） | Na | In Progress | P2 |
-| SG-TRANS-08 | 按对话自动翻译，话题、对话、账号、全局四级继承 | Ni | Planned | P3 |
+| SG-TRANS-08 | 按对话自动翻译，话题、对话、账号、全局四级继承（上游的整段对话翻译面向 Premium 用户，对话菜单与翻译栏都以 `session().premium()` 为前提；Serein 的外部翻译服务目前按条翻译消息，把整段对话翻译开放给非 Premium 用户需要改动上游多处 Premium 判断，待做） | Ni | Planned | P3 |
 | SG-TRANS-09 | LLM 上下文翻译与摘要（摘要已实现：所选翻译服务是带模型的 OpenAI 兼容或 Anthropic 服务时，对话菜单出现“总结最近的消息”，把最多 60 条最近加载的文字消息以 JSON 数组发送给该服务，按对话的译入语言返回要点，窗口中注明发送对象并可复制；上下文翻译待做） | Ni | In Progress | P3 |
 
 ## NET 网络与代理
