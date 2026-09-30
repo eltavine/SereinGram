@@ -36,6 +36,16 @@ message PageOptions {
   string cpp_namespace = 1;
   Scope scope = 2;
   Category category = 3;
+  // Set when the page is its own section opened from another page.
+  Subpage subpage = 4;
+}
+
+message Subpage {
+  // Lang key of the section title and of the button that opens it.
+  string title = 1;
+  // Name of the style::icon in st:: shown on that button.
+  string icon = 2;
+  repeated string keywords = 3;
 }
 
 // Unset fields follow the naming convention: the C++ constant is

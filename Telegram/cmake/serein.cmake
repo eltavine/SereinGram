@@ -55,6 +55,7 @@ set(serein_sources
     serein/settings/interface.cpp
     serein/settings/restart.cpp
     serein/settings/rows.cpp
+    serein/settings/subpages.cpp
     serein/menu/actions.cpp
     serein/menu/batch.cpp
     serein/menu/rating.cpp

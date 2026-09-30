@@ -346,6 +346,35 @@ class RenderTest(unittest.TestCase):
                 model.FIELD_EXTENSION: {"text": {"placeholder": "lng_edited"}},
             })), known_strings={"lng_serein_mark"})
 
+    def test_subpage_needs_title_and_style_icon(self):
+        for subpage, error in (
+                ({"icon": "menuIconLock"}, "subpage 'title' is required"),
+                ({"title": "lng_s"}, "subpage 'icon' is required"),
+                ({"title": "lng_s", "icon": "st::menuIconLock"}, "style name")):
+            with self.subTest(subpage=subpage), self.assertRaisesRegex(
+                    model.SchemaError, error):
+                model.build_pages(image(field("hide_all", "hideAll"),
+                                        page={**PAGE, "subpage": subpage}))
+
+    def test_renders_subpage_button(self):
+        import generate
+        page = {**PAGE, "subpage": {
+            "title": "lng_page", "icon": "menuIconLock", "keywords": ["ghost"]}}
+        output = generate.render(image(field("hide_all", "hideAll"), page=page),
+                                 known_strings={"lng_serein_hide_all", "lng_page"})
+        rows = output["settings/gen/messages_rows.h"]
+        self.assertIn('#include "styles/style_menu_icons.h"', rows)
+        self.assertIn("inline constexpr auto kSubpageTitle = &tr::lng_page;", rows)
+        self.assertIn("inline const auto kSubpageIcon = &st::menuIconLock;", rows)
+        self.assertIn("		.targetSection = section,", rows)
+        self.assertIn('		.keywords = { u"ghost"_q },', rows)
+        with self.assertRaisesRegex(model.SchemaError, "lng_page"):
+            generate.render(image(field("hide_all", "hideAll"), page=page),
+                            known_strings={"lng_serein_hide_all"})
+        plain = generate.render(image(field("hide_all", "hideAll")),
+                                known_strings={"lng_serein_hide_all"})
+        self.assertNotIn("AddSubpageButton", plain["settings/gen/messages_rows.h"])
+
     def test_renders_custom_rows(self):
         import generate
         output = generate.render(

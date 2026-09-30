@@ -1,6 +1,7 @@
 """Turn a Buf JSON image into settings pages for the C++ templates."""
 
 import json
+import re
 from dataclasses import dataclass, field
 
 PAGE_EXTENSION = "[serein.options.v1.page]"
@@ -138,6 +139,7 @@ class Page:
     layout: list = field(default_factory=list)
     customs: list = field(default_factory=list)
     stem: str = ""
+    subpage: dict = field(default_factory=dict)
 
     @property
     def hook_types(self):
@@ -290,6 +292,7 @@ def build_page(source, message):
             custom.append((validator, option.ctype))
     stem = source.rsplit("/", 1)[-1].removesuffix(".proto")
     rows, layout, customs = build_layout(message, options, stem, where)
+    subpage = build_subpage(page.get("subpage"), where)
     return Page(
         source=f"proto/{source}",
         namespace=page["cppNamespace"],
@@ -298,12 +301,28 @@ def build_page(source, message):
         custom_validators=custom,
         needs_codec=any("Codec::" in line
                         for option in options for line in option.validator),
-        rows_header=f"{stem}_rows.h" if layout else "",
+        rows_header=f"{stem}_rows.h" if (layout or subpage) else "",
         stem=stem,
         rows=rows,
         layout=layout,
         customs=customs,
+        subpage=subpage,
     )
+
+
+def build_subpage(subpage, where):
+    if not subpage:
+        return {}
+    for required in ("title", "icon"):
+        if not subpage.get(required):
+            raise SchemaError(f"{where}: subpage '{required}' is required")
+    if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", subpage["icon"]):
+        raise SchemaError(f"{where}: subpage icon must be a style name")
+    return {
+        "title": subpage["title"],
+        "icon": subpage["icon"],
+        "keywords": cpp_keywords(subpage.get("keywords", [])),
+    }
 
 
 def build_layout(message, options, stem, where):
@@ -458,6 +477,7 @@ def check_titles(pages, known):
                for label in (item.zero_label, item.count_format, item.hint,
                              item.placeholder)
                if label}
+    titles |= {page.subpage["title"] for page in pages if page.subpage}
     missing = sorted(title for title in titles if title not in known)
     if missing:
         raise SchemaError(f"settings rows use unknown strings: {missing}")

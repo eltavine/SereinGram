@@ -1,11 +1,11 @@
 #include "serein/settings/privacy.h"
 
-#include "serein/features/history/viewer.h"
 #include "serein/privacy/options.h"
 #include "serein/settings/gen/ghost_rows.h"
 #include "serein/settings/gen/history_rows.h"
 #include "serein/settings/gen/privacy_rows.h"
 #include "serein/settings/home.h"
+#include "serein/settings/subpages.h"
 #include "lang/lang_keys.h"
 #include "main/main_session.h"
 #include "main/main_session_settings.h"
@@ -48,6 +48,8 @@ const auto kMeta = BuildHelper({
 	.title = &tr::lng_serein_privacy,
 	.icon = &st::menuIconLock,
 }, [](SectionBuilder &builder) {
+	Ghost::AddSubpageButton(builder, GhostId());
+	HistorySettings::AddSubpageButton(builder, HistoryId());
 	const auto session = builder.session();
 	const auto button = builder.addButton({
 		.id = u"serein/privacy/hide-my-phone"_q,
@@ -63,20 +65,6 @@ const auto kMeta = BuildHelper({
 			session->saveSettingsDelayed();
 		}, button->lifetime());
 	}
-	Ghost::AddLayout(builder);
-	HistorySettings::AddLayout(builder);
-	const auto controller = builder.controller();
-	builder.addButton({
-		.id = u"serein/privacy/history-clear-all"_q,
-		.title = tr::lng_serein_history_clear_all(),
-		.st = &st::settingsAttentionButton,
-		.onClick = [=] {
-			if (controller) {
-				HistoryFeature::ConfirmClearHistory(controller, nullptr);
-			}
-		},
-		.keywords = { u"history"_q, u"deleted"_q, u"clear"_q },
-	});
 	Privacy::AddLayout(builder);
 });
 

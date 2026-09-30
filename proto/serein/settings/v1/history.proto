@@ -10,6 +10,11 @@ message HistorySettings {
     cpp_namespace: "HistorySettings"
     scope: SCOPE_ACCOUNT
     category: CATEGORY_PRIVACY
+    subpage: {
+      title: "lng_serein_history_page"
+      icon: "menuIconRestore"
+      keywords: ["deleted", "edited", "anti-recall", "history"]
+    }
   };
 
   optional bool history_save_deleted = 1 [(serein.options.v1.field) = {

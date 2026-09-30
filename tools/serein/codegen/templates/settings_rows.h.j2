@@ -5,6 +5,9 @@
 #include "lang/lang_keys.h"
 #include "serein/schema/gen/{{ page.header }}"
 #include "serein/settings/rows.h"
+{% if page.subpage %}
+#include "styles/style_menu_icons.h"
+{% endif %}
 
 #include <array>
 
@@ -104,5 +107,21 @@ inline void AddLayout(
 {% endif %}
 {% endfor %}
 }
+{% if page.subpage %}
+
+inline constexpr auto kSubpageTitle = &tr::{{ page.subpage.title }};
+inline const auto kSubpageIcon = &st::{{ page.subpage.icon }};
+
+inline void AddSubpageButton(
+		::Settings::Builder::SectionBuilder &builder,
+		::Settings::Type section) {
+	builder.addSectionButton({
+		.title = (*kSubpageTitle)(),
+		.targetSection = section,
+		.icon = { kSubpageIcon },
+		.keywords = { {{ page.subpage.keywords }} },
+	});
+}
+{% endif %}
 
 } // namespace Serein::{{ page.namespace }}

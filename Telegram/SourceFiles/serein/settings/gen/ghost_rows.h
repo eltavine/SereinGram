@@ -5,6 +5,7 @@
 #include "lang/lang_keys.h"
 #include "serein/schema/gen/settings/ghost.h"
 #include "serein/settings/rows.h"
+#include "styles/style_menu_icons.h"
 
 #include <array>
 
@@ -79,6 +80,20 @@ inline void AddLayout(
 	AddToggle(builder, kToggleRows[7]);
 	AddToggle(builder, kToggleRows[8]);
 	AddNote(builder, tr::lng_serein_ghost_note);
+}
+
+inline constexpr auto kSubpageTitle = &tr::lng_serein_ghost_mode;
+inline const auto kSubpageIcon = &st::menuIconStealth;
+
+inline void AddSubpageButton(
+		::Settings::Builder::SectionBuilder &builder,
+		::Settings::Type section) {
+	builder.addSectionButton({
+		.title = (*kSubpageTitle)(),
+		.targetSection = section,
+		.icon = { kSubpageIcon },
+		.keywords = { u"ghost"_q, u"stealth"_q, u"online"_q, u"read"_q },
+	});
 }
 
 } // namespace Serein::Ghost

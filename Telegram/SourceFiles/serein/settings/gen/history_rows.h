@@ -5,6 +5,7 @@
 #include "lang/lang_keys.h"
 #include "serein/schema/gen/settings/history.h"
 #include "serein/settings/rows.h"
+#include "styles/style_menu_icons.h"
 
 #include <array>
 
@@ -72,6 +73,20 @@ inline void AddLayout(
 		.zeroLabel = tr::lng_serein_history_unlimited,
 	});
 	AddNote(builder, tr::lng_serein_history_note);
+}
+
+inline constexpr auto kSubpageTitle = &tr::lng_serein_history_page;
+inline const auto kSubpageIcon = &st::menuIconRestore;
+
+inline void AddSubpageButton(
+		::Settings::Builder::SectionBuilder &builder,
+		::Settings::Type section) {
+	builder.addSectionButton({
+		.title = (*kSubpageTitle)(),
+		.targetSection = section,
+		.icon = { kSubpageIcon },
+		.keywords = { u"deleted"_q, u"edited"_q, u"anti-recall"_q, u"history"_q },
+	});
 }
 
 } // namespace Serein::HistorySettings
