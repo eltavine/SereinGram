@@ -10,7 +10,7 @@
 
 namespace Serein::Chats {
 
-inline const auto kToggleRows = std::array<ToggleRow, 14>{ {
+inline const auto kToggleRows = std::array<ToggleRow, 15>{ {
 	{
 		&kCompactList,
 		tr::lng_serein_compact_chat_list,
@@ -95,6 +95,12 @@ inline const auto kToggleRows = std::array<ToggleRow, 14>{ {
 		u"serein/chats/chat-quick-actions"_q,
 		{ u"toolbar"_q, u"search"_q, u"media"_q, u"pinned"_q, u"mute"_q },
 	},
+	{
+		&kManagementShortcuts,
+		tr::lng_serein_management_shortcuts,
+		u"serein/chats/management-shortcuts"_q,
+		{ u"admin"_q, u"members"_q, u"recent actions"_q, u"group"_q },
+	},
 } };
 
 struct CustomRows {
@@ -156,6 +162,8 @@ inline void AddLayout(
 	AddNote(builder, tr::lng_serein_remember_reading_position_note);
 	AddToggle(builder, kToggleRows[13]);
 	AddNote(builder, tr::lng_serein_chat_quick_actions_note);
+	AddToggle(builder, kToggleRows[14]);
+	AddNote(builder, tr::lng_serein_management_shortcuts_note);
 }
 
 } // namespace Serein::Chats

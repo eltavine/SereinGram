@@ -465,6 +465,12 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_upgrade_supergroup_sure" = "Upgrade this group to a supergroup? Members keep their messages, and the change cannot be undone.";
 "lng_serein_upgrade_supergroup_confirm" = "Upgrade";
 "lng_serein_upgrade_supergroup_done" = "The group is now a supergroup.";
+"lng_serein_management_shortcuts" = "Group management in the profile menu";
+"lng_serein_management_shortcuts_note" = "Adds members, administrators, removed users and recent actions to the profile menu of groups you can manage, without opening “Manage group”.";
+"lng_serein_manage_members" = "Members";
+"lng_serein_manage_admins" = "Administrators";
+"lng_serein_manage_removed" = "Removed users";
+"lng_serein_manage_recent_actions" = "Recent actions";
 "lng_serein_alias_about" = "This name is visible only in this account on this device. Leave it empty to restore the original name.";
 "lng_serein_alias_invalid" = "The local name is invalid or the list is full.";
 "lng_serein_alias_changed" = "The local name changed. Reopen this dialog and try again.";

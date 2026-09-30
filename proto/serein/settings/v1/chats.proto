@@ -119,6 +119,10 @@ message ChatsSettings {
     keywords: ["toolbar", "search", "media", "pinned", "mute"]
     note: "lng_serein_chat_quick_actions_note"
   }];
+  optional bool management_shortcuts = 23 [(serein.options.v1.field) = {
+    keywords: ["admin", "members", "recent actions", "group"]
+    note: "lng_serein_management_shortcuts_note"
+  }];
   // Serialized peer ids of recently opened chats, newest first.
   optional string recent_chats = 19 [
     (serein.options.v1.field) = {

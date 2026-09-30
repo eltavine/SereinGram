@@ -1,6 +1,7 @@
 #include "serein/hooks/peer_menu.h"
 
 #include "serein/admin/delete_mine.h"
+#include "serein/admin/shortcuts.h"
 #include "serein/admin/upgrade.h"
 #include "serein/chats/quick_actions.h"
 #include "serein/features/history/viewer.h"
@@ -71,6 +72,7 @@ void FillProfileMenu(
 			Admin::ConfirmUpgradeToSupergroup(controller, peer);
 		}, &st::menuIconGroups);
 	}
+	Admin::FillManagementShortcuts(addAction, controller, peer);
 }
 
 } // namespace Serein::Hooks

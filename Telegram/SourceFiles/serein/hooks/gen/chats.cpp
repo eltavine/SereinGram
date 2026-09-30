@@ -166,6 +166,14 @@ rpl::producer<bool> ChatQuickActionsValue() {
 	return ForDevice().Value(Serein::Chats::kChatQuickActions);
 }
 
+bool ManagementShortcuts() {
+	return ForDevice().Get(Serein::Chats::kManagementShortcuts);
+}
+
+rpl::producer<bool> ManagementShortcutsValue() {
+	return ForDevice().Value(Serein::Chats::kManagementShortcuts);
+}
+
 QString RecentChats(gsl::not_null<Main::Session*> session) {
 	return ForAccount(session).Get(Serein::Chats::kRecentChats);
 }

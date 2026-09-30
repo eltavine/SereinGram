@@ -461,6 +461,12 @@
 "lng_serein_upgrade_supergroup_sure" = "要把這個群組升級為超級群組嗎？成員的訊息會保留，升級後無法復原。";
 "lng_serein_upgrade_supergroup_confirm" = "升級";
 "lng_serein_upgrade_supergroup_done" = "群組已升級為超級群組。";
+"lng_serein_management_shortcuts" = "資料選單中的群組管理";
+"lng_serein_management_shortcuts_note" = "在你能管理的群組資料選單中加入成員、管理員、已移除的使用者與最近動作，無需開啟「管理群組」。";
+"lng_serein_manage_members" = "成員";
+"lng_serein_manage_admins" = "管理員";
+"lng_serein_manage_removed" = "已移除的使用者";
+"lng_serein_manage_recent_actions" = "最近動作";
 "lng_serein_alias_about" = "此名稱只在本機的目前帳號中顯示。留空可恢復原名。";
 "lng_serein_alias_invalid" = "本機名稱無效，或名稱清單已滿。";
 "lng_serein_alias_changed" = "本機名稱已變更，請重新開啟此視窗。";

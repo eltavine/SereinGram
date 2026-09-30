@@ -461,6 +461,12 @@
 "lng_serein_upgrade_supergroup_sure" = "要把这个群组升级为超级群吗？成员的消息会保留，升级后无法撤销。";
 "lng_serein_upgrade_supergroup_confirm" = "升级";
 "lng_serein_upgrade_supergroup_done" = "群组已升级为超级群。";
+"lng_serein_management_shortcuts" = "资料菜单中的群组管理";
+"lng_serein_management_shortcuts_note" = "在你能管理的群组资料菜单中加入成员、管理员、已移除的用户与最近操作，无需打开“管理群组”。";
+"lng_serein_manage_members" = "成员";
+"lng_serein_manage_admins" = "管理员";
+"lng_serein_manage_removed" = "已移除的用户";
+"lng_serein_manage_recent_actions" = "最近操作";
 "lng_serein_alias_about" = "此名称只在本机的当前账号中显示。留空可恢复原名。";
 "lng_serein_alias_invalid" = "本地名称无效，或名称列表已满。";
 "lng_serein_alias_changed" = "本地名称已变化，请重新打开此窗口。";

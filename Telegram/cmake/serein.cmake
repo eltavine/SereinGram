@@ -64,6 +64,7 @@ set(serein_sources
     serein/admin/delete_mine.cpp
     serein/admin/unblock_all.cpp
     serein/admin/upgrade.cpp
+    serein/admin/shortcuts.cpp
     serein/privacy/recorders.cpp
     serein/privacy/recorders_platform.cpp
     serein/menu/actions.cpp
