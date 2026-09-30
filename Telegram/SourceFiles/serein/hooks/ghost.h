@@ -11,6 +11,10 @@ namespace Main {
 class Session;
 } // namespace Main
 
+namespace Ui {
+class SettingsButton;
+} // namespace Ui
+
 namespace Serein::Hooks {
 
 [[nodiscard]] bool AllowOnline(gsl::not_null<Main::Session*> session);
@@ -24,5 +28,9 @@ namespace Serein::Hooks {
 	gsl::not_null<History*> history,
 	MsgId tillId,
 	std::optional<int> stillUnread);
+
+void BindGhostToggle(
+	gsl::not_null<Ui::SettingsButton*> button,
+	gsl::not_null<Main::Session*> session);
 
 } // namespace Serein::Hooks

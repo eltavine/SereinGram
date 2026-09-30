@@ -74,6 +74,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "styles/style_settings.h"
 #include "styles/style_window.h"
 #include "styles/style_window_main_menu.h"
+#include "serein/hooks/ghost.h"
 
 #include <QtGui/QWindow>
 #include <QtGui/QScreen>
@@ -763,6 +764,11 @@ void MainMenu::setupMenu() {
 	)->setClickedCallback([=] {
 		controller->showSettings();
 	});
+
+	Serein::Hooks::BindGhostToggle(addAction(
+		tr::lng_serein_ghost_mode(),
+		{ &st::menuIconLock }
+	), &controller->session());
 
 	_nightThemeToggle = addAction(
 		tr::lng_menu_night_mode(),
