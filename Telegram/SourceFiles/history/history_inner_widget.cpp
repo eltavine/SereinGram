@@ -3936,9 +3936,7 @@ void HistoryInner::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 		(sereinOnMessage && !selectedState.count) ? leaderOrSelf : nullptr,
 		controller,
 		std::move(sereinSelected),
-		crl::guard(this, [=](HistoryItem *item) {
-			Serein::Menu::Selection::Select(this, item);
-		}));
+		Serein::Menu::SelectionTarget(this));
 	if (_menu->empty()) {
 		_menu = nullptr;
 		return;

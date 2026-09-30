@@ -32,6 +32,7 @@ enum class ActionId : int {
 	HistoryExclusion = 27,
 	ButtonData = 28,
 	MessageDetails = 29,
+	SelectRange = 30,
 };
 
 } // namespace Serein::Menu

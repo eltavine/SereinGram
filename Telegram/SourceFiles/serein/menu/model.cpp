@@ -34,7 +34,8 @@ Visibility DefaultVisibility(ActionId id) {
 	if (id == ActionId::EditHistory
 		|| id == ActionId::DeletedMessages
 		|| id == ActionId::ReadUntilHere
-		|| id == ActionId::HistoryExclusion) {
+		|| id == ActionId::HistoryExclusion
+		|| id == ActionId::SelectRange) {
 		return Visibility::Show;
 	}
 	return static_cast<int>(id) >= static_cast<int>(ActionId::Repeat)

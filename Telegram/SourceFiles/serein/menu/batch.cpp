@@ -229,11 +229,16 @@ void InsertBatchActions(
 		HistoryItem *item,
 		Window::SessionController *controller,
 		MessageIdsList selected,
-		Fn<void(HistoryItem*)> selectAuthor) {
+		SelectionTarget selection) {
 	if (!menu || !controller) {
 		return;
 	}
 	auto position = EndPosition(menu);
+	if (selection && selected.size() > 1) {
+		Insert(menu, position++, ActionId::SelectRange,
+			tr::lng_serein_menu_select_range(tr::now),
+			crl::guard(controller, [=] { selection.selectRange(); }));
+	}
 	if (selected.size() > 1 && selected.size() <= kMaximumMessages) {
 		const auto sourceId = selected.front();
 		Insert(menu, position++, ActionId::Batch,
@@ -242,13 +247,13 @@ void InsertBatchActions(
 				controller->show(Box(BatchBox, controller, selected, sourceId));
 			}));
 	}
-	if (item && selectAuthor && item->canBeSelected()) {
+	if (item && selection && item->canBeSelected()) {
 		const auto itemId = item->fullId();
 		Insert(menu, position, ActionId::SelectSender,
 			tr::lng_serein_menu_select_sender(tr::now),
 			crl::guard(controller, [=] {
 				if (const auto current = controller->session().data().message(itemId)) {
-					selectAuthor(current);
+					selection.selectSender(current);
 				}
 			}));
 	}

@@ -2,6 +2,8 @@
 
 #include "base/basic_types.h"
 #include "serein/hooks/menu/action_id.h"
+#include "serein/hooks/menu/selection.h"
+#include "serein/hooks/menu/selection.h"
 
 #include <vector>
 
@@ -26,6 +28,6 @@ void Apply(
 	HistoryItem *item,
 	Window::SessionController *controller,
 	std::vector<FullMsgId> selected,
-	Fn<void(HistoryItem*)> selectAuthor);
+	SelectionTarget selection);
 
 } // namespace Serein::Menu

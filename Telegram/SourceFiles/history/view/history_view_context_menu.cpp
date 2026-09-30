@@ -2043,9 +2043,7 @@ base::unique_qptr<Ui::PopupMenu> FillContextMenu(
 		list->controller(),
 		(request.pointState != PointState::Outside && request.overSelection)
 			? ExtractIdsList(request.selectedItems) : MessageIdsList(),
-		crl::guard(list, [=](HistoryItem *item) {
-			Serein::Menu::Selection::Select(list, item);
-		}));
+		Serein::Menu::SelectionTarget(list));
 	return result;
 }
 

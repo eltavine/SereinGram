@@ -2,6 +2,8 @@
 
 #include "data/data_types.h"
 #include "base/basic_types.h"
+#include "serein/hooks/menu/selection.h"
+#include "serein/hooks/menu/selection.h"
 
 class HistoryItem;
 namespace Ui {
@@ -18,6 +20,6 @@ void InsertBatchActions(
 	HistoryItem *item,
 	Window::SessionController *controller,
 	MessageIdsList selected,
-	Fn<void(HistoryItem*)> selectAuthor);
+	SelectionTarget selection);
 
 } // namespace Serein::Menu

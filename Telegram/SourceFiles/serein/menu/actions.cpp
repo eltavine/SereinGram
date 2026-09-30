@@ -46,7 +46,7 @@ void Apply(
 		HistoryItem *item,
 		Window::SessionController *controller,
 		MessageIdsList selected,
-		Fn<void(HistoryItem*)> selectAuthor) {
+		SelectionTarget selection) {
 	Expects(menu != nullptr);
 	if (controller) {
 		if (item) {
@@ -54,7 +54,7 @@ void Apply(
 		}
 		if (item || !selected.empty()) {
 			InsertBatchActions(menu, item, controller,
-				selected, std::move(selectAuthor));
+				selected, selection);
 			Snapshot::InsertAction(menu, controller, item, selected);
 		}
 		if (item) {
