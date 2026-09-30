@@ -161,6 +161,13 @@ inline constexpr auto kRememberReadingPosition = Option<bool>{
 	Category::Chats,
 	"lng_serein_remember_reading_position",
 	0 };
+inline constexpr auto kChatQuickActions = Option<bool>{
+	"serein.chatQuickActions",
+	Scope::Device,
+	false,
+	Category::Chats,
+	"lng_serein_chat_quick_actions",
+	0 };
 inline const auto kRecentChats = Option<QString>{
 	"serein.recentChats",
 	Scope::Account,
@@ -198,6 +205,7 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kDisableScrollToNextChannel));
 	Expects(registry.Add(kDisableScrollToNextTopic));
 	Expects(registry.Add(kRememberReadingPosition));
+	Expects(registry.Add(kChatQuickActions));
 	Expects(registry.Add(kRecentChats));
 	Expects(registry.Add(kReadingPositions));
 }

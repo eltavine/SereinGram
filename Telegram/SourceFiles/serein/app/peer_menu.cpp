@@ -2,6 +2,7 @@
 
 #include "serein/admin/delete_mine.h"
 #include "serein/admin/upgrade.h"
+#include "serein/chats/quick_actions.h"
 #include "serein/features/history/viewer.h"
 #include "serein/hooks/privacy/alias.h"
 #include "data/data_forum_topic.h"
@@ -32,6 +33,9 @@ void FillHistoryMenu(
 				Window::SectionShow::Way::Forward);
 		}
 	}, &st::menuIconShowInChat);
+	if (!topic) {
+		Chats::FillQuickActions(addAction, controller, peer);
+	}
 	if (!topic
 		&& HistoryFeature::HasDeletedMessages(&controller->session(), peer)) {
 		addAction(tr::lng_serein_menu_deleted_messages(tr::now), [=] {

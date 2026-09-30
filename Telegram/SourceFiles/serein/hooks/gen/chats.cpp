@@ -158,6 +158,14 @@ rpl::producer<bool> RememberReadingPositionValue() {
 	return ForDevice().Value(Serein::Chats::kRememberReadingPosition);
 }
 
+bool ChatQuickActions() {
+	return ForDevice().Get(Serein::Chats::kChatQuickActions);
+}
+
+rpl::producer<bool> ChatQuickActionsValue() {
+	return ForDevice().Value(Serein::Chats::kChatQuickActions);
+}
+
 QString RecentChats(gsl::not_null<Main::Session*> session) {
 	return ForAccount(session).Get(Serein::Chats::kRecentChats);
 }

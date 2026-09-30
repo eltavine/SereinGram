@@ -164,7 +164,8 @@ void TestOptions() {
 		"unknown refresh option");
 	auto chats = Registry();
 	Chats::RegisterOptions(chats);
-	Require(chats.All().size() == 21, "chat option count");
+	Require(chats.All().size() == 22, "chat option count");
+	Require(!Chats::kChatQuickActions.fallback, "chat quick actions must be opt-in");
 	Require(!Chats::kRememberReadingPosition.fallback
 		&& Chats::kRememberReadingPosition.scope == Scope::Device
 		&& Chats::kReadingPositions.scope == Scope::Account

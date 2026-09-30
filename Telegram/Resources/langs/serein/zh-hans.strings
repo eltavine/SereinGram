@@ -441,6 +441,13 @@
 "lng_serein_demo_hidden" = "演示模式已遮盖";
 "lng_serein_peer_alias" = "设置本地名称";
 "lng_serein_jump_to_beginning" = "跳到对话开头";
+"lng_serein_chat_quick_actions" = "对话菜单中的快捷操作";
+"lng_serein_chat_quick_actions_note" = "在对话菜单“跳到开头”旁加入搜索、共享媒体、置顶消息与静音。";
+"lng_serein_quick_search" = "在对话中搜索";
+"lng_serein_quick_media" = "共享媒体";
+"lng_serein_quick_pinned" = "置顶消息";
+"lng_serein_quick_mute" = "静音";
+"lng_serein_quick_unmute" = "取消静音";
 "lng_serein_delete_mine" = "删除我的全部消息";
 "lng_serein_delete_mine_sure" = "要为所有人删除你在“{chat}”中的全部消息吗？此操作无法撤销。";
 "lng_serein_delete_mine_done" = "已删除消息：{amount}";

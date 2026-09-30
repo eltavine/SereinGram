@@ -115,6 +115,10 @@ message ChatsSettings {
     keywords: ["scroll", "position", "resume"]
     note: "lng_serein_remember_reading_position_note"
   }];
+  optional bool chat_quick_actions = 22 [(serein.options.v1.field) = {
+    keywords: ["toolbar", "search", "media", "pinned", "mute"]
+    note: "lng_serein_chat_quick_actions_note"
+  }];
   // Serialized peer ids of recently opened chats, newest first.
   optional string recent_chats = 19 [
     (serein.options.v1.field) = {
