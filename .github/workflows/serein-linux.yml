@@ -169,6 +169,7 @@ jobs:
           -v $PWD:/usr/src/tdesktop \
           -v ${{ env.CCACHE_DIR }}:/var/cache/ccache \
           -e CONFIG=Debug \
+          -e KEEP_GOING=1 \
           -e SEREIN_API_ID \
           -e SEREIN_API_HASH \
           -e CCACHE_SLOPPINESS=pch_defines,time_macros \

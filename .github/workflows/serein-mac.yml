@@ -109,6 +109,9 @@ jobs:
             ThirdParty
           key: ${{ steps.cache-libs.outputs.cache-primary-key }}
 
+      - name: Report every compile error in one run.
+        run: defaults write com.apple.dt.Xcode IDEBuildingContinueBuildingAfterErrors -bool YES
+
       - name: Serein build.
         if: env.ONLY_CACHE == 'false'
         env:

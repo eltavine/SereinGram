@@ -198,6 +198,4 @@ if (DESKTOP_APP_TEST_APPS)
     set_target_properties(test_serein PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/serein-tests/$<CONFIG>"
     )
-
-    add_dependencies(Telegram test_serein)
 endif()
