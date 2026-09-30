@@ -1,5 +1,6 @@
 #include "serein/app/modules.h"
 
+#include "serein/app/auto_demo.h"
 #include "serein/app/updates.h"
 
 #include "serein/app/recent_chats.h"
@@ -22,6 +23,7 @@ constexpr auto kModules = std::array{
 	Module{ "updates.check", StartUpdateChecks },
 	Module{ "chats.sorting", nullptr, Chats::WatchSorting },
 	Module{ "app.shortcuts", StartShortcuts },
+	Module{ "privacy.auto_demo", StartAutoDemoMode },
 	Module{ "chats.recent", nullptr, nullptr, TrackRecentChats },
 };
 

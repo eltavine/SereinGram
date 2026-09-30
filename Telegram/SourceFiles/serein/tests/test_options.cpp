@@ -307,7 +307,11 @@ void TestOptions() {
 		Flag::RefreshMessageView), "video autoplay refresh flag");
 	auto privacy = Registry();
 	Privacy::RegisterOptions(privacy);
-	Require(privacy.All().size() == 9, "privacy option count");
+	Require(privacy.All().size() == 10, "privacy option count");
+	Require(!Privacy::kAutoDemoMode.fallback
+		&& Privacy::kAutoDemoMode.scope == Scope::Device
+		&& privacy.HasFlag(Privacy::kAutoDemoMode.key, Flag::Exportable),
+		"automatic streamer mode must be an exportable device opt-in");
 	Require(!Privacy::kSaveProtectedContent.fallback
 		&& privacy.HasFlag(Privacy::kSaveProtectedContent.key, Flag::Exportable),
 		"protected content saving must be an exportable opt-in");

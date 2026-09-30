@@ -433,6 +433,8 @@
 "lng_serein_demo_mode_enabled" = "演示模式已開啟";
 "lng_serein_demo_mode_disabled" = "演示模式已關閉";
 "lng_serein_demo_mode_note" = "要求系統在錄影中排除 SereinGram 視窗，並遮蓋對話清單、標題和通知內容。部分錄影工具可能忽略此要求。";
+"lng_serein_auto_demo_mode" = "執行直播或錄影軟體時自動開啟";
+"lng_serein_auto_demo_mode_note" = "每隔幾秒檢查 OBS、Streamlabs、XSplit、vMix、Bandicam 等軟體是否在執行；軟體關閉後自動關閉主播模式，除非你在此期間手動改過。";
 "lng_serein_demo_hidden" = "演示模式已遮蓋";
 "lng_serein_peer_alias" = "設定本機名稱";
 "lng_serein_jump_to_beginning" = "跳到對話開頭";

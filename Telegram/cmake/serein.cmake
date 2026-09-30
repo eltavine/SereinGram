@@ -56,6 +56,9 @@ set(serein_sources
     serein/settings/restart.cpp
     serein/settings/rows.cpp
     serein/settings/subpages.cpp
+    serein/app/auto_demo.cpp
+    serein/privacy/recorders.cpp
+    serein/privacy/recorders_platform.cpp
     serein/menu/actions.cpp
     serein/menu/batch.cpp
     serein/menu/rating.cpp

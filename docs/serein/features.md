@@ -115,7 +115,7 @@ SG-HIST-05 的“已编辑”标记文字已由 C09 实现，删除标记随 SG-
 | SG-PRIV-07 | 本地 Premium 外观，仅本地显示，不伪造服务端权益 | Ad Aa | Planned | P3 |
 | SG-PRIV-08 | 受保护内容的本地复制与保存（复制文字、保存媒体与截图已放开，转发仍由服务端拒绝；受保护的动态可截图，并与普通动态一样可由 Premium 用户保存，不绕过 Premium 限制） | Ad Na | Implemented | P2 |
 | SG-PRIV-09 | 设置锁与本地账号隐藏 | Ni | Planned | P3 |
-| SG-PRIV-10 | 检测到录屏软件时自动开启主播模式 | Ad | Planned | P3 |
+| SG-PRIV-10 | 检测到录屏软件时自动开启主播模式（隐私设置“运行直播或录屏软件时自动开启”，默认关闭：开启后每 5 秒在后台线程列出进程——Windows 用 Toolhelp 快照、macOS 用 libproc、其他平台读 `/proc/*/comm`——发现 OBS、Streamlabs、XSplit、vMix、Bandicam 等常见软件即打开主播模式，软件退出后恢复原状，期间手动改过则不再动它） | Ad | Implemented | P3 |
 
 ## APPEAR 界面与外观
 

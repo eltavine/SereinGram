@@ -7,6 +7,8 @@ namespace Serein::Hooks::Privacy {
 
 [[nodiscard]] bool DemoMode();
 [[nodiscard]] rpl::producer<bool> DemoModeValue();
+[[nodiscard]] bool AutoDemoMode();
+[[nodiscard]] rpl::producer<bool> AutoDemoModeValue();
 [[nodiscard]] bool HideReadTime();
 [[nodiscard]] rpl::producer<bool> HideReadTimeValue();
 [[nodiscard]] bool HideSharePhonePrompt();

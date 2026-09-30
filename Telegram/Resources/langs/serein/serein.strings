@@ -437,6 +437,8 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_demo_mode_enabled" = "Presentation mode is on";
 "lng_serein_demo_mode_disabled" = "Presentation mode is off";
 "lng_serein_demo_mode_note" = "Ask the system to exclude SereinGram windows from capture. Chat rows, titles and notifications hide details. Some capture tools may ignore the system request.";
+"lng_serein_auto_demo_mode" = "Turn on while a streaming or recording app runs";
+"lng_serein_auto_demo_mode_note" = "Checks every few seconds for apps such as OBS, Streamlabs, XSplit, vMix and Bandicam, and turns streamer mode back off when they close unless you changed it yourself.";
 "lng_serein_demo_hidden" = "Hidden in presentation mode";
 "lng_serein_peer_alias" = "Set local name";
 "lng_serein_jump_to_beginning" = "Jump to the beginning";

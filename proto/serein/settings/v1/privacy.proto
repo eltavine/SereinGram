@@ -16,6 +16,10 @@ message PrivacySettings {
     keywords: ["presentation", "capture"]
     note: "lng_serein_demo_mode_note"
   }];
+  optional bool auto_demo_mode = 10 [(serein.options.v1.field) = {
+    keywords: ["presentation", "OBS", "recording", "streaming"]
+    note: "lng_serein_auto_demo_mode_note"
+  }];
   optional bool hide_read_time = 2 [(serein.options.v1.field) = {
     keywords: ["read", "time"]
   }];

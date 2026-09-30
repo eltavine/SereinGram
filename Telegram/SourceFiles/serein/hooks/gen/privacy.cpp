@@ -14,6 +14,14 @@ rpl::producer<bool> DemoModeValue() {
 	return ForDevice().Value(Serein::Privacy::kDemoMode);
 }
 
+bool AutoDemoMode() {
+	return ForDevice().Get(Serein::Privacy::kAutoDemoMode);
+}
+
+rpl::producer<bool> AutoDemoModeValue() {
+	return ForDevice().Value(Serein::Privacy::kAutoDemoMode);
+}
+
 bool HideReadTime() {
 	return ForDevice().Get(Serein::Privacy::kHideReadTime);
 }
