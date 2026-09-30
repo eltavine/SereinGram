@@ -5,6 +5,8 @@
 namespace Serein::Hooks {
 namespace {
 
+auto ForcedReadReceipts = 0;
+
 [[nodiscard]] bool Allows(
 		gsl::not_null<Main::Session*> session,
 		Ghost::Activity activity) {
@@ -17,8 +19,17 @@ bool AllowOnline(gsl::not_null<Main::Session*> session) {
 	return Allows(session, Ghost::Activity::Online);
 }
 
+ForcedReadReceipt::ForcedReadReceipt() {
+	++ForcedReadReceipts;
+}
+
+ForcedReadReceipt::~ForcedReadReceipt() {
+	--ForcedReadReceipts;
+}
+
 bool AllowReadReceipt(gsl::not_null<Main::Session*> session) {
-	return Allows(session, Ghost::Activity::ReadReceipt);
+	return (ForcedReadReceipts > 0)
+		|| Allows(session, Ghost::Activity::ReadReceipt);
 }
 
 bool AllowTyping(gsl::not_null<Main::Session*> session) {

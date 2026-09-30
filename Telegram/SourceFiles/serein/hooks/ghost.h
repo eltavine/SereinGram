@@ -24,6 +24,17 @@ namespace Serein::Hooks {
 [[nodiscard]] bool AllowViewIncrement(gsl::not_null<Main::Session*> session);
 
 
+class ForcedReadReceipt final {
+public:
+	ForcedReadReceipt();
+	~ForcedReadReceipt();
+
+	ForcedReadReceipt(const ForcedReadReceipt &) = delete;
+	ForcedReadReceipt &operator=(const ForcedReadReceipt &) = delete;
+};
+
+void OnSendingMessage(gsl::not_null<History*> history);
+
 [[nodiscard]] bool ReadInboxLocally(
 	gsl::not_null<History*> history,
 	MsgId tillId,

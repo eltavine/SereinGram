@@ -65,7 +65,7 @@ Nagram 的品牌政策要求分支使用不同品牌并替换 Nagram 名称与�
 | SG-GHOST-05 | 总开关、子项锁定，全局策略与按账号策略 | Ad Na | In Progress | P1 |
 | SG-GHOST-06 | 主菜单、托盘与聊天顶部的快速切换入口和状态指示 | Ad Na | In Progress | P1 |
 | SG-GHOST-07 | 阅读频道消息时不增加浏览数 | Ad | In Progress | P2 |
-| SG-GHOST-08 | 发送消息或互动后自动标记该对话已读（可选） | Ad Na | Planned | P2 |
+| SG-GHOST-08 | 发送消息或互动后自动标记该对话已读（可选） | Ad Na | In Progress | P2 |
 | SG-GHOST-09 | 幽灵模式下用定时消息发送，避免上线 | Ad | Planned | P2 |
 | SG-GHOST-10 | “仅本地已读”与“同步到服务端”两个显式动作：读到此处、全部已读 | Ad Na | Planned | P2 |
 | SG-GHOST-11 | 查看动态前提示当前幽灵模式状态 | Na | Planned | P3 |

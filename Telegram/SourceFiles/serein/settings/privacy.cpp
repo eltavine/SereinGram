@@ -151,6 +151,10 @@ const auto kMeta = BuildHelper({
 		tr::lng_serein_ghost_hide_view_increments(),
 		u"serein/privacy/ghost-hide-view-increments"_q,
 		{ u"ghost"_q, u"views"_q });
+	AddAccountToggle(builder, Ghost::kGhostMarkReadAfterSending,
+		tr::lng_serein_ghost_mark_read_after_sending(),
+		u"serein/privacy/ghost-mark-read-after-sending"_q,
+		{ u"ghost"_q, u"read"_q, u"send"_q });
 	builder.addDividerText(tr::lng_serein_ghost_note());
 	AddAccountToggle(builder, HistorySettings::kHistorySaveDeleted,
 		tr::lng_serein_history_save_deleted(),

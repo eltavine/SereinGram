@@ -17,6 +17,7 @@ set(serein_sources
     serein/hooks/ghost.cpp
     serein/app/ghost_read.cpp
     serein/app/ghost_menu.cpp
+    serein/app/ghost_send.cpp
     serein/display/view_refresher.cpp
     serein/interface/main_menu.cpp
     serein/interface/main_menu_model.cpp
