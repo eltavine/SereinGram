@@ -43,6 +43,11 @@ jobs:
       - name: Hook code does not reach shadowed page namespaces.
         run: python3 tools/serein/check_hook_namespaces.py
 
+      - name: Workflows pass actionlint.
+        run: |
+          bash <(curl -sSfL https://raw.githubusercontent.com/rhysd/actionlint/v1.7.12/scripts/download-actionlint.bash) 1.7.12
+          ./actionlint -shellcheck= .github/workflows/serein-*.yml
+
       - name: Fetch comparison baselines.
         env:
           SCHEMA_BASELINE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}

@@ -29,4 +29,9 @@ python3 tools/serein/check_boundaries.py
 python3 tools/serein/check_hook_namespaces.py
 python3 tools/serein/upstream_budget.py
 python3 tools/serein/check_features.py
+if command -v actionlint >/dev/null; then
+	actionlint -shellcheck= .github/workflows/serein-*.yml
+else
+	echo "actionlint is not installed; skipping the workflow lint." >&2
+fi
 echo "All local SereinGram checks passed."
