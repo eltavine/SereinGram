@@ -6,6 +6,7 @@ set(serein_sources
     serein/compose/placeholder.cpp
     serein/compose/spacing.cpp
     serein/compose/text.cpp
+    serein/compose/validators.cpp
     serein/core/language.cpp
     serein/core/exchange.cpp
     serein/core/options.cpp
@@ -16,6 +17,7 @@ set(serein_sources
     serein/interface/text.cpp
     serein/chats/startup_folder.cpp
     serein/chats/sort.cpp
+    serein/chats/validators.cpp
     serein/chats/managed_folders.cpp
     serein/interface/roundness.cpp
     serein/settings/interface.cpp
@@ -125,7 +127,9 @@ if (DESKTOP_APP_TEST_APPS)
         serein/tests/test_services.cpp
         serein/tests/test_filters.cpp
         serein/tests/test_links.cpp
+        serein/chats/validators.cpp
         serein/compose/spacing.cpp
+        serein/compose/validators.cpp
         serein/core/exchange.cpp
         serein/interface/main_menu_model.cpp
         serein/menu/model.cpp

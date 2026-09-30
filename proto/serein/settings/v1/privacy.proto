@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package serein.settings.v1;
+
+import "buf/validate/validate.proto";
+import "serein/options/v1/options.proto";
+
+message PrivacySettings {
+  option (serein.options.v1.page) = {
+    cpp_namespace: "Privacy"
+    scope: SCOPE_DEVICE
+    category: CATEGORY_PRIVACY
+  };
+
+  optional bool demo_mode = 1;
+  optional bool hide_read_time = 2;
+  optional bool hide_share_phone_prompt = 3;
+  optional int32 profile_id_format = 4 [
+    (buf.validate.field).int32 = {gte: 0, lte: 2}
+  ];
+  optional bool show_profile_dc = 5;
+  optional bool hide_profile_gifts = 6;
+  optional bool hide_create_todo = 7;
+}

@@ -1,0 +1,66 @@
+syntax = "proto3";
+
+package serein.options.v1;
+
+import "google/protobuf/descriptor.proto";
+
+enum Scope {
+  SCOPE_UNSPECIFIED = 0;
+  SCOPE_DEVICE = 1;
+  SCOPE_ACCOUNT = 2;
+}
+
+enum Category {
+  CATEGORY_UNSPECIFIED = 0;
+  CATEGORY_INTERFACE = 1;
+  CATEGORY_CHATS = 2;
+  CATEGORY_MESSAGES = 3;
+  CATEGORY_COMPOSE = 4;
+  CATEGORY_MENU = 5;
+  CATEGORY_MEDIA = 6;
+  CATEGORY_PRIVACY = 7;
+  CATEGORY_SERVICES = 8;
+  CATEGORY_RULES = 9;
+}
+
+enum Refresh {
+  REFRESH_UNSPECIFIED = 0;
+  REFRESH_MESSAGE_VIEW = 1;
+  REFRESH_DIALOG_LIST = 2;
+  REFRESH_COMPOSE_BUTTONS = 3;
+}
+
+// A message annotated with page options declares one settings page.
+message PageOptions {
+  // Namespace below Serein that receives the generated declarations.
+  string cpp_namespace = 1;
+  Scope scope = 2;
+  Category category = 3;
+}
+
+// Unset fields follow the naming convention: the C++ constant is
+// k<FieldNameInCamelCase>, the storage key is serein.<json_name> and the
+// title is lng_serein_<field_name>.
+message FieldOptions {
+  string cpp_name = 1;
+  string title = 2;
+  Scope scope = 3;
+  repeated Refresh refresh = 4;
+  bool restart = 5;
+  bool hidden = 6;
+  // Predicate implemented in C++ for rules protovalidate cannot express.
+  string validator = 7;
+  oneof default_value {
+    bool default_bool = 8;
+    int32 default_int = 9;
+    string default_string = 10;
+  }
+}
+
+extend google.protobuf.MessageOptions {
+  PageOptions page = 50001;
+}
+
+extend google.protobuf.FieldOptions {
+  FieldOptions field = 50001;
+}

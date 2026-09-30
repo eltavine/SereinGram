@@ -1,0 +1,31 @@
+// Generated from {{ page.source }} by tools/serein/codegen; do not edit.
+#pragma once
+
+#include "serein/core/options.h"
+{% if page.needs_regex %}
+
+#include <QtCore/QRegularExpression>
+{% endif %}
+
+namespace Serein::{{ page.namespace }} {
+
+{% for name, ctype in page.custom_validators %}
+[[nodiscard]] bool {{ name }}(const {{ ctype }} &value);
+{% endfor %}
+{% if page.custom_validators %}
+
+{% endif %}
+{% for option in page.options %}
+inline {{ "constexpr" if option.constexpr else "const" }} auto {{ option.cpp_name }} = Option<{{ option.ctype }}>{
+{% for line in option.initializer %}
+{{ line }}
+{% endfor %}
+{% endfor %}
+
+inline void RegisterOptions(Registry &registry) {
+{% for option in page.options %}
+	Expects(registry.Add({{ option.cpp_name }}));
+{% endfor %}
+}
+
+} // namespace Serein::{{ page.namespace }}

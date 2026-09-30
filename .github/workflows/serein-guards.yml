@@ -19,16 +19,41 @@ jobs:
       - name: Clone.
         uses: actions/checkout@v7
 
-      - name: Guard self-tests.
-        run: python3 -m unittest discover -s tools/serein/tests -v
+      - name: Set up Buf.
+        uses: bufbuild/buf-action@v1
+        with:
+          setup_only: true
+          version: 1.72.0
+
+      - name: Set up uv.
+        uses: astral-sh/setup-uv@v6
+
+      - name: Tool self-tests.
+        run: uv run --with jinja2==3.1.6 python -m unittest discover -s tools/serein/tests -v
 
       - name: Owned source files stay within 1000 lines.
         run: python3 tools/serein/check_file_size.py
 
-      - name: Fetch the upstream base commit.
+      - name: Fetch comparison baselines.
+        env:
+          SCHEMA_BASELINE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
         run: |
           base=$(python3 -c "import json; print(json.load(open('tools/serein/policy/upstream.json'))['base'])")
           git fetch --no-tags --depth=1 origin "$base"
+          if [[ ! "$SCHEMA_BASELINE" =~ ^0+$ ]]; then
+            git fetch --no-tags --depth=1 origin "$SCHEMA_BASELINE" || true
+          fi
 
       - name: Upstream intrusion stays within budget.
         run: python3 tools/serein/upstream_budget.py --list
+
+      - name: Schema lint.
+        run: buf lint proto
+
+      - name: Schema stays compatible.
+        env:
+          SCHEMA_BASELINE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+        run: tools/serein/proto_breaking.sh "$SCHEMA_BASELINE"
+
+      - name: Generated code matches the schema.
+        run: uv run tools/serein/codegen/generate.py --check

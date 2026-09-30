@@ -1,0 +1,81 @@
+syntax = "proto3";
+
+package serein.settings.v1;
+
+import "buf/validate/validate.proto";
+import "serein/options/v1/options.proto";
+
+message ChatsSettings {
+  option (serein.options.v1.page) = {
+    cpp_namespace: "Chats"
+    scope: SCOPE_DEVICE
+    category: CATEGORY_CHATS
+  };
+
+  optional bool chat_list_compact = 1 [
+    (serein.options.v1.field) = {
+      cpp_name: "kCompactList"
+      title: "lng_serein_compact_chat_list"
+      refresh: REFRESH_DIALOG_LIST
+    }
+  ];
+  optional int32 chat_preview_lines = 2 [
+    (serein.options.v1.field) = {
+      cpp_name: "kPreviewLines"
+      refresh: REFRESH_DIALOG_LIST
+    },
+    (buf.validate.field).int32 = {gte: 0, lte: 3}
+  ];
+  optional bool hide_saved_and_archived_previews = 3 [
+    (serein.options.v1.field) = {
+      refresh: REFRESH_DIALOG_LIST
+    }
+  ];
+  optional bool hide_stories = 4;
+  optional bool hide_all_chats_folder = 5;
+  optional bool show_archive_in_folders = 6 [
+    (serein.options.v1.field) = {
+      refresh: REFRESH_DIALOG_LIST
+    }
+  ];
+  optional bool hide_folder_unread_counters = 7;
+  optional int32 startup_folder_mode = 8 [
+    (serein.options.v1.field) = {
+      title: "lng_serein_startup_folder"
+      scope: SCOPE_ACCOUNT
+    },
+    (buf.validate.field).int32 = {gte: 0, lte: 2}
+  ];
+  optional int32 startup_folder_id = 9 [
+    (serein.options.v1.field) = {
+      title: "lng_serein_startup_folder"
+      scope: SCOPE_ACCOUNT
+    },
+    (buf.validate.field).int32 = {gte: 0}
+  ];
+  optional int32 last_opened_folder_id = 10 [
+    (serein.options.v1.field) = {
+      title: "lng_serein_startup_folder"
+      scope: SCOPE_ACCOUNT
+    },
+    (buf.validate.field).int32 = {gte: 0}
+  ];
+  optional int32 chat_sort = 11 [
+    (serein.options.v1.field) = {
+      validator: "ValidChatSort"
+    }
+  ];
+  optional string managed_folder_ids = 12 [
+    (serein.options.v1.field) = {
+      title: "lng_serein_managed_only"
+      scope: SCOPE_ACCOUNT
+      validator: "ValidManagedFolderIds"
+    }
+  ];
+  optional bool hide_sponsored_messages = 13;
+  optional bool hide_proxy_sponsor = 14;
+  optional bool hide_premium_promotions = 15;
+  optional bool hide_birthday_suggestions = 16;
+  optional bool disable_scroll_to_next_channel = 17;
+  optional bool disable_scroll_to_next_topic = 18;
+}

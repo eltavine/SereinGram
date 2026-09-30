@@ -124,8 +124,9 @@ message MessagesSettings {
 
 - 语义：proto3 `optional` 有值表示用户显式设置；无值表示跟随 Telegram。稳定标识是字段编号与 JSON 名，删除字段必须 `reserved`。
 - 校验使用 protovalidate 的标准注解；生成器只接受其中的范围、枚举、长度约束，遇到不支持的约束直接报错。
-- 生成器 `tools/serein/protoc_gen_serein`（Python + Jinja2，作为 Buf 本地插件运行）为每个 proto 文件生成：C++ 值类型、JSON 编解码（proto3 标准 JSON 映射的子集）、校验、字段元数据表、类型化的选项句柄。
-- 生成代码提交入库：三平台与发行版构建不需要 protoc 或 Python 依赖；CI 运行 `buf lint`、`buf breaking`、`buf generate` 并要求 `git diff --exit-code` 为空。
+- 生成器 `tools/serein/codegen`（`uv run tools/serein/codegen/generate.py`）读取 `buf build` 的 JSON 映像，用 Jinja2 为每个设置页生成 `serein/schema/gen/settings/<页>.h`：类型化的 `Option<T>` 句柄、校验与 `RegisterOptions`。命名约定：常量 `k<字段名驼峰>`、存储键 `serein.<json_name>`、标题 `lng_serein_<字段名>`，只有例外才写 `cpp_name`、`title`。
+- 已迁移：界面、会话列表、消息、输入、媒体、隐私 6 个页面共 103 个选项；原 `options.h` 只转发到生成头文件。其余 8 个结构化 JSON 选项（菜单、服务、过滤、链接、别名、截图等）随第二阶段的编解码迁移。
+- 生成代码提交入库：三平台与发行版构建不需要 Buf 或 Python 依赖；CI 运行 `buf lint`、`tools/serein/proto_breaking.sh` 与 `generate.py --check`。
 
 ## 6. 存储（ADR-0003）
 
@@ -145,8 +146,8 @@ message MessagesSettings {
 | 自有源文件 ≤ 1000 行 | `tools/serein/check_file_size.py` + `serein-guards.yml` | 已实施 |
 | 模块依赖方向 | `tools/serein/check_boundaries.py`，按 `#include` 与策略文件检查 | Phase 0 |
 | 上游侵入预算 | `tools/serein/upstream_budget.py`，与 `policy/upstream.json` 记录的上游基线比较；预算只降不升，并统计上游文件直接包含非门面头文件的数量 | 已实施 |
-| schema 兼容 | `buf lint`、`buf breaking --against` 目标分支 | Phase 0 |
-| 生成代码漂移 | `buf generate` 后 `git diff --exit-code` | Phase 0 |
+| schema 兼容 | `buf lint`；`tools/serein/proto_breaking.sh` 与推送前的提交或 PR 目标分支比较（`FILE` 级） | 已实施 |
+| 生成代码漂移 | `uv run tools/serein/codegen/generate.py --check` | 已实施 |
 | 三语文案一致 | `test_serein` | 已有 |
 | 构建与单元测试 | `serein-{mac,win,linux}.yml` | 已有 |
 

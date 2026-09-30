@@ -28,10 +28,11 @@
 采用 D：
 
 - schema：`proto/serein/**`，Buf v2 配置；lint 用 `STANDARD`，breaking 检查 `FILE` 与 `WIRE_JSON`。
-- 校验：protovalidate 标准注解，生成器只接受范围、枚举、长度约束，其余报错（fail closed）。
-- 生成器：`tools/serein/protoc_gen_serein`，Python + Jinja2，依赖由 uv 锁定；上游 Docker 生成脚本本身已使用 Jinja2。自定义选项通过插件请求中的描述符动态解析，不需要预生成的 Python 绑定。
-- JSON 映射遵循 proto3 标准 JSON 规则的子集：标量、枚举（名称）、字符串、bytes（base64）、repeated、map、嵌套消息、`optional` 字段存在性。未知字段在读入后原样保留并在写回时带上。
-- 生成代码提交入库，CI 校验无漂移；构建机与发行版打包不需要 protoc 或 Python 依赖。
+- 校验：protovalidate 标准注解，生成器只接受范围、`in` 列表、长度与正则约束，其余报错（fail closed）。默认值等价于“未设置”，生成的校验总是接受默认值；因此 `optional` 字段不使用 `IGNORE_IF_ZERO_VALUE`（`buf lint` 也要求如此）。
+- 生成器：`tools/serein/codegen`。`buf build` 输出 JSON 描述符映像，其中自定义选项与 protovalidate 注解已由 Buf 解析；Python + Jinja2 渲染模板，依赖以 PEP 723 内联元数据声明并由 uv 运行。不需要 Python protobuf 库或 protoc 插件协议；上游 Docker 生成脚本本身也使用 Jinja2。
+- 第一阶段生成与现有 `Option<T>` 同形的声明和 `RegisterOptions`，调用方无需改动；迁移时用新旧声明逐项比较（元数据、注册表顺序、校验在全部样本上的结果）证明等价。
+- 第二阶段为结构化配置生成 JSON 编解码，映射遵循 proto3 标准 JSON 规则的子集：标量、枚举（名称）、字符串、bytes（base64）、repeated、map、嵌套消息、`optional` 字段存在性；未知字段读入后原样保留并在写回时带上。
+- 生成代码提交入库，CI 校验无漂移；构建机与发行版打包不需要 Buf 或 Python 依赖。
 
 ## 后果
 

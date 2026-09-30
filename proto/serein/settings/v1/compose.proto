@@ -1,0 +1,98 @@
+syntax = "proto3";
+
+package serein.settings.v1;
+
+import "buf/validate/validate.proto";
+import "serein/options/v1/options.proto";
+
+message ComposeSettings {
+  option (serein.options.v1.page) = {
+    cpp_namespace: "Compose"
+    scope: SCOPE_DEVICE
+    category: CATEGORY_COMPOSE
+  };
+
+  optional bool hide_attach_button = 1 [
+    (serein.options.v1.field) = {
+      refresh: REFRESH_COMPOSE_BUTTONS
+    }
+  ];
+  optional bool hide_emoji_button = 2 [
+    (serein.options.v1.field) = {
+      refresh: REFRESH_COMPOSE_BUTTONS
+    }
+  ];
+  optional bool hide_recording_button = 3 [
+    (serein.options.v1.field) = {
+      refresh: REFRESH_COMPOSE_BUTTONS
+    }
+  ];
+  optional bool hide_bot_command_button = 4 [
+    (serein.options.v1.field) = {
+      refresh: REFRESH_COMPOSE_BUTTONS
+    }
+  ];
+  optional bool hide_bot_menu = 5 [
+    (serein.options.v1.field) = {
+      refresh: REFRESH_COMPOSE_BUTTONS
+    }
+  ];
+  optional bool hide_auto_delete_button = 6 [
+    (serein.options.v1.field) = {
+      refresh: REFRESH_COMPOSE_BUTTONS
+    }
+  ];
+  optional bool hide_gift_button = 7 [
+    (serein.options.v1.field) = {
+      refresh: REFRESH_COMPOSE_BUTTONS
+    }
+  ];
+  optional bool hide_ai_button = 8 [
+    (serein.options.v1.field) = {
+      refresh: REFRESH_COMPOSE_BUTTONS
+    }
+  ];
+  optional bool hide_send_as_button = 9 [
+    (serein.options.v1.field) = {
+      refresh: REFRESH_COMPOSE_BUTTONS
+    }
+  ];
+  optional bool hide_stars_reaction_button = 10 [
+    (serein.options.v1.field) = {
+      refresh: REFRESH_COMPOSE_BUTTONS
+    }
+  ];
+  optional bool hide_channel_mute_button = 11 [
+    (serein.options.v1.field) = {
+      refresh: REFRESH_COMPOSE_BUTTONS
+    }
+  ];
+  optional bool disable_emoji_hover = 12;
+  optional bool disable_attach_hover = 13;
+  optional bool bot_commands_to_draft = 14;
+  optional int32 input_placeholder_mode = 15 [
+    (serein.options.v1.field) = {
+      title: "lng_serein_input_placeholder"
+    },
+    (buf.validate.field).int32 = {gte: 0, lte: 2}
+  ];
+  optional bool disable_auto_markdown = 16;
+  optional bool disable_link_preview = 17;
+  optional bool space_on_send = 18;
+  optional bool space_on_edit = 19;
+  optional string default_code_language = 20 [
+    (buf.validate.field).string = {max_len: 32, pattern: "^[A-Za-z0-9+-]*$"}
+  ];
+  optional bytes quick_replies = 21 [
+    (serein.options.v1.field) = {
+      validator: "ValidQuickReplies"
+      default_string: "{\"version\":1,\"replies\":[\"\",\"\"]}"
+    }
+  ];
+  optional bool confirm_sticker = 22;
+  optional bool confirm_gif = 23;
+  optional bool preview_voice = 24;
+  optional bool preview_round_video = 25;
+  optional bool confirm_private_call = 26;
+  optional bool forward_before_comment = 27;
+}

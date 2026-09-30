@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package serein.settings.v1;
+
+import "buf/validate/validate.proto";
+import "serein/options/v1/options.proto";
+
+message MediaSettings {
+  option (serein.options.v1.page) = {
+    cpp_namespace: "Media"
+    scope: SCOPE_DEVICE
+    category: CATEGORY_MEDIA
+  };
+
+  optional int32 sticker_scale = 1 [
+    (serein.options.v1.field) = {
+      refresh: REFRESH_MESSAGE_VIEW
+      default_int: 100
+    },
+    (buf.validate.field).int32 = {in: [50, 75, 100, 125, 150, 175, 200]}
+  ];
+  optional bool hide_sticker_time = 2 [
+    (serein.options.v1.field) = {
+      refresh: REFRESH_MESSAGE_VIEW
+    }
+  ];
+  optional int32 recent_sticker_limit = 3 [
+    (buf.validate.field).int32 = {gte: 0, lte: 200}
+  ];
+  optional bool hide_group_stickers = 4;
+  optional bool hide_recommended_stickers = 5;
+  optional bool hide_recommended_emoji = 6;
+  optional bool hide_gif_categories = 7;
+  optional bool hide_greeting_sticker = 8;
+  optional bool disable_video_autoplay = 9 [
+    (serein.options.v1.field) = {
+      refresh: REFRESH_MESSAGE_VIEW
+    }
+  ];
+  optional bool gif_playback_controls = 10;
+  optional bool mp4_file_preview = 11;
+}

@@ -1,0 +1,118 @@
+syntax = "proto3";
+
+package serein.settings.v1;
+
+import "buf/validate/validate.proto";
+import "serein/options/v1/options.proto";
+
+message MessagesSettings {
+  option (serein.options.v1.page) = {
+    cpp_namespace: "Messages"
+    scope: SCOPE_DEVICE
+    category: CATEGORY_MESSAGES
+  };
+
+  optional bool seconds_in_messages = 1 [
+    (serein.options.v1.field) = {
+      refresh: REFRESH_MESSAGE_VIEW
+    }
+  ];
+  optional bool show_forwarded_message_date = 2 [
+    (serein.options.v1.field) = {
+      refresh: REFRESH_MESSAGE_VIEW
+    }
+  ];
+  optional bool show_service_time = 3 [
+    (serein.options.v1.field) = {
+      refresh: REFRESH_MESSAGE_VIEW
+    }
+  ];
+  optional bool show_message_id = 4 [
+    (serein.options.v1.field) = {
+      refresh: REFRESH_MESSAGE_VIEW
+    }
+  ];
+  optional bool exact_message_counters = 5 [
+    (serein.options.v1.field) = {
+      refresh: REFRESH_MESSAGE_VIEW
+    }
+  ];
+  optional bool hide_message_views = 6 [
+    (serein.options.v1.field) = {
+      refresh: REFRESH_MESSAGE_VIEW
+    }
+  ];
+  optional bool hide_channel_signature = 7 [
+    (serein.options.v1.field) = {
+      refresh: REFRESH_MESSAGE_VIEW
+    }
+  ];
+  optional bool hide_edited_badge = 8 [
+    (serein.options.v1.field) = {
+      refresh: REFRESH_MESSAGE_VIEW
+    }
+  ];
+  optional string edited_mark = 9 [
+    (serein.options.v1.field) = {
+      refresh: REFRESH_MESSAGE_VIEW
+    }
+  ];
+  optional bool hide_reactions = 10 [
+    (serein.options.v1.field) = {
+      refresh: REFRESH_MESSAGE_VIEW
+    }
+  ];
+  optional bool hide_private_reactions = 11 [
+    (serein.options.v1.field) = {
+      refresh: REFRESH_MESSAGE_VIEW
+    }
+  ];
+  optional bool hide_group_reactions = 12 [
+    (serein.options.v1.field) = {
+      refresh: REFRESH_MESSAGE_VIEW
+    }
+  ];
+  optional bool hide_channel_reactions = 13 [
+    (serein.options.v1.field) = {
+      refresh: REFRESH_MESSAGE_VIEW
+    }
+  ];
+  optional bool hide_reaction_menu = 14;
+  optional bool hide_reaction_menu_when_selecting = 15;
+  optional bool disable_premium_sticker_effects = 16;
+  optional bool disable_emoji_interactions = 17;
+  optional bool disable_message_effects = 18;
+  optional bool reveal_spoilers = 19 [
+    (serein.options.v1.field) = {
+      refresh: REFRESH_MESSAGE_VIEW
+    }
+  ];
+  optional bool hide_quick_share = 20 [
+    (serein.options.v1.field) = {
+      refresh: REFRESH_MESSAGE_VIEW
+    }
+  ];
+  optional bool hide_recommended_channels = 21 [
+    (serein.options.v1.field) = {
+      refresh: REFRESH_MESSAGE_VIEW
+    }
+  ];
+  optional bool hide_premium_badges = 22 [
+    (serein.options.v1.field) = {
+      refresh: REFRESH_MESSAGE_VIEW
+    }
+  ];
+  optional bool hide_saved_tags = 23;
+  optional bool hide_private_chat_activities = 24;
+  optional bool reading_spacing = 25 [
+    (serein.options.v1.field) = {
+      refresh: REFRESH_MESSAGE_VIEW
+    }
+  ];
+  optional int32 reading_chinese = 26 [
+    (serein.options.v1.field) = {
+      refresh: REFRESH_MESSAGE_VIEW
+    },
+    (buf.validate.field).int32 = {gte: 0, lte: 2}
+  ];
+}
