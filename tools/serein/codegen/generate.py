@@ -18,13 +18,19 @@ from pathlib import Path
 import jinja2
 
 from codec_model import build_files
-from model import SchemaError, build_pages
+from model import SchemaError, build_pages, check_titles
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[2]
 PROTO = ROOT / "proto"
-OUTPUT = ROOT / "Telegram/SourceFiles/serein/schema/gen"
-SOURCES = "sources.cmake"
+OUTPUT = ROOT / "Telegram/SourceFiles/serein"
+SCHEMA = "schema/gen"
+ROWS = "settings/gen"
+SOURCES = f"{SCHEMA}/sources.cmake"
+STRINGS = (
+    ROOT / "Telegram/Resources/langs/lang.strings",
+    ROOT / "Telegram/Resources/langs/serein/serein.strings",
+)
 
 
 def build_image():
@@ -35,7 +41,16 @@ def build_image():
         return json.loads(image.read_text(encoding="utf-8"))
 
 
-def render(image):
+def string_keys():
+    keys = set()
+    for path in STRINGS:
+        for line in path.read_text(encoding="utf-8").splitlines():
+            if line.startswith('"lng_'):
+                keys.add(line[1:line.index('"', 1)])
+    return keys
+
+
+def render(image, known_strings=None):
     environment = jinja2.Environment(
         loader=jinja2.FileSystemLoader(HERE / "templates"),
         trim_blocks=True,
@@ -46,12 +61,19 @@ def render(image):
     settings = environment.get_template("settings.h.j2")
     header = environment.get_template("codec.h.j2")
     implementation = environment.get_template("codec.cpp.j2")
-    outputs = {page.header: settings.render(page=page) for page in build_pages(image)}
+    rows = environment.get_template("settings_rows.h.j2")
+    pages = build_pages(image)
+    check_titles(pages, string_keys() if known_strings is None else known_strings)
+    outputs = {f"{SCHEMA}/{page.header}": settings.render(page=page)
+               for page in pages}
+    for page in pages:
+        if page.rows:
+            outputs[f"{ROWS}/{page.rows_header}"] = rows.render(page=page)
     sources = []
     for file in build_files(image):
-        outputs[file.header] = header.render(file=file)
-        outputs[file.implementation] = implementation.render(file=file)
-        sources.append(f"serein/schema/gen/{file.implementation}")
+        outputs[f"{SCHEMA}/{file.header}"] = header.render(file=file)
+        outputs[f"{SCHEMA}/{file.implementation}"] = implementation.render(file=file)
+        sources.append(f"serein/{SCHEMA}/{file.implementation}")
     outputs[SOURCES] = ("set(serein_generated_sources\n"
                         + "".join(f"    {source}\n" for source in sorted(sources))
                         + ")\n")
@@ -59,10 +81,9 @@ def render(image):
 
 
 def existing_files():
-    if not OUTPUT.exists():
-        return set()
-    return {str(path.relative_to(OUTPUT)) for path in OUTPUT.rglob("*")
-            if path.is_file()}
+    return {path.relative_to(OUTPUT).as_posix()
+            for folder in (SCHEMA, ROWS) if (OUTPUT / folder).exists()
+            for path in (OUTPUT / folder).rglob("*") if path.is_file()}
 
 
 def main(argv=None):

@@ -2,6 +2,7 @@
 
 #include "serein/media/options.h"
 #include "serein/media/sticker_catalog.h"
+#include "serein/settings/gen/media_rows.h"
 #include "serein/settings/home.h"
 #include "lang/lang_keys.h"
 #include "settings/settings_builder.h"
@@ -38,27 +39,6 @@ public:
 
 	static const SectionBuildMethod kBuild;
 };
-
-void AddToggle(
-		SectionBuilder &builder,
-		const Option<bool> &option,
-		rpl::producer<QString> title,
-		QString id,
-		QStringList keywords) {
-	const auto button = builder.addButton({
-		.id = std::move(id),
-		.title = std::move(title),
-		.st = &st::settingsButtonNoIcon,
-		.toggled = ForDevice().Value(option),
-		.keywords = std::move(keywords),
-	});
-	if (button) {
-		button->toggledChanges(
-		) | rpl::on_next([option](bool value) {
-			Expects(ForDevice().Set(option, value));
-		}, button->lifetime());
-	}
-}
 
 void StickerScaleBox(not_null<Ui::GenericBox*> box) {
 	box->setTitle(tr::lng_serein_sticker_scale());
@@ -120,10 +100,6 @@ const auto kMeta = BuildHelper({
 		.onClick = [=] { controller->show(Box(StickerScaleBox)); },
 		.keywords = { u"sticker"_q, u"size"_q },
 	});
-	AddToggle(builder, Media::kHideStickerTime,
-		tr::lng_serein_hide_sticker_time(),
-		u"serein/media/hide-sticker-time"_q,
-		{ u"sticker"_q, u"time"_q });
 	builder.addButton({
 		.id = u"serein/media/recent-sticker-limit"_q,
 		.title = tr::lng_serein_recent_sticker_limit(),
@@ -136,38 +112,7 @@ const auto kMeta = BuildHelper({
 		.onClick = [=] { controller->show(Box(RecentLimitBox)); },
 		.keywords = { u"recent"_q, u"sticker"_q, u"limit"_q },
 	});
-	AddToggle(builder, Media::kHideGroupStickers,
-		tr::lng_serein_hide_group_stickers(),
-		u"serein/media/hide-group-stickers"_q,
-		{ u"group"_q, u"sticker"_q });
-	AddToggle(builder, Media::kHideRecommendedStickers,
-		tr::lng_serein_hide_recommended_stickers(),
-		u"serein/media/hide-recommended-stickers"_q,
-		{ u"recommended"_q, u"sticker"_q });
-	AddToggle(builder, Media::kHideRecommendedEmoji,
-		tr::lng_serein_hide_recommended_emoji(),
-		u"serein/media/hide-recommended-emoji"_q,
-		{ u"recommended"_q, u"emoji"_q });
-	AddToggle(builder, Media::kHideGifCategories,
-		tr::lng_serein_hide_gif_categories(),
-		u"serein/media/hide-gif-categories"_q,
-		{ u"GIF"_q, u"categories"_q });
-	AddToggle(builder, Media::kHideGreetingSticker,
-		tr::lng_serein_hide_greeting_sticker(),
-		u"serein/media/hide-greeting-sticker"_q,
-		{ u"greeting"_q, u"sticker"_q });
-	AddToggle(builder, Media::kDisableVideoAutoplay,
-		tr::lng_serein_disable_video_autoplay(),
-		u"serein/media/disable-video-autoplay"_q,
-		{ u"video"_q, u"autoplay"_q });
-	AddToggle(builder, Media::kGifPlaybackControls,
-		tr::lng_serein_gif_playback_controls(),
-		u"serein/media/gif-playback-controls"_q,
-		{ u"GIF"_q, u"playback"_q, u"controls"_q });
-	AddToggle(builder, Media::kMp4FilePreview,
-		tr::lng_serein_mp4_file_preview(),
-		u"serein/media/mp4-file-preview"_q,
-		{ u"MP4"_q, u"file"_q, u"preview"_q });
+	AddToggles(builder, Media::kToggleRows);
 	builder.addButton({
 		.id = u"serein/media/sticker-catalog"_q,
 		.title = tr::lng_serein_catalog_title(),

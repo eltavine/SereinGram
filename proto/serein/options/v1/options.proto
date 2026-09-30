@@ -55,6 +55,10 @@ message FieldOptions {
     int32 default_int = 9;
     string default_string = 10;
   }
+  // Words the settings search matches besides the title.
+  repeated string keywords = 11;
+  // The page draws this option itself instead of a generated row.
+  bool custom_ui = 12;
 }
 
 // A file annotated with file options gets C++ types and JSON codecs.

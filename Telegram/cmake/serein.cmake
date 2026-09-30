@@ -30,6 +30,7 @@ set(serein_sources
     serein/interface/roundness.cpp
     serein/settings/interface.cpp
     serein/settings/restart.cpp
+    serein/settings/rows.cpp
     serein/menu/actions.cpp
     serein/menu/batch.cpp
     serein/menu/media.cpp

@@ -50,6 +50,14 @@ class Option:
     title: str
     flags: list
     validator: list = field(default_factory=list)
+    name: str = ""
+    keywords: list = field(default_factory=list)
+    custom_ui: bool = False
+
+    @property
+    def toggle(self):
+        return (self.ctype == "bool" and not self.custom_ui
+                and "Hidden" not in self.flags)
 
     @property
     def constexpr(self):
@@ -79,6 +87,14 @@ class Option:
 
 
 @dataclass
+class Row:
+    cpp_name: str
+    title: str
+    id: str
+    keywords: str
+
+
+@dataclass
 class Page:
     source: str
     namespace: str
@@ -86,6 +102,8 @@ class Page:
     options: list
     custom_validators: list
     needs_codec: bool
+    rows_header: str = ""
+    rows: list = field(default_factory=list)
 
 
 def camel_upper(name):
@@ -195,6 +213,9 @@ def build_option(message_field, page, where):
         title=custom.get("title") or "lng_serein_" + name,
         flags=flags,
         validator=lines,
+        name=name,
+        keywords=list(custom.get("keywords", [])),
+        custom_ui=bool(custom.get("customUi")),
     )
 
 
@@ -217,6 +238,12 @@ def build_page(source, message):
         if validator and (validator, option.ctype) not in custom:
             custom.append((validator, option.ctype))
     stem = source.rsplit("/", 1)[-1].removesuffix(".proto")
+    rows = [Row(
+        cpp_name=option.cpp_name,
+        title=option.title,
+        id=f"serein/{stem}/{option.name.replace('_', '-')}",
+        keywords=", ".join(f"u{cpp_string(word)}_q" for word in option.keywords),
+    ) for option in options if option.toggle]
     return Page(
         source=f"proto/{source}",
         namespace=page["cppNamespace"],
@@ -225,6 +252,8 @@ def build_page(source, message):
         custom_validators=custom,
         needs_codec=any("Codec::" in line
                         for option in options for line in option.validator),
+        rows_header=f"{stem}_rows.h" if rows else "",
+        rows=rows,
     )
 
 
@@ -241,4 +270,15 @@ def build_pages(image):
     duplicates = sorted({key for key in keys if keys.count(key) > 1})
     if duplicates:
         raise SchemaError(f"duplicate storage keys: {duplicates}")
+    ids = [row.id for page in pages for row in page.rows]
+    duplicates = sorted({id for id in ids if ids.count(id) > 1})
+    if duplicates:
+        raise SchemaError(f"duplicate settings row ids: {duplicates}")
     return pages
+
+
+def check_titles(pages, known):
+    missing = sorted({row.title for page in pages for row in page.rows
+                      if row.title not in known})
+    if missing:
+        raise SchemaError(f"settings rows use unknown strings: {missing}")

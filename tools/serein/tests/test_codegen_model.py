@@ -115,16 +115,58 @@ class ModelTest(unittest.TestCase):
     def test_ignores_files_outside_settings(self):
         self.assertEqual(model.build_pages(image(field("x", "x"), name="serein/other.proto")), [])
 
+    def test_toggle_rows(self):
+        page = model.build_pages(image(
+            field("show_seconds", "showSeconds", options={
+                model.FIELD_EXTENSION: {"keywords": ["time", "GIF \"x\""]}}),
+            field("secret_flag", "secretFlag", options={
+                model.FIELD_EXTENSION: {"hidden": True}}),
+            field("drawn_by_hand", "drawnByHand", options={
+                model.FIELD_EXTENSION: {"customUi": True}}),
+            field("preview_lines", "previewLines", "TYPE_INT32"),
+        ))[0]
+        self.assertEqual(page.rows_header, "messages_rows.h")
+        self.assertEqual(len(page.rows), 1)
+        row = page.rows[0]
+        self.assertEqual(row.cpp_name, "kShowSeconds")
+        self.assertEqual(row.title, "lng_serein_show_seconds")
+        self.assertEqual(row.id, "serein/messages/show-seconds")
+        self.assertEqual(row.keywords, 'u"time"_q, u"GIF \\"x\\""_q')
+
+    def test_page_without_toggles_has_no_rows_header(self):
+        page = model.build_pages(image(field("preview_lines", "previewLines", "TYPE_INT32")))[0]
+        self.assertEqual((page.rows_header, page.rows), ("", []))
+
+    def test_rejects_duplicate_row_ids(self):
+        first = image(field("show_seconds", "showSeconds"))
+        second = image(field("show_seconds", "otherKey"), name="serein/settings/v2/messages.proto")
+        first["file"] += second["file"]
+        with self.assertRaisesRegex(model.SchemaError, "duplicate settings row ids"):
+            model.build_pages(first)
+
+    def test_unknown_titles_fail(self):
+        pages = model.build_pages(image(field("show_seconds", "showSeconds")))
+        model.check_titles(pages, {"lng_serein_show_seconds"})
+        with self.assertRaisesRegex(model.SchemaError, "lng_serein_show_seconds"):
+            model.check_titles(pages, set())
+
 
 @unittest.skipUnless(importlib.util.find_spec("jinja2"), "jinja2 is not installed")
 class RenderTest(unittest.TestCase):
     def test_renders_header(self):
         import generate
-        output = generate.render(image(field("seconds_in_messages", "secondsInMessages")))
-        text = output["settings/messages.h"]
+        output = generate.render(
+            image(field("seconds_in_messages", "secondsInMessages")),
+            known_strings={"lng_serein_seconds_in_messages"})
+        text = output["schema/gen/settings/messages.h"]
         self.assertIn("namespace Serein::Messages {", text)
         self.assertIn("inline constexpr auto kSecondsInMessages = Option<bool>{", text)
         self.assertIn("\tExpects(registry.Add(kSecondsInMessages));", text)
+        rows = output["settings/gen/messages_rows.h"]
+        self.assertIn('#include "serein/schema/gen/settings/messages.h"', rows)
+        self.assertIn("std::array<ToggleRow, 1>", rows)
+        self.assertIn("\t\t&kSecondsInMessages,\n\t\ttr::lng_serein_seconds_in_messages,", rows)
+        self.assertIn('u"serein/messages/seconds-in-messages"_q', rows)
 
 
 if __name__ == "__main__":

@@ -21,22 +21,38 @@ message MediaSettings {
   ];
   optional bool hide_sticker_time = 2 [
     (serein.options.v1.field) = {
+      keywords: ["sticker", "time"]
       refresh: REFRESH_MESSAGE_VIEW
     }
   ];
   optional int32 recent_sticker_limit = 3 [
     (buf.validate.field).int32 = {gte: 0, lte: 200}
   ];
-  optional bool hide_group_stickers = 4;
-  optional bool hide_recommended_stickers = 5;
-  optional bool hide_recommended_emoji = 6;
-  optional bool hide_gif_categories = 7;
-  optional bool hide_greeting_sticker = 8;
+  optional bool hide_group_stickers = 4 [(serein.options.v1.field) = {
+    keywords: ["group", "sticker"]
+  }];
+  optional bool hide_recommended_stickers = 5 [(serein.options.v1.field) = {
+    keywords: ["recommended", "sticker"]
+  }];
+  optional bool hide_recommended_emoji = 6 [(serein.options.v1.field) = {
+    keywords: ["recommended", "emoji"]
+  }];
+  optional bool hide_gif_categories = 7 [(serein.options.v1.field) = {
+    keywords: ["GIF", "categories"]
+  }];
+  optional bool hide_greeting_sticker = 8 [(serein.options.v1.field) = {
+    keywords: ["greeting", "sticker"]
+  }];
   optional bool disable_video_autoplay = 9 [
     (serein.options.v1.field) = {
+      keywords: ["video", "autoplay"]
       refresh: REFRESH_MESSAGE_VIEW
     }
   ];
-  optional bool gif_playback_controls = 10;
-  optional bool mp4_file_preview = 11;
+  optional bool gif_playback_controls = 10 [(serein.options.v1.field) = {
+    keywords: ["GIF", "playback", "controls"]
+  }];
+  optional bool mp4_file_preview = 11 [(serein.options.v1.field) = {
+    keywords: ["MP4", "file", "preview"]
+  }];
 }
