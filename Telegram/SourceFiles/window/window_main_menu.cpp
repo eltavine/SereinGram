@@ -74,7 +74,6 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "styles/style_settings.h"
 #include "styles/style_window.h"
 #include "styles/style_window_main_menu.h"
-#include "serein/hooks/ghost.h"
 
 #include <QtGui/QWindow>
 #include <QtGui/QScreen>
@@ -765,14 +764,7 @@ void MainMenu::setupMenu() {
 		controller->showSettings();
 	});
 
-	Serein::Hooks::BindGhostToggle(addAction(
-		tr::lng_serein_ghost_mode(),
-		{ &st::menuIconStealth }
-	), &controller->session());
-	Serein::Hooks::BindStreamerToggle(addAction(
-		tr::lng_serein_demo_mode(),
-		{ &st::menuIconVideoChat }
-	));
+	Serein::Hooks::FillMainMenu(controller, addAction);
 
 	_nightThemeToggle = addAction(
 		tr::lng_menu_night_mode(),

@@ -38,6 +38,14 @@ void TrackAccounts() {
 
 } // namespace
 
+void OnWindowStarted(gsl::not_null<Window::SessionController*> window) {
+	for (const auto &module : App::Modules()) {
+		if (module.windowStarted) {
+			module.windowStarted(window);
+		}
+	}
+}
+
 void OnApplicationStarted() {
 	static auto lifetime = rpl::lifetime();
 	for (const auto &module : App::Modules()) {

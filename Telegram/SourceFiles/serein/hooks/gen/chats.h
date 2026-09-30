@@ -47,5 +47,7 @@ namespace Serein::Hooks::Chats {
 [[nodiscard]] rpl::producer<bool> DisableScrollToNextChannelValue();
 [[nodiscard]] bool DisableScrollToNextTopic();
 [[nodiscard]] rpl::producer<bool> DisableScrollToNextTopicValue();
+[[nodiscard]] QString RecentChats(gsl::not_null<Main::Session*> session);
+[[nodiscard]] rpl::producer<QString> RecentChatsValue(gsl::not_null<Main::Session*> session);
 
 } // namespace Serein::Hooks::Chats

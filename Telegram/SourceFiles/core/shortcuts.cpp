@@ -145,6 +145,7 @@ const auto CommandByName = base::flat_map<QString, Command>{
 	{ u"show_admin_log"_q                , Command::ShowAdminLog },
 	{ u"serein_toggle_ghost_mode"_q      , Command::SereinToggleGhostMode },
 	{ u"serein_toggle_presentation_mode"_q, Command::SereinToggleDemoMode },
+	{ u"serein_recent_chats"_q           , Command::SereinRecentChats },
 	//
 };
 
@@ -172,6 +173,7 @@ const base::flat_map<Command, QString> &CommandNames() {
 	Command::RecordRound,
 	Command::SereinToggleGhostMode,
 	Command::SereinToggleDemoMode,
+	Command::SereinRecentChats,
 };
 
 class Manager {

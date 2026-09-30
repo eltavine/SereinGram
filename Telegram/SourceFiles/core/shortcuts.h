@@ -94,6 +94,7 @@ enum class Command {
 	SupportHistoryForward,
 	SereinToggleGhostMode,
 	SereinToggleDemoMode,
+	SereinRecentChats,
 };
 
 [[maybe_unused]] constexpr auto kShowFolder = {

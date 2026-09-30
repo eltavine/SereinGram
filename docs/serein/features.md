@@ -44,7 +44,7 @@ Nagram 的品牌政策要求分支使用不同品牌并替换 Nagram 名称与�
 | SG-CORE-02 | 代码生成器：注册表元数据、C++ 值类型、JSON 编解码、校验（均已生成；既有结构化配置已迁移 6 个：链接规则、快捷回复、消息过滤、主菜单、消息菜单、翻译与转写服务；支持字符串键的 map 字段、double 与可空字段） | D | In Progress | P0 |
 | SG-CORE-03 | 存储端口与适配器：设备偏好、账号偏好、历史库 | D | In Progress | P0 |
 | SG-CORE-04 | 上游挂钩门面 `serein/hooks`，上游文件只调用门面（设置选项的门面由 proto 生成到 `serein/hooks/gen`，面向上游的薄接口头文件已移入 `serein/hooks/<领域>/`，并可脱离应用代码单独通过语法检查；直接包含内部头文件的上游文件已从 87 降到 0，并由预算守卫锁定；依赖上游嵌套类型的门面声明为函数模板，在实现文件中对该类型显式实例化，门面本身不包含应用代码） | D | Implemented | P0 |
-| SG-CORE-05 | 功能模块注册与生命周期（应用、会话、窗口作用域）：应用与会话作用域已由 `serein/app/modules.cpp` 模块表统一分发（对话排序已从上游窗口构造函数移到会话作用域），窗口作用域待做 | D | In Progress | P0 |
+| SG-CORE-05 | 功能模块注册与生命周期（应用、会话、窗口作用域）：应用与会话作用域已由 `serein/app/modules.cpp` 模块表统一分发（对话排序已从上游窗口构造函数移到会话作用域）；窗口作用域由 `Serein::Hooks::OnWindowStarted` 分发，首个使用者是最近会话记录；主菜单条目统一由 `Serein::Hooks::FillMainMenu` 添加 | D | Implemented | P0 |
 | SG-CORE-06 | 设置页与搜索索引由 schema 元数据生成（开关、选项、数值、文本、子页）：开关行、小标题、说明、依赖开关与自定义行位置已由 proto 生成 `AddLayout`，界面、聊天、消息、写作、媒体、隐私（含幽灵与历史）六页已迁移；数值输入行（范围取自 gte/lte 规则，0 的文字与复数格式由 `number` 选项声明）已生成；单选行（按序语言键或 `in` 规则加后缀）已生成；文本行（`text` 选项声明占位语言键，未设置时行标签显示占位文字，`disabled_by` 使该行在对应开关打开时隐藏）已生成，“已编辑/已删除标记文字”已改用生成行；子页待做 | D | In Progress | P0 |
 | SG-CORE-07 | 英文、简体、繁体内置文案与一致性检查 | Ni Na | Implemented | P0 |
 | SG-CORE-08 | 配置管理：已修改项、导出、导入差异预览、诊断信息（J01–J04） | Ni Na | Implemented | P1 |
@@ -147,7 +147,7 @@ SG-HIST-05 的“已编辑”标记文字已由 C09 实现，删除标记随 SG-
 | SG-CHATS-06 | 文件夹属性“仅显示我管理的群组和频道” | Ni | Implemented | P2 |
 | SG-CHATS-07 | 一键已读全部对话或当前文件夹（由上游提供：对话列表与文件夹菜单的“标记为已读”“全部对话标记为已读”，`menu/menu_mark_as_read.cpp`，核对于 2026-09-30） | Ad Na | Implemented | P2 |
 | SG-CHATS-08 | 跳到对话开头（聊天窗口菜单“跳到对话开头”，由 `serein/app/peer_menu.cpp` 提供；话题内跳到话题的首条消息） | Ad Ni | Implemented | P2 |
-| SG-CHATS-09 | 最近会话列表 | Ni | Planned | P2 |
+| SG-CHATS-09 | 最近会话列表（按账号记录最近打开的 30 个对话；主菜单“最近会话”与快捷键命令 `serein_recent_chats` 打开列表，点击进入对话，可清空） | Ni | Implemented | P2 |
 | SG-CHATS-10 | 聊天顶部工具栏：搜索、媒体、置顶、跳到开头、静音、清缓存 | Ni | Planned | P2 |
 | SG-CHATS-11 | 保存并恢复阅读位置 | Ni | Planned | P2 |
 | SG-CHATS-12 | 本地置顶扩展 | Ni | Planned | P3 |

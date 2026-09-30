@@ -234,6 +234,9 @@
 "lng_serein_startup_folder_specific" = "指定文件夹";
 "lng_serein_sorting" = "排序";
 "lng_serein_chat_sort" = "会话排序";
+"lng_serein_recent_chats" = "最近会话";
+"lng_serein_recent_chats_empty" = "打开过的对话会显示在这里。";
+"lng_serein_recent_chats_clear" = "清空";
 "lng_serein_sort_unread" = "未读";
 "lng_serein_sort_unmuted" = "未静音";
 "lng_serein_sort_users" = "用户";

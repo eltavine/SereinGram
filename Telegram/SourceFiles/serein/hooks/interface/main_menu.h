@@ -1,6 +1,9 @@
 #pragma once
 
 #include "serein/schema/gen/config/main_menu.h"
+#include "base/basic_types.h"
+
+#include <rpl/producer.h>
 #include <QtCore/QByteArray>
 #include <QtCore/QJsonObject>
 #include <gsl/pointers>
@@ -10,8 +13,17 @@
 
 namespace Ui {
 class GenericBox;
+class SettingsButton;
 class VerticalLayout;
 } // namespace Ui
+
+namespace Settings {
+struct IconDescriptor;
+} // namespace Settings
+
+namespace Window {
+class SessionController;
+} // namespace Window
 
 namespace Serein::Interface {
 
@@ -35,3 +47,15 @@ void SetMainMenu(const QJsonObject &value);
 void MainMenuBox(gsl::not_null<Ui::GenericBox*> box);
 
 } // namespace Serein::Interface
+
+namespace Serein::Hooks {
+
+using MainMenuAction = Fn<gsl::not_null<Ui::SettingsButton*>(
+	rpl::producer<QString>,
+	Settings::IconDescriptor &&)>;
+
+void FillMainMenu(
+	gsl::not_null<Window::SessionController*> controller,
+	const MainMenuAction &addAction);
+
+} // namespace Serein::Hooks

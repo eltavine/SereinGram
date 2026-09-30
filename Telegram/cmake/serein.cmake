@@ -22,8 +22,10 @@ set(serein_sources
     serein/app/history_expiry.cpp
     serein/app/history_fade.cpp
     serein/app/lifecycle.cpp
+    serein/app/main_menu.cpp
     serein/app/modules.cpp
     serein/app/peer_menu.cpp
+    serein/app/recent_chats.cpp
     serein/app/send_options.cpp
     serein/app/shortcuts.cpp
     serein/app/sticker_set_menu.cpp
@@ -40,6 +42,7 @@ set(serein_sources
     serein/chats/startup_folder.cpp
     serein/chats/sort.cpp
     serein/chats/validators.cpp
+    serein/chats/recent.cpp
     serein/chats/managed_folders.cpp
     serein/interface/roundness.cpp
     serein/settings/interface.cpp

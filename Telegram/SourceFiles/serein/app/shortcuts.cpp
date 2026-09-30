@@ -1,5 +1,7 @@
 #include "serein/app/shortcuts.h"
 
+#include "serein/app/recent_chats.h"
+
 #include "serein/features/ghost/model/policy.h"
 #include "serein/privacy/options.h"
 #include "core/application.h"
@@ -42,6 +44,16 @@ bool ToggleDemoMode() {
 	return true;
 }
 
+bool ShowRecent() {
+	const auto window = Core::App().activeWindow();
+	const auto controller = window ? window->sessionController() : nullptr;
+	if (!controller) {
+		return false;
+	}
+	ShowRecentChats(controller);
+	return true;
+}
+
 } // namespace
 
 void StartShortcuts() {
@@ -53,6 +65,8 @@ void StartShortcuts() {
 			&& request->handle(ToggleGhostMode);
 		request->check(Command::SereinToggleDemoMode)
 			&& request->handle(ToggleDemoMode);
+		request->check(Command::SereinRecentChats)
+			&& request->handle(ShowRecent);
 	}, lifetime);
 }
 

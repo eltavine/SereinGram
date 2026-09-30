@@ -238,6 +238,9 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_startup_folder_specific" = "Specific folder";
 "lng_serein_sorting" = "Sorting";
 "lng_serein_chat_sort" = "Chat order";
+"lng_serein_recent_chats" = "Recent chats";
+"lng_serein_recent_chats_empty" = "Chats you open will appear here.";
+"lng_serein_recent_chats_clear" = "Clear";
 "lng_serein_sort_unread" = "Unread";
 "lng_serein_sort_unmuted" = "Unmuted";
 "lng_serein_sort_users" = "Users";

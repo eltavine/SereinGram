@@ -13,6 +13,7 @@ void TestServices();
 void TestTranslationProtocols();
 void TestUpdates();
 void TestStickers();
+void TestRecentChats();
 void TestFilters();
 void TestLinks();
 void TestCodec();
@@ -101,6 +102,7 @@ int main() {
 		TestTranslationProtocols();
 		TestUpdates();
 		TestStickers();
+		TestRecentChats();
 		TestFilters();
 		TestLinks();
 		TestCodec();

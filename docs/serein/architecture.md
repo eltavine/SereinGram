@@ -20,7 +20,7 @@
 | 项目 | 数值 |
 | --- | --- |
 | 自有代码 | `Telegram/SourceFiles/serein/` 249 个文件：手写 16,480 行，由 16 个 proto 生成 5,080 行；最大文件 681 行 |
-| 上游侵入 | 208 个上游文件、+1,643 行；源码 139 个文件、+1,420 行；直接包含内部头文件的上游文件 0 个（初始 87 个），预算锁定为 0 |
+| 上游侵入 | 208 个上游文件、+1,640 行；源码 139 个文件、+1,417 行；直接包含内部头文件的上游文件 0 个（初始 87 个），预算锁定为 0 |
 | 设置页 | 布局、开关、数值与单选行由 proto 生成；手写设置页 2,455 行，只保留自定义控件 |
 | 结构化配置 | 链接、快捷回复、过滤、主菜单、消息菜单、服务与历史记录均由 proto3 声明，生成编解码器校验 |
 | 构建 | 三平台 CI 已接入并缓存依赖；核心测试与守卫在每次推送时运行 |
@@ -111,9 +111,9 @@ namespace Serein::Hooks {
 
 已接入：在线状态（`api/api_updates.cpp`）与输入状态（`api/api_send_progress.cpp`，群通话的“正在说话”不受影响），各为一行条件；服务器删除（`data/data_session.cpp` 两处）与编辑前快照（`history/history_item.cpp`），实现位于组合根 `serein/app/`。已读类请求被拦截时，上游本地状态仍需按“已读”推进，否则未读计数与重试逻辑会卡住；这一点在 GHOST 模块的实现与测试中单独验证。
 
-门面的三种来源：设置选项的取值与订阅函数由 proto 生成到 `serein/hooks/gen/<页>.h`；面向上游的薄接口头文件位于 `serein/hooks/<领域>/`，只允许前置声明与库头文件，可脱离应用代码单独通过语法检查（参数或返回值是上游嵌套类型时，门面声明为函数模板，由实现文件对该类型显式实例化，例如 `ApplyInfoOptions(Data &, ...)` 与 `TranscriptionOverride<Entry>(item)`）；其余一次性挂钩（幽灵、历史、定时发送）位于 `serein/hooks/*.h`，实现放在组合根 `serein/app/`。应用启动只有一个挂钩 `Serein::Hooks::OnApplicationStarted()`：组合根的模块表 `serein/app/modules.cpp` 为每个模块登记“应用启动”和“会话启动”回调，会话跟踪统一订阅各账号的 `sessionValue()`，功能模块不再各自挂接上游。
+门面的三种来源：设置选项的取值与订阅函数由 proto 生成到 `serein/hooks/gen/<页>.h`；面向上游的薄接口头文件位于 `serein/hooks/<领域>/`，只允许前置声明与库头文件，可脱离应用代码单独通过语法检查（参数或返回值是上游嵌套类型时，门面声明为函数模板，由实现文件对该类型显式实例化，例如 `ApplyInfoOptions(Data &, ...)` 与 `TranscriptionOverride<Entry>(item)`）；其余一次性挂钩（幽灵、历史、定时发送）位于 `serein/hooks/*.h`，实现放在组合根 `serein/app/`。应用启动只有一个挂钩 `Serein::Hooks::OnApplicationStarted()`：组合根的模块表 `serein/app/modules.cpp` 为每个模块登记“应用启动”“会话启动”和“窗口启动”回调（窗口启动由 `SessionController` 构造函数中的 `Serein::Hooks::OnWindowStarted` 分发），会话跟踪统一订阅各账号的 `sessionValue()`，功能模块不再各自挂接上游。
 
-现有 Nagram 内联挂钩（123 个上游源文件）按功能族改走门面。预算：迁移完成后上游源码文件 ≤ 90 个、新增行 ≤ 900 行（不含品牌与构建文件），由 `tools/serein/upstream_budget.py` 与上游合并基线比较并在 CI 报告。当前为 139 个源码文件、+1,420 行，尚未达到该目标，后续继续把品牌与多处小挂钩合并到门面。
+现有 Nagram 内联挂钩（123 个上游源文件）按功能族改走门面。预算：迁移完成后上游源码文件 ≤ 90 个、新增行 ≤ 900 行（不含品牌与构建文件），由 `tools/serein/upstream_budget.py` 与上游合并基线比较并在 CI 报告。当前为 139 个源码文件、+1,417 行，尚未达到该目标，后续继续把品牌与多处小挂钩合并到门面。
 
 ## 5. Schema 与代码生成（ADR-0002）
 

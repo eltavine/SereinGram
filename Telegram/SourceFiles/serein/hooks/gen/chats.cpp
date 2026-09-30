@@ -150,4 +150,12 @@ rpl::producer<bool> DisableScrollToNextTopicValue() {
 	return ForDevice().Value(Serein::Chats::kDisableScrollToNextTopic);
 }
 
+QString RecentChats(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Get(Serein::Chats::kRecentChats);
+}
+
+rpl::producer<QString> RecentChatsValue(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Value(Serein::Chats::kRecentChats);
+}
+
 } // namespace Serein::Hooks::Chats

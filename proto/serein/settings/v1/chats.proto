@@ -111,4 +111,13 @@ message ChatsSettings {
   optional bool disable_scroll_to_next_topic = 18 [(serein.options.v1.field) = {
     keywords: ["scroll", "topic"]
   }];
+  // Serialized peer ids of recently opened chats, newest first.
+  optional string recent_chats = 19 [
+    (serein.options.v1.field) = {
+      hidden: true
+      title: "lng_serein_recent_chats"
+      scope: SCOPE_ACCOUNT
+      validator: "ValidRecentChats"
+    }
+  ];
 }

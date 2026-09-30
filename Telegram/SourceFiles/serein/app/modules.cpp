@@ -2,6 +2,7 @@
 
 #include "serein/app/updates.h"
 
+#include "serein/app/recent_chats.h"
 #include "serein/app/shortcuts.h"
 
 #include "serein/hooks/chats/sort.h"
@@ -21,6 +22,7 @@ constexpr auto kModules = std::array{
 	Module{ "updates.check", StartUpdateChecks },
 	Module{ "chats.sorting", nullptr, Chats::WatchSorting },
 	Module{ "app.shortcuts", StartShortcuts },
+	Module{ "chats.recent", nullptr, nullptr, TrackRecentChats },
 };
 
 } // namespace

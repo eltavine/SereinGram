@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "window/window_session_controller.h"
+#include "serein/hooks/app.h"
 #include "serein/hooks/chats/startup_folder.h"
 #include "serein/hooks/gen/privacy.h"
 
@@ -1586,6 +1587,7 @@ SessionController::SessionController(
 , _defaultChatTheme(std::make_shared<Ui::ChatTheme>())
 , _chatStyle(std::make_unique<Ui::ChatStyle>(session->colorIndicesValue())) {
 	init();
+	Serein::Hooks::OnWindowStarted(this);
 
 	_chatStyleTheme = _defaultChatTheme;
 	_chatStyle->apply(_defaultChatTheme.get());
