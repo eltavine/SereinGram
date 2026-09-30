@@ -1,6 +1,7 @@
 #include "serein/hooks/peer_menu.h"
 
 #include "serein/hooks/privacy/alias.h"
+#include "data/data_forum_topic.h"
 #include "data/data_peer.h"
 #include "lang/lang_keys.h"
 #include "ui/widgets/menu/menu_add_action_callback.h"
@@ -14,14 +15,19 @@ void FillHistoryMenu(
 		gsl::not_null<Window::SessionController*> controller,
 		gsl::not_null<PeerData*> peer,
 		Data::ForumTopic *topic) {
-	if (topic) {
-		return;
-	}
+	const auto weak = base::make_weak(topic);
 	addAction(tr::lng_serein_jump_to_beginning(tr::now), [=] {
-		controller->showPeerHistory(
-			peer,
-			Window::SectionShow::Way::Forward,
-			MsgId(1));
+		if (!topic) {
+			controller->showPeerHistory(
+				peer,
+				Window::SectionShow::Way::Forward,
+				MsgId(1));
+		} else if (const auto strong = weak.get()) {
+			controller->showTopic(
+				strong,
+				strong->rootId(),
+				Window::SectionShow::Way::Forward);
+		}
 	}, &st::menuIconShowInChat);
 }
 
