@@ -4,6 +4,8 @@
 
 ## 1. 现状基线（2026-09-30）
 
+重构开始时（Nagram-qt 分支原样）：
+
 | 项目 | 数值 | 来源 |
 | --- | --- | --- |
 | 自有代码 | `Telegram/SourceFiles/nagram/` 144 个文件、13,823 行，最大文件 650 行 | `wc -l` |
@@ -12,6 +14,16 @@
 | 设置声明 | 手写 `Option<T>` 注册表 + 24 个手写设置页文件（3,017 行） | `nagram/core`、`nagram/settings` |
 | 结构化配置 | 过滤、链接、服务、菜单各自手写 JSON 解析与校验 | `nagram/*/model.cpp` |
 | 构建 | 只在开发者本机做过 macOS Debug 构建；三平台 CI 从未运行 | `docs/nagram/design.md` |
+
+当前（以 `tools/serein/upstream_budget.py` 与仓库统计为准）：
+
+| 项目 | 数值 |
+| --- | --- |
+| 自有代码 | `Telegram/SourceFiles/serein/` 249 个文件：手写 16,480 行，由 16 个 proto 生成 5,080 行；最大文件 681 行 |
+| 上游侵入 | 202 个上游文件、+1,611 行；源码 133 个文件、+1,388 行；直接包含内部头文件的上游文件 9 个（初始 87 个） |
+| 设置页 | 布局、开关、数值与单选行由 proto 生成；手写设置页 2,455 行，只保留自定义控件 |
+| 结构化配置 | 链接、快捷回复、过滤、主菜单、消息菜单、服务与历史记录均由 proto3 声明，生成编解码器校验 |
+| 构建 | 三平台 CI 已接入并缓存依赖；核心测试与守卫在每次推送时运行 |
 
 上游刻意不带 protobuf 运行时：cld3 用手写头文件替代生成代码（`cmake/external/cld3`），WebRTC 以 `WEBRTC_ENABLE_PROTOBUF=0` 构建。静态 Qt 只初始化 `qtbase`、`qtimageformats`、`qtshadertools`、`qtsvg`，但没有关闭 Qt SQL，Qt 自带的 SQLite 驱动可用。
 
