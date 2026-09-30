@@ -35,7 +35,8 @@ Visibility DefaultVisibility(ActionId id) {
 		|| id == ActionId::DeletedMessages
 		|| id == ActionId::ReadUntilHere
 		|| id == ActionId::HistoryExclusion
-		|| id == ActionId::SelectRange) {
+		|| id == ActionId::SelectRange
+		|| id == ActionId::BatchUnpin) {
 		return Visibility::Show;
 	}
 	return static_cast<int>(id) >= static_cast<int>(ActionId::Repeat)

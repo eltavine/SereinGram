@@ -472,6 +472,7 @@
 "lng_serein_menu_button_data" = "按鈕資料";
 "lng_serein_menu_details" = "訊息詳情";
 "lng_serein_menu_select_range" = "選擇區間";
+"lng_serein_menu_unpin_selected" = "取消置頂所選訊息";
 "lng_serein_details_message_id" = "訊息 ID";
 "lng_serein_details_chat_id" = "對話 ID";
 "lng_serein_details_sender_id" = "傳送者 ID";

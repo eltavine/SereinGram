@@ -476,6 +476,7 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_menu_button_data" = "Button data";
 "lng_serein_menu_details" = "Message details";
 "lng_serein_menu_select_range" = "Select range";
+"lng_serein_menu_unpin_selected" = "Unpin selected messages";
 "lng_serein_details_message_id" = "Message ID";
 "lng_serein_details_chat_id" = "Chat ID";
 "lng_serein_details_sender_id" = "Sender ID";

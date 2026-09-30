@@ -11,6 +11,7 @@
 #include "history/history_item.h"
 #include "lang/lang_keys.h"
 #include "main/main_session.h"
+#include "apiwrap.h"
 #include "mainwidget.h"
 #include "storage/storage_account.h"
 #include "ui/layers/generic_box.h"
@@ -222,6 +223,45 @@ void Insert(
 	Tag(menu->insertAction(position, std::move(widget)), id);
 }
 
+[[nodiscard]] MessageIdsList PinnedAmong(
+		not_null<Main::Session*> session,
+		const MessageIdsList &ids) {
+	auto result = MessageIdsList();
+	for (const auto &id : ids) {
+		if (const auto item = session->data().message(id)) {
+			if (item->isPinned() && item->canPin()) {
+				result.push_back(id);
+			}
+		}
+	}
+	return result;
+}
+
+void UnpinSequentially(
+		not_null<Main::Session*> session,
+		MessageIdsList ids) {
+	const auto unpin = [=](auto self, int index) -> void {
+		for (auto i = index; i < int(ids.size()); ++i) {
+			const auto item = session->data().message(ids[i]);
+			if (!item || !item->isPinned() || !item->canPin()) {
+				continue;
+			}
+			session->api().request(MTPmessages_UpdatePinnedMessage(
+				MTP_flags(MTPmessages_UpdatePinnedMessage::Flag::f_unpin),
+				item->history()->peer->input(),
+				MTP_int(item->id)
+			)).done([=](const MTPUpdates &result) {
+				session->api().applyUpdates(result);
+				self(self, i + 1);
+			}).fail([=](const MTP::Error &) {
+				self(self, i + 1);
+			}).send();
+			return;
+		}
+	};
+	unpin(unpin, 0);
+}
+
 } // namespace
 
 void InsertBatchActions(
@@ -234,6 +274,13 @@ void InsertBatchActions(
 		return;
 	}
 	auto position = EndPosition(menu);
+	if (const auto pinned = PinnedAmong(&controller->session(), selected)
+		; pinned.size() > 1) {
+		const auto session = &controller->session();
+		Insert(menu, position++, ActionId::BatchUnpin,
+			tr::lng_serein_menu_unpin_selected(tr::now),
+			crl::guard(controller, [=] { UnpinSequentially(session, pinned); }));
+	}
 	if (selection && selected.size() > 1) {
 		Insert(menu, position++, ActionId::SelectRange,
 			tr::lng_serein_menu_select_range(tr::now),
