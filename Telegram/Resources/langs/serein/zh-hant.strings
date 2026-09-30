@@ -426,3 +426,12 @@
 "lng_serein_config_invalid" = "儲存值無效";
 "lng_serein_config_diagnostic_report" = "SereinGram {version}\n設定格式：1\n管理的設定：{amount}\n已修改的設定：{value}\n無效儲存值：{error}\n\n本報告只包含版本和數量。";
 "lng_serein_config_copy_report" = "複製報告";
+"lng_serein_ghost_mode" = "幽靈模式";
+"lng_serein_ghost_hide_read_receipts" = "不傳送已讀回條";
+"lng_serein_ghost_hide_story_views" = "不將動態標記為已看";
+"lng_serein_ghost_hide_online" = "不傳送上線狀態";
+"lng_serein_ghost_hide_typing" = "不傳送輸入狀態";
+"lng_serein_ghost_hide_view_increments" = "不增加頻道瀏覽數";
+"lng_serein_ghost_mark_read_after_sending" = "傳送訊息後將對話標記為已讀";
+"lng_serein_ghost_use_scheduled_messages" = "透過排程訊息傳送";
+"lng_serein_ghost_note" = "只對目前帳號生效。其他裝置以及傳送訊息等操作仍可能暴露你的活動。";

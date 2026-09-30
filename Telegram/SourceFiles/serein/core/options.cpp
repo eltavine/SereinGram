@@ -12,6 +12,7 @@
 #include "serein/filters/model.h"
 #include "serein/links/model.h"
 #include "serein/snapshot/snapshot.h"
+#include "serein/features/ghost/model/policy.h"
 
 #include "core/application.h"
 #include "core/core_settings.h"
@@ -106,6 +107,7 @@ const Registry &RegisteredOptions() {
 		Links::RegisterOptions(result);
 		Snapshot::RegisterOptions(result);
 		RegisterServiceOptions(result);
+		Ghost::RegisterOptions(result);
 		return result;
 	}();
 	return registry;

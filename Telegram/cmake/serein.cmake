@@ -12,6 +12,7 @@ set(serein_sources
     serein/core/options.cpp
     serein/schema/codec.cpp
     serein/features/ghost/model/policy.cpp
+    serein/hooks/ghost.cpp
     serein/display/view_refresher.cpp
     serein/interface/main_menu.cpp
     serein/interface/main_menu_model.cpp

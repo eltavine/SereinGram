@@ -14,6 +14,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "base/unixtime.h"
 #include "data/data_peer_values.h"
 #include "apiwrap.h"
+#include "serein/hooks/ghost.h"
 
 namespace Api {
 namespace {
@@ -109,7 +110,9 @@ bool SendProgressManager::updated(const Key &key, bool doing) {
 }
 
 void SendProgressManager::send(const Key &key, int progress) {
-	if (skipRequest(key)) {
+	if (skipRequest(key)
+		|| (key.type != SendProgressType::Speaking
+			&& !Serein::Hooks::AllowTyping(_session))) {
 		return;
 	}
 	using Type = SendProgressType;

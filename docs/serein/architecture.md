@@ -97,7 +97,7 @@ namespace Serein::Hooks {
 | HIST 删除 | `data/data_session.cpp` 的 `processMessagesDeleted`、`processNonChannelMessagesDeleted` | `OnMessagesDeleted` |
 | HIST 编辑 | `history/history_item.cpp` 的 `applyEdition` | `OnBeforeEdition` |
 
-已读类请求被拦截时，上游本地状态仍需按“已读”推进，否则未读计数与重试逻辑会卡住；这一点在 GHOST 模块的实现与测试中单独验证。
+已接入：在线状态（`api/api_updates.cpp`）与输入状态（`api/api_send_progress.cpp`，群通话的“正在说话”不受影响），各为一行条件。已读类请求被拦截时，上游本地状态仍需按“已读”推进，否则未读计数与重试逻辑会卡住；这一点在 GHOST 模块的实现与测试中单独验证。
 
 现有 Nagram 内联挂钩（123 个上游源文件）按功能族改走门面。预算：迁移完成后上游源码文件 ≤ 90 个、新增行 ≤ 900 行（不含品牌与构建文件），由 `tools/serein/upstream_budget.py` 与上游合并基线比较并在 CI 报告。
 

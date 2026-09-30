@@ -12,13 +12,17 @@
     "Telegram/build/api_credentials.local.cmake.example",
     "BRANDING.md"
   ],
-  "own_include_prefixes": ["serein/"],
-  "hook_include_prefixes": ["serein/hooks/"],
+  "own_include_prefixes": [
+    "serein/"
+  ],
+  "hook_include_prefixes": [
+    "serein/hooks/"
+  ],
   "budget": {
-    "all_files": 190,
-    "all_added_lines": 1611,
-    "source_files": 123,
-    "source_added_lines": 1386,
+    "all_files": 192,
+    "all_added_lines": 1610,
+    "source_files": 125,
+    "source_added_lines": 1393,
     "direct_include_files": 87
   }
 }

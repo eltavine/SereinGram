@@ -430,3 +430,12 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_config_invalid" = "Invalid stored value";
 "lng_serein_config_diagnostic_report" = "SereinGram {version}\nConfiguration format: 1\nManaged settings: {amount}\nModified settings: {value}\nInvalid stored values: {error}\n\nThis report contains only version and counts.";
 "lng_serein_config_copy_report" = "Copy report";
+"lng_serein_ghost_mode" = "Ghost mode";
+"lng_serein_ghost_hide_read_receipts" = "Don't send read receipts";
+"lng_serein_ghost_hide_story_views" = "Don't mark stories as viewed";
+"lng_serein_ghost_hide_online" = "Don't send online status";
+"lng_serein_ghost_hide_typing" = "Don't send typing status";
+"lng_serein_ghost_hide_view_increments" = "Don't increase channel view counts";
+"lng_serein_ghost_mark_read_after_sending" = "Mark the chat read after sending";
+"lng_serein_ghost_use_scheduled_messages" = "Send through scheduled messages";
+"lng_serein_ghost_note" = "Applies to the current account only. Other devices and actions such as sending messages can still reveal your activity.";

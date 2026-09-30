@@ -1,5 +1,6 @@
 #include "serein/settings/privacy.h"
 
+#include "serein/features/ghost/model/policy.h"
 #include "serein/privacy/options.h"
 #include "serein/settings/home.h"
 #include "lang/lang_keys.h"
@@ -59,6 +60,28 @@ void AddToggle(
 	}
 }
 
+void AddAccountToggle(
+		SectionBuilder &builder,
+		const Option<bool> &option,
+		rpl::producer<QString> title,
+		QString id,
+		QStringList keywords) {
+	const auto session = builder.session();
+	const auto button = builder.addButton({
+		.id = std::move(id),
+		.title = std::move(title),
+		.st = &st::settingsButtonNoIcon,
+		.toggled = ForAccount(session).Value(option),
+		.keywords = std::move(keywords),
+	});
+	if (button) {
+		button->toggledChanges(
+		) | rpl::on_next([=](bool value) {
+			Expects(ForAccount(session).Set(option, value));
+		}, button->lifetime());
+	}
+}
+
 QString ProfileIdFormatLabel(int format) {
 	return (format == 1)
 		? tr::lng_serein_id_bot_api(tr::now)
@@ -103,6 +126,19 @@ const auto kMeta = BuildHelper({
 			session->saveSettingsDelayed();
 		}, button->lifetime());
 	}
+	AddAccountToggle(builder, Ghost::kGhostMode,
+		tr::lng_serein_ghost_mode(),
+		u"serein/privacy/ghost-mode"_q,
+		{ u"ghost"_q, u"online"_q, u"typing"_q });
+	AddAccountToggle(builder, Ghost::kGhostHideOnline,
+		tr::lng_serein_ghost_hide_online(),
+		u"serein/privacy/ghost-hide-online"_q,
+		{ u"ghost"_q, u"online"_q });
+	AddAccountToggle(builder, Ghost::kGhostHideTyping,
+		tr::lng_serein_ghost_hide_typing(),
+		u"serein/privacy/ghost-hide-typing"_q,
+		{ u"ghost"_q, u"typing"_q });
+	builder.addDividerText(tr::lng_serein_ghost_note());
 	AddToggle(builder, Privacy::kDemoMode,
 		tr::lng_serein_demo_mode(),
 		u"serein/privacy/demo-mode"_q,

@@ -39,6 +39,16 @@
       "app": false,
       "libraries": true
     },
+    "serein/hooks/": {
+      "own": [
+        "serein/hooks/",
+        "serein/features/",
+        "serein/core/",
+        "serein/schema/"
+      ],
+      "app": false,
+      "libraries": true
+    },
     "serein/tests/": {
       "own": [
         "serein/"
