@@ -34,4 +34,9 @@ message PrivacySettings {
   optional bool hide_create_todo = 7 [(serein.options.v1.field) = {
     keywords: ["todo", "list"]
   }];
+  // Forwarding stays blocked because Telegram rejects it server-side.
+  optional bool save_protected_content = 8 [(serein.options.v1.field) = {
+    keywords: ["protected", "save", "copy", "noforwards"]
+    note: "lng_serein_save_protected_content_note"
+  }];
 }

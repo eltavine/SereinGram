@@ -10,7 +10,7 @@
 
 namespace Serein::Privacy {
 
-inline const auto kToggleRows = std::array<ToggleRow, 6>{ {
+inline const auto kToggleRows = std::array<ToggleRow, 7>{ {
 	{
 		&kDemoMode,
 		tr::lng_serein_demo_mode,
@@ -47,6 +47,12 @@ inline const auto kToggleRows = std::array<ToggleRow, 6>{ {
 		u"serein/privacy/hide-create-todo"_q,
 		{ u"todo"_q, u"list"_q },
 	},
+	{
+		&kSaveProtectedContent,
+		tr::lng_serein_save_protected_content,
+		u"serein/privacy/save-protected-content"_q,
+		{ u"protected"_q, u"save"_q, u"copy"_q, u"noforwards"_q },
+	},
 } };
 
 struct CustomRows {
@@ -64,6 +70,8 @@ inline void AddLayout(
 	AddToggle(builder, kToggleRows[3]);
 	AddToggle(builder, kToggleRows[4]);
 	AddToggle(builder, kToggleRows[5]);
+	AddToggle(builder, kToggleRows[6]);
+	AddNote(builder, tr::lng_serein_save_protected_content_note);
 }
 
 } // namespace Serein::Privacy

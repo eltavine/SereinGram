@@ -7,6 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/history_inner_widget.h"
 #include "serein/hooks/messages/reactions.h"
+#include "serein/hooks/gen/privacy.h"
 #include "serein/menu/actions.h"
 #include "serein/hooks/menu/selection.h"
 
@@ -3971,7 +3972,8 @@ void HistoryInner::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 }
 
 bool HistoryInner::hasCopyRestriction(HistoryItem *item) const {
-	return !_peer->allowsForwarding() || (item && item->forbidsForward());
+	return !Serein::Hooks::Privacy::SaveProtectedContent()
+		&& (!_peer->allowsForwarding() || (item && item->forbidsForward()));
 }
 
 bool HistoryInner::hasCopyMediaRestriction(
@@ -4004,7 +4006,9 @@ bool HistoryInner::showCopyMediaRestriction(not_null<HistoryItem*> item) {
 }
 
 bool HistoryInner::hasCopyRestrictionForSelected() const {
-	if (hasCopyRestriction()) {
+	if (Serein::Hooks::Privacy::SaveProtectedContent()) {
+		return false;
+	} else if (hasCopyRestriction()) {
 		return true;
 	}
 	for (const auto &item : _selected) {

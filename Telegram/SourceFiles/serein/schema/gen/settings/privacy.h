@@ -58,6 +58,13 @@ inline constexpr auto kHideCreateTodo = Option<bool>{
 	Category::Privacy,
 	"lng_serein_hide_create_todo",
 	0 };
+inline constexpr auto kSaveProtectedContent = Option<bool>{
+	"serein.saveProtectedContent",
+	Scope::Device,
+	false,
+	Category::Privacy,
+	"lng_serein_save_protected_content",
+	0 };
 
 inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kDemoMode));
@@ -67,6 +74,7 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kShowProfileDc));
 	Expects(registry.Add(kHideProfileGifts));
 	Expects(registry.Add(kHideCreateTodo));
+	Expects(registry.Add(kSaveProtectedContent));
 }
 
 } // namespace Serein::Privacy

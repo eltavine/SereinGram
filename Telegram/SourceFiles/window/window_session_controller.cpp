@@ -7,6 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "window/window_session_controller.h"
 #include "serein/hooks/chats/startup_folder.h"
+#include "serein/hooks/gen/privacy.h"
 #include "serein/hooks/chats/sort.h"
 
 #include "apiwrap.h"
@@ -146,6 +147,7 @@ base::options::toggle OptionExternalMediaViewer({
 
 [[nodiscard]] bool HasSavingRestriction(HistoryItem *item) {
 	return item
+		&& !Serein::Hooks::Privacy::SaveProtectedContent()
 		&& (item->forbidsSaving()
 			|| !item->history()->peer->allowsForwarding());
 }

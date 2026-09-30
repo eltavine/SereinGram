@@ -109,6 +109,8 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_profile_dc" = "Data center";
 "lng_serein_hide_profile_gifts" = "Hide profile gifts";
 "lng_serein_hide_create_todo" = "Hide Create To-Do List";
+"lng_serein_save_protected_content" = "Allow saving protected content";
+"lng_serein_save_protected_content_note" = "Lets you copy text, save media and take screenshots in chats that restrict saving. Forwarding stays blocked by Telegram.";
 "lng_serein_time_and_info" = "Time and info";
 "lng_serein_seconds_in_messages" = "Show seconds in message times";
 "lng_serein_show_forwarded_message_date" = "Show original time on forwarded messages";

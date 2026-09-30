@@ -81,6 +81,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "platform/platform_notifications_manager.h"
 #include "spellcheck/spellcheck_highlight_syntax.h"
 #include "serein/hooks/history.h"
+#include "serein/hooks/gen/privacy.h"
 #include "styles/style_dialogs.h"
 
 namespace {
@@ -3310,7 +3311,7 @@ bool HistoryItem::forbidsForward() const {
 }
 
 bool HistoryItem::forbidsSaving() const {
-	if (forbidsForward()) {
+	if (forbidsForward() && !Serein::Hooks::Privacy::SaveProtectedContent()) {
 		return true;
 	} else if (_media && _media->ttlSeconds()) {
 		return true;

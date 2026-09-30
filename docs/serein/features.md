@@ -113,7 +113,7 @@ SG-HIST-05 的“已编辑”标记文字已由 C09 实现，删除标记随 SG-
 | SG-PRIV-05 | 默认隐藏赞助消息与代理赞助频道（B10、B11） | Ad Ni | Implemented | P1 |
 | SG-PRIV-06 | 隐藏已读时间提示与分享手机号提示（G03、G04） | Ni | Implemented | P2 |
 | SG-PRIV-07 | 本地 Premium 外观，仅本地显示，不伪造服务端权益 | Ad Aa | Planned | P3 |
-| SG-PRIV-08 | 受保护内容的本地复制与保存 | Ad Na | Planned | P2 |
+| SG-PRIV-08 | 受保护内容的本地复制与保存（复制文字、保存媒体与截图已放开，转发仍由服务端拒绝；受保护的动态待做） | Ad Na | In Progress | P2 |
 | SG-PRIV-09 | 设置锁与本地账号隐藏 | Ni | Planned | P3 |
 | SG-PRIV-10 | 检测到录屏软件时自动开启主播模式 | Ad | Planned | P3 |
 

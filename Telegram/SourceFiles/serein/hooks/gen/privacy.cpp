@@ -62,4 +62,12 @@ rpl::producer<bool> HideCreateTodoValue() {
 	return ForDevice().Value(Serein::Privacy::kHideCreateTodo);
 }
 
+bool SaveProtectedContent() {
+	return ForDevice().Get(Serein::Privacy::kSaveProtectedContent);
+}
+
+rpl::producer<bool> SaveProtectedContentValue() {
+	return ForDevice().Value(Serein::Privacy::kSaveProtectedContent);
+}
+
 } // namespace Serein::Hooks::Privacy

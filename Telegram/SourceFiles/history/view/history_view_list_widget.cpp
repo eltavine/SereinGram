@@ -7,6 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/history_view_list_widget.h"
 #include "serein/hooks/messages/reactions.h"
+#include "serein/hooks/gen/privacy.h"
 
 #include "history/view/history_view_about_view.h"
 #include "base/unixtime.h"
@@ -2187,7 +2188,9 @@ bool ListWidget::showCopyMediaRestriction(not_null<HistoryItem*> item) {
 }
 
 bool ListWidget::hasCopyRestrictionForSelected() const {
-	if (hasCopyRestriction()) {
+	if (Serein::Hooks::Privacy::SaveProtectedContent()) {
+		return false;
+	} else if (hasCopyRestriction()) {
 		return true;
 	}
 	if (_selected.empty()) {
@@ -6769,7 +6772,8 @@ void ConfirmSendNowSelectedItems(not_null<ListWidget*> widget) {
 CopyRestrictionType CopyRestrictionTypeFor(
 		not_null<PeerData*> peer,
 		HistoryItem *item) {
-	return (peer->allowsForwarding() && (!item || !item->forbidsForward()))
+	return (Serein::Hooks::Privacy::SaveProtectedContent()
+			|| (peer->allowsForwarding() && (!item || !item->forbidsForward())))
 		? CopyRestrictionType::None
 		: peer->isUser()
 		? CopyRestrictionType::User

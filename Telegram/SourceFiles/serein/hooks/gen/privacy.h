@@ -19,5 +19,7 @@ namespace Serein::Hooks::Privacy {
 [[nodiscard]] rpl::producer<bool> HideProfileGiftsValue();
 [[nodiscard]] bool HideCreateTodo();
 [[nodiscard]] rpl::producer<bool> HideCreateTodoValue();
+[[nodiscard]] bool SaveProtectedContent();
+[[nodiscard]] rpl::producer<bool> SaveProtectedContentValue();
 
 } // namespace Serein::Hooks::Privacy

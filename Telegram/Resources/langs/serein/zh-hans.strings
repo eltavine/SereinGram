@@ -105,6 +105,8 @@
 "lng_serein_profile_dc" = "数据中心";
 "lng_serein_hide_profile_gifts" = "隐藏资料页礼物";
 "lng_serein_hide_create_todo" = "隐藏创建待办清单入口";
+"lng_serein_save_protected_content" = "允许保存受保护内容";
+"lng_serein_save_protected_content_note" = "在限制保存内容的聊天中也可以复制文字、保存媒体和截图。转发仍会被 Telegram 拒绝。";
 "lng_serein_time_and_info" = "时间与信息";
 "lng_serein_seconds_in_messages" = "时间显示秒";
 "lng_serein_show_forwarded_message_date" = "转发消息显示原始发送时间";

@@ -7,6 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "media/view/media_view_overlay_widget.h"
 #include "serein/hooks/gen/media.h"
+#include "serein/hooks/gen/privacy.h"
 
 #include "apiwrap.h"
 #include "api/api_attached_stickers.h"
@@ -1449,7 +1450,8 @@ bool OverlayWidget::hasCopyMediaRestriction(bool skipPremiumCheck) const {
 			? !story->canDownloadIfPremium()
 			: !story->canDownloadChecked();
 	}
-	return (_history && !_history->peer->allowsForwarding())
+	return (_history && !_history->peer->allowsForwarding()
+			&& !Serein::Hooks::Privacy::SaveProtectedContent())
 		|| (_message && _message->forbidsSaving());
 }
 
@@ -6080,7 +6082,8 @@ bool OverlayWidget::contentNeedsScreenshotProtection() const {
 	if (const auto story = _stories ? _stories->story() : nullptr) {
 		return story->forbidsForward();
 	}
-	return (_history && !_history->peer->allowsForwarding())
+	return (_history && !_history->peer->allowsForwarding()
+			&& !Serein::Hooks::Privacy::SaveProtectedContent())
 		|| (_message && _message->forbidsSaving());
 }
 
