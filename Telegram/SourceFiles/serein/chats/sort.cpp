@@ -118,7 +118,7 @@ void RefreshSorting(gsl::not_null<Main::Session*> session) {
 	for (const auto &filter : session->data().chatsFilters().list()) {
 		collect(session->data().chatsFilters().chatsList(filter.id()));
 	}
-	for (const auto entry : entries) {
+	for (const auto &entry : entries) {
 		entry->updateChatListSortPosition();
 	}
 }

@@ -124,7 +124,7 @@ HistoryView::ListWidget *FindMessageList(MsgId messageId) {
 	if (!item) {
 		return nullptr;
 	}
-	for (const auto list : Test::FindVisible<HistoryView::ListWidget>(
+	for (const auto &list : Test::FindVisible<HistoryView::ListWidget>(
 			controller->widget())) {
 		const auto view = list->viewByPosition(item->position());
 		if (view && view->data() == item && view->delegate() == list) {
@@ -144,7 +144,7 @@ HistoryInner *FindMessageInner(MsgId messageId) {
 	if (!item) {
 		return nullptr;
 	}
-	for (const auto inner : Test::FindVisible<HistoryInner>(
+	for (const auto &inner : Test::FindVisible<HistoryInner>(
 			controller->widget())) {
 		if (const auto view = inner->viewByItem(item)) {
 			if (view->data() == item) {
@@ -185,14 +185,14 @@ QString MessageViewDetails(MsgId messageId) {
 	const auto legacy = Test::FindVisible<HistoryInner>(controller->widget());
 	auto result = u"item=%1 lists=%2 legacy=%3"_q
 		.arg(item ? 1 : 0).arg(lists.size()).arg(legacy.size());
-	for (const auto list : lists) {
+	for (const auto &list : lists) {
 		const auto view = item ? list->viewByPosition(item->position()) : nullptr;
 		result += u" listVisible=%1 view=%2 height=%3 point=%4"_q
 			.arg(list->isVisible()).arg(view ? 1 : 0)
 			.arg(view ? view->height() : 0)
 			.arg(MessagePointList(list, messageId).has_value() ? 1 : 0);
 	}
-	for (const auto inner : legacy) {
+	for (const auto &inner : legacy) {
 		const auto view = item ? inner->viewByItem(item) : nullptr;
 		result += u" innerView=%1 top=%2 point=%3"_q
 			.arg(view ? 1 : 0).arg(view ? inner->itemTop(view) : -1)
@@ -257,7 +257,7 @@ Ui::PopupMenu *VisibleMenu() {
 }
 
 void LogMenu(not_null<Ui::PopupMenu*> menu, const QString &kind) {
-	for (const auto action : menu->actions()) {
+	for (const auto &action : menu->actions()) {
 		const auto marker = action->property("sereinMenuActionId");
 		Test::Note(u"SEREIN_MENU kind=%1 id=%2 text=%3 separator=%4"_q.arg(
 			kind,
@@ -435,7 +435,7 @@ void AppendMenuScenario(not_null<Test::Runner*> runner) {
 			if (const auto controller = Controller()) {
 				const auto fields = Test::FindVisible<Ui::InputField>(
 					controller->widget());
-				for (const auto field : fields) {
+				for (const auto &field : fields) {
 					if (field->isEnabled() && (!state->field
 						|| field->mapToGlobal(field->rect().bottomLeft()).y()
 							> state->field->mapToGlobal(

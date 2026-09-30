@@ -275,7 +275,7 @@ std::variant<QImage, QString> Render(
 		}
 		const auto item = controller->session().data().message(id);
 		if (const auto group = controller->session().data().groups().find(item)) {
-			for (const auto part : group->items) {
+			for (const auto &part : group->items) {
 				if (!ranges::contains(ids, part->fullId())) {
 					return tr::lng_serein_snapshot_album(tr::now);
 				}
@@ -360,7 +360,7 @@ void InsertAction(
 		if (const auto source = controller->session().data().message(ids.front())) {
 			if (const auto group = controller->session().data().groups().find(source)) {
 				ids.clear();
-				for (const auto part : group->items) {
+				for (const auto &part : group->items) {
 					ids.push_back(part->fullId());
 				}
 			}
