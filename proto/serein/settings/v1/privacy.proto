@@ -34,6 +34,10 @@ message PrivacySettings {
   optional bool show_profile_dc = 5 [(serein.options.v1.field) = {
     keywords: ["profile", "DC"]
   }];
+  optional bool show_registration_date = 9 [(serein.options.v1.field) = {
+    keywords: ["profile", "registration", "account age"]
+    note: "lng_serein_registration_date_note"
+  }];
   optional bool hide_profile_gifts = 6 [(serein.options.v1.field) = {
     keywords: ["profile", "gifts"]
   }];

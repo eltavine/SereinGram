@@ -287,7 +287,7 @@ void TestOptions() {
 		Flag::RefreshMessageView), "video autoplay refresh flag");
 	auto privacy = Registry();
 	Privacy::RegisterOptions(privacy);
-	Require(privacy.All().size() == 8, "privacy option count");
+	Require(privacy.All().size() == 9, "privacy option count");
 	Require(!Privacy::kSaveProtectedContent.fallback
 		&& privacy.HasFlag(Privacy::kSaveProtectedContent.key, Flag::Exportable),
 		"protected content saving must be an exportable opt-in");

@@ -104,6 +104,11 @@
 "lng_serein_profile_id" = "ID";
 "lng_serein_show_profile_dc" = "在资料页显示数据中心";
 "lng_serein_profile_dc" = "数据中心";
+"lng_serein_show_registration_date" = "显示估算的注册时间";
+"lng_serein_registration_date_note" = "根据用户 ID 在 WizardLoop/CreationDate（MIT）公开数据点之间插值估算，可能相差数月。";
+"lng_serein_profile_registered" = "注册于";
+"lng_serein_profile_registered_about" = "约 {date}";
+"lng_serein_profile_registered_after" = "晚于 {date}";
 "lng_serein_hide_profile_gifts" = "隐藏资料页礼物";
 "lng_serein_hide_create_todo" = "隐藏创建待办清单入口";
 "lng_serein_save_protected_content" = "允许保存受保护内容";

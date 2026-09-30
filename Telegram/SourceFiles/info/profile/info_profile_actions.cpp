@@ -1879,10 +1879,11 @@ Section DetailsFiller::makeInfo() {
 		}
 	}
 	if (!_topic) {
-		addInfoOneLine(tr::lng_serein_profile_id(),
-			Serein::Privacy::ProfileIdValue(_peer), QString());
-		addInfoOneLine(tr::lng_serein_profile_dc(),
-			Serein::Privacy::ProfileDcValue(_peer), QString());
+		Serein::Privacy::FillProfileRows(_peer, [&](
+				rpl::producer<QString> label,
+				rpl::producer<TextWithEntities> value) {
+			addInfoOneLine(std::move(label), std::move(value), QString());
+		});
 	}
 	raw->toggleOn(tracker.atLeastOneShownValue());
 	raw->finishAnimating();

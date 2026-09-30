@@ -12,6 +12,7 @@ set(serein_test_sources
     serein/tests/test_aliases.cpp
     serein/tests/test_sticker_catalog.cpp
     serein/tests/test_snapshot_config.cpp
+    serein/tests/test_regdate.cpp
     serein/tests/test_filters.cpp
     serein/tests/test_links.cpp
     serein/tests/test_codec.cpp
@@ -21,6 +22,7 @@ set(serein_test_sources
     serein/features/ghost/model/policy.cpp
     serein/features/history/model/recorder.cpp
     serein/features/updates/model/release.cpp
+    serein/features/regdate/model/estimate.cpp
     serein/schema/codec.cpp
     serein/chats/validators.cpp
     serein/chats/recent.cpp

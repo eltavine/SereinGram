@@ -18,6 +18,7 @@ void TestChinese();
 void TestAliases();
 void TestStickerCatalog();
 void TestSnapshotConfig();
+void TestRegistrationDate();
 void TestFilters();
 void TestLinks();
 void TestCodec();
@@ -111,6 +112,7 @@ int main() {
 		TestAliases();
 		TestStickerCatalog();
 		TestSnapshotConfig();
+		TestRegistrationDate();
 		TestFilters();
 		TestLinks();
 		TestCodec();

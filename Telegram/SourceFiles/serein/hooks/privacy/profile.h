@@ -1,6 +1,8 @@
 #pragma once
 
+#include "base/basic_types.h"
 #include "ui/text/text_entity.h"
+
 #include <gsl/pointers>
 #include <rpl/rpl.h>
 
@@ -8,9 +10,10 @@ class PeerData;
 
 namespace Serein::Privacy {
 
-[[nodiscard]] rpl::producer<TextWithEntities> ProfileIdValue(
-	not_null<PeerData*> peer);
-[[nodiscard]] rpl::producer<TextWithEntities> ProfileDcValue(
-	not_null<PeerData*> peer);
+using ProfileRow = Fn<void(
+	rpl::producer<QString> label,
+	rpl::producer<TextWithEntities> value)>;
+
+void FillProfileRows(not_null<PeerData*> peer, const ProfileRow &add);
 
 } // namespace Serein::Privacy

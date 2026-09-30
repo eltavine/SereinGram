@@ -15,6 +15,8 @@ namespace Serein::Hooks::Privacy {
 [[nodiscard]] rpl::producer<int> ProfileIdFormatValue();
 [[nodiscard]] bool ShowProfileDc();
 [[nodiscard]] rpl::producer<bool> ShowProfileDcValue();
+[[nodiscard]] bool ShowRegistrationDate();
+[[nodiscard]] rpl::producer<bool> ShowRegistrationDateValue();
 [[nodiscard]] bool HideProfileGifts();
 [[nodiscard]] rpl::producer<bool> HideProfileGiftsValue();
 [[nodiscard]] bool HideCreateTodo();

@@ -44,6 +44,13 @@ inline constexpr auto kShowProfileDc = Option<bool>{
 	Category::Privacy,
 	"lng_serein_show_profile_dc",
 	0 };
+inline constexpr auto kShowRegistrationDate = Option<bool>{
+	"serein.showRegistrationDate",
+	Scope::Device,
+	false,
+	Category::Privacy,
+	"lng_serein_show_registration_date",
+	0 };
 inline constexpr auto kHideProfileGifts = Option<bool>{
 	"serein.hideProfileGifts",
 	Scope::Device,
@@ -72,6 +79,7 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kHideSharePhonePrompt));
 	Expects(registry.Add(kProfileIdFormat));
 	Expects(registry.Add(kShowProfileDc));
+	Expects(registry.Add(kShowRegistrationDate));
 	Expects(registry.Add(kHideProfileGifts));
 	Expects(registry.Add(kHideCreateTodo));
 	Expects(registry.Add(kSaveProtectedContent));

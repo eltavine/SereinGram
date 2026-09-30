@@ -46,6 +46,14 @@ rpl::producer<bool> ShowProfileDcValue() {
 	return ForDevice().Value(Serein::Privacy::kShowProfileDc);
 }
 
+bool ShowRegistrationDate() {
+	return ForDevice().Get(Serein::Privacy::kShowRegistrationDate);
+}
+
+rpl::producer<bool> ShowRegistrationDateValue() {
+	return ForDevice().Value(Serein::Privacy::kShowRegistrationDate);
+}
+
 bool HideProfileGifts() {
 	return ForDevice().Get(Serein::Privacy::kHideProfileGifts);
 }

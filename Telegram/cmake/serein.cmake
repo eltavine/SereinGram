@@ -16,6 +16,7 @@ set(serein_sources
     serein/features/history/deleted_marks.cpp
     serein/features/history/model/recorder.cpp
     serein/features/updates/model/release.cpp
+    serein/features/regdate/model/estimate.cpp
     serein/adapters/openssl/aes_gcm_cipher.cpp
     serein/hooks/ghost.cpp
     serein/app/ghost_read.cpp
@@ -221,6 +222,7 @@ if (DESKTOP_APP_TEST_APPS)
     target_compile_definitions(test_serein PRIVATE
         SEREIN_LANG_SOURCE_DIR="${res_loc}/langs"
         SEREIN_OPENCC_DICTIONARY_DIR="${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/OpenCC/data/dictionary"
+        SEREIN_REGDATE_POINTS="${res_loc}/serein/regdate_points.json"
     )
 
     set_target_properties(test_serein PROPERTIES

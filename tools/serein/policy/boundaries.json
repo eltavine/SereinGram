@@ -63,6 +63,13 @@
       "app": false,
       "libraries": true
     },
+    "serein/features/regdate/model/": {
+      "own": [
+        "serein/features/regdate/model/"
+      ],
+      "app": false,
+      "libraries": true
+    },
     "serein/hooks/": {
       "own": [
         "serein/hooks/",

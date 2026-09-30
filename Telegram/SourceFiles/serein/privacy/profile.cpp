@@ -1,16 +1,23 @@
 #include "serein/hooks/privacy/profile.h"
 
+#include "serein/features/regdate/model/estimate.h"
 #include "serein/privacy/options.h"
 #include "serein/privacy/peer_id.h"
 #include "data/data_changes.h"
 #include "data/data_peer.h"
 #include "data/data_session.h"
+#include "data/data_user.h"
+#include "lang/lang_keys.h"
 #include "main/main_session.h"
 #include "ui/image/image_location.h"
 
-namespace Serein::Privacy {
+#include <QtCore/QFile>
 
-rpl::producer<TextWithEntities> ProfileIdValue(not_null<PeerData*> peer) {
+namespace Serein::Privacy {
+namespace {
+
+[[nodiscard]] rpl::producer<TextWithEntities> IdValue(
+		not_null<PeerData*> peer) {
 	return ForDevice().Value(kProfileIdFormat) | rpl::map([=](int format) {
 		if (!format) {
 			return TextWithEntities();
@@ -19,7 +26,8 @@ rpl::producer<TextWithEntities> ProfileIdValue(not_null<PeerData*> peer) {
 	});
 }
 
-rpl::producer<TextWithEntities> ProfileDcValue(not_null<PeerData*> peer) {
+[[nodiscard]] rpl::producer<TextWithEntities> DcValue(
+		not_null<PeerData*> peer) {
 	return rpl::combine(
 		ForDevice().Value(kShowProfileDc),
 		peer->session().changes().peerFlagsValue(
@@ -35,6 +43,45 @@ rpl::producer<TextWithEntities> ProfileDcValue(not_null<PeerData*> peer) {
 			? TextWithEntities{ QString::number(file->dcId()) }
 			: TextWithEntities();
 	});
+}
+
+[[nodiscard]] const std::vector<RegistrationDate::Point> &Points() {
+	static const auto result = [] {
+		auto file = QFile(u":/serein/regdate_points.json"_q);
+		return file.open(QIODevice::ReadOnly)
+			? RegistrationDate::ParsePoints(file.readAll())
+			: std::vector<RegistrationDate::Point>();
+	}();
+	return result;
+}
+
+[[nodiscard]] rpl::producer<TextWithEntities> RegistrationValue(
+		not_null<PeerData*> peer) {
+	const auto user = peer->asUser();
+	return ForDevice().Value(kShowRegistrationDate) | rpl::map([=](bool show) {
+		const auto estimate = (show && user)
+			? RegistrationDate::EstimateFor(
+				Points(),
+				peerToUser(user->id).bare)
+			: std::nullopt;
+		if (!estimate) {
+			return TextWithEntities();
+		}
+		const auto when = langMonthOfYearFull(
+			estimate->date.month(),
+			estimate->date.year());
+		return TextWithEntities{ estimate->lowerBound
+			? tr::lng_serein_profile_registered_after(tr::now, lt_date, when)
+			: tr::lng_serein_profile_registered_about(tr::now, lt_date, when) };
+	});
+}
+
+} // namespace
+
+void FillProfileRows(not_null<PeerData*> peer, const ProfileRow &add) {
+	add(tr::lng_serein_profile_id(), IdValue(peer));
+	add(tr::lng_serein_profile_dc(), DcValue(peer));
+	add(tr::lng_serein_profile_registered(), RegistrationValue(peer));
 }
 
 } // namespace Serein::Privacy
