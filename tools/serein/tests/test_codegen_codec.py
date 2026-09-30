@@ -28,6 +28,20 @@ def one_file(*args, **kwargs):
     return codec_model.build_files(image(*args, **kwargs))[0]
 
 
+def map_message(value_type="TYPE_STRING", key_type="TYPE_STRING", rules=None,
+                nested_extra=None):
+    entry = {"name": "StatesEntry", "options": {"mapEntry": True}, "field": [
+        {"name": "key", "number": 1, "type": key_type, "jsonName": "key"},
+        {"name": "value", "number": 2, "type": value_type, "jsonName": "value"},
+    ]}
+    states = field("states", "states", "TYPE_MESSAGE", label="LABEL_REPEATED",
+                   typeName=".serein.history.v1.Record.StatesEntry")
+    if rules:
+        states["options"] = {RULES_EXTENSION: rules}
+    return {"name": "Record", "field": [states],
+            "nestedType": [entry] + list(nested_extra or [])}
+
+
 class CodecModelTest(unittest.TestCase):
     def test_enum_values_drop_the_prefix(self):
         enum = {"name": "RecordKind", "value": [
@@ -63,6 +77,28 @@ class CodecModelTest(unittest.TestCase):
         self.assertIn("qsizetype(value.names.size()) <= 4", checks)
         self.assertIn("Codec::Unique(value.names)", checks)
         self.assertIn("item.toUcs4().size() <= 8", checks)
+
+    def test_map_fields(self):
+        built = one_file([map_message(rules={"map": {
+            "maxPairs": 8,
+            "keys": {"string": {"pattern": "^E[0-9]{2}$"}},
+            "values": {"string": {"in": ["show", "hide"]}},
+        }})]).messages[0]
+        self.assertEqual(built.fields[0].cpp_type, "std::map<QString, QString>")
+        checks = "\n".join(built.checks)
+        self.assertIn("qsizetype(value.states.size()) <= 8", checks)
+        self.assertIn("for (const auto &[key, item] : value.states) {", checks)
+        self.assertIn('Codec::Matches(key, QString::fromUtf8("^E[0-9]{2}$"))', checks)
+        self.assertIn('item == QString::fromUtf8("show")', checks)
+        self.assertIn("Codec::Entry(Codec::Child(path", checks)
+
+    def test_map_keys_must_be_strings(self):
+        with self.assertRaisesRegex(SchemaError, "map keys must be strings"):
+            one_file([map_message(key_type="TYPE_INT32")])
+
+    def test_other_nested_types_are_rejected(self):
+        with self.assertRaisesRegex(SchemaError, "nested types"):
+            one_file([map_message(nested_extra=[{"name": "Inner"}])])
 
     def test_string_in_lists(self):
         message = {"name": "Record", "field": [field("action", "action", options={

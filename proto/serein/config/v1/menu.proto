@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package serein.config.v1;
+
+import "buf/validate/validate.proto";
+import "serein/options/v1/options.proto";
+
+option (serein.options.v1.file) = {cpp_namespace: "Menu"};
+
+// Visibility overrides for message menu actions, keyed E01, E02 and so on.
+message MenuConfig {
+  option (serein.options.v1.document) = {
+    version: 2
+    validator: "ValidMenuConfig"
+  };
+  option (serein.options.v1.codec) = {require_fields: true};
+
+  map<string, string> states = 1 [(buf.validate.field).map = {
+    values: {
+      string: {
+        in: ["show", "hide", "option"]
+      }
+    }
+  }];
+}

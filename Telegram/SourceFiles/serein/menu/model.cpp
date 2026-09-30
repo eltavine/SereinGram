@@ -1,7 +1,12 @@
 #include "serein/menu/model.h"
 
+#include "serein/schema/gen/config/menu.h"
+#include "base/basic_types.h"
+
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
+
+#include <algorithm>
 
 namespace Serein::Menu {
 namespace {
@@ -36,35 +41,26 @@ Visibility DefaultVisibility(ActionId id) {
 		? Visibility::Hide : Visibility::Show;
 }
 
+bool ValidMenuConfig(const MenuConfig &value) {
+	return std::all_of(value.states.begin(), value.states.end(), [](
+			const auto &entry) {
+		return KnownKey(entry.first);
+	});
+}
+
 bool ValidateConfig(const QByteArray &raw) {
 	if (raw.isEmpty()) {
 		return true;
 	}
-	auto error = QJsonParseError();
-	const auto document = QJsonDocument::fromJson(raw, &error);
-	if (error.error != QJsonParseError::NoError || !document.isObject()) {
+	auto root = QJsonDocument::fromJson(raw).object();
+	if (root.value(u"version"_q) != QJsonValue(1)) {
+		return ParseMenuConfig(raw).has_value();
+	} else if (root.value(u"states"_q).toObject().contains(u"E22"_q)) {
 		return false;
 	}
-	const auto root = document.object();
-	const auto version = root.value("version").toInt();
-	if (root.size() != 2 || !root.value("version").isDouble()
-		|| (version != 1 && version != 2)
-		|| !root.value("states").isObject()) {
-		return false;
-	}
-	const auto states = root.value("states").toObject();
-	for (auto it = states.begin(); it != states.end(); ++it) {
-		if (!KnownKey(it.key()) || (version == 1 && it.key() == u"E22")
-			|| !it.value().isString()) {
-			return false;
-		}
-		const auto value = it.value().toString();
-		if (value != u"show" && value != u"hide"
-			&& value != u"option") {
-			return false;
-		}
-	}
-	return true;
+	root.insert(u"version"_q, 2);
+	return ParseMenuConfig(
+		QJsonDocument(root).toJson(QJsonDocument::Compact)).has_value();
 }
 
 Visibility ReadVisibility(const QByteArray &raw, ActionId id) {

@@ -189,4 +189,8 @@ QString Item(const QString &path, qsizetype index) {
 	return path + u'[' + QString::number(index) + u']';
 }
 
+QString Entry(const QString &path, const QString &key) {
+	return path + u"[\""_q + key + u"\"]"_q;
+}
+
 } // namespace Serein::Codec

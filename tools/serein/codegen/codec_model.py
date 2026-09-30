@@ -180,9 +180,67 @@ def field_checks(item, member, key, kind, repeated, optional, message_type, wher
     return lines
 
 
-def build_field(item, local_types, where):
+def map_checks(item, member, value_kind, value_message, where):
+    rules = item.get("options", {}).get(RULES_EXTENSION, {})
+    unknown = set(rules) - {"map"}
+    if unknown:
+        raise SchemaError(f"{where}: unsupported map rules {sorted(unknown)}")
+    map_rules = rules.get("map", {})
+    path = f"Codec::Child(path, {quoted_key(item['jsonName'])})"
+    lines = []
+    for name, value in map_rules.items():
+        if name in ("minPairs", "maxPairs"):
+            sign = ">=" if name == "minPairs" else "<="
+            condition = f"qsizetype(value.{member}.size()) {sign} {int(value)}"
+            lines += [f"\tif (!({condition})) {{", fail_line(path, "\t"), "\t}"]
+        elif name not in ("keys", "values"):
+            raise SchemaError(f"{where}: unsupported map rule '{name}'")
+    keys = map_rules.get("keys", {})
+    values = map_rules.get("values", {})
+    key_conditions = scalar_conditions("string", keys, "key", where) if keys else []
+    value_conditions = (scalar_conditions(value_kind, values, "item", where)
+                        if value_kind and values else [])
+    if key_conditions or value_conditions or value_message:
+        lines.append(f"\tfor (const auto &[key, item] : value.{member}) {{")
+        entry_path = f"Codec::Entry({path}, key)"
+        for conditions in (key_conditions, value_conditions):
+            if conditions:
+                lines += [f"\t\tif (!({' && '.join(conditions)})) {{",
+                          fail_line(entry_path, "\t\t"), "\t\t}"]
+        if value_message:
+            lines += [f"\t\tif (!Validate(item, error, {entry_path})) {{",
+                      "\t\t\treturn false;", "\t\t}"]
+        lines.append("\t}")
+    return lines
+
+
+def value_type(item, local_types, where):
+    if item["type"] in SCALARS:
+        return SCALARS[item["type"]][0], RULE_FAMILY.get(item["type"]), None
+    if item["type"] in ("TYPE_ENUM", "TYPE_MESSAGE"):
+        if item["typeName"] not in local_types:
+            raise SchemaError(f"{where}: {item['typeName']} must be declared in the same file")
+        name = item["typeName"].rsplit(".", 1)[-1]
+        message = name if item["type"] == "TYPE_MESSAGE" else None
+        return name, RULE_FAMILY.get(item["type"]), message
+    raise SchemaError(f"{where}: unsupported type {item['type']}")
+
+
+def build_map_field(item, entry, local_types, where):
+    key, value = sorted(entry["field"], key=lambda field: field["number"])
+    if key["type"] != "TYPE_STRING":
+        raise SchemaError(f"{where}: map keys must be strings")
+    cpp, kind, message = value_type(value, local_types, where)
+    member = item["jsonName"]
+    checks = map_checks(item, member, kind, message, where)
+    return Field(member, item["jsonName"], f"std::map<QString, {cpp}>", "", checks), message
+
+
+def build_field(item, local_types, where, map_entries=None):
     if item.get("type") == "TYPE_GROUP" or "oneofIndex" in item and not item.get("proto3Optional"):
         raise SchemaError(f"{where}: oneofs are not supported")
+    if map_entries and item.get("typeName") in map_entries:
+        return build_map_field(item, map_entries[item["typeName"]], local_types, where)
     repeated = item.get("label") == "LABEL_REPEATED"
     optional = bool(item.get("proto3Optional"))
     kind = RULE_FAMILY.get(item["type"])
@@ -238,16 +296,22 @@ def build_file(file):
     enums = [build_enum(enum) for enum in file.get("enumType", [])]
     for enum in enums:
         local_types[f"{package}.{enum.name}"] = enum.values[0].cpp
+    map_entries = {}
     for message in file.get("messageType", []):
-        if message.get("nestedType") or message.get("enumType"):
+        nested = message.get("nestedType", [])
+        if message.get("enumType") or any(
+                not entry.get("options", {}).get("mapEntry") for entry in nested):
             raise SchemaError(f"{source}:{message['name']}: nested types are not supported")
+        for entry in nested:
+            map_entries[f"{package}.{message['name']}.{entry['name']}"] = entry
         local_types[f"{package}.{message['name']}"] = None
     messages, dependencies = {}, {}
     for message in file.get("messageType", []):
         where = f"{source}:{message['name']}"
         fields, needs = [], set()
         for item in message.get("field", []):
-            built, dependency = build_field(item, local_types, f"{where}.{item['name']}")
+            built, dependency = build_field(
+                item, local_types, f"{where}.{item['name']}", map_entries)
             if built.key == "version" and DOCUMENT_EXTENSION in message.get("options", {}):
                 raise SchemaError(f"{where}: 'version' is reserved in documents")
             fields.append(built)

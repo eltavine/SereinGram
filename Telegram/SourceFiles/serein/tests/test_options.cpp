@@ -73,6 +73,23 @@ void TestOptions() {
 		"unknown menu action accepted");
 	Require(!Menu::ValidateConfig(R"({"version":1,"states":{"E01":"unknown"}})"),
 		"invalid menu state accepted");
+	Require(Menu::ValidateConfig(R"({"version":2,"states":{"E22":"option","E29":"show"}})"),
+		"valid menu config rejected");
+	Require(Menu::ValidateConfig(R"({"version":1,"states":{"E21":"hide"}})"),
+		"version 1 menu config rejected");
+	Require(!Menu::ValidateConfig(R"({"version":1,"states":{"E22":"hide"}})"),
+		"version 1 menu config with E22 accepted");
+	Require(!Menu::ValidateConfig(R"({"version":3,"states":{}})"),
+		"unknown menu config version accepted");
+	Require(!Menu::ValidateConfig(R"({"version":2,"states":{},"extra":1})"),
+		"menu config with an unknown key accepted");
+	Require(!Menu::ValidateConfig(R"({"version":2})"),
+		"menu config without states accepted");
+	Require(!Menu::ValidateConfig(R"({"version":2,"states":[]})"),
+		"menu config with array states accepted");
+	Require(!Menu::ValidateConfig(R"({"version":2,"states":{"E01":1}})"),
+		"menu config with a numeric state accepted");
+	Require(!Menu::ValidateConfig("{broken"), "broken menu config accepted");
 	Require(Menu::ReadVisibility({}, ActionId::Repeat) == Visibility::Hide,
 		"new menu action default");
 	Require(Menu::ReadVisibility({}, ActionId::Reading) == Visibility::Hide,

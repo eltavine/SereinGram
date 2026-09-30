@@ -8,6 +8,7 @@
 #include <QtCore/QString>
 
 #include <initializer_list>
+#include <map>
 #include <optional>
 #include <vector>
 
@@ -52,6 +53,7 @@ bool FailExpected(Error &error, const QString &path, const char *what);
 [[nodiscard]] bool Matches(const QString &value, const QString &pattern);
 [[nodiscard]] QString Child(const QString &path, QLatin1StringView key);
 [[nodiscard]] QString Item(const QString &path, qsizetype index);
+[[nodiscard]] QString Entry(const QString &path, const QString &key);
 
 template <typename Type>
 [[nodiscard]] bool Unique(const std::vector<Type> &values) {
@@ -108,6 +110,36 @@ template <typename Type>
 		array.push_back(Write(value));
 	}
 	return array;
+}
+
+template <typename Type>
+[[nodiscard]] bool Read(
+		const QJsonValue &json,
+		std::map<QString, Type> &result,
+		Error &error,
+		const QString &path) {
+	if (!json.isObject()) {
+		return FailExpected(error, path, "an object");
+	}
+	const auto object = json.toObject();
+	result.clear();
+	for (auto i = object.begin(); i != object.end(); ++i) {
+		auto item = Type();
+		if (!Read(i.value(), item, error, Entry(path, i.key()))) {
+			return false;
+		}
+		result.emplace(i.key(), std::move(item));
+	}
+	return true;
+}
+
+template <typename Type>
+[[nodiscard]] QJsonValue Write(const std::map<QString, Type> &values) {
+	auto object = QJsonObject();
+	for (const auto &[key, value] : values) {
+		object.insert(key, Write(value));
+	}
+	return object;
 }
 
 template <typename Type>
