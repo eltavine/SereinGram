@@ -442,6 +442,10 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_demo_hidden" = "Hidden in presentation mode";
 "lng_serein_peer_alias" = "Set local name";
 "lng_serein_jump_to_beginning" = "Jump to the beginning";
+"lng_serein_delete_mine" = "Delete my messages";
+"lng_serein_delete_mine_sure" = "Delete all your messages in {chat} for everyone? This cannot be undone.";
+"lng_serein_delete_mine_done" = "Messages deleted: {amount}";
+"lng_serein_delete_mine_none" = "No messages of yours were found in this chat.";
 "lng_serein_alias_about" = "This name is visible only in this account on this device. Leave it empty to restore the original name.";
 "lng_serein_alias_invalid" = "The local name is invalid or the list is full.";
 "lng_serein_alias_changed" = "The local name changed. Reopen this dialog and try again.";

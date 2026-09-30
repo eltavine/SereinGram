@@ -1,5 +1,6 @@
 #include "serein/hooks/peer_menu.h"
 
+#include "serein/admin/delete_mine.h"
 #include "serein/features/history/viewer.h"
 #include "serein/hooks/privacy/alias.h"
 #include "data/data_forum_topic.h"
@@ -35,6 +36,16 @@ void FillHistoryMenu(
 		addAction(tr::lng_serein_menu_deleted_messages(tr::now), [=] {
 			HistoryFeature::ShowDeletedMessages(controller, peer);
 		}, &st::menuIconInfo);
+	}
+	if (!topic && Admin::CanDeleteMyMessages(peer)) {
+		addAction({
+			.text = tr::lng_serein_delete_mine(tr::now),
+			.handler = [=] {
+				Admin::ConfirmDeleteMyMessages(controller, peer);
+			},
+			.icon = &st::menuIconDeleteAttention,
+			.isAttention = true,
+		});
 	}
 }
 

@@ -438,6 +438,10 @@
 "lng_serein_demo_hidden" = "演示模式已遮蓋";
 "lng_serein_peer_alias" = "設定本機名稱";
 "lng_serein_jump_to_beginning" = "跳到對話開頭";
+"lng_serein_delete_mine" = "刪除我的全部訊息";
+"lng_serein_delete_mine_sure" = "要為所有人刪除你在「{chat}」中的全部訊息嗎？此操作無法復原。";
+"lng_serein_delete_mine_done" = "已刪除訊息：{amount}";
+"lng_serein_delete_mine_none" = "在此對話中沒有找到你的訊息。";
 "lng_serein_alias_about" = "此名稱只在本機的目前帳號中顯示。留空可恢復原名。";
 "lng_serein_alias_invalid" = "本機名稱無效，或名稱清單已滿。";
 "lng_serein_alias_changed" = "本機名稱已變更，請重新開啟此視窗。";

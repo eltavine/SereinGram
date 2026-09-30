@@ -438,6 +438,10 @@
 "lng_serein_demo_hidden" = "演示模式已遮盖";
 "lng_serein_peer_alias" = "设置本地名称";
 "lng_serein_jump_to_beginning" = "跳到对话开头";
+"lng_serein_delete_mine" = "删除我的全部消息";
+"lng_serein_delete_mine_sure" = "要为所有人删除你在“{chat}”中的全部消息吗？此操作无法撤销。";
+"lng_serein_delete_mine_done" = "已删除消息：{amount}";
+"lng_serein_delete_mine_none" = "在此对话中没有找到你的消息。";
 "lng_serein_alias_about" = "此名称只在本机的当前账号中显示。留空可恢复原名。";
 "lng_serein_alias_invalid" = "本地名称无效，或名称列表已满。";
 "lng_serein_alias_changed" = "本地名称已变化，请重新打开此窗口。";
