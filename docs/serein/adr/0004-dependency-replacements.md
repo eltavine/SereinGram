@@ -22,6 +22,6 @@
 
 ## 验证门槛
 
-- OpenCC：词典在构建时生成；三平台 CI 构建通过，`test_serein` 覆盖简繁双向与词组样例。
+- OpenCC：按 ADR-0005 以文本词典随资源分发、首次使用时解压，不在构建时生成；`test_serein` 覆盖简繁双向与词组样例。
 - QtKeychain：Linux Docker 镜像需要 libsecret 开发包；不可用时在该平台显示“不可用”并保持现有行为，同时记录到本 ADR。
 - Catch2：以子模块加入，只链接到测试目标。

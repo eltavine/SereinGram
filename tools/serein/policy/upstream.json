@@ -10,7 +10,9 @@
     "Telegram/Resources/branding/",
     "Telegram/Resources/qrc/serein.qrc",
     "Telegram/build/api_credentials.local.cmake.example",
-    "BRANDING.md"
+    "BRANDING.md",
+    "Telegram/Resources/qrc/serein_opencc.qrc",
+    "Telegram/ThirdParty/OpenCC"
   ],
   "own_include_prefixes": [
     "serein/"
@@ -19,8 +21,8 @@
     "serein/hooks/"
   ],
   "budget": {
-    "all_files": 208,
-    "all_added_lines": 1640,
+    "all_files": 209,
+    "all_added_lines": 1643,
     "source_files": 139,
     "source_added_lines": 1417,
     "direct_include_files": 0

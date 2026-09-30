@@ -8,6 +8,7 @@ set(serein_test_sources
     serein/tests/test_updates.cpp
     serein/tests/test_stickers.cpp
     serein/tests/test_recent_chats.cpp
+    serein/tests/test_chinese.cpp
     serein/tests/test_filters.cpp
     serein/tests/test_links.cpp
     serein/tests/test_codec.cpp
@@ -20,6 +21,7 @@ set(serein_test_sources
     serein/schema/codec.cpp
     serein/chats/validators.cpp
     serein/chats/recent.cpp
+    serein/messages/chinese.cpp
     serein/compose/spacing.cpp
     serein/compose/validators.cpp
     serein/core/exchange.cpp

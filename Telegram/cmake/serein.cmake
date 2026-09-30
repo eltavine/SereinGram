@@ -65,6 +65,7 @@ set(serein_sources
     serein/messages/badges.cpp
     serein/messages/effects.cpp
     serein/messages/reactions.cpp
+    serein/messages/chinese.cpp
     serein/messages/reading.cpp
     serein/tests/menu_scenario.cpp
     serein/filters/model.cpp
@@ -168,7 +169,18 @@ if (APPLE AND NOT DESKTOP_APP_DISABLE_SWIFT6)
     endif()
 endif()
 
-nice_target_sources(Telegram ${res_loc} PRIVATE qrc/serein.qrc)
+nice_target_sources(Telegram ${res_loc} PRIVATE qrc/serein.qrc qrc/serein_opencc.qrc)
+
+if (DESKTOP_APP_USE_PACKAGED)
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(SEREIN_OPENCC REQUIRED IMPORTED_TARGET opencc)
+    add_library(serein_opencc_system INTERFACE)
+    target_link_libraries(serein_opencc_system INTERFACE PkgConfig::SEREIN_OPENCC)
+    add_library(Serein::OpenCC ALIAS serein_opencc_system)
+else()
+    include(${CMAKE_CURRENT_LIST_DIR}/serein_opencc.cmake)
+endif()
+target_link_libraries(Telegram PRIVATE Serein::OpenCC)
 
 if (DESKTOP_APP_TEST_APPS)
     add_executable(test_serein)
@@ -199,10 +211,12 @@ if (DESKTOP_APP_TEST_APPS)
         desktop-app::lib_crl
         desktop-app::external_openssl
         desktop-app::external_qt
+        Serein::OpenCC
     )
 
     target_compile_definitions(test_serein PRIVATE
         SEREIN_LANG_SOURCE_DIR="${res_loc}/langs"
+        SEREIN_OPENCC_DICTIONARY_DIR="${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/OpenCC/data/dictionary"
     )
 
     set_target_properties(test_serein PROPERTIES

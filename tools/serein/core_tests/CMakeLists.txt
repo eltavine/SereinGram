@@ -12,10 +12,11 @@ set(src_loc ${repo_loc}/Telegram/SourceFiles)
 set(lib_loc ${repo_loc}/Telegram)
 
 include(${lib_loc}/cmake/serein_tests.cmake)
+include(${lib_loc}/cmake/serein_opencc.cmake)
 list(APPEND serein_test_sources ${serein_sql_test_sources})
 list(TRANSFORM serein_test_sources PREPEND ${src_loc}/)
 
-add_executable(test_serein ${serein_test_sources} assertion_log.cpp)
+add_executable(test_serein ${serein_test_sources} assertion_log.cpp text_entity.cpp)
 
 target_include_directories(test_serein PRIVATE
     ${src_loc}
@@ -28,10 +29,11 @@ target_include_directories(test_serein PRIVATE
     ${lib_loc}/ThirdParty/expected/include
 )
 
-target_link_libraries(test_serein PRIVATE Qt6::Core Qt6::Sql OpenSSL::Crypto)
+target_link_libraries(test_serein PRIVATE Qt6::Core Qt6::Sql OpenSSL::Crypto Serein::OpenCC)
 
 target_compile_definitions(test_serein PRIVATE
     SEREIN_LANG_SOURCE_DIR="${lib_loc}/Resources/langs"
+    SEREIN_OPENCC_DICTIONARY_DIR="${lib_loc}/ThirdParty/OpenCC/data/dictionary"
     SEREIN_HAVE_QT_SQL
 )
 

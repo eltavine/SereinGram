@@ -14,6 +14,7 @@ void TestTranslationProtocols();
 void TestUpdates();
 void TestStickers();
 void TestRecentChats();
+void TestChinese();
 void TestFilters();
 void TestLinks();
 void TestCodec();
@@ -103,6 +104,7 @@ int main() {
 		TestUpdates();
 		TestStickers();
 		TestRecentChats();
+		TestChinese();
 		TestFilters();
 		TestLinks();
 		TestCodec();

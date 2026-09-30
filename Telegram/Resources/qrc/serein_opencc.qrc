@@ -1,0 +1,8 @@
+<RCC>
+  <qresource prefix="/serein/opencc">
+    <file alias="STCharacters.txt">../../ThirdParty/OpenCC/data/dictionary/STCharacters.txt</file>
+    <file alias="STPhrases.txt">../../ThirdParty/OpenCC/data/dictionary/STPhrases.txt</file>
+    <file alias="TSCharacters.txt">../../ThirdParty/OpenCC/data/dictionary/TSCharacters.txt</file>
+    <file alias="TSPhrases.txt">../../ThirdParty/OpenCC/data/dictionary/TSPhrases.txt</file>
+  </qresource>
+</RCC>

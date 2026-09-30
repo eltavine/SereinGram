@@ -218,7 +218,7 @@ SG-HIST-05 的“已编辑”标记文字已由 C09 实现，删除标记随 SG-
 | SG-TRANS-01 | 服务实例：OpenAI 兼容与 DeepL 协议、连接测试、密钥存入系统凭据库（H03） | Ni | Implemented | P1 |
 | SG-TRANS-02 | 翻译服务选择与草稿翻译（H01） | Ad Ni | Implemented | P1 |
 | SG-TRANS-03 | 更多服务：Google、Yandex、Microsoft、Transmart、DeepLX、Anthropic 与 Gemini 协议（已接入 Google、Yandex、Transmart、DeepLX、Anthropic 原生协议，Gemini 走官方 OpenAI 兼容端点；协议构造、解析与请求头集中在 `services/translation_protocol` 与 `services/model`。Microsoft 免费接口 `edge.microsoft.com/translate/auth` 已下线（404），改接 Azure Translator v3 官方接口：订阅密钥存系统凭据库，区域字段可选，服务配置升级到 v2 并自动迁移 v1） | Ad Ni Na | Implemented | P1 |
-| SG-TRANS-04 | 简繁转换改用 OpenCC 词组级转换，三平台可用（替代现有系统逐字转换）（方案见 ADR-0005：OpenCC 子模块静态库 + 文本词典资源，待三平台 CI 基线通过后实施） | Na | Planned | P1 |
+| SG-TRANS-04 | 简繁转换改用 OpenCC 词组级转换，三平台可用（替代现有系统逐字转换）（按 ADR-0005 实施：OpenCC ver.1.4.2 子模块编译为静态库，四个文本词典随资源分发并在首次使用时解压到 `tdata/serein/opencc-1.4.2`；Linux 也可用；实体与代码片段保持原样） | Na | Implemented | P1 |
 | SG-TRANS-05 | 语音转写服务（H02） | Ni | Implemented | P2 |
 | SG-TRANS-06 | 系统 AI 草稿预览（H04，macOS） | Ni | Implemented | P2 |
 | SG-TRANS-07 | Instant View 与选中文本翻译（聊天中选中文本的“翻译”与消息翻译统一使用所选翻译服务；Instant View 页面翻译待做） | Na | In Progress | P2 |

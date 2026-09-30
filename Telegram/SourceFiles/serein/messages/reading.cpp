@@ -1,15 +1,13 @@
 #include "serein/hooks/messages/reading.h"
 
 #include "serein/hooks/compose/text.h"
+#include "serein/messages/chinese.h"
+#include "logs.h"
+#include "settings.h"
 #include "ui/text/text_utilities.h"
 
-#ifdef Q_OS_MAC
-#include <CoreFoundation/CoreFoundation.h>
-#elif defined Q_OS_WIN
-#include <windows.h>
-#endif
-
-#include <QtCore/QHash>
+#include <QtCore/QDir>
+#include <QtCore/QFile>
 
 #include <algorithm>
 
@@ -39,62 +37,38 @@ bool Protected(EntityType type) {
 	}
 }
 
-std::optional<QString> ConvertCharacter(char32_t value, bool traditional) {
-	const auto input = QString::fromUcs4(&value, 1);
-#ifdef Q_OS_MAC
-	const auto string = CFStringCreateMutable(nullptr, 0);
-	if (!string) {
-		LOG(("Serein Chinese conversion: CFStringCreateMutable failed."));
-		return std::nullopt;
+[[nodiscard]] QString DictionaryDirectory() {
+	const auto directory = cWorkingDir() + u"tdata/serein/opencc-1.4.2"_q;
+	if (!QDir().mkpath(directory)) {
+		return QString();
 	}
-	CFStringAppendCharacters(string,
-		reinterpret_cast<const UniChar*>(input.utf16()), input.size());
-	const auto ok = CFStringTransform(string, nullptr,
-		CFSTR("Traditional-Simplified"), traditional);
-	if (!ok) {
-		LOG(("Serein Chinese conversion: CFStringTransform failed for U+%1."
-			).arg(QString::number(value, 16)));
-		CFRelease(string);
-		return std::nullopt;
+	for (const auto name : kChineseDictionaries) {
+		const auto target = directory + '/' + QString::fromLatin1(name);
+		if (QFile::exists(target)) {
+			continue;
+		} else if (!QFile::copy(u":/serein/opencc/"_q + QString::fromLatin1(name), target)) {
+			return QString();
+		}
+		QFile::setPermissions(target, QFile::ReadOwner | QFile::WriteOwner);
 	}
-	auto output = QString(CFStringGetLength(string), Qt::Uninitialized);
-	CFStringGetCharacters(string, CFRangeMake(0, output.size()),
-		reinterpret_cast<UniChar*>(output.data()));
-	CFRelease(string);
-	if (output.isEmpty()) {
-		LOG(("Serein Chinese conversion: CFStringTransform returned empty text."));
-		return std::nullopt;
+	return directory;
+}
+
+[[nodiscard]] const ChineseConverter *Converter(bool traditional) {
+	static auto loaded = std::array<bool, 2>();
+	static auto converters = std::array<std::unique_ptr<ChineseConverter>, 2>();
+	const auto index = traditional ? 1 : 0;
+	if (!loaded[index]) {
+		loaded[index] = true;
+		const auto directory = DictionaryDirectory();
+		converters[index] = directory.isEmpty()
+			? nullptr
+			: ChineseConverter::Load(directory, traditional);
+		if (!converters[index]) {
+			LOG(("Serein Chinese conversion: OpenCC could not be loaded."));
+		}
 	}
-	return output;
-#elif defined Q_OS_WIN
-	const auto flags = traditional
-		? LCMAP_TRADITIONAL_CHINESE : LCMAP_SIMPLIFIED_CHINESE;
-	const auto source = reinterpret_cast<LPCWSTR>(input.utf16());
-	const auto length = LCMapStringEx(L"zh-CN", flags, source, input.size(),
-		nullptr, 0, nullptr, nullptr, 0);
-	if (!length) {
-		LOG(("Serein Chinese conversion: LCMapStringEx size failed: %1."
-			).arg(GetLastError()));
-		return std::nullopt;
-	}
-	auto output = QString(length, Qt::Uninitialized);
-	const auto written = LCMapStringEx(L"zh-CN", flags, source, input.size(),
-		reinterpret_cast<LPWSTR>(output.data()), length,
-		nullptr, nullptr, 0);
-	if (written != length) {
-		LOG(("Serein Chinese conversion: LCMapStringEx map failed: %1."
-			).arg(GetLastError()));
-		return std::nullopt;
-	}
-	if (output.isEmpty()) {
-		LOG(("Serein Chinese conversion: LCMapStringEx returned empty text."));
-		return std::nullopt;
-	}
-	return output;
-#else
-	LOG(("Serein Chinese conversion: unsupported platform."));
-	return std::nullopt;
-#endif
+	return converters[index].get();
 }
 
 } // namespace
@@ -102,8 +76,8 @@ std::optional<QString> ConvertCharacter(char32_t value, bool traditional) {
 std::optional<TextWithEntities> ConvertChinese(
 		const TextWithEntities &source,
 		bool traditional) {
-	if (!ChineseConversionAvailable()) {
-		LOG(("Serein Chinese conversion: unsupported platform."));
+	const auto converter = Converter(traditional);
+	if (!converter) {
 		return std::nullopt;
 	}
 	const auto length = int(source.text.size());
@@ -153,43 +127,10 @@ std::optional<TextWithEntities> ConvertChinese(
 		std::fill(protectedPositions.begin() + codeStart,
 			protectedPositions.end(), true);
 	}
-	auto result = TextWithEntities();
-	auto offsets = std::vector<int>(length + 1);
-	auto converted = QHash<char32_t, QString>();
-	for (auto i = 0; i < length;) {
-		const auto first = source.text.at(i);
-		const auto surrogate = first.isHighSurrogate()
-			&& i + 1 < length && source.text.at(i + 1).isLowSurrogate();
-		const auto character = surrogate
-			? QChar::surrogateToUcs4(first, source.text.at(i + 1))
-			: char32_t(first.unicode());
-		const auto size = surrogate ? 2 : 1;
-		offsets[i] = result.text.size();
-		if (surrogate) {
-			offsets[i + 1] = result.text.size() + 1;
-		}
-		if (!protectedPositions[i] && QChar::script(character) == QChar::Script_Han) {
-			if (!converted.contains(character)) {
-				const auto value = ConvertCharacter(character, traditional);
-				if (!value) {
-					return std::nullopt;
-				}
-				converted.insert(character, *value);
-			}
-			result.text += converted.value(character);
-		} else {
-			result.text += source.text.mid(i, size);
-		}
-		i += size;
-	}
-	offsets[length] = result.text.size();
-	for (const auto &entity : source.entities) {
-		const auto start = offsets[entity.offset()];
-		const auto end = offsets[entity.offset() + entity.length()];
-		result.entities.push_back(EntityInText(
-			entity.type(), start, end - start, entity.data()));
-	}
-	return result;
+	return ConvertChineseRuns(source, protectedPositions, [&](
+			const QString &text) {
+		return converter->convert(text);
+	});
 }
 
 std::optional<TextWithEntities> ProjectReading(

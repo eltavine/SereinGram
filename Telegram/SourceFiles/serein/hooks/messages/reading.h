@@ -7,11 +7,7 @@
 namespace Serein::Messages {
 
 [[nodiscard]] constexpr bool ChineseConversionAvailable() {
-#if defined Q_OS_MAC || defined Q_OS_WIN
 	return true;
-#else
-	return false;
-#endif
 }
 
 [[nodiscard]] std::optional<TextWithEntities> ConvertChinese(
