@@ -104,6 +104,14 @@ def scalar_condition(kind, name, value, expression, enum=None):
             return f"Codec::IsUuid({expression})"
         if name == "const":
             return f"{expression} == QString::fromUtf8({cpp_string(value)})"
+        if name == "in":
+            return "(" + " || ".join(
+                f"{expression} == QString::fromUtf8({cpp_string(item)})"
+                for item in value) + ")"
+        if name == "notIn":
+            return " && ".join(
+                f"{expression} != QString::fromUtf8({cpp_string(item)})"
+                for item in value)
     raise SchemaError(f"unsupported {kind} rule '{name}'")
 
 

@@ -71,6 +71,8 @@ void TestLinks() {
 	Require(!accepts(withField(u"host"_q, u"a..b"_q)), "host with an empty label accepted");
 	Require(!accepts(withField(u"id"_q, enabled.value(u"id"_q).toString().toUpper())),
 		"uppercase rule id accepted");
+	Require(!accepts(withField(u"id"_q, u"00000000-0000-0000-0000-000000000000"_q)),
+		"nil rule id accepted");
 	Require(!accepts(withField(u"removeParameters"_q, QJsonArray{ u"a"_q, u"a"_q })),
 		"duplicate parameters accepted");
 	Require(!accepts(withField(u"removeParameters"_q, QJsonArray{ u"a b"_q })),

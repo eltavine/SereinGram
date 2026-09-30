@@ -4,6 +4,7 @@
 #include "base/basic_types.h"
 #include "ui/text/text_entity.h"
 #include "serein/core/options.h"
+#include "serein/schema/gen/config/filters.h"
 
 #include <QtCore/QByteArray>
 #include <QtCore/QJsonObject>

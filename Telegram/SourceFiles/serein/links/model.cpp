@@ -24,6 +24,7 @@ bool ValidLinkRules(const LinkRules &value) {
 	auto ids = QSet<QString>();
 	for (const auto &rule : value.rules) {
 		if (ids.contains(rule.id)
+			|| QUuid(rule.id).isNull()
 			|| (rule.removeParameters.empty() && rule.replacementHost.isEmpty())) {
 			return false;
 		}

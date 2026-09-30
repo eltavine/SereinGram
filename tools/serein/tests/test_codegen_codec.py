@@ -64,6 +64,13 @@ class CodecModelTest(unittest.TestCase):
         self.assertIn("Codec::Unique(value.names)", checks)
         self.assertIn("item.toUcs4().size() <= 8", checks)
 
+    def test_string_in_lists(self):
+        message = {"name": "Record", "field": [field("action", "action", options={
+            RULES_EXTENSION: {"string": {"in": ["mask", "hide"]}}})]}
+        checks = "\n".join(one_file([message]).messages[0].checks)
+        self.assertIn('(value.action == QString::fromUtf8("mask") || '
+                      'value.action == QString::fromUtf8("hide"))', checks)
+
     def test_not_in_uses_inequalities(self):
         message = {"name": "Record", "field": [field("peer_id", "peerId", "TYPE_INT64", options={
             RULES_EXTENSION: {"int64": {"notIn": ["0"]}}})]}

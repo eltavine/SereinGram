@@ -22,90 +22,31 @@ QString RegexPrefix() {
 	return u"(*NO_JIT)(*LIMIT_MATCH=10000)(*LIMIT_DEPTH=64)(*LIMIT_HEAP=1024)"_q;
 }
 
-QRegularExpression Compile(const QJsonObject &rule) {
+QRegularExpression CompilePattern(const QString &pattern, bool caseInsensitive) {
 	return QRegularExpression(
-		RegexPrefix() + rule.value(u"pattern"_q).toString(),
+		RegexPrefix() + pattern,
 		QRegularExpression::UseUnicodePropertiesOption
-			| (rule.value(u"caseInsensitive"_q).toBool()
+			| (caseInsensitive
 				? QRegularExpression::CaseInsensitiveOption
 				: QRegularExpression::NoPatternOption));
 }
 
-bool IdList(const QJsonValue &value) {
-	if (!value.isArray() || value.toArray().size() > 1000) {
-		return false;
-	}
-	auto seen = QSet<QString>();
-	for (const auto entry : value.toArray()) {
-		const auto id = entry.toString();
-		auto ok = false;
-		const auto number = id.toULongLong(&ok);
-		if (!entry.isString() || !ok || !number
-			|| QString::number(number) != id || seen.contains(id)) {
-			return false;
-		}
-		seen.insert(id);
-	}
-	return true;
+QRegularExpression Compile(const QJsonObject &rule) {
+	return CompilePattern(
+		rule.value(u"pattern"_q).toString(),
+		rule.value(u"caseInsensitive"_q).toBool());
 }
 
-bool ValidText(const QJsonValue &value, int limit, bool allowEmpty) {
-	if (!value.isString()) {
-		return false;
-	}
-	const auto text = value.toString();
+bool ValidId(const QString &id) {
+	auto ok = false;
+	const auto number = id.toULongLong(&ok);
+	return ok && number && QString::number(number) == id;
+}
+
+bool ValidText(const QString &text, int limit, bool allowEmpty) {
 	return (allowEmpty || !text.isEmpty()) && text.size() <= limit
 		&& !text.contains(QChar(0))
 		&& QString::fromUtf8(text.toUtf8()) == text;
-}
-
-bool ValidObject(const QJsonObject &config) {
-	if (config.keys() != Defaults().keys()
-		|| config.value(u"version"_q) != 1
-		|| QJsonDocument(config).toJson(QJsonDocument::Compact).size()
-			> kMaxConfigBytes) {
-		return false;
-	}
-	for (const auto &key : { u"enabled"_q, u"filterOutgoing"_q,
-			u"hideBlocked"_q, u"stripZalgo"_q }) {
-		if (!config.value(key).isBool()) {
-			return false;
-		}
-	}
-	if (!IdList(config.value(u"hiddenAuthors"_q))
-		|| !IdList(config.value(u"excludedPeers"_q))
-		|| !config.value(u"rules"_q).isArray()
-		|| config.value(u"rules"_q).toArray().size() > kMaxRules) {
-		return false;
-	}
-	auto seen = QSet<QString>();
-	for (const auto entry : config.value(u"rules"_q).toArray()) {
-		if (!entry.isObject()) {
-			return false;
-		}
-		const auto rule = entry.toObject();
-		const auto id = rule.value(u"id"_q).toString();
-		const auto action = rule.value(u"action"_q).toString();
-		const auto uuid = QUuid(id);
-		if (rule.size() != 8 || uuid.isNull()
-			|| uuid.toString(QUuid::WithoutBraces) != id
-			|| seen.contains(id)
-			|| !ValidText(rule.value(u"title"_q), 128, false)
-			|| !ValidText(rule.value(u"pattern"_q), 2048, false)
-			|| !ValidText(rule.value(u"replacement"_q), 4096, true)
-			|| !rule.value(u"enabled"_q).isBool()
-			|| !rule.value(u"caseInsensitive"_q).isBool()
-			|| !rule.value(u"reversed"_q).isBool()
-			|| (action != u"mask"_q && action != u"replace"_q
-				&& action != u"hide"_q)
-			|| (rule.value(u"reversed"_q).toBool()
-				&& action != u"hide"_q)
-			|| !Compile(rule).isValid()) {
-			return false;
-		}
-		seen.insert(id);
-	}
-	return true;
 }
 
 struct Edit {
@@ -201,14 +142,30 @@ QJsonObject Defaults() {
 	};
 }
 
-bool Validate(const QByteArray &raw) {
-	if (raw.isEmpty()) {
-		return true;
+bool ValidFilterRules(const FilterRules &value) {
+	if (SerializeFilterRules(value).size() > kMaxConfigBytes
+		|| !std::ranges::all_of(value.hiddenAuthors, ValidId)
+		|| !std::ranges::all_of(value.excludedPeers, ValidId)) {
+		return false;
 	}
-	auto error = QJsonParseError();
-	const auto document = QJsonDocument::fromJson(raw, &error);
-	return error.error == QJsonParseError::NoError
-		&& document.isObject() && ValidObject(document.object());
+	auto seen = QSet<QString>();
+	for (const auto &rule : value.rules) {
+		if (seen.contains(rule.id)
+			|| QUuid(rule.id).isNull()
+			|| !ValidText(rule.title, 128, false)
+			|| !ValidText(rule.pattern, 2048, false)
+			|| !ValidText(rule.replacement, 4096, true)
+			|| (rule.reversed && rule.action != u"hide"_q)
+			|| !CompilePattern(rule.pattern, rule.caseInsensitive).isValid()) {
+			return false;
+		}
+		seen.insert(rule.id);
+	}
+	return true;
+}
+
+bool Validate(const QByteArray &raw) {
+	return raw.isEmpty() || ParseFilterRules(raw).has_value();
 }
 
 Result Apply(
