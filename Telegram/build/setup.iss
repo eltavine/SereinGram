@@ -34,7 +34,9 @@ CloseApplications=force
 DisableDirPage=no
 DisableProgramGroupPage=no
 WizardStyle=modern
-SignTool=sha256
+#ifdef MySignTool
+SignTool={#MySignTool}
+#endif
 
 #ifndef MyOutputBaseFilename
   #if MyBuildTarget == "winarm"
@@ -79,7 +81,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]
 Source: "{#ReleasePath}\SereinGram.exe"; DestDir: "{app}"; Flags: ignoreversion
-#if MyBuildTarget != "winarm"
+#if MyBuildTarget != "winarm" && FileExists(ReleasePath + "\" + ModulesFolder + "\d3d\d3dcompiler_47.dll")
 Source: "{#ReleasePath}\{#ModulesFolder}\d3d\d3dcompiler_47.dll"; DestDir: "{app}\{#ModulesFolder}\d3d"; Flags: ignoreversion
 #endif
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files

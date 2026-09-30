@@ -16,7 +16,7 @@
 | ID | 功能 | 来源 | 状态 | 优先级 |
 | --- | --- | --- | --- | --- |
 | SG-PLAT-01 | macOS 通用二进制（arm64 + x86_64）构建与 DMG（依赖与应用默认按 `x86_64;arm64` 构建；CI 用 `lipo -verify_arch` 校验两种架构后打包 DMG 上传；签名与公证待做） | T | In Progress | P0 |
-| SG-PLAT-02 | Windows x64 构建、安装包与便携版 | T | Planned | P0 |
+| SG-PLAT-02 | Windows x64 构建、安装包与便携版（便携版为单个 `SereinGram.exe`；CI 以 Inno Setup 编译 `setup.iss` 生成安装包，步骤暂为允许失败的试验状态；签名待做） | T | In Progress | P0 |
 | SG-PLAT-03 | Linux x86_64 静态构建（Rocky Linux 8 容器）与 tar 包（CI 打包 `SereinGram.tar.gz` 上传） | T | In Progress | P0 |
 | SG-PLAT-04 | 三平台 CI：构建、`test_serein`、全部守卫 | D | Planned | P0 |
 | SG-PLAT-05 | 发行版打包：Flatpak 清单、AUR PKGBUILD、`DESKTOP_APP_USE_PACKAGED` 依赖清单 | Ad | Planned | P2 |
