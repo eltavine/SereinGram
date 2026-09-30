@@ -1,5 +1,7 @@
 # SereinGram
 
+<img src="Telegram/Resources/branding/sereingram.png" width="160" alt="SereinGram app icon">
+
 SereinGram is an open-source Telegram client for macOS, Windows and major
 Linux distributions. It is based on
 [Telegram Desktop](https://github.com/telegramdesktop/tdesktop) and inspired
