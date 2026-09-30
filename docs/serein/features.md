@@ -163,7 +163,7 @@ SG-HIST-05 的“已编辑”标记文字已由 C09 实现，删除标记随 SG-
 | SG-MSG-05 | 直接显示剧透、快速转发按钮、推荐频道、会员标识、收藏夹标签栏、对方输入状态（C19–C24） | Ad Ni | Implemented | P1 |
 | SG-MSG-06 | 阅读时中西文加空格与简繁转换（C25、C26） | Na | Implemented | P2 |
 | SG-MSG-07 | 资料页 ID、数据中心、隐藏礼物、隐藏待办入口（G05–G08） | Ad Ni Na | Implemented | P1 |
-| SG-MSG-08 | 消息详情：日期、转发来源、贴纸包与表情包作者（消息菜单“消息详情”：消息与对话、发送者 ID（Bot API 格式）、带秒的发送与编辑时间、转发来源与原始时间、浏览数、贴纸包名称与链接；贴纸包作者查询待做） | Ad Na | In Progress | P2 |
+| SG-MSG-08 | 消息详情：日期、转发来源、贴纸包与表情包作者（消息菜单“消息详情”：消息与对话、发送者 ID（Bot API 格式）、带秒的发送与编辑时间、转发来源与原始时间、浏览数、贴纸包名称与链接、贴纸包作者） | Ad Na | Done | P2 |
 | SG-MSG-09 | 内联按钮回调数据查看与复制（消息菜单“按钮数据”：列出内联按钮的文字与数据，点击复制；不可打印的数据以 base64 显示；默认隐藏，可在菜单设置中开启） | Ad | Implemented | P2 |
 | SG-MSG-10 | 语音与圆形视频拖动进度（先核对上游现状）（由上游提供：语音消息 `VoiceSeekClickHandler` 与圆形视频 `VideoMessageSeek` 均支持拖动进度，核对于 2026-09-30） | Ad | Implemented | P2 |
 | SG-MSG-11 | 反应时间显示秒（反应与已读列表的时间随“消息时间显示秒”选项显示到秒） | Ad | Implemented | P3 |
@@ -204,7 +204,7 @@ SG-HIST-05 的“已编辑”标记文字已由 C09 实现，删除标记随 SG-
 | SG-MEDIA-02 | 关闭视频自动播放、GIF 播放控制（F09、F10） | Ad Ni | Implemented | P1 |
 | SG-MEDIA-03 | 以文件发送的 MP4 保留视频预览（F11） | Ni | Implemented | P2 |
 | SG-MEDIA-04 | 贴纸包列表导出与导入（F12、F13） | Na | Implemented | P2 |
-| SG-MEDIA-05 | 查询贴纸包、表情包作者并打开资料 | Ad | Planned | P2 |
+| SG-MEDIA-05 | 查询贴纸包、表情包作者并打开资料（贴纸包与表情包窗口右上角菜单“作者”：由贴纸包 ID 推算作者用户 ID，本地已知该用户时打开资料页，否则复制 ID；按 ID 远程解析未知用户待做） | Ad | In Progress | P2 |
 | SG-MEDIA-06 | 下载时保留原始文件名（先核对上游现状）（由上游提供：`DocumentFileNameForSave` 默认使用原始文件名，核对于 2026-09-30） | Na | Implemented | P2 |
 | SG-MEDIA-07 | 不经贴纸包收藏单个贴纸、收藏去重 | Na | Planned | P3 |
 | SG-MEDIA-08 | 通话与录音降噪、语音增强 | Na | Planned | P3 |

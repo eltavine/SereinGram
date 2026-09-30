@@ -6,6 +6,7 @@ set(serein_test_sources
     serein/tests/test_spacing.cpp
     serein/tests/test_services.cpp
     serein/tests/test_updates.cpp
+    serein/tests/test_stickers.cpp
     serein/tests/test_filters.cpp
     serein/tests/test_links.cpp
     serein/tests/test_codec.cpp

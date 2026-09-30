@@ -56,6 +56,13 @@
       "app": false,
       "libraries": true
     },
+    "serein/features/stickers/model/": {
+      "own": [
+        "serein/features/stickers/model/"
+      ],
+      "app": false,
+      "libraries": true
+    },
     "serein/hooks/": {
       "own": [
         "serein/hooks/",

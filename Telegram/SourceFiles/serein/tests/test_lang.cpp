@@ -12,6 +12,7 @@ void TestSpacing();
 void TestServices();
 void TestTranslationProtocols();
 void TestUpdates();
+void TestStickers();
 void TestFilters();
 void TestLinks();
 void TestCodec();
@@ -99,6 +100,7 @@ int main() {
 		TestServices();
 		TestTranslationProtocols();
 		TestUpdates();
+		TestStickers();
 		TestFilters();
 		TestLinks();
 		TestCodec();

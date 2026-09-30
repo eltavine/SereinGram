@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "boxes/sticker_set_box.h"
+#include "serein/hooks/stickers/set_menu.h"
 
 #include "api/api_common.h"
 #include "api/api_stickers_creator.h"
@@ -1097,6 +1098,7 @@ void StickerSetBox::updateButtons() {
 					tr::lng_context_copy_link(tr::now),
 					copyLink,
 					&st::menuIconCopy);
+				Serein::Hooks::FillStickerSetMenu(raw, _show, _inner->setId());
 				if (fillSetCreatorMenu) {
 					fillSetCreatorMenu(raw);
 				}

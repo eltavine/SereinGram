@@ -486,3 +486,6 @@
 "lng_serein_details_forwarded_date" = "原始傳送時間";
 "lng_serein_details_views" = "瀏覽次數";
 "lng_serein_details_sticker_set" = "貼圖包";
+"lng_serein_details_sticker_set_author" = "貼圖包作者";
+"lng_serein_sticker_set_author" = "作者";
+"lng_serein_sticker_set_author_copied" = "作者資料尚未載入，已複製作者 ID。";

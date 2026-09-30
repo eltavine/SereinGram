@@ -1,6 +1,7 @@
 #include "serein/menu/details.h"
 
 #include "serein/hooks/menu/actions.h"
+#include "serein/features/stickers/model/owner.h"
 #include "serein/privacy/peer_id.h"
 #include "base/unixtime.h"
 #include "data/data_document.h"
@@ -55,6 +56,21 @@ namespace {
 		: (title + u" ("_q + link + u")"_q);
 }
 
+[[nodiscard]] QString StickerSetAuthor(not_null<DocumentData*> document) {
+	const auto sticker = document->sticker();
+	if (!sticker || !sticker->set) {
+		return QString();
+	}
+	const auto ownerId = Stickers::SetOwnerId(sticker->set.id);
+	if (!ownerId) {
+		return QString();
+	}
+	const auto id = QString::number(ownerId);
+	const auto peer = document->owner().peerLoaded(
+		peerFromUser(UserId(ownerId)));
+	return peer ? (peer->name() + u" ("_q + id + u")"_q) : id;
+}
+
 [[nodiscard]] QString ForwardedName(not_null<HistoryMessageForwarded*> forwarded) {
 	return forwarded->originalSender
 		? forwarded->originalSender->name()
@@ -99,6 +115,8 @@ namespace {
 		if (const auto document = media->document()) {
 			add(tr::lng_serein_details_sticker_set(tr::now),
 				StickerSetText(document));
+			add(tr::lng_serein_details_sticker_set_author(tr::now),
+				StickerSetAuthor(document));
 		}
 	}
 	return lines.join('\n');

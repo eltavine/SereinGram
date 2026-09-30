@@ -486,3 +486,6 @@
 "lng_serein_details_forwarded_date" = "原始发送时间";
 "lng_serein_details_views" = "浏览次数";
 "lng_serein_details_sticker_set" = "贴纸包";
+"lng_serein_details_sticker_set_author" = "贴纸包作者";
+"lng_serein_sticker_set_author" = "作者";
+"lng_serein_sticker_set_author_copied" = "作者资料尚未加载，已复制作者 ID。";
