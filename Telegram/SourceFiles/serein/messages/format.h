@@ -16,7 +16,9 @@ namespace Serein::Messages {
 [[nodiscard]] QString FormatEditedDate(QDateTime sent, QDateTime edited);
 [[nodiscard]] QString EditedMark();
 [[nodiscard]] QString FormatCounter(int count);
-void ApplyInfoOptions(HistoryView::BottomInfo::Data &data);
+void ApplyInfoOptions(
+	HistoryView::BottomInfo::Data &data,
+	not_null<HistoryItem*> item);
 void ApplyForwardedDate(
 	HistoryView::BottomInfo::Data &data,
 	not_null<HistoryItem*> item);

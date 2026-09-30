@@ -12,6 +12,13 @@ inline constexpr auto kHistorySaveDeleted = Option<bool>{
 	Category::Privacy,
 	"lng_serein_history_save_deleted",
 	0 };
+inline constexpr auto kHistoryKeepDeletedInPlace = Option<bool>{
+	"serein.historyKeepDeletedInPlace",
+	Scope::Account,
+	false,
+	Category::Privacy,
+	"lng_serein_history_keep_deleted_in_place",
+	0 };
 inline constexpr auto kHistorySaveEdits = Option<bool>{
 	"serein.historySaveEdits",
 	Scope::Account,
@@ -51,6 +58,7 @@ inline constexpr auto kHistoryMaxRecords = Option<int>{
 
 inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kHistorySaveDeleted));
+	Expects(registry.Add(kHistoryKeepDeletedInPlace));
 	Expects(registry.Add(kHistorySaveEdits));
 	Expects(registry.Add(kHistoryIncludeBots));
 	Expects(registry.Add(kHistoryRetentionDays));

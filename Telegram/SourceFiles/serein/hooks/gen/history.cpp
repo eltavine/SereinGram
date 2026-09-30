@@ -14,6 +14,14 @@ rpl::producer<bool> HistorySaveDeletedValue(gsl::not_null<Main::Session*> sessio
 	return ForAccount(session).Value(Serein::HistorySettings::kHistorySaveDeleted);
 }
 
+bool HistoryKeepDeletedInPlace(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Get(Serein::HistorySettings::kHistoryKeepDeletedInPlace);
+}
+
+rpl::producer<bool> HistoryKeepDeletedInPlaceValue(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Value(Serein::HistorySettings::kHistoryKeepDeletedInPlace);
+}
+
 bool HistorySaveEdits(gsl::not_null<Main::Session*> session) {
 	return ForAccount(session).Get(Serein::HistorySettings::kHistorySaveEdits);
 }

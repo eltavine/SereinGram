@@ -2,6 +2,7 @@
 
 #include "serein/adapters/openssl/aes_gcm_cipher.h"
 #include "serein/adapters/qtsql/history_store.h"
+#include "serein/features/history/deleted_marks.h"
 #include "serein/features/history/model/recorder.h"
 #include "base/unixtime.h"
 #include "data/data_media_types.h"
@@ -145,7 +146,8 @@ struct Backend {
 
 } // namespace
 
-void OnServerDeleted(const std::vector<gsl::not_null<HistoryItem*>> &items) {
+std::vector<gsl::not_null<HistoryItem*>> OnServerDeleted(
+		std::vector<gsl::not_null<HistoryItem*>> items) {
 	for (const auto &item : items) {
 		const auto session = &item->history()->session();
 		const auto policy = HistoryFeature::Read(ForAccount(session));
@@ -155,6 +157,7 @@ void OnServerDeleted(const std::vector<gsl::not_null<HistoryItem*>> &items) {
 			recorder->recordDeleted(policy, TakeSnapshot(item));
 		}
 	}
+	return HistoryFeature::KeepDeletedInPlace(std::move(items));
 }
 
 void OnBeforeEdition(

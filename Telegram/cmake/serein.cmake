@@ -13,6 +13,7 @@ set(serein_sources
     serein/core/options.cpp
     serein/schema/codec.cpp
     serein/features/ghost/model/policy.cpp
+    serein/features/history/deleted_marks.cpp
     serein/features/history/model/recorder.cpp
     serein/adapters/openssl/aes_gcm_cipher.cpp
     serein/hooks/ghost.cpp

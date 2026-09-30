@@ -17,7 +17,8 @@ class HistoryStore;
 
 namespace Serein::Hooks {
 
-void OnServerDeleted(const std::vector<gsl::not_null<HistoryItem*>> &items);
+[[nodiscard]] std::vector<gsl::not_null<HistoryItem*>> OnServerDeleted(
+	std::vector<gsl::not_null<HistoryItem*>> items);
 void OnBeforeEdition(
 	gsl::not_null<HistoryItem*> item,
 	const TextWithEntities &updated);

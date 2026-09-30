@@ -746,7 +746,7 @@ BottomInfo::Data BottomInfoDataFromMessage(not_null<Message*> message) {
 			result.flags |= Flag::Silent;
 		}
 	}
-	Serein::Messages::ApplyInfoOptions(result);
+	Serein::Messages::ApplyInfoOptions(result, item);
 	if (!forwarded) {
 		return result;
 	}

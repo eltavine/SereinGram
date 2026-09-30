@@ -3361,8 +3361,8 @@ void Session::processMessagesDeleted(
 			affected->unknownMessageDeleted(messageId.v);
 		}
 	}
+	toDestroy = Serein::Hooks::OnServerDeleted(std::move(toDestroy));
 	if (!toDestroy.empty()) {
-		Serein::Hooks::OnServerDeleted(toDestroy);
 		notifyItemsAboutToBeDestroyed(toDestroy);
 		for (const auto &item : toDestroy) {
 			item->destroy();
@@ -3385,8 +3385,8 @@ void Session::processNonChannelMessagesDeleted(const QVector<MTPint> &data) {
 			historiesToCheck.emplace(history);
 		}
 	}
+	toDestroy = Serein::Hooks::OnServerDeleted(std::move(toDestroy));
 	if (!toDestroy.empty()) {
-		Serein::Hooks::OnServerDeleted(toDestroy);
 		notifyItemsAboutToBeDestroyed(toDestroy);
 		for (const auto &item : toDestroy) {
 			item->destroy();

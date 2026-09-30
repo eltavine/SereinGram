@@ -15,6 +15,9 @@ message HistorySettings {
   optional bool history_save_deleted = 1 [(serein.options.v1.field) = {
     keywords: ["deleted", "anti-recall", "history"]
   }];
+  optional bool history_keep_deleted_in_place = 6 [(serein.options.v1.field) = {
+    keywords: ["deleted", "anti-recall", "in chat"]
+  }];
   optional bool history_save_edits = 2 [(serein.options.v1.field) = {
     keywords: ["edit", "history"]
   }];

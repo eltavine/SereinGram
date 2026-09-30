@@ -1,6 +1,7 @@
 #include "serein/messages/format.h"
 
 #include "serein/core/options.h"
+#include "serein/features/history/deleted_marks.h"
 #include "serein/messages/options.h"
 #include "serein/messages/time_format.h"
 #include "history/history_item.h"
@@ -73,7 +74,9 @@ QString FormatCounter(int count) {
 		: Lang::FormatCountToShort(count).string;
 }
 
-void ApplyInfoOptions(HistoryView::BottomInfo::Data &data) {
+void ApplyInfoOptions(
+		HistoryView::BottomInfo::Data &data,
+		not_null<HistoryItem*> item) {
 	auto &options = ForDevice();
 	if (options.Get(kHideMessageViews)) {
 		data.views.reset();
@@ -84,6 +87,12 @@ void ApplyInfoOptions(HistoryView::BottomInfo::Data &data) {
 	if (options.Get(kHideEditedBadge)) {
 		using Flag = HistoryView::BottomInfo::Data::Flag;
 		data.flags &= ~(Flag::Edited | Flag::EditedPrimary);
+	}
+	if (HistoryFeature::DeletedInPlace(item)) {
+		const auto mark = tr::lng_serein_deleted_mark(tr::now);
+		data.author = data.author.isEmpty()
+			? mark
+			: (mark + u" \u00B7 "_q + data.author);
 	}
 }
 

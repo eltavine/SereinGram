@@ -10,12 +10,18 @@
 
 namespace Serein::HistorySettings {
 
-inline const auto kToggleRows = std::array<ToggleRow, 3>{ {
+inline const auto kToggleRows = std::array<ToggleRow, 4>{ {
 	{
 		&kHistorySaveDeleted,
 		tr::lng_serein_history_save_deleted,
 		u"serein/history/history-save-deleted"_q,
 		{ u"deleted"_q, u"anti-recall"_q, u"history"_q },
+	},
+	{
+		&kHistoryKeepDeletedInPlace,
+		tr::lng_serein_history_keep_deleted_in_place,
+		u"serein/history/history-keep-deleted-in-place"_q,
+		{ u"deleted"_q, u"anti-recall"_q, u"in chat"_q },
 	},
 	{
 		&kHistorySaveEdits,
@@ -42,6 +48,7 @@ inline void AddLayout(
 	AddToggle(builder, kToggleRows[0]);
 	AddToggle(builder, kToggleRows[1]);
 	AddToggle(builder, kToggleRows[2]);
+	AddToggle(builder, kToggleRows[3]);
 	custom.historyRetentionDays();
 	custom.historyMaxRecords();
 	AddNote(builder, tr::lng_serein_history_note);
