@@ -14,6 +14,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "history/history.h"
 #include "history/history_item.h"
 #include "main/main_session.h"
+#include "serein/hooks/ghost.h"
 
 namespace Api {
 namespace {
@@ -97,7 +98,7 @@ void ViewsManager::viewsIncrement() {
 		const auto requestId = _api.request(MTPmessages_GetMessagesViews(
 			i->first->input(),
 			MTP_vector<MTPint>(ids),
-			MTP_bool(true)
+			MTP_bool(Serein::Hooks::AllowViewIncrement(_session))
 		)).done([=](
 				const MTPmessages_MessageViews &result,
 				mtpRequestId requestId) {

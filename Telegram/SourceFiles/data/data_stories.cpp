@@ -26,6 +26,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "main/main_session.h"
 #include "ui/layers/show.h"
 #include "ui/text/text_utilities.h"
+#include "serein/hooks/ghost.h"
 
 namespace Data {
 namespace {
@@ -1241,13 +1242,16 @@ void Stories::markAsRead(FullStoryId id, bool viewed) {
 		return;
 	}
 	const auto story = *maybeStory;
-	if (story->expired() && story->inProfile()) {
+	if (story->expired()
+		&& story->inProfile()
+		&& Serein::Hooks::AllowStoryView(&_owner->session())) {
 		_incrementViewsPending[id.peer].emplace(id.story);
 		if (!_incrementViewsTimer.isActive()) {
 			_incrementViewsTimer.callOnce(kIncrementViewsDelay);
 		}
 	}
-	if (!bumpReadTill(id.peer, id.story)) {
+	if (!bumpReadTill(id.peer, id.story)
+		|| !Serein::Hooks::AllowStoryView(&_owner->session())) {
 		return;
 	}
 	if (!_markReadPending.contains(id.peer)) {

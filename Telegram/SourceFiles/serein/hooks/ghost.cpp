@@ -21,4 +21,12 @@ bool AllowTyping(gsl::not_null<Main::Session*> session) {
 	return Allows(session, Ghost::Activity::Typing);
 }
 
+bool AllowStoryView(gsl::not_null<Main::Session*> session) {
+	return Allows(session, Ghost::Activity::StoryView);
+}
+
+bool AllowViewIncrement(gsl::not_null<Main::Session*> session) {
+	return Allows(session, Ghost::Activity::ViewIncrement);
+}
+
 } // namespace Serein::Hooks

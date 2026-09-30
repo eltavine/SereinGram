@@ -139,6 +139,14 @@ const auto kMeta = BuildHelper({
 		tr::lng_serein_ghost_hide_typing(),
 		u"serein/privacy/ghost-hide-typing"_q,
 		{ u"ghost"_q, u"typing"_q });
+	AddAccountToggle(builder, Ghost::kGhostHideStoryViews,
+		tr::lng_serein_ghost_hide_story_views(),
+		u"serein/privacy/ghost-hide-story-views"_q,
+		{ u"ghost"_q, u"stories"_q });
+	AddAccountToggle(builder, Ghost::kGhostHideViewIncrements,
+		tr::lng_serein_ghost_hide_view_increments(),
+		u"serein/privacy/ghost-hide-view-increments"_q,
+		{ u"ghost"_q, u"views"_q });
 	builder.addDividerText(tr::lng_serein_ghost_note());
 	AddAccountToggle(builder, HistorySettings::kHistorySaveDeleted,
 		tr::lng_serein_history_save_deleted(),
