@@ -18,6 +18,8 @@ set(serein_sources
     serein/adapters/openssl/aes_gcm_cipher.cpp
     serein/hooks/ghost.cpp
     serein/app/ghost_read.cpp
+    serein/app/lifecycle.cpp
+    serein/app/modules.cpp
     serein/app/ghost_menu.cpp
     serein/app/ghost_send.cpp
     serein/display/view_refresher.cpp

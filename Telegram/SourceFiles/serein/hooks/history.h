@@ -25,5 +25,6 @@ void OnBeforeEdition(
 
 [[nodiscard]] Ports::HistoryStore *HistoryStoreFor(
 	gsl::not_null<Main::Session*> session);
+void PruneHistory(gsl::not_null<Main::Session*> session);
 
 } // namespace Serein::Hooks

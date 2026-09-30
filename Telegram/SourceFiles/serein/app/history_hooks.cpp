@@ -177,4 +177,10 @@ Ports::HistoryStore *HistoryStoreFor(gsl::not_null<Main::Session*> session) {
 	return backend ? backend->store.get() : nullptr;
 }
 
+void PruneHistory(gsl::not_null<Main::Session*> session) {
+	if (const auto backend = BackendFor(session, false)) {
+		backend->recorder->prune(HistoryFeature::Read(ForAccount(session)));
+	}
+}
+
 } // namespace Serein::Hooks

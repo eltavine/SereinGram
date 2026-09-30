@@ -16,4 +16,7 @@ Ports::HistoryStore *HistoryStoreFor(gsl::not_null<Main::Session*>) {
 	return nullptr;
 }
 
+void PruneHistory(gsl::not_null<Main::Session*>) {
+}
+
 } // namespace Serein::Hooks

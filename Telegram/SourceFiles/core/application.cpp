@@ -6,8 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "core/application.h"
-#include "serein/hooks/interface/roundness.h"
-#include "serein/hooks/interface/text.h"
+#include "serein/hooks/app.h"
 #include "serein/hooks/gen/privacy.h"
 
 #include "data/data_abstract_structure.h"
@@ -321,8 +320,7 @@ void Application::run() {
 	_notifications = std::make_unique<Window::Notifications::System>();
 
 	startLocalStorage();
-	Serein::Interface::StartRoundness();
-	Serein::Interface::StartUiText();
+	Serein::Hooks::OnApplicationStarted();
 
 	style::SetCustomFont(settings().customFontFamily());
 	style::internal::StartFonts();
