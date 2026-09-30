@@ -16,7 +16,7 @@ include(${lib_loc}/cmake/serein_opencc.cmake)
 list(APPEND serein_test_sources ${serein_sql_test_sources})
 list(TRANSFORM serein_test_sources PREPEND ${src_loc}/)
 
-add_executable(test_serein ${serein_test_sources} assertion_log.cpp text_entity.cpp)
+add_executable(test_serein ${serein_test_sources} assertion_log.cpp)
 
 target_include_directories(test_serein PRIVATE
     ${src_loc}

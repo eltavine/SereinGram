@@ -57,7 +57,7 @@ void Restore(
 	const auto from = record.fromPeerId
 		? PeerId(PeerIdHelper(BareId(record.fromPeerId)))
 		: peer->id;
-	auto flags = MessageFlag::Local;
+	auto flags = MessageFlags(MessageFlag::Local);
 	if (peer->isBroadcast()) {
 		flags |= MessageFlag::Post;
 	} else if (from != peer->id) {

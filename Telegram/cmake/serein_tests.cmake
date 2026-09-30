@@ -19,6 +19,7 @@ set(serein_test_sources
     serein/tests/test_codec.cpp
     serein/tests/test_ghost.cpp
     serein/tests/test_cipher.cpp
+    serein/tests/text_entity_support.cpp
     serein/adapters/openssl/aes_gcm_cipher.cpp
     serein/features/ghost/model/policy.cpp
     serein/features/history/model/recorder.cpp
