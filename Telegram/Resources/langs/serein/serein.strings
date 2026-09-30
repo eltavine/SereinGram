@@ -335,6 +335,13 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_service_url" = "Base URL";
 "lng_serein_service_use_key" = "Authenticate with an API key";
 "lng_serein_services" = "Translation and transcription services";
+"lng_serein_proxy_subscription" = "Proxy subscription";
+"lng_serein_proxy_subscription_about" = "An HTTPS address of a list of Telegram proxy links (tg://proxy, t.me/proxy or t.me/socks). “Update now” downloads it and adds the proxies that are not in your list yet. New protocols need an external proxy app.";
+"lng_serein_proxy_subscription_update" = "Update now";
+"lng_serein_proxy_subscription_done" = "Proxies added: {added}. Already in the list: {existing}.";
+"lng_serein_proxy_subscription_empty" = "The subscription contains no supported proxy links.";
+"lng_serein_proxy_subscription_failed" = "Could not download the proxy subscription.";
+"lng_serein_proxy_subscription_invalid" = "Enter an HTTPS address first.";
 "lng_serein_services_about" = "External services receive only the text or audio you explicitly request to process. Automatic chat translation keeps its existing provider. API keys stay in the system credential store and are excluded from configuration exports.";
 "lng_serein_draft_changed" = "The draft changed while this preview was open. Close it and translate the current draft again.";
 "lng_serein_inherit" = "Inherit";

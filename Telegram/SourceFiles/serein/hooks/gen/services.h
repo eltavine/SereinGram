@@ -2,6 +2,7 @@
 #pragma once
 
 #include <QtCore/QByteArray>
+#include <QtCore/QString>
 #include <rpl/producer.h>
 
 namespace Serein::Hooks::ServiceSettings {
@@ -10,5 +11,7 @@ namespace Serein::Hooks::ServiceSettings {
 [[nodiscard]] rpl::producer<QByteArray> ServicesConfigValue();
 [[nodiscard]] bool PreferSystemAi();
 [[nodiscard]] rpl::producer<bool> PreferSystemAiValue();
+[[nodiscard]] QString ProxySubscription();
+[[nodiscard]] rpl::producer<QString> ProxySubscriptionValue();
 
 } // namespace Serein::Hooks::ServiceSettings

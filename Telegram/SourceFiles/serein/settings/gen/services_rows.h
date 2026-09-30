@@ -14,6 +14,7 @@ namespace Serein::ServiceSettings {
 struct CustomRows {
 	CustomRow services;
 	CustomRow preferSystemAi;
+	CustomRow proxySubscription;
 };
 
 inline void AddLayout(
@@ -21,6 +22,7 @@ inline void AddLayout(
 		const CustomRows &custom) {
 	custom.services();
 	custom.preferSystemAi();
+	custom.proxySubscription();
 }
 
 } // namespace Serein::ServiceSettings

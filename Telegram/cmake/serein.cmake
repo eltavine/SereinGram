@@ -125,6 +125,8 @@ set(serein_sources
     serein/services/credentials_local.cpp
     serein/services/summary.cpp
     serein/services/summary_protocol.cpp
+    serein/network/proxy_import.cpp
+    serein/network/proxy_subscription.cpp
     serein/services/transcription.cpp
     serein/services/system_ai.cpp
 )

@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package serein.settings.v1;
 
+import "buf/validate/validate.proto";
 import "serein/options/v1/options.proto";
 
 // Translation and transcription services; the services page edits them by hand.
@@ -23,4 +24,11 @@ message ServicesSettings {
     custom_ui: true
     refresh: [REFRESH_COMPOSE_BUTTONS]
   }];
+  optional string proxy_subscription = 3 [
+    (serein.options.v1.field) = {
+      title: "lng_serein_proxy_subscription"
+      custom_ui: true
+    },
+    (buf.validate.field).string = {max_len: 2048, pattern: "^(https://[^\\s]+)?$"}
+  ];
 }

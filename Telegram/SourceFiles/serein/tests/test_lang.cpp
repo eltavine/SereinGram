@@ -20,6 +20,7 @@ void TestReadingPositions();
 void TestLocalPins();
 void TestSummary();
 void TestTextReplacements();
+void TestProxySubscription();
 void TestChinese();
 void TestAliases();
 void TestStickerCatalog();
@@ -121,6 +122,7 @@ int main() {
 		TestLocalPins();
 		TestSummary();
 		TestTextReplacements();
+		TestProxySubscription();
 		TestChinese();
 		TestAliases();
 		TestStickerCatalog();

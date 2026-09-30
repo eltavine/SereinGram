@@ -22,4 +22,12 @@ rpl::producer<bool> PreferSystemAiValue() {
 	return ForDevice().Value(Serein::ServiceSettings::kPreferSystemAi);
 }
 
+QString ProxySubscription() {
+	return ForDevice().Get(Serein::ServiceSettings::kProxySubscription);
+}
+
+rpl::producer<QString> ProxySubscriptionValue() {
+	return ForDevice().Value(Serein::ServiceSettings::kProxySubscription);
+}
+
 } // namespace Serein::Hooks::ServiceSettings

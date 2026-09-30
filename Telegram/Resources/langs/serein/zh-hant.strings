@@ -331,6 +331,13 @@
 "lng_serein_service_url" = "基礎 URL";
 "lng_serein_service_use_key" = "使用 API 金鑰驗證";
 "lng_serein_services" = "翻譯與轉寫服務";
+"lng_serein_proxy_subscription" = "代理訂閱";
+"lng_serein_proxy_subscription_about" = "填寫一個 HTTPS 位址，內容為 Telegram 代理連結列表（tg://proxy、t.me/proxy 或 t.me/socks）。「立即更新」會下載並加入列表中尚未存在的代理。其他協定需要藉助外部代理程式。";
+"lng_serein_proxy_subscription_update" = "立即更新";
+"lng_serein_proxy_subscription_done" = "已加入代理：{added}。已在列表中：{existing}。";
+"lng_serein_proxy_subscription_empty" = "訂閱中沒有受支援的代理連結。";
+"lng_serein_proxy_subscription_failed" = "無法下載代理訂閱。";
+"lng_serein_proxy_subscription_invalid" = "請先填寫 HTTPS 位址。";
 "lng_serein_services_about" = "外部服務僅接收你手動請求處理的文字或音訊。自動聊天翻譯仍使用原服務。API 金鑰儲存在系統憑證庫，不隨設定匯出。";
 "lng_serein_draft_changed" = "預覽期間草稿已變更。請關閉預覽並重新翻譯目前草稿。";
 "lng_serein_inherit" = "跟隨上游";

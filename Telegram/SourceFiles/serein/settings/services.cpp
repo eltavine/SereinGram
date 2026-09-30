@@ -4,6 +4,7 @@
 #include "core/application.h"
 #include "core/file_utilities.h"
 #include "lang/lang_keys.h"
+#include "serein/network/proxy_import.h"
 #include "serein/services/credentials.h"
 #include "serein/services/request.h"
 #include "serein/services/translation_protocol.h"
@@ -614,6 +615,42 @@ void ServicesBox(not_null<Ui::GenericBox*> box, ServicesConfig initial) {
 	box->addButton(tr::lng_box_ok(), [=] { box->closeBox(); });
 }
 
+void ProxySubscriptionBox(not_null<Ui::GenericBox*> box) {
+	box->setTitle(tr::lng_serein_proxy_subscription());
+	box->addRow(object_ptr<Ui::FlatLabel>(
+		box,
+		tr::lng_serein_proxy_subscription_about(),
+		st::boxLabel));
+	const auto field = box->addRow(object_ptr<Ui::InputField>(
+		box,
+		st::defaultInputField,
+		Ui::InputField::Mode::SingleLine,
+		rpl::single(u"https://"_q),
+		ForDevice().Get(ServiceSettings::kProxySubscription)));
+	field->setMaxLength(2048);
+	box->setFocusCallback([=] { field->setFocusFast(); });
+	const auto save = [=] {
+		const auto url = field->getLastText().trimmed();
+		if (!ForDevice().Set(ServiceSettings::kProxySubscription, url)) {
+			field->showError();
+			return false;
+		}
+		return true;
+	};
+	box->addButton(tr::lng_serein_proxy_subscription_update(), [=] {
+		if (save() && !field->getLastText().trimmed().isEmpty()) {
+			Network::UpdateProxySubscription(box->uiShow());
+			box->closeBox();
+		}
+	});
+	box->addButton(tr::lng_settings_save(), [=] {
+		if (save()) {
+			box->closeBox();
+		}
+	});
+	box->addButton(tr::lng_cancel(), [=] { box->closeBox(); });
+}
+
 const auto kMeta = BuildHelper({
 	.id = ServicesSection::Id(),
 	.parentId = HomeId(),
@@ -678,6 +715,20 @@ const auto kMeta = BuildHelper({
 		.keywords = { u"SereinGram"_q, u"LLM"_q, u"API"_q },
 	});
 	builder.addDividerText(tr::lng_serein_services_about());
+	builder.addButton({
+		.id = u"serein/services/proxy-subscription"_q,
+		.title = tr::lng_serein_proxy_subscription(),
+		.st = &st::settingsButtonNoIcon,
+		.label = ForDevice().Value(ServiceSettings::kProxySubscription)
+			| rpl::map([](const QString &url) {
+				return url.isEmpty()
+					? tr::lng_serein_config_off(tr::now)
+					: QUrl(url).host();
+			}),
+		.onClick = [=] { controller->show(Box(ProxySubscriptionBox)); },
+		.keywords = { u"proxy"_q, u"subscription"_q, u"MTProto"_q },
+	});
+	builder.addDividerText(tr::lng_serein_proxy_subscription_about());
 });
 
 const SectionBuildMethod ServicesSection::kBuild = kMeta.build;

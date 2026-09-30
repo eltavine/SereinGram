@@ -416,6 +416,14 @@ void TestOptions() {
 	Require(std::ranges::all_of(accountScoped, [](Scope scope) {
 		return scope == Scope::Account;
 	}), "per-account data stored for the whole device");
+	Require(ServiceSettings::kProxySubscription.validate(QString())
+		&& ServiceSettings::kProxySubscription.validate(
+			QString::fromLatin1("https://example.com/proxies.txt"))
+		&& !ServiceSettings::kProxySubscription.validate(
+			QString::fromLatin1("http://example.com/proxies.txt"))
+		&& !ServiceSettings::kProxySubscription.validate(
+			QString::fromLatin1("https://a b")),
+		"proxy subscription accepts only HTTPS addresses");
 	const auto deviceScoped = std::array{
 		Privacy::kDemoMode.scope,
 		Messages::kFadeDeletedMessages.scope,
