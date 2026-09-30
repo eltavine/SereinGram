@@ -15,12 +15,14 @@ set(serein_sources
     serein/features/ghost/model/policy.cpp
     serein/features/history/deleted_marks.cpp
     serein/features/history/model/recorder.cpp
+    serein/features/updates/model/release.cpp
     serein/adapters/openssl/aes_gcm_cipher.cpp
     serein/hooks/ghost.cpp
     serein/app/ghost_read.cpp
     serein/app/lifecycle.cpp
     serein/app/modules.cpp
     serein/app/peer_menu.cpp
+    serein/app/updates.cpp
     serein/app/ghost_menu.cpp
     serein/app/ghost_send.cpp
     serein/display/view_refresher.cpp

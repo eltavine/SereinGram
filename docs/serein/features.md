@@ -21,7 +21,7 @@
 | SG-PLAT-04 | 三平台 CI：构建、`test_serein`、全部守卫 | D | Planned | P0 |
 | SG-PLAT-05 | 发行版打包：Flatpak 清单、AUR PKGBUILD、`DESKTOP_APP_USE_PACKAGED` 依赖清单 | Ad | Planned | P2 |
 | SG-PLAT-06 | Windows arm64 构建（暂从 CI 矩阵移除：上游 ffmpeg n8.1.3 在 arm64 上生成的 `epel_neon.d` 依赖文件格式错误，导致依赖构建失败） | T | Planned | P2 |
-| SG-PLAT-07 | 独立更新检查（GitHub Releases，默认不自动下载） | D | Planned | P2 |
+| SG-PLAT-07 | 独立更新检查（GitHub Releases，默认不自动下载）（界面设置“在 GitHub 上检查更新”默认开启：启动 30 秒后及每 24 小时查询最新正式版，只接受 github.com 的发布页链接，发现新版本时提示链接，不自动下载；官方更新通道在构建中关闭） | D | In Progress | P2 |
 | SG-PLAT-08 | API 凭据构建期注入（Secrets 或本地文件），禁止使用官方客户端凭据 | D | Implemented | P0 |
 
 ## BRAND 品牌与身份

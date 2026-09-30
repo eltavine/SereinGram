@@ -49,6 +49,13 @@
       "app": false,
       "libraries": true
     },
+    "serein/features/updates/model/": {
+      "own": [
+        "serein/features/updates/model/"
+      ],
+      "app": false,
+      "libraries": true
+    },
     "serein/hooks/": {
       "own": [
         "serein/hooks/",

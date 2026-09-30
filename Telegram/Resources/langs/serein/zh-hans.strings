@@ -221,6 +221,9 @@
 "lng_serein_accounts" = "账号";
 "lng_serein_more_accounts" = "允许登录最多 20 个账号";
 "lng_serein_more_accounts_note" = "超出官方上限的账号只保存在本机。官方客户端最多只能打开其中 6 个。";
+"lng_serein_updates" = "更新";
+"lng_serein_check_updates" = "在 GitHub 上检查更新";
+"lng_serein_update_available" = "SereinGram {version} 已在 GitHub 发布。";
 "lng_serein_startup_folder" = "启动时打开的文件夹";
 "lng_serein_startup_folder_last" = "上次打开的文件夹";
 "lng_serein_startup_folder_specific" = "指定文件夹";

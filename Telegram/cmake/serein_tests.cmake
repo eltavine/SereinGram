@@ -5,6 +5,7 @@ set(serein_test_sources
     serein/tests/test_options.cpp
     serein/tests/test_spacing.cpp
     serein/tests/test_services.cpp
+    serein/tests/test_updates.cpp
     serein/tests/test_filters.cpp
     serein/tests/test_links.cpp
     serein/tests/test_codec.cpp
@@ -13,6 +14,7 @@ set(serein_test_sources
     serein/adapters/openssl/aes_gcm_cipher.cpp
     serein/features/ghost/model/policy.cpp
     serein/features/history/model/recorder.cpp
+    serein/features/updates/model/release.cpp
     serein/schema/codec.cpp
     serein/chats/validators.cpp
     serein/compose/spacing.cpp

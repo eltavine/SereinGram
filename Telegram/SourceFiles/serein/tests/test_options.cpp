@@ -151,7 +151,7 @@ void TestOptions() {
 		Flag::RefreshDialogList), "stories use widget refresh");
 	auto interface = Registry();
 	Interface::RegisterOptions(interface);
-	Require(interface.All().size() == 15, "interface option count");
+	Require(interface.All().size() == 16, "interface option count");
 	Require(!Interface::kMoreAccounts.fallback
 		&& Interface::kMoreAccounts.scope == Scope::Device,
 		"more accounts must be a device opt-in");

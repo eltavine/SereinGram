@@ -126,4 +126,12 @@ rpl::producer<bool> MoreAccountsValue() {
 	return ForDevice().Value(Serein::Interface::kMoreAccounts);
 }
 
+bool CheckUpdates() {
+	return ForDevice().Get(Serein::Interface::kCheckUpdates);
+}
+
+rpl::producer<bool> CheckUpdatesValue() {
+	return ForDevice().Value(Serein::Interface::kCheckUpdates);
+}
+
 } // namespace Serein::Hooks::Interface

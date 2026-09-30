@@ -11,6 +11,7 @@ void TestOptions();
 void TestSpacing();
 void TestServices();
 void TestTranslationProtocols();
+void TestUpdates();
 void TestFilters();
 void TestLinks();
 void TestCodec();
@@ -97,6 +98,7 @@ int main() {
 		TestSpacing();
 		TestServices();
 		TestTranslationProtocols();
+		TestUpdates();
 		TestFilters();
 		TestLinks();
 		TestCodec();

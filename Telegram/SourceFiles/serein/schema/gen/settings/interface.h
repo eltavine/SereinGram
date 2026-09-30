@@ -133,6 +133,13 @@ inline constexpr auto kMoreAccounts = Option<bool>{
 	Category::Interface,
 	"lng_serein_more_accounts",
 	0 };
+inline constexpr auto kCheckUpdates = Option<bool>{
+	"serein.checkUpdates",
+	Scope::Device,
+	true,
+	Category::Interface,
+	"lng_serein_check_updates",
+	0 };
 
 inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kBubbleRoundness));
@@ -150,6 +157,7 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kOtherDeviceNotificationDelay));
 	Expects(registry.Add(kHalfwidthUiPunctuation));
 	Expects(registry.Add(kMoreAccounts));
+	Expects(registry.Add(kCheckUpdates));
 }
 
 } // namespace Serein::Interface

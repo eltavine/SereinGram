@@ -36,5 +36,7 @@ namespace Serein::Hooks::Interface {
 [[nodiscard]] rpl::producer<bool> HalfwidthUiPunctuationValue();
 [[nodiscard]] bool MoreAccounts();
 [[nodiscard]] rpl::producer<bool> MoreAccountsValue();
+[[nodiscard]] bool CheckUpdates();
+[[nodiscard]] rpl::producer<bool> CheckUpdatesValue();
 
 } // namespace Serein::Hooks::Interface

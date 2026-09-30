@@ -10,7 +10,7 @@
 
 namespace Serein::Interface {
 
-inline const auto kToggleRows = std::array<ToggleRow, 8>{ {
+inline const auto kToggleRows = std::array<ToggleRow, 9>{ {
 	{
 		&kWideChannelPosts,
 		tr::lng_serein_wide_channel_posts,
@@ -58,6 +58,12 @@ inline const auto kToggleRows = std::array<ToggleRow, 8>{ {
 		tr::lng_serein_more_accounts,
 		u"serein/interface/more-accounts"_q,
 		{ u"accounts"_q, u"limit"_q, u"multiple"_q },
+	},
+	{
+		&kCheckUpdates,
+		tr::lng_serein_check_updates,
+		u"serein/interface/check-updates"_q,
+		{ u"updates"_q, u"GitHub"_q, u"version"_q },
 	},
 } };
 
@@ -120,6 +126,12 @@ inline void AddLayout(
 	});
 	AddToggle(builder, kToggleRows[7]);
 	AddNote(builder, tr::lng_serein_more_accounts_note);
+	AddSection(builder, {
+		u"serein/interface/updates"_q,
+		tr::lng_serein_updates,
+		{ u"updates"_q },
+	});
+	AddToggle(builder, kToggleRows[8]);
 }
 
 } // namespace Serein::Interface

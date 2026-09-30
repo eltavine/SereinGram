@@ -1,5 +1,7 @@
 #include "serein/app/modules.h"
 
+#include "serein/app/updates.h"
+
 #include "serein/hooks/history.h"
 #include "serein/hooks/interface/roundness.h"
 #include "serein/hooks/interface/text.h"
@@ -13,6 +15,7 @@ constexpr auto kModules = std::array{
 	Module{ "interface.roundness", Interface::StartRoundness },
 	Module{ "interface.text", Interface::StartUiText },
 	Module{ "history.retention", nullptr, Hooks::PruneHistory },
+	Module{ "updates.check", StartUpdateChecks },
 };
 
 } // namespace

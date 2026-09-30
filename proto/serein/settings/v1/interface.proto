@@ -94,4 +94,9 @@ message InterfaceSettings {
     keywords: ["accounts", "limit", "multiple"]
     note: "lng_serein_more_accounts_note"
   }];
+  optional bool check_updates = 16 [(serein.options.v1.field) = {
+    section: {title: "lng_serein_updates" id: "updates" keywords: ["updates"]}
+    keywords: ["updates", "GitHub", "version"]
+    default_bool: true
+  }];
 }
