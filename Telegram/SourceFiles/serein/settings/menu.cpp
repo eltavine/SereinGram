@@ -6,6 +6,7 @@
 #include "serein/hooks/core/language.h"
 #include "lang/lang_instance.h"
 #include "lang/lang_keys.h"
+#include "lang_auto_counts.h"
 #include "settings/settings_builder.h"
 #include "ui/vertical_list.h"
 #include "ui/layers/generic_box.h"
