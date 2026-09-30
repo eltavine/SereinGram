@@ -54,13 +54,15 @@ Nagram 的品牌政策要求分支使用不同品牌并替换 Nagram 名称与�
 
 ## GHOST 幽灵模式
 
+策略模型与按账号保存的设置（`proto/serein/settings/v1/ghost.proto`、`serein/features/ghost/model/`）已实现并有测试；上游挂钩与设置界面待接入。
+
 | ID | 功能 | 来源 | 状态 | 优先级 |
 | --- | --- | --- | --- | --- |
-| SG-GHOST-01 | 不发送消息已读回执（私聊、群组、频道、讨论、话题、提及与反应已读） | Ad Aa Na | Planned | P1 |
-| SG-GHOST-02 | 不发送动态已读与动态浏览 | Ad Aa Na | Planned | P1 |
-| SG-GHOST-03 | 不发送在线状态；发送消息后立即恢复离线 | Ad Aa Na | Planned | P1 |
-| SG-GHOST-04 | 不发送输入、上传、选贴纸等活动状态 | Ad Aa Na | Planned | P1 |
-| SG-GHOST-05 | 总开关、子项锁定，全局策略与按账号策略 | Ad Na | Planned | P1 |
+| SG-GHOST-01 | 不发送消息已读回执（私聊、群组、频道、讨论、话题、提及与反应已读） | Ad Aa Na | In Progress | P1 |
+| SG-GHOST-02 | 不发送动态已读与动态浏览 | Ad Aa Na | In Progress | P1 |
+| SG-GHOST-03 | 不发送在线状态；发送消息后立即恢复离线 | Ad Aa Na | In Progress | P1 |
+| SG-GHOST-04 | 不发送输入、上传、选贴纸等活动状态 | Ad Aa Na | In Progress | P1 |
+| SG-GHOST-05 | 总开关、子项锁定，全局策略与按账号策略 | Ad Na | In Progress | P1 |
 | SG-GHOST-06 | 主菜单、托盘与聊天顶部的快速切换入口和状态指示 | Ad Na | Planned | P1 |
 | SG-GHOST-07 | 阅读频道消息时不增加浏览数 | Ad | Planned | P2 |
 | SG-GHOST-08 | 发送消息或互动后自动标记该对话已读（可选） | Ad Na | Planned | P2 |

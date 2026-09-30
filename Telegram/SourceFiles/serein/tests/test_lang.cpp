@@ -12,6 +12,7 @@ void TestServices();
 void TestFilters();
 void TestLinks();
 void TestCodec();
+void TestGhost();
 void TestHistoryStore();
 
 namespace {
@@ -94,6 +95,7 @@ int main() {
 		TestFilters();
 		TestLinks();
 		TestCodec();
+		TestGhost();
 #ifdef SEREIN_HAVE_QT_SQL
 		TestHistoryStore();
 #endif // SEREIN_HAVE_QT_SQL

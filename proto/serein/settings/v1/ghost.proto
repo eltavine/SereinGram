@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package serein.settings.v1;
+
+import "serein/options/v1/options.proto";
+
+message GhostSettings {
+  option (serein.options.v1.page) = {
+    cpp_namespace: "Ghost"
+    scope: SCOPE_ACCOUNT
+    category: CATEGORY_PRIVACY
+  };
+
+  optional bool ghost_mode = 1;
+  optional bool ghost_hide_read_receipts = 2 [(serein.options.v1.field) = {default_bool: true}];
+  optional bool ghost_hide_story_views = 3 [(serein.options.v1.field) = {default_bool: true}];
+  optional bool ghost_hide_online = 4 [(serein.options.v1.field) = {default_bool: true}];
+  optional bool ghost_hide_typing = 5 [(serein.options.v1.field) = {default_bool: true}];
+  optional bool ghost_hide_view_increments = 6;
+  optional bool ghost_mark_read_after_sending = 7;
+  optional bool ghost_use_scheduled_messages = 8;
+}

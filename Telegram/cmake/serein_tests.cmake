@@ -8,6 +8,8 @@ set(serein_test_sources
     serein/tests/test_filters.cpp
     serein/tests/test_links.cpp
     serein/tests/test_codec.cpp
+    serein/tests/test_ghost.cpp
+    serein/features/ghost/model/policy.cpp
     serein/schema/codec.cpp
     serein/chats/validators.cpp
     serein/compose/spacing.cpp
