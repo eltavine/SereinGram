@@ -35,6 +35,8 @@ message InterfaceSettings {
     (serein.options.v1.field) = {
       section: {title: "lng_serein_message_style" id: "message-style" keywords: ["messages", "style"]}
       refresh: REFRESH_MESSAGE_VIEW
+      keywords: ["text", "width"]
+      number: {zero_label: "lng_serein_preview_follow" suffix: "%" hint: "lng_serein_text_width_hint"}
     },
     (buf.validate.field).int32 = {gte: 50, lte: 400}
   ];

@@ -106,36 +106,6 @@ void AddRoundness(
 	});
 }
 
-void TextWidthBox(not_null<Ui::GenericBox*> box) {
-	box->setTitle(tr::lng_serein_text_message_width());
-	const auto current = ForDevice().Get(Interface::kTextMessageWidth);
-	const auto field = box->addRow(object_ptr<Ui::InputField>(
-		box,
-		st::defaultInputField,
-		tr::lng_serein_text_width_hint(),
-		current ? QString::number(current) : QString()));
-	field->setInputMethodHints(Qt::ImhDigitsOnly);
-	box->setFocusCallback([=] { field->setFocusFast(); });
-	const auto submit = [=] {
-		const auto text = field->getLastText().trimmed();
-		auto valid = false;
-		const auto value = text.isEmpty() ? 0 : text.toInt(&valid);
-		if ((!text.isEmpty() && !valid)
-			|| (value != 0 && (value < 50 || value > 400))) {
-			field->showError();
-			return;
-		}
-		if (value != current) {
-			Expects(ForDevice().Set(Interface::kTextMessageWidth, value));
-		}
-		box->closeBox();
-	};
-	field->submits(
-	) | rpl::on_next([=](auto) { submit(); }, field->lifetime());
-	box->addButton(tr::lng_settings_save(), submit);
-	box->addButton(tr::lng_cancel(), [=] { box->closeBox(); });
-}
-
 QString DelayLabel(int milliseconds) {
 	return milliseconds
 		? QString::number(milliseconds / 1000.0)
@@ -221,20 +191,6 @@ const auto kMeta = BuildHelper({
 					ShowRestartPrompt(controller);
 				}, button->lifetime());
 			}
-		},
-		.textMessageWidth = [&] {
-			builder.addButton({
-				.id = u"serein/interface/text-width"_q,
-				.title = tr::lng_serein_text_message_width(),
-				.st = &st::settingsButtonNoIcon,
-				.label = ForDevice().Value(Interface::kTextMessageWidth)
-					| rpl::map([](int value) {
-						return value ? QString::number(value) + u"%"_q
-							: tr::lng_serein_preview_follow(tr::now);
-					}),
-				.onClick = [=] { controller->show(Box(TextWidthBox)); },
-				.keywords = { u"text"_q, u"width"_q },
-			});
 		},
 		.mainMenu = [&] {
 			builder.addButton({

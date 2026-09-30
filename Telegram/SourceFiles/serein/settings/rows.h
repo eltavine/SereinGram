@@ -5,6 +5,7 @@
 #include "serein/core/options.h"
 #include "settings/settings_builder.h"
 
+#include <optional>
 #include <span>
 #include <type_traits>
 #include <vector>
@@ -34,6 +35,7 @@ struct NumberRow {
 	int maximum = 0;
 	tr::phrase<> zeroLabel;
 	Fn<QString(int)> format;
+	std::optional<tr::phrase<>> hint;
 };
 
 struct ChoiceRow {

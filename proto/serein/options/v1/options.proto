@@ -84,6 +84,10 @@ message NumberInput {
   string zero_label = 1;
   // Lang key of a {count} plural used for every other value.
   string count_format = 2;
+  // Appended to every other value when there is no count_format.
+  string suffix = 3;
+  // Lang key of the input placeholder, which defaults to zero_label.
+  string hint = 4;
 }
 
 message Section {

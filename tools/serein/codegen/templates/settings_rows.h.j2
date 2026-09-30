@@ -63,6 +63,13 @@ inline void AddLayout(
 		.format = [](int value) {
 			return tr::{{ item.count_format }}(tr::now, lt_count, value);
 		},
+{% elif item.suffix %}
+		.format = [](int value) {
+			return QString::number(value) + u{{ item.suffix | tojson }}_q;
+		},
+{% endif %}
+{% if item.hint %}
+		.hint = tr::{{ item.hint }},
 {% endif %}
 	});
 {% elif item.kind == "choice" %}

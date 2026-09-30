@@ -35,7 +35,7 @@ void NumberBox(
 	const auto field = box->addRow(object_ptr<Ui::InputField>(
 		box,
 		st::defaultInputField,
-		row.zeroLabel(),
+		row.hint ? (*row.hint)() : row.zeroLabel(),
 		current ? QString::number(current) : QString()));
 	field->setInputMethodHints(Qt::ImhDigitsOnly);
 	box->setFocusCallback([=] { field->setFocusFast(); });

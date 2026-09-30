@@ -120,6 +120,7 @@ class LayoutItem:
     values: list = field(default_factory=list)
     labels: list = field(default_factory=list)
     suffix: str = ""
+    hint: str = ""
 
 
 @dataclass
@@ -390,6 +391,8 @@ def number_item(item, option, number, stem, place):
         maximum=int(rules["lte"]),
         zero_label=number["zeroLabel"],
         count_format=number.get("countFormat", ""),
+        suffix=number.get("suffix", ""),
+        hint=number.get("hint", ""),
     )
 
 
@@ -425,7 +428,8 @@ def check_titles(pages, known):
     titles |= {label for page in pages for item in page.layout
                for label in item.labels}
     titles |= {label for page in pages for item in page.layout
-               for label in (item.zero_label, item.count_format) if label}
+               for label in (item.zero_label, item.count_format, item.hint)
+               if label}
     missing = sorted(title for title in titles if title not in known)
     if missing:
         raise SchemaError(f"settings rows use unknown strings: {missing}")

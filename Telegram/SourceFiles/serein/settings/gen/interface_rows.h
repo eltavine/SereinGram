@@ -71,7 +71,6 @@ struct CustomRows {
 	CustomRow bubbleRoundness;
 	CustomRow avatarRoundness;
 	CustomRow uniformAvatarShapes;
-	CustomRow textMessageWidth;
 	CustomRow mainMenu;
 	CustomRow notificationDelay;
 	CustomRow otherDeviceNotificationDelay;
@@ -93,7 +92,19 @@ inline void AddLayout(
 		tr::lng_serein_message_style,
 		{ u"messages"_q, u"style"_q },
 	});
-	custom.textMessageWidth();
+	AddNumber(builder, {
+		.option = &kTextMessageWidth,
+		.title = tr::lng_serein_text_message_width,
+		.id = u"serein/interface/text-message-width"_q,
+		.keywords = { u"text"_q, u"width"_q },
+		.minimum = 50,
+		.maximum = 400,
+		.zeroLabel = tr::lng_serein_preview_follow,
+		.format = [](int value) {
+			return QString::number(value) + u"%"_q;
+		},
+		.hint = tr::lng_serein_text_width_hint,
+	});
 	AddToggle(builder, kToggleRows[0]);
 	AddToggle(builder, kToggleRows[1]);
 	AddToggle(builder, kToggleRows[2]);
