@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package serein.config.v1;
+
+import "buf/validate/validate.proto";
+import "serein/options/v1/options.proto";
+
+option (serein.options.v1.file) = {cpp_namespace: "Compose"};
+
+// User text replacements applied while typing in message fields.
+message TextReplacements {
+  option (serein.options.v1.document) = {
+    version: 1
+    validator: "ValidTextReplacements"
+  };
+  option (serein.options.v1.codec) = {require_fields: true};
+
+  repeated TextReplacement rules = 1 [(buf.validate.field).repeated.max_items = 100];
+}
+
+message TextReplacement {
+  option (serein.options.v1.codec) = {require_fields: true};
+
+  string from = 1 [(buf.validate.field).string = {min_len: 1, max_len: 32}];
+  string to = 2 [(buf.validate.field).string.max_len = 256];
+}

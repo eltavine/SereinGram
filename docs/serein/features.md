@@ -180,7 +180,7 @@ SG-HIST-05 的“已编辑”标记文字已由 C09 实现，删除标记随 SG-
 | SG-COMPOSE-05 | 先转发后附言（D27） | Na | Implemented | P2 |
 | SG-COMPOSE-06 | 草稿翻译与系统 AI 草稿（H04） | Ni | Implemented | P2 |
 | SG-COMPOSE-07 | 静音发送策略：从不、预设、始终（“按对话”由上游的静音发送开关提供；写作页新增“总是静音发送”，在 `Api::SendAction` 的统一挂钩中生效） | Ni | Implemented | P2 |
-| SG-COMPOSE-08 | 文本替换规则 | Na | Planned | P3 |
+| SG-COMPOSE-08 | 文本替换规则（写作设置“文本替换”：每行一条“文本 => 替换内容”，最多 100 条，存为 proto 声明的配置文档；消息输入框在上游默认的即时替换之外加入这些规则，随设置变化实时生效，受上游“自动替换表情”开关控制） | Na | Implemented | P3 |
 | SG-COMPOSE-09 | 格式工具栏 | Ni | Planned | P3 |
 
 ## MENU 消息菜单

@@ -182,6 +182,14 @@ rpl::producer<QByteArray> QuickRepliesValue() {
 	return ForDevice().Value(Serein::Compose::kQuickReplies);
 }
 
+QByteArray TextReplacements() {
+	return ForDevice().Get(Serein::Compose::kTextReplacements);
+}
+
+rpl::producer<QByteArray> TextReplacementsValue() {
+	return ForDevice().Value(Serein::Compose::kTextReplacements);
+}
+
 bool ConfirmSticker() {
 	return ForDevice().Get(Serein::Compose::kConfirmSticker);
 }

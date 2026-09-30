@@ -13,6 +13,7 @@ set(serein_test_sources
     serein/tests/test_reading_positions.cpp
     serein/tests/test_local_pins.cpp
     serein/tests/test_summary.cpp
+    serein/tests/test_text_replacements.cpp
     serein/tests/test_chinese.cpp
     serein/tests/test_aliases.cpp
     serein/tests/test_sticker_catalog.cpp
@@ -42,6 +43,7 @@ set(serein_test_sources
     serein/snapshot/rules.cpp
     serein/compose/mention_query.cpp
     serein/compose/spacing.cpp
+    serein/compose/text_replacements.cpp
     serein/compose/validators.cpp
     serein/core/exchange.cpp
     serein/interface/main_menu_model.cpp

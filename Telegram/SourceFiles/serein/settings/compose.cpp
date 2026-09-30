@@ -1,6 +1,7 @@
 #include "serein/settings/compose.h"
 
 #include "serein/compose/options.h"
+#include "serein/compose/text_replacements.h"
 #include "serein/hooks/compose/text.h"
 #include "serein/settings/gen/compose_rows.h"
 #include "serein/settings/home.h"
@@ -12,6 +13,7 @@
 #include "ui/widgets/buttons.h"
 #include "ui/widgets/checkbox.h"
 #include "ui/widgets/fields/input_field.h"
+#include "ui/widgets/labels.h"
 #include "ui/wrap/vertical_layout.h"
 #include "window/window_session_controller.h"
 #include "styles/style_menu_icons.h"
@@ -88,6 +90,39 @@ void QuickRepliesBox(not_null<Ui::GenericBox*> box) {
 	box->addButton(tr::lng_cancel(), [=] { box->closeBox(); });
 }
 
+void TextReplacementsBox(not_null<Ui::GenericBox*> box) {
+	box->setTitle(tr::lng_serein_text_replacements());
+	box->addRow(object_ptr<Ui::FlatLabel>(
+		box,
+		tr::lng_serein_text_replacements_about(),
+		st::boxLabel));
+	const auto current = Compose::ReadTextReplacements(
+		ForDevice().Get(Compose::kTextReplacements)
+	).value_or(Compose::TextReplacements());
+	const auto field = box->addRow(object_ptr<Ui::InputField>(
+		box,
+		st::defaultInputField,
+		Ui::InputField::Mode::MultiLine,
+		rpl::single(u"brb => be right back"_q),
+		Compose::FormatReplacementLines(current)));
+	field->setMaxLength(40000);
+	box->setFocusCallback([=] { field->setFocusFast(); });
+	box->addButton(tr::lng_settings_save(), [=] {
+		const auto parsed = Compose::ParseReplacementLines(
+			field->getLastText());
+		if (!parsed) {
+			field->showError();
+			box->showToast(tr::lng_serein_text_replacements_invalid(tr::now));
+			return;
+		}
+		Expects(ForDevice().Set(
+			Compose::kTextReplacements,
+			Compose::WriteTextReplacements(*parsed)));
+		box->closeBox();
+	});
+	box->addButton(tr::lng_cancel(), [=] { box->closeBox(); });
+}
+
 const auto kMeta = BuildHelper({
 	.id = ComposeSection::Id(),
 	.parentId = HomeId(),
@@ -118,6 +153,25 @@ const auto kMeta = BuildHelper({
 				.st = &st::settingsButtonNoIcon,
 				.onClick = [=] { controller->show(Box(QuickRepliesBox)); },
 				.keywords = { u"quick"_q, u"reply"_q },
+			});
+		},
+		.textReplacements = [&] {
+			builder.addButton({
+				.id = u"serein/compose/text-replacements"_q,
+				.title = tr::lng_serein_text_replacements(),
+				.st = &st::settingsButtonNoIcon,
+				.label = ForDevice().Value(Compose::kTextReplacements)
+					| rpl::map([](const QByteArray &raw) {
+						const auto rules = Compose::ReadTextReplacements(raw);
+						const auto count = rules ? int(rules->rules.size()) : 0;
+						return count
+							? QString::number(count)
+							: tr::lng_serein_config_off(tr::now);
+					}),
+				.onClick = [=] {
+					controller->show(Box(TextReplacementsBox));
+				},
+				.keywords = { u"replace"_q, u"shortcut"_q, u"text"_q },
 			});
 		},
 	});

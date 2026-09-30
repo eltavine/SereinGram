@@ -172,6 +172,7 @@ inline const auto kToggleRows = std::array<ToggleRow, 26>{ {
 struct CustomRows {
 	CustomRow defaultCodeLanguage;
 	CustomRow quickReplies;
+	CustomRow textReplacements;
 };
 
 inline void AddLayout(
@@ -221,6 +222,7 @@ inline void AddLayout(
 	AddToggle(builder, kToggleRows[18]);
 	custom.defaultCodeLanguage();
 	custom.quickReplies();
+	custom.textReplacements();
 	AddSection(builder, {
 		u"serein/compose/send-confirmation"_q,
 		tr::lng_serein_send_confirmation,

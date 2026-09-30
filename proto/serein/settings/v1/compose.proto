@@ -125,6 +125,10 @@ message ComposeSettings {
       default_string: "{\"version\":1,\"replies\":[\"\",\"\"]}"
     }
   ];
+  optional bytes text_replacements = 30 [(serein.options.v1.field) = {
+    custom_ui: true
+    validator: "ValidTextReplacementsBytes"
+  }];
   optional bool confirm_sticker = 22 [(serein.options.v1.field) = {
     section: {title: "lng_serein_send_confirmation" id: "send-confirmation" keywords: ["send", "confirm"]}
     keywords: ["sticker", "confirm"]

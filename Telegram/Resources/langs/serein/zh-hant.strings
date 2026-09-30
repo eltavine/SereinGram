@@ -279,6 +279,9 @@
 "lng_serein_quick_reply_one" = "快速回覆 1";
 "lng_serein_quick_reply_two" = "快速回覆 2";
 "lng_serein_quick_reply_insert" = "插入快速回覆 {index}";
+"lng_serein_text_replacements" = "文字替換";
+"lng_serein_text_replacements_about" = "每行一條規則：文字 => 替換內容。在訊息輸入框中一輸入該文字就會被替換，需要開啟聊天設定中的「自動替換表情」。最多 100 條規則，每個觸發詞最多 32 個字元。";
+"lng_serein_text_replacements_invalid" = "每行都需要「=>」，觸發詞不能重複，長度為 1–32 個字元。";
 "lng_serein_mention_menu" = "在文字選單中顯示「提及…」";
 "lng_serein_mention_create" = "提及…";
 "lng_serein_mention_title" = "提及使用者";

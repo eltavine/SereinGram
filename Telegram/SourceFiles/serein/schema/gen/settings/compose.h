@@ -7,6 +7,7 @@
 namespace Serein::Compose {
 
 [[nodiscard]] bool ValidQuickReplies(const QByteArray &value);
+[[nodiscard]] bool ValidTextReplacementsBytes(const QByteArray &value);
 
 inline constexpr auto kHideAttachButton = Option<bool>{
 	"serein.hideAttachButton",
@@ -171,6 +172,14 @@ inline const auto kQuickReplies = Option<QByteArray>{
 	"lng_serein_quick_replies",
 	0,
 	&ValidQuickReplies };
+inline const auto kTextReplacements = Option<QByteArray>{
+	"serein.textReplacements",
+	Scope::Device,
+	QByteArray(),
+	Category::Compose,
+	"lng_serein_text_replacements",
+	0,
+	&ValidTextReplacementsBytes };
 inline constexpr auto kConfirmSticker = Option<bool>{
 	"serein.confirmSticker",
 	Scope::Device,
@@ -244,6 +253,7 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kMentionMenu));
 	Expects(registry.Add(kDefaultCodeLanguage));
 	Expects(registry.Add(kQuickReplies));
+	Expects(registry.Add(kTextReplacements));
 	Expects(registry.Add(kConfirmSticker));
 	Expects(registry.Add(kConfirmGif));
 	Expects(registry.Add(kPreviewVoice));

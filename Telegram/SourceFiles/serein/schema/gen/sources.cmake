@@ -9,6 +9,7 @@ set(serein_generated_sources
     serein/schema/gen/config/services.cpp
     serein/schema/gen/config/snapshot.cpp
     serein/schema/gen/config/sticker_catalog.cpp
+    serein/schema/gen/config/text_replacements.cpp
     serein/schema/gen/history/record.cpp
 )
 set(serein_generated_hook_sources

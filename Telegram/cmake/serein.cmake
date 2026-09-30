@@ -10,6 +10,7 @@ set(serein_sources
     serein/compose/placeholder.cpp
     serein/compose/spacing.cpp
     serein/compose/text.cpp
+    serein/compose/text_replacements.cpp
     serein/compose/validators.cpp
     serein/core/language.cpp
     serein/core/exchange.cpp

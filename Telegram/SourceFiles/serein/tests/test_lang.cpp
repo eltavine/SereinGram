@@ -19,6 +19,7 @@ void TestRecorders();
 void TestReadingPositions();
 void TestLocalPins();
 void TestSummary();
+void TestTextReplacements();
 void TestChinese();
 void TestAliases();
 void TestStickerCatalog();
@@ -119,6 +120,7 @@ int main() {
 		TestReadingPositions();
 		TestLocalPins();
 		TestSummary();
+		TestTextReplacements();
 		TestChinese();
 		TestAliases();
 		TestStickerCatalog();
