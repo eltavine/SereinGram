@@ -262,7 +262,7 @@ SG-HIST-05 的“已编辑”标记文字已由 C09 实现，删除标记随 SG-
 | ID | 功能 | 来源 | 状态 | 优先级 |
 | --- | --- | --- | --- | --- |
 | SG-TG-01 | Telegram 全部功能保留；Serein 功能全部关闭时行为与上游一致 | T | In Progress | P0 |
-| SG-TG-02 | 每个上游版本（beta 与 stable）同步一次，同步后三平台 CI 通过才发布 | T | Planned | P0 |
+| SG-TG-02 | 每个上游版本（beta 与 stable）同步一次，同步后三平台 CI 通过才发布（同步工具 `tools/serein/upstream_sync.py` 已就绪，流程见 ADR-0001） | T | In Progress | P0 |
 | SG-TG-03 | 上游侵入预算：上游文件数、新增行数、挂钩数在 CI 中统计并设上限 | D | Implemented | P0 |
 
 ## 需求族映射

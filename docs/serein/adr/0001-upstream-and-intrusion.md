@@ -31,3 +31,13 @@
 
 - 同步上游的流程是普通的 `git merge` 或 rebase 到新的 `dev`，不再依赖 jj。
 - Nagram-qt 中已实现的功能按功能族迁入新结构，旧的内联挂钩在迁移中收敛到门面。
+
+## 同步流程
+
+`python3 tools/serein/upstream_sync.py <上游标签或分支>` 在干净的工作区上执行一次同步：
+
+1. 按 `tools/serein/policy/upstream.json` 的 `upstream` 添加远端 `upstream` 并取回目标引用；目标必须包含当前基线 `base`，否则拒绝（上游历史被改写时需要人工判断）。
+2. 在 `sync/<引用>` 分支上 `git merge --no-ff`。
+3. 无冲突时把 `base` 移到新的上游提交，按新基线重新计算侵入预算，并以 Conventional Commits 格式提交合并；随后推送分支，三平台 CI 与全部守卫通过后才合入 `main` 并发布。
+4. 有冲突时保留合并现场，把冲突文件按“自有代码”“带挂钩的上游文件”“纯上游文件”分组列出。按 ADR 约定，冲突只应出现在挂钩与品牌文件中；纯上游文件出现冲突说明有未登记的改动。
+
