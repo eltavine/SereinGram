@@ -5,6 +5,7 @@ set(serein_generated_sources
     serein/schema/gen/config/main_menu.cpp
     serein/schema/gen/config/menu.cpp
     serein/schema/gen/config/quick_replies.cpp
+    serein/schema/gen/config/services.cpp
     serein/schema/gen/history/record.cpp
 )
 set(serein_generated_hook_sources

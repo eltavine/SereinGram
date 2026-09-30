@@ -25,12 +25,14 @@ bool FailExpected(Error &error, const QString &path, const char *what);
 [[nodiscard]] bool Read(const QJsonValue &json, bool &result, Error &error, const QString &path);
 [[nodiscard]] bool Read(const QJsonValue &json, int &result, Error &error, const QString &path);
 [[nodiscard]] bool Read(const QJsonValue &json, qint64 &result, Error &error, const QString &path);
+[[nodiscard]] bool Read(const QJsonValue &json, double &result, Error &error, const QString &path);
 [[nodiscard]] bool Read(const QJsonValue &json, QString &result, Error &error, const QString &path);
 [[nodiscard]] bool Read(const QJsonValue &json, QByteArray &result, Error &error, const QString &path);
 
 [[nodiscard]] QJsonValue Write(bool value);
 [[nodiscard]] QJsonValue Write(int value);
 [[nodiscard]] QJsonValue Write(qint64 value);
+[[nodiscard]] QJsonValue Write(double value);
 [[nodiscard]] QJsonValue Write(const QString &value);
 [[nodiscard]] QJsonValue Write(const QByteArray &value);
 
@@ -169,6 +171,14 @@ void WriteField(
 	if (value) {
 		object.insert(key, Write(*value));
 	}
+}
+
+template <typename Type>
+void WriteNullableField(
+		QJsonObject &object,
+		QLatin1StringView key,
+		const std::optional<Type> &value) {
+	object.insert(key, value ? Write(*value) : QJsonValue(QJsonValue::Null));
 }
 
 } // namespace Serein::Codec

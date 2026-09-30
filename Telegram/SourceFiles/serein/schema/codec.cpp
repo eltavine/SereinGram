@@ -87,6 +87,18 @@ QJsonValue Write(int value) {
 	return value;
 }
 
+bool Read(const QJsonValue &json, double &result, Error &error, const QString &path) {
+	if (!json.isDouble() || !std::isfinite(json.toDouble())) {
+		return FailExpected(error, path, "a finite number");
+	}
+	result = json.toDouble();
+	return true;
+}
+
+QJsonValue Write(double value) {
+	return value;
+}
+
 QJsonValue Write(qint64 value) {
 	return QString::number(value);
 }

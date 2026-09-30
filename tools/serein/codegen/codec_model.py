@@ -13,10 +13,11 @@ SCALARS = {
     "TYPE_INT64": ("qint64", "0"),
     "TYPE_STRING": ("QString", ""),
     "TYPE_BYTES": ("QByteArray", ""),
+    "TYPE_DOUBLE": ("double", "0."),
 }
 RULE_FAMILY = {
     "TYPE_INT32": "int32", "TYPE_INT64": "int64", "TYPE_STRING": "string",
-    "TYPE_ENUM": "enum",
+    "TYPE_ENUM": "enum", "TYPE_DOUBLE": "double",
 }
 COMPARE = {"const": "==", "gte": ">=", "gt": ">", "lte": "<=", "lt": "<"}
 
@@ -41,6 +42,8 @@ class Field:
     cpp_type: str
     default: str
     checks: list = field(default_factory=list)
+    optional: bool = False
+    nullable: bool = False
 
 
 @dataclass
@@ -87,6 +90,8 @@ def build_enum(enum):
 def scalar_condition(kind, name, value, expression, enum=None):
     if name in COMPARE and kind in ("int32", "int64"):
         return f"{expression} {COMPARE[name]} {int(value)}"
+    if name in COMPARE and kind == "double":
+        return f"{expression} {COMPARE[name]} {float(value)!r}"
     if name in ("in", "notIn") and kind in ("int32", "int64", "enum"):
         subject = f"int({expression})" if kind == "enum" else expression
         if name == "notIn":
@@ -263,7 +268,7 @@ def build_field(item, local_types, where, map_entries=None):
     member = item["jsonName"]
     checks = field_checks(item, member, item["jsonName"], kind, repeated, optional,
                           message_type, where)
-    return Field(member, item["jsonName"], cpp, default, checks), message_type
+    return Field(member, item["jsonName"], cpp, default, checks, optional), message_type
 
 
 def order_messages(messages, dependencies):
@@ -318,6 +323,10 @@ def build_file(file):
             if dependency:
                 needs.add(dependency)
         document = message.get("options", {}).get(DOCUMENT_EXTENSION, {})
+        require_fields = bool(message.get("options", {}).get(
+            CODEC_EXTENSION, {}).get("requireFields", False))
+        for built in fields:
+            built.nullable = built.optional and require_fields
         messages[message["name"]] = Message(
             name=message["name"], fields=fields,
             checks=[line for built in fields for line in built.checks],

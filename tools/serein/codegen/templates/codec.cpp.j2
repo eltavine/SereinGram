@@ -77,7 +77,7 @@ bool Read(
 QJsonValue Write(const {{ message.name }} &value) {
 	auto object = QJsonObject();
 {% for field in message.fields %}
-	Codec::WriteField(object, QLatin1StringView("{{ field.key }}"), value.{{ field.member }});
+	Codec::{{ "WriteNullableField" if field.nullable else "WriteField" }}(object, QLatin1StringView("{{ field.key }}"), value.{{ field.member }});
 {% endfor %}
 	return object;
 }

@@ -58,6 +58,48 @@ void TestServices() {
 	config.insert(u"transcription"_q, service.id);
 	Require(!ValidServices(config), "cross-kind selection accepted");
 	Require(!ValidServicesBytes("{broken"), "invalid JSON accepted");
+	invalid = serialized;
+	invalid.remove(u"temperature"_q);
+	Require(!ParseService(invalid), "service without temperature accepted");
+	invalid = serialized;
+	invalid.insert(u"useKey"_q, 1);
+	Require(!ParseService(invalid), "numeric useKey accepted");
+	invalid = serialized;
+	invalid.insert(u"temperature"_q, u"0.5"_q);
+	Require(!ParseService(invalid), "string temperature accepted");
+	invalid = serialized;
+	invalid.insert(u"temperature"_q, 2.5);
+	Require(!ParseService(invalid), "temperature above 2 accepted");
+	invalid = serialized;
+	invalid.insert(u"kind"_q, u"summary"_q);
+	Require(!ParseService(invalid), "unknown service kind accepted");
+	invalid = serialized;
+	invalid.insert(u"id"_q, u"00000000-0000-0000-0000-000000000000"_q);
+	Require(!ParseService(invalid), "nil service id accepted");
+	invalid = serialized;
+	invalid.insert(u"language"_q, u"eng"_q);
+	Require(!ParseService(invalid), "three letter language accepted");
+	auto withTemperature = serialized;
+	withTemperature.insert(u"temperature"_q, 0.25);
+	const auto parsedTemperature = ParseService(withTemperature);
+	Require(parsedTemperature && parsedTemperature->temperature == 0.25,
+		"temperature not parsed");
+	Require(SerializeService(*parsedTemperature) == withTemperature,
+		"service does not round trip");
+	auto duplicate = ServicesDefaults();
+	duplicate.insert(u"instances"_q, QJsonArray{ serialized, serialized });
+	Require(!ValidServices(duplicate), "duplicate service ids accepted");
+	auto missingSelection = ServicesDefaults();
+	missingSelection.insert(u"translation"_q, u"00000000-0000-0000-0000-000000000009"_q);
+	Require(!ValidServices(missingSelection), "unknown selected service accepted");
+	auto systemSelection = ServicesDefaults();
+	systemSelection.insert(u"translation"_q, u"system"_q);
+	Require(ValidServices(systemSelection), "system translation rejected");
+	systemSelection.insert(u"transcription"_q, u"system"_q);
+	Require(!ValidServices(systemSelection), "system transcription accepted");
+	auto extraRoot = ServicesDefaults();
+	extraRoot.insert(u"extra"_q, 1);
+	Require(!ValidServices(extraRoot), "services config with an unknown key accepted");
 	std::cout << "PASS: Serein service config and credential binding" << std::endl;
 }
 
