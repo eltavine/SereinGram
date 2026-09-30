@@ -234,5 +234,35 @@ void TestTranslationProtocols() {
 		"wrong bearer auth header");
 	Require(IsKeylessProtocol(u"yandex"_q) && !IsKeylessProtocol(u"deeplx"_q),
 		"wrong keyless protocols");
+
+	auto transmart = yandex;
+	transmart.protocol = u"transmart"_q;
+	transmart.baseUrl = QUrl(u"https://transmart.qq.com/"_q);
+	transmart.endpoint = u"api/imt"_q;
+	Require(ParseService(SerializeService(transmart)).has_value(),
+		"transmart service rejected");
+	const auto transmartCall = BuildTranslationCall(
+		transmart,
+		{ u"a"_q, u"b"_q },
+		u"zh"_q);
+	const auto source = transmartCall.json.value(u"source"_q).toObject();
+	Require(!transmartCall.form
+		&& source.value(u"lang"_q) == u"auto"_q
+		&& source.value(u"text_list"_q).toArray().size() == 2
+		&& transmartCall.json.value(u"target"_q).toObject()
+			.value(u"lang"_q) == u"zh"_q
+		&& transmartCall.json.value(u"header"_q).toObject()
+			.value(u"client_key"_q).toString().startsWith(u"browser-"_q),
+		"wrong transmart body");
+	const auto transmartParsed = ParseTranslationResponse(transmart, R"({
+		"header": { "type": "auto_translation", "ret_code": "succ" },
+		"auto_translation": ["x", "y"]
+	})", 2);
+	Require(transmartParsed && transmartParsed->front() == u"x"_q,
+		"transmart response not parsed");
+	Require(!ParseTranslationResponse(transmart, R"({
+		"header": { "ret_code": "error" },
+		"auto_translation": ["x", "y"]
+	})", 2), "failed transmart response accepted");
 	std::cout << "PASS: Serein translation protocols" << std::endl;
 }

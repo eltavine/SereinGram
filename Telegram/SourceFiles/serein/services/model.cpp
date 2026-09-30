@@ -30,7 +30,7 @@ bool ValidText(const QJsonValue &value, int maximum, bool multiline = false) {
 bool KnownProtocol(const QString &protocol) {
 	static const auto known = QStringList{
 		u"openai"_q, u"anthropic"_q, u"deepl"_q,
-		u"deeplx"_q, u"google"_q, u"yandex"_q,
+		u"deeplx"_q, u"google"_q, u"yandex"_q, u"transmart"_q,
 	};
 	return known.contains(protocol);
 }
@@ -42,7 +42,9 @@ bool IsLanguageModelProtocol(const QString &protocol) {
 }
 
 bool IsKeylessProtocol(const QString &protocol) {
-	return (protocol == u"google"_q) || (protocol == u"yandex"_q);
+	return (protocol == u"google"_q)
+		|| (protocol == u"yandex"_q)
+		|| (protocol == u"transmart"_q);
 }
 
 std::vector<std::pair<QByteArray, QByteArray>> ServiceHeaders(

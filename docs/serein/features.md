@@ -217,7 +217,7 @@ SG-HIST-05 的“已编辑”标记文字已由 C09 实现，删除标记随 SG-
 | --- | --- | --- | --- | --- |
 | SG-TRANS-01 | 服务实例：OpenAI 兼容与 DeepL 协议、连接测试、密钥存入系统凭据库（H03） | Ni | Implemented | P1 |
 | SG-TRANS-02 | 翻译服务选择与草稿翻译（H01） | Ad Ni | Implemented | P1 |
-| SG-TRANS-03 | 更多服务：Google、Yandex、Microsoft、Transmart、DeepLX、Anthropic 与 Gemini 协议（已接入 Google、Yandex、DeepLX、Anthropic 原生协议，Gemini 走官方 OpenAI 兼容端点；协议构造、解析与请求头集中在 `services/translation_protocol` 与 `services/model`；待做 Microsoft、Transmart） | Ad Ni Na | In Progress | P1 |
+| SG-TRANS-03 | 更多服务：Google、Yandex、Microsoft、Transmart、DeepLX、Anthropic 与 Gemini 协议（已接入 Google、Yandex、Transmart、DeepLX、Anthropic 原生协议，Gemini 走官方 OpenAI 兼容端点；协议构造、解析与请求头集中在 `services/translation_protocol` 与 `services/model`。Microsoft 免费接口 `edge.microsoft.com/translate/auth` 已下线（404），Azure 官方接口需要 region 字段，待服务配置迁移到 proto3 后接入） | Ad Ni Na | In Progress | P1 |
 | SG-TRANS-04 | 简繁转换改用 OpenCC 词组级转换，三平台可用（替代现有系统逐字转换） | Na | Planned | P1 |
 | SG-TRANS-05 | 语音转写服务（H02） | Ni | Implemented | P2 |
 | SG-TRANS-06 | 系统 AI 草稿预览（H04，macOS） | Ni | Implemented | P2 |

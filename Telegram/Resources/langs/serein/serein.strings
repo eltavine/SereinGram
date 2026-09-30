@@ -252,6 +252,7 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_service_add_anthropic" = "Add Anthropic Claude";
 "lng_serein_service_add_deeplx" = "Add DeepLX (self-hosted)";
 "lng_serein_service_add_yandex" = "Add Yandex Translate";
+"lng_serein_service_add_transmart" = "Add Tencent Transmart";
 "lng_serein_service_add_openai" = "Add OpenAI-compatible translation";
 "lng_serein_service_add_transcription" = "Add OpenAI-compatible transcription";
 "lng_serein_service_audio_filter" = "Audio (*.flac *.mp3 *.mp4 *.mpeg *.mpga *.m4a *.ogg *.wav *.webm)";

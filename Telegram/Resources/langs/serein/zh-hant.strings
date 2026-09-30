@@ -248,6 +248,7 @@
 "lng_serein_service_add_anthropic" = "新增 Anthropic Claude";
 "lng_serein_service_add_deeplx" = "新增 DeepLX（自架）";
 "lng_serein_service_add_yandex" = "新增 Yandex 翻譯";
+"lng_serein_service_add_transmart" = "新增騰訊互動翻譯";
 "lng_serein_service_add_openai" = "新增 OpenAI 相容翻譯";
 "lng_serein_service_add_transcription" = "新增 OpenAI 相容轉寫";
 "lng_serein_service_audio_filter" = "音訊 (*.flac *.mp3 *.mp4 *.mpeg *.mpga *.m4a *.ogg *.wav *.webm)";

@@ -3,6 +3,7 @@
 #include "base/assertion.h"
 #include "base/basic_types.h"
 
+#include <QtCore/QDateTime>
 #include <QtCore/QJsonArray>
 #include <QtCore/QJsonDocument>
 #include <QtCore/QUuid>
@@ -131,6 +132,34 @@ constexpr auto kAnthropicMaxTokens = 4096;
 		: QJsonArray();
 }
 
+[[nodiscard]] QJsonObject TransmartBody(
+		const QJsonArray &texts,
+		const QString &to) {
+	const auto client = u"browser-chrome-120.0.0-Mac_OS-"_q
+		+ QUuid::createUuid().toString(QUuid::WithoutBraces)
+		+ '-' + QString::number(QDateTime::currentMSecsSinceEpoch());
+	return {
+		{ u"header"_q, QJsonObject{
+			{ u"fn"_q, u"auto_translation"_q },
+			{ u"client_key"_q, client },
+		} },
+		{ u"type"_q, u"plain"_q },
+		{ u"model_category"_q, u"normal"_q },
+		{ u"source"_q, QJsonObject{
+			{ u"lang"_q, u"auto"_q },
+			{ u"text_list"_q, texts },
+		} },
+		{ u"target"_q, QJsonObject{ { u"lang"_q, to } } },
+	};
+}
+
+[[nodiscard]] QJsonArray TransmartValues(const QJsonObject &root) {
+	const auto header = root.value(u"header"_q).toObject();
+	return (header.value(u"ret_code"_q) == u"succ"_q)
+		? root.value(u"auto_translation"_q).toArray()
+		: QJsonArray();
+}
+
 [[nodiscard]] QJsonArray GoogleValues(const QJsonObject &root) {
 	const auto sentences = root.value(u"sentences"_q).toArray();
 	auto text = QString();
@@ -187,6 +216,8 @@ TranslationCall BuildTranslationCall(
 		} };
 	} else if (Is(service, u"anthropic")) {
 		return { .json = AnthropicBody(service, array, to) };
+	} else if (Is(service, u"transmart")) {
+		return { .json = TransmartBody(array, to) };
 	}
 	return { .json = ChatBody(service, array, to) };
 }
@@ -206,6 +237,8 @@ std::optional<QStringList> ParseTranslationResponse(
 		? DeeplxValues(root)
 		: Is(service, u"anthropic")
 		? AnthropicValues(root)
+		: Is(service, u"transmart")
+		? TransmartValues(root)
 		: ChatValues(root);
 	if (values.size() != expected) {
 		return std::nullopt;
