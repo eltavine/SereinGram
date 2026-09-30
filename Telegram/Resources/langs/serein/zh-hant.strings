@@ -462,3 +462,13 @@
 "lng_serein_menu_history_exclude" = "不記錄此對話的歷史";
 "lng_serein_menu_history_include" = "恢復記錄此對話的歷史";
 "lng_serein_menu_button_data" = "按鈕資料";
+"lng_serein_menu_details" = "訊息詳情";
+"lng_serein_details_message_id" = "訊息 ID";
+"lng_serein_details_chat_id" = "對話 ID";
+"lng_serein_details_sender_id" = "傳送者 ID";
+"lng_serein_details_date" = "傳送時間";
+"lng_serein_details_edited" = "編輯時間";
+"lng_serein_details_forwarded_from" = "轉傳自";
+"lng_serein_details_forwarded_date" = "原始傳送時間";
+"lng_serein_details_views" = "瀏覽次數";
+"lng_serein_details_sticker_set" = "貼圖包";

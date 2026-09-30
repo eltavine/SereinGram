@@ -1,5 +1,6 @@
 #include "serein/menu/actions.h"
 #include "serein/menu/buttons.h"
+#include "serein/menu/details.h"
 #include "serein/menu/repeat.h"
 #include "serein/menu/batch.h"
 #include "serein/menu/media.h"
@@ -62,6 +63,7 @@ void Apply(
 			InsertReadUntilHereAction(menu, item, controller);
 			InsertHistoryExclusionAction(menu, item, controller);
 			InsertButtonDataAction(menu, item, controller);
+			InsertDetailsAction(menu, item, controller);
 		}
 	}
 	const auto config = ForDevice().Get(kMenuConfig);

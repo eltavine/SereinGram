@@ -1,6 +1,7 @@
 #include "serein/hooks/privacy/profile.h"
 
 #include "serein/privacy/options.h"
+#include "serein/privacy/peer_id.h"
 #include "data/data_changes.h"
 #include "data/data_peer.h"
 #include "data/data_session.h"
@@ -14,16 +15,7 @@ rpl::producer<TextWithEntities> ProfileIdValue(not_null<PeerData*> peer) {
 		if (!format) {
 			return TextWithEntities();
 		}
-		const auto raw = peer->id.value & PeerId::kChatTypeMask;
-		auto result = QString::number(raw);
-		if (format == 1) {
-			if (peer->isChat()) {
-				result.prepend('-');
-			} else if (peer->isChannel()) {
-				result.prepend(u"-100"_q);
-			}
-		}
-		return TextWithEntities{ result };
+		return TextWithEntities{ PeerIdText(peer, format == 1) };
 	});
 }
 

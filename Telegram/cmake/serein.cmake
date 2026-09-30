@@ -39,6 +39,7 @@ set(serein_sources
     serein/menu/batch.cpp
     serein/menu/media.cpp
     serein/menu/buttons.cpp
+    serein/menu/details.cpp
     serein/menu/ghost_read.cpp
     serein/menu/history.cpp
     serein/menu/model.cpp
@@ -61,6 +62,7 @@ set(serein_sources
     serein/links/open.cpp
     serein/links/settings.cpp
     serein/snapshot/snapshot.cpp
+    serein/privacy/peer_id.cpp
     serein/privacy/profile.cpp
     serein/privacy/alias.cpp
     serein/privacy/alias_model.cpp
