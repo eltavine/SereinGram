@@ -36,7 +36,9 @@ Visibility DefaultVisibility(ActionId id) {
 		|| id == ActionId::ReadUntilHere
 		|| id == ActionId::HistoryExclusion
 		|| id == ActionId::SelectRange
-		|| id == ActionId::BatchUnpin) {
+		|| id == ActionId::BatchUnpin
+		|| id == ActionId::QuickRatingFirst
+		|| id == ActionId::QuickRatingSecond) {
 		return Visibility::Show;
 	}
 	return static_cast<int>(id) >= static_cast<int>(ActionId::Repeat)

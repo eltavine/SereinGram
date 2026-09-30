@@ -180,6 +180,15 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_menu_hidden" = "Hide";
 "lng_serein_menu_with_option" = "Show with Option (Alt)";
 "lng_serein_menu_note" = "Hiding an action only changes the menu. It does not grant permission for unavailable actions.";
+"lng_serein_quick_rating" = "Quick ratings";
+"lng_serein_quick_rating_first" = "First rating";
+"lng_serein_quick_rating_second" = "Second rating";
+"lng_serein_quick_rating_unset" = "Not set";
+"lng_serein_quick_rating_note" = "Each rating that is set adds a message menu item that replies to the message with its text.";
+"lng_serein_menu_items" = "Menu items";
+"lng_serein_menu_quick_rating_first" = "Reply with the first rating";
+"lng_serein_menu_quick_rating_second" = "Reply with the second rating";
+"lng_serein_menu_quick_rating_send" = "Reply “{text}”";
 "lng_serein_menu_repeat" = "Repeat";
 "lng_serein_menu_repeat_as_copy" = "Repeat without attribution";
 "lng_serein_menu_forward_without_quote" = "Forward without attribution";

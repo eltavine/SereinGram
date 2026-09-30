@@ -75,6 +75,18 @@ void TestOptions() {
 		true), "menu option held");
 	Require(Menu::WriteVisibility(optionReply, ActionId::Reply,
 		Visibility::Show).isEmpty(), "menu default removes stored override");
+	const auto hiddenRating = Menu::WriteVisibility(
+		{}, ActionId::QuickRatingSecond, Visibility::Hide);
+	Require(Menu::ValidateConfig(hiddenRating)
+		&& Menu::ReadVisibility(hiddenRating, ActionId::QuickRatingSecond)
+			== Visibility::Hide
+		&& Menu::DefaultVisibility(ActionId::QuickRatingFirst)
+			== Visibility::Show,
+		"quick rating visibility");
+	Require(Menu::kQuickRatingFirst.validate(QString(256, u'x'))
+		&& !Menu::kQuickRatingFirst.validate(QString(257, u'x'))
+		&& Menu::kQuickRatingSecond.fallback.isEmpty(),
+		"quick rating text bounds");
 	Require(!Menu::ValidateConfig(R"({"version":1,"states":{"E99":"hide"}})"),
 		"unknown menu action accepted");
 	Require(!Menu::ValidateConfig(R"({"version":1,"states":{"E01":"unknown"}})"),

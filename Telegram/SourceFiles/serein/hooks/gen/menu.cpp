@@ -6,20 +6,36 @@
 
 namespace Serein::Hooks::Menu {
 
-QByteArray MenuConfig() {
-	return ForDevice().Get(Serein::Menu::kMenuConfig);
-}
-
-rpl::producer<QByteArray> MenuConfigValue() {
-	return ForDevice().Value(Serein::Menu::kMenuConfig);
-}
-
 bool ConfirmRepeat() {
 	return ForDevice().Get(Serein::Menu::kConfirmRepeat);
 }
 
 rpl::producer<bool> ConfirmRepeatValue() {
 	return ForDevice().Value(Serein::Menu::kConfirmRepeat);
+}
+
+QString QuickRatingFirst() {
+	return ForDevice().Get(Serein::Menu::kQuickRatingFirst);
+}
+
+rpl::producer<QString> QuickRatingFirstValue() {
+	return ForDevice().Value(Serein::Menu::kQuickRatingFirst);
+}
+
+QString QuickRatingSecond() {
+	return ForDevice().Get(Serein::Menu::kQuickRatingSecond);
+}
+
+rpl::producer<QString> QuickRatingSecondValue() {
+	return ForDevice().Value(Serein::Menu::kQuickRatingSecond);
+}
+
+QByteArray MenuConfig() {
+	return ForDevice().Get(Serein::Menu::kMenuConfig);
+}
+
+rpl::producer<QByteArray> MenuConfigValue() {
+	return ForDevice().Value(Serein::Menu::kMenuConfig);
 }
 
 } // namespace Serein::Hooks::Menu

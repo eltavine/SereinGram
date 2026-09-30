@@ -34,6 +34,8 @@ enum class ActionId : int {
 	MessageDetails = 29,
 	SelectRange = 30,
 	BatchUnpin = 31,
+	QuickRatingFirst = 32,
+	QuickRatingSecond = 33,
 };
 
 } // namespace Serein::Menu

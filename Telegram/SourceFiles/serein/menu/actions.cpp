@@ -4,6 +4,7 @@
 #include "data/data_types.h"
 #include "serein/menu/buttons.h"
 #include "serein/menu/details.h"
+#include "serein/menu/rating.h"
 #include "serein/menu/repeat.h"
 #include "serein/menu/batch.h"
 #include "serein/menu/media.h"
@@ -50,6 +51,7 @@ void Apply(
 	Expects(menu != nullptr);
 	if (controller) {
 		if (item) {
+			InsertQuickRatingActions(menu, item, controller);
 			InsertRepeatActions(menu, item, controller);
 		}
 		if (item || !selected.empty()) {

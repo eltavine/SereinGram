@@ -2,6 +2,9 @@
 
 #include "serein/menu/model.h"
 #include "serein/settings/home.h"
+#include "serein/settings/gen/menu_rows.h"
+#include "serein/hooks/core/language.h"
+#include "lang/lang_instance.h"
 #include "lang/lang_keys.h"
 #include "settings/settings_builder.h"
 #include "ui/vertical_list.h"
@@ -36,32 +39,16 @@ public:
 };
 
 QString Title(Menu::ActionId id) {
-	switch (id) {
-	case Menu::ActionId::Reply: return tr::lng_serein_menu_reply(tr::now);
-	case Menu::ActionId::Edit: return tr::lng_serein_menu_edit(tr::now);
-	case Menu::ActionId::Copy: return tr::lng_serein_menu_copy(tr::now);
-	case Menu::ActionId::CopyLink: return tr::lng_serein_menu_copy_link(tr::now);
-	case Menu::ActionId::Forward: return tr::lng_serein_menu_forward(tr::now);
-	case Menu::ActionId::Translate: return tr::lng_serein_menu_translate(tr::now);
-	case Menu::ActionId::Pin: return tr::lng_serein_menu_pin(tr::now);
-	case Menu::ActionId::Select: return tr::lng_serein_menu_select(tr::now);
-	case Menu::ActionId::Statistics: return tr::lng_serein_menu_statistics(tr::now);
-	case Menu::ActionId::Report: return tr::lng_serein_menu_report(tr::now);
-	case Menu::ActionId::BlockSender: return tr::lng_serein_menu_block_sender(tr::now);
-	case Menu::ActionId::Image: return tr::lng_serein_menu_image(tr::now);
-	case Menu::ActionId::Delete: return tr::lng_serein_menu_delete(tr::now);
-	case Menu::ActionId::StickerPack: return tr::lng_serein_menu_sticker_pack(tr::now);
-	case Menu::ActionId::Repeat: return tr::lng_serein_menu_repeat(tr::now);
-	case Menu::ActionId::RepeatAsCopy: return tr::lng_serein_menu_repeat_as_copy(tr::now);
-	case Menu::ActionId::ForwardWithoutQuote: return tr::lng_serein_menu_forward_without_quote(tr::now);
-	case Menu::ActionId::Batch: return tr::lng_serein_menu_batch(tr::now);
-	case Menu::ActionId::SelectSender: return tr::lng_serein_menu_select_sender(tr::now);
-	case Menu::ActionId::MediaInfo: return tr::lng_serein_menu_media_info(tr::now);
-	case Menu::ActionId::Screenshot: return tr::lng_serein_menu_screenshot(tr::now);
-	case Menu::ActionId::Reading: return tr::lng_serein_menu_reading(tr::now);
-	case Menu::ActionId::FilterAuthor: return tr::lng_serein_filter_author_hide(tr::now);
-	default: return QString();
+	for (const auto &entry : Menu::kEntries) {
+		if (entry.id == id) {
+			const auto key = QLatin1String(entry.titleKey);
+			const auto index = Lang::GetKeyIndex(key);
+			return (index == Lang::kKeysCount)
+				? QString(key)
+				: LocalizedValue(Lang::GetInstance(), index);
+		}
 	}
+	return QString();
 }
 
 QString VisibilityLabel(Menu::Visibility visibility) {
@@ -97,6 +84,16 @@ const style::icon *Icon(Menu::ActionId id) {
 	case Menu::ActionId::Screenshot: return &st::menuIconSaveImage;
 	case Menu::ActionId::Reading: return &st::menuIconTranslate;
 	case Menu::ActionId::FilterAuthor: return &st::menuIconBlock;
+	case Menu::ActionId::EditHistory: return &st::menuIconEdit;
+	case Menu::ActionId::DeletedMessages: return &st::menuIconRestore;
+	case Menu::ActionId::ReadUntilHere: return &st::menuIconMarkRead;
+	case Menu::ActionId::HistoryExclusion: return &st::menuIconBlock;
+	case Menu::ActionId::ButtonData:
+	case Menu::ActionId::MessageDetails: return &st::menuIconInfo;
+	case Menu::ActionId::SelectRange: return &st::menuIconSelect;
+	case Menu::ActionId::BatchUnpin: return &st::menuIconUnpin;
+	case Menu::ActionId::QuickRatingFirst: return &st::menuIconLike;
+	case Menu::ActionId::QuickRatingSecond: return &st::menuIconReply;
 	default: return &st::menuIconChatBubble;
 	}
 }
@@ -127,34 +124,28 @@ const auto kMeta = BuildHelper({
 	.icon = &st::menuIconChatBubble,
 }, [](SectionBuilder &builder) {
 	const auto controller = builder.controller();
-	const auto confirm = builder.addButton({
-		.id = u"serein/menu/confirm-repeat"_q,
-		.title = tr::lng_serein_menu_confirm_repeat(),
-		.st = &st::settingsButtonNoIcon,
-		.toggled = ForDevice().Value(Menu::kConfirmRepeat),
-		.keywords = { u"repeat"_q, u"confirm"_q },
+	Menu::AddLayout(builder, {
+		.messageMenu = [&] {
+			for (const auto &entry : Menu::kEntries) {
+				const auto id = entry.id;
+				builder.addButton({
+					.id = u"serein/menu/"_q
+						+ QString::fromLatin1(entry.titleKey),
+					.title = rpl::single(Title(id)),
+					.icon = { Icon(id) },
+					.label = ForDevice().Value(Menu::kMenuConfig)
+						| rpl::map([=](const QByteArray &config) {
+							return VisibilityLabel(
+								Menu::ReadVisibility(config, id));
+						}),
+					.onClick = [=] {
+						controller->show(Box(VisibilityBox, id));
+					},
+					.keywords = { Title(id) },
+				});
+			}
+		},
 	});
-	if (confirm) {
-		confirm->toggledChanges(
-		) | rpl::on_next([](bool value) {
-			Expects(ForDevice().Set(Menu::kConfirmRepeat, value));
-		}, confirm->lifetime());
-	}
-	for (const auto &entry : Menu::kEntries) {
-		const auto id = entry.id;
-		builder.addButton({
-			.id = u"serein/menu/"_q + QString::fromLatin1(entry.titleKey),
-			.title = rpl::single(Title(id)),
-			.icon = { Icon(id) },
-			.label = ForDevice().Value(Menu::kMenuConfig)
-				| rpl::map([=](const QByteArray &config) {
-					return VisibilityLabel(Menu::ReadVisibility(config, id));
-				}),
-			.onClick = [=] { controller->show(Box(VisibilityBox, id)); },
-			.keywords = { Title(id) },
-		});
-	}
-	builder.addDividerText(tr::lng_serein_menu_note());
 });
 
 const SectionBuildMethod MenuSection::kBuild = kMeta.build;

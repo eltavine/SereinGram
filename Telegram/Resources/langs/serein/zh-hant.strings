@@ -176,6 +176,15 @@
 "lng_serein_menu_hidden" = "隱藏";
 "lng_serein_menu_with_option" = "按住 Option（Alt）時顯示";
 "lng_serein_menu_note" = "隱藏只影響選單顯示，不改變權限；Telegram 不允許的操作不會因設為顯示而出現。";
+"lng_serein_quick_rating" = "快速評價";
+"lng_serein_quick_rating_first" = "第一則評價";
+"lng_serein_quick_rating_second" = "第二則評價";
+"lng_serein_quick_rating_unset" = "未設定";
+"lng_serein_quick_rating_note" = "設定了文字的評價會出現在訊息選單中，點擊後以該文字回覆這則訊息。";
+"lng_serein_menu_items" = "選單項目";
+"lng_serein_menu_quick_rating_first" = "以第一則評價回覆";
+"lng_serein_menu_quick_rating_second" = "以第二則評價回覆";
+"lng_serein_menu_quick_rating_send" = "回覆「{text}」";
 "lng_serein_menu_repeat" = "複讀";
 "lng_serein_menu_repeat_as_copy" = "無引用複讀";
 "lng_serein_menu_forward_without_quote" = "無引用轉發";
