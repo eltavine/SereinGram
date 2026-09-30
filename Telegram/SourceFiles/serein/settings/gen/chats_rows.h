@@ -86,7 +86,6 @@ inline const auto kToggleRows = std::array<ToggleRow, 12>{ {
 } };
 
 struct CustomRows {
-	CustomRow chatPreviewLines;
 	CustomRow startupFolderMode;
 	CustomRow chatSort;
 };
@@ -100,7 +99,14 @@ inline void AddLayout(
 		{ u"list"_q, u"layout"_q },
 	});
 	AddToggle(builder, kToggleRows[0]);
-	custom.chatPreviewLines();
+	AddChoice(builder, {
+		.option = &kPreviewLines,
+		.title = tr::lng_serein_chat_preview_lines,
+		.id = u"serein/chats/chat-preview-lines"_q,
+		.keywords = { u"preview"_q, u"lines"_q },
+		.values = { 0, 1, 2, 3 },
+		.labels = { tr::lng_serein_preview_follow, tr::lng_serein_preview_one, tr::lng_serein_preview_two, tr::lng_serein_preview_three },
+	});
 	AddToggle(builder, kToggleRows[1]);
 	AddToggle(builder, kToggleRows[2]);
 	AddSection(builder, {

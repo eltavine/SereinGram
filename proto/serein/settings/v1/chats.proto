@@ -25,6 +25,10 @@ message ChatsSettings {
     (serein.options.v1.field) = {
       cpp_name: "kPreviewLines"
       refresh: REFRESH_DIALOG_LIST
+      keywords: ["preview", "lines"]
+      choice: {
+        labels: ["lng_serein_preview_follow", "lng_serein_preview_one", "lng_serein_preview_two", "lng_serein_preview_three"]
+      }
     },
     (buf.validate.field).int32 = {gte: 0, lte: 3}
   ];

@@ -47,30 +47,6 @@ public:
 	static const SectionBuildMethod kBuild;
 };
 
-QString PreviewLinesLabel(int value) {
-	switch (value) {
-	case 1: return tr::lng_serein_preview_one(tr::now);
-	case 2: return tr::lng_serein_preview_two(tr::now);
-	case 3: return tr::lng_serein_preview_three(tr::now);
-	default: return tr::lng_serein_preview_follow(tr::now);
-	}
-}
-
-void PreviewLinesBox(not_null<Ui::GenericBox*> box) {
-	box->setTitle(tr::lng_serein_chat_preview_lines());
-	const auto group = std::make_shared<Ui::RadiobuttonGroup>(
-		ForDevice().Get(Chats::kPreviewLines));
-	for (auto value = 0; value != 4; ++value) {
-		box->addRow(object_ptr<Ui::Radiobutton>(
-			box, group, value, PreviewLinesLabel(value), st::settingsSendType),
-			st::settingsSendTypePadding);
-	}
-	group->setChangedCallback([=](int value) {
-		Expects(ForDevice().Set(Chats::kPreviewLines, value));
-		box->closeBox();
-	});
-}
-
 QString StartupFolderLabel(not_null<Main::Session*> session) {
 	auto &options = ForAccount(session);
 	switch (options.Get(Chats::kStartupFolderMode)) {
@@ -131,17 +107,6 @@ const auto kMeta = BuildHelper({
 }, [](SectionBuilder &builder) {
 	const auto controller = builder.controller();
 	Chats::AddLayout(builder, {
-		.chatPreviewLines = [&] {
-			builder.addButton({
-				.id = u"serein/chats/preview-lines"_q,
-				.title = tr::lng_serein_chat_preview_lines(),
-				.st = &st::settingsButtonNoIcon,
-				.label = ForDevice().Value(Chats::kPreviewLines)
-					| rpl::map(PreviewLinesLabel),
-				.onClick = [=] { controller->show(Box(PreviewLinesBox)); },
-				.keywords = { u"preview"_q, u"lines"_q },
-			});
-		},
 		.startupFolderMode = [&] {
 			const auto session = &controller->session();
 			builder.addButton({
