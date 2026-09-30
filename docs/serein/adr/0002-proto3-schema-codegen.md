@@ -31,7 +31,7 @@
 - 校验：protovalidate 标准注解，生成器只接受范围、`in` 列表、长度与正则约束，其余报错（fail closed）。默认值等价于“未设置”，生成的校验总是接受默认值；因此 `optional` 字段不使用 `IGNORE_IF_ZERO_VALUE`（`buf lint` 也要求如此）。
 - 生成器：`tools/serein/codegen`。`buf build` 输出 JSON 描述符映像，其中自定义选项与 protovalidate 注解已由 Buf 解析；Python + Jinja2 渲染模板，依赖以 PEP 723 内联元数据声明并由 uv 运行。不需要 Python protobuf 库或 protoc 插件协议；上游 Docker 生成脚本本身也使用 Jinja2。
 - 第一阶段生成与现有 `Option<T>` 同形的声明和 `RegisterOptions`，调用方无需改动；迁移时用新旧声明逐项比较（元数据、注册表顺序、校验在全部样本上的结果）证明等价。
-- 第二阶段为结构化配置生成 JSON 编解码，映射遵循 proto3 标准 JSON 规则的子集：标量、枚举（名称）、字符串、bytes（base64）、repeated、map、嵌套消息、`optional` 字段存在性；未知字段读入后原样保留并在写回时带上。
+- 第二阶段为带 `(serein.options.v1.file)` 选项的文件生成值类型与 JSON 编解码，带 `(serein.options.v1.document)` 的消息另有带版本号的 `Parse…`/`Serialize…`。映射遵循 proto3 标准 JSON 规则的子集：bool、int32、int64（写为字符串，读时也接受整数）、字符串、bytes（base64）、枚举（全名，读时也接受数值）、repeated、同文件内的嵌套消息、`optional` 存在性。所有非 `optional` 字段都会写出，缺失字段取默认值；未知字段严格拒绝，与现有配置格式的严格校验一致。map、oneof 与跨文件类型暂不支持，遇到即报错。
 - 生成代码提交入库，CI 校验无漂移；构建机与发行版打包不需要 Buf 或 Python 依赖。
 
 ## 后果

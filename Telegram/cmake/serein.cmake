@@ -10,6 +10,7 @@ set(serein_sources
     serein/core/language.cpp
     serein/core/exchange.cpp
     serein/core/options.cpp
+    serein/schema/codec.cpp
     serein/display/view_refresher.cpp
     serein/interface/main_menu.cpp
     serein/interface/main_menu_model.cpp
@@ -67,6 +68,9 @@ set(serein_sources
     serein/services/transcription.cpp
     serein/services/system_ai.cpp
 )
+
+include(${CMAKE_CURRENT_LIST_DIR}/../SourceFiles/serein/schema/gen/sources.cmake)
+list(APPEND serein_sources ${serein_generated_sources})
 
 if (serein_sources)
     nice_target_sources(Telegram ${src_loc} PRIVATE ${serein_sources})

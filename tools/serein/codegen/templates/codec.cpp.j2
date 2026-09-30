@@ -1,0 +1,121 @@
+// Generated from {{ file.source }} by tools/serein/codegen; do not edit.
+#include "serein/schema/gen/{{ file.header }}"
+
+namespace Serein::{{ file.namespace }} {
+
+{% for enum in file.enums %}
+bool Read(
+		const QJsonValue &json,
+		{{ enum.name }} &result,
+		Codec::Error &error,
+		const QString &path) {
+	if (json.isString()) {
+		const auto name = json.toString();
+{% for value in enum.values %}
+		if (name == QLatin1StringView("{{ value.json }}")) {
+			result = {{ enum.name }}::{{ value.cpp }};
+			return true;
+		}
+{% endfor %}
+	} else if (json.isDouble()) {
+		switch (json.toInt(-1)) {
+{% for value in enum.values %}
+		case {{ value.number }}: result = {{ enum.name }}::{{ value.cpp }}; return true;
+{% endfor %}
+		}
+	}
+	return Codec::FailExpected(error, path, "a {{ enum.name }} value");
+}
+
+QJsonValue Write({{ enum.name }} value) {
+	switch (value) {
+{% for value in enum.values %}
+	case {{ enum.name }}::{{ value.cpp }}: return QString::fromLatin1("{{ value.json }}");
+{% endfor %}
+	}
+	return QString::fromLatin1("{{ enum.values[0].json }}");
+}
+
+{% endfor %}
+{% for message in file.messages %}
+bool Read(
+		const QJsonValue &json,
+		{{ message.name }} &result,
+		Codec::Error &error,
+		const QString &path) {
+	if (!json.isObject()) {
+		return Codec::FailExpected(error, path, "an object");
+	}
+	const auto object = json.toObject();
+	if (!Codec::KnownKeys(object, {
+{% for field in message.fields %}
+			QLatin1StringView("{{ field.key }}"),
+{% endfor %}
+		}, error, path)) {
+		return false;
+	}
+	result = {{ message.name }}();
+{% if message.fields %}
+	return true
+{% for field in message.fields %}
+		&& Codec::ReadField(object, QLatin1StringView("{{ field.key }}"), result.{{ field.member }}, error, path){% if loop.last %};{% endif %}
+
+{% endfor %}
+{% else %}
+	return true;
+{% endif %}
+}
+
+QJsonValue Write(const {{ message.name }} &value) {
+	auto object = QJsonObject();
+{% for field in message.fields %}
+	Codec::WriteField(object, QLatin1StringView("{{ field.key }}"), value.{{ field.member }});
+{% endfor %}
+	return object;
+}
+
+bool Validate(
+		const {{ message.name }} &value,
+		Codec::Error &error,
+		const QString &path) {
+{% for line in message.checks %}
+{{ line }}
+{% endfor %}
+	return true;
+}
+
+{% if message.version %}
+std::optional<{{ message.name }}> Parse{{ message.name }}(
+		const QByteArray &raw,
+		Codec::Error *error) {
+	auto ignored = Codec::Error();
+	auto &out = error ? *error : ignored;
+	auto object = Codec::ParseObject(raw, out);
+	if (!object) {
+		return std::nullopt;
+	} else if (object->value(QLatin1StringView("version")) != QJsonValue({{ message.version }})) {
+		Codec::Fail(out, QString::fromLatin1("version"), QString::fromLatin1("unsupported version"));
+		return std::nullopt;
+	}
+	object->remove(QLatin1StringView("version"));
+	auto result = {{ message.name }}();
+	if (!Read(*object, result, out, QString()) || !Validate(result, out, QString())) {
+		return std::nullopt;
+{% if message.validator %}
+	} else if (!{{ message.validator }}(result)) {
+		Codec::Fail(out, QString(), QString::fromLatin1("violates the document rules"));
+		return std::nullopt;
+{% endif %}
+	}
+	return result;
+}
+
+QByteArray Serialize{{ message.name }}(const {{ message.name }} &value) {
+	auto object = Write(value).toObject();
+	object.insert(QLatin1StringView("version"), {{ message.version }});
+	return Codec::Serialize(object);
+}
+
+{% endif %}
+{% endfor %}
+} // namespace Serein::{{ file.namespace }}

@@ -1,0 +1,53 @@
+// Generated from {{ file.source }} by tools/serein/codegen; do not edit.
+#pragma once
+
+#include "serein/schema/codec.h"
+
+namespace Serein::{{ file.namespace }} {
+
+{% for enum in file.enums %}
+enum class {{ enum.name }} {
+{% for value in enum.values %}
+	{{ value.cpp }} = {{ value.number }},
+{% endfor %}
+};
+
+[[nodiscard]] bool Read(
+	const QJsonValue &json,
+	{{ enum.name }} &result,
+	Codec::Error &error,
+	const QString &path);
+[[nodiscard]] QJsonValue Write({{ enum.name }} value);
+
+{% endfor %}
+{% for message in file.messages %}
+struct {{ message.name }} {
+{% for field in message.fields %}
+	{{ field.cpp_type }} {{ field.member }}{% if field.default %} = {{ field.default }}{% endif %};
+{% endfor %}
+
+	friend bool operator==(const {{ message.name }} &, const {{ message.name }} &) = default;
+};
+
+[[nodiscard]] bool Read(
+	const QJsonValue &json,
+	{{ message.name }} &result,
+	Codec::Error &error,
+	const QString &path);
+[[nodiscard]] QJsonValue Write(const {{ message.name }} &value);
+[[nodiscard]] bool Validate(
+	const {{ message.name }} &value,
+	Codec::Error &error,
+	const QString &path);
+{% if message.version %}
+{% if message.validator %}
+[[nodiscard]] bool {{ message.validator }}(const {{ message.name }} &value);
+{% endif %}
+[[nodiscard]] std::optional<{{ message.name }}> Parse{{ message.name }}(
+	const QByteArray &raw,
+	Codec::Error *error = nullptr);
+[[nodiscard]] QByteArray Serialize{{ message.name }}(const {{ message.name }} &value);
+{% endif %}
+
+{% endfor %}
+} // namespace Serein::{{ file.namespace }}

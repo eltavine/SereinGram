@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package serein.history.v1;
+
+import "buf/validate/validate.proto";
+import "serein/options/v1/options.proto";
+
+option (serein.options.v1.file) = {cpp_namespace: "History"};
+
+enum RecordKind {
+  RECORD_KIND_UNSPECIFIED = 0;
+  RECORD_KIND_DELETED = 1;
+  RECORD_KIND_EDITED = 2;
+}
+
+message TextEntity {
+  string type = 1 [(buf.validate.field).string.pattern = "^[a-z_]{1,32}$"];
+  int32 offset = 2 [(buf.validate.field).int32.gte = 0];
+  int32 length = 3 [(buf.validate.field).int32.gt = 0];
+  string data = 4;
+}
+
+// One saved version of a message; the payload of a history database row.
+message Record {
+  option (serein.options.v1.document) = {version: 1};
+
+  RecordKind kind = 1 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: [0]
+  }];
+  int64 peer_id = 2 [(buf.validate.field).int64 = {
+    not_in: [0]
+  }];
+  int64 message_id = 3 [(buf.validate.field).int64.gt = 0];
+  int64 topic_root_id = 4;
+  int32 revision = 5 [(buf.validate.field).int32.gte = 0];
+  int64 date = 6;
+  int64 recorded_at = 7;
+  int64 from_peer_id = 8;
+  string text = 9;
+  repeated TextEntity entities = 10 [(buf.validate.field).repeated.max_items = 10000];
+  // Upstream MTP layer of tl_message; rendering falls back to text when it differs.
+  int32 api_layer = 11 [(buf.validate.field).int32.gte = 0];
+  bytes tl_message = 12;
+  string media_summary = 13;
+}

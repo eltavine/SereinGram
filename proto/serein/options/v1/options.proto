@@ -57,8 +57,27 @@ message FieldOptions {
   }
 }
 
+// A file annotated with file options gets C++ types and JSON codecs.
+message FileOptions {
+  // Namespace below Serein that receives the generated types.
+  string cpp_namespace = 1;
+}
+
+// A message annotated with document options is a persisted JSON document.
+message DocumentOptions {
+  // Written as "version" and required on read when set.
+  int32 version = 1;
+  // Predicate implemented in C++ that runs after the structural checks.
+  string validator = 2;
+}
+
+extend google.protobuf.FileOptions {
+  FileOptions file = 50001;
+}
+
 extend google.protobuf.MessageOptions {
   PageOptions page = 50001;
+  DocumentOptions document = 50002;
 }
 
 extend google.protobuf.FieldOptions {

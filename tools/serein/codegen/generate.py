@@ -3,7 +3,7 @@
 # requires-python = ">=3.11"
 # dependencies = ["jinja2==3.1.6"]
 # ///
-"""Generate C++ settings declarations from the proto3 schema.
+"""Generate C++ settings declarations and JSON codecs from the proto3 schema.
 
 Run from anywhere: uv run tools/serein/codegen/generate.py [--check]
 """
@@ -17,12 +17,14 @@ from pathlib import Path
 
 import jinja2
 
+from codec_model import build_files
 from model import SchemaError, build_pages
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[2]
 PROTO = ROOT / "proto"
 OUTPUT = ROOT / "Telegram/SourceFiles/serein/schema/gen"
+SOURCES = "sources.cmake"
 
 
 def build_image():
@@ -41,14 +43,26 @@ def render(image):
         keep_trailing_newline=True,
         undefined=jinja2.StrictUndefined,
     )
-    template = environment.get_template("settings.h.j2")
-    return {page.header: template.render(page=page) for page in build_pages(image)}
+    settings = environment.get_template("settings.h.j2")
+    header = environment.get_template("codec.h.j2")
+    implementation = environment.get_template("codec.cpp.j2")
+    outputs = {page.header: settings.render(page=page) for page in build_pages(image)}
+    sources = []
+    for file in build_files(image):
+        outputs[file.header] = header.render(file=file)
+        outputs[file.implementation] = implementation.render(file=file)
+        sources.append(f"serein/schema/gen/{file.implementation}")
+    outputs[SOURCES] = ("set(serein_generated_sources\n"
+                        + "".join(f"    {source}\n" for source in sorted(sources))
+                        + ")\n")
+    return outputs
 
 
 def existing_files():
     if not OUTPUT.exists():
         return set()
-    return {str(path.relative_to(OUTPUT)) for path in OUTPUT.rglob("*.h")}
+    return {str(path.relative_to(OUTPUT)) for path in OUTPUT.rglob("*")
+            if path.is_file()}
 
 
 def main(argv=None):

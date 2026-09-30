@@ -11,6 +11,7 @@ void TestSpacing();
 void TestServices();
 void TestFilters();
 void TestLinks();
+void TestCodec();
 
 namespace {
 
@@ -91,6 +92,7 @@ int main() {
 		TestServices();
 		TestFilters();
 		TestLinks();
+		TestCodec();
 		const auto root = std::string(SEREIN_LANG_SOURCE_DIR);
 		const auto upstream = ReadStrings(root + "/lang.strings", false);
 		const auto english = ReadStrings(root + "/serein/serein.strings", true);
