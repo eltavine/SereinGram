@@ -3,16 +3,20 @@
 #include "serein/hooks/history.h"
 #include "serein/ports/history_store.h"
 #include "base/unixtime.h"
+#include "core/file_utilities.h"
 #include "data/data_peer.h"
 #include "data/data_session.h"
 #include "lang/lang_keys.h"
 #include "main/main_session.h"
 #include "ui/boxes/confirm_box.h"
 #include "ui/layers/generic_box.h"
+#include "ui/widgets/buttons.h"
 #include "ui/widgets/labels.h"
 #include "window/window_session_controller.h"
 #include "styles/style_boxes.h"
 #include "styles/style_layers.h"
+
+#include <QtCore/QFileInfo>
 
 namespace Serein::HistoryFeature {
 namespace {
@@ -35,24 +39,20 @@ constexpr auto kDeletedLimit = 100;
 
 [[nodiscard]] QString Describe(
 		not_null<Main::Session*> session,
-		const std::vector<History::Record> &records) {
-	auto blocks = QStringList();
-	for (const auto &record : records) {
-		auto header = langDateTimeFull(
-			base::unixtime::parse(TimeId(record.date)));
-		if (record.fromPeerId) {
-			const auto from = session->data().peerLoaded(
-				PeerId(PeerIdHelper(BareId(record.fromPeerId))));
-			if (from) {
-				header = from->name() + u", "_q + header;
-			}
+		const History::Record &record) {
+	auto header = langDateTimeFull(
+		base::unixtime::parse(TimeId(record.date)));
+	if (record.fromPeerId) {
+		const auto from = session->data().peerLoaded(
+			PeerId(PeerIdHelper(BareId(record.fromPeerId))));
+		if (from) {
+			header = from->name() + u", "_q + header;
 		}
-		const auto body = record.text.isEmpty()
-			? record.mediaSummary
-			: record.text;
-		blocks.push_back(header + u"\n"_q + body);
 	}
-	return blocks.join(u"\n\n"_q);
+	const auto body = record.text.isEmpty()
+		? record.mediaSummary
+		: record.text;
+	return header + u"\n"_q + body;
 }
 
 } // namespace
@@ -70,13 +70,26 @@ void ShowDeletedMessages(
 	const auto records = DeletedFor(session, peer->id, kDeletedLimit);
 	controller->show(Box([=](not_null<Ui::GenericBox*> box) {
 		box->setTitle(tr::lng_serein_menu_deleted_messages());
-		const auto label = box->addRow(object_ptr<Ui::FlatLabel>(
-			box,
-			(records.empty()
-				? tr::lng_serein_history_empty(tr::now)
-				: Describe(session, records)),
-			st::boxLabel));
-		label->setSelectable(true);
+		if (records.empty()) {
+			box->addRow(object_ptr<Ui::FlatLabel>(
+				box,
+				tr::lng_serein_history_empty(tr::now),
+				st::boxLabel));
+		}
+		for (const auto &record : records) {
+			const auto label = box->addRow(object_ptr<Ui::FlatLabel>(
+				box,
+				Describe(session, record),
+				st::boxLabel));
+			label->setSelectable(true);
+			const auto path = record.localPath;
+			if (!path.isEmpty() && QFileInfo::exists(path)) {
+				const auto open = box->addRow(object_ptr<Ui::LinkButton>(
+					box,
+					tr::lng_serein_history_open_file(tr::now)));
+				open->setClickedCallback([=] { File::Launch(path); });
+			}
+		}
 		if (!records.empty()) {
 			box->addLeftButton(tr::lng_serein_history_clear_chat(), [=] {
 				ConfirmClearHistory(controller, peer, crl::guard(box, [=] {

@@ -7,6 +7,7 @@
 #include "serein/features/history/model/recorder.h"
 #include "base/unixtime.h"
 #include "core/application.h"
+#include "data/data_document.h"
 #include "data/data_media_types.h"
 #include "data/data_peer.h"
 #include "data/data_user.h"
@@ -57,6 +58,9 @@ struct Backend {
 	}
 	if (const auto media = item->media()) {
 		result.mediaSummary = media->notificationText().text;
+		if (const auto document = media->document()) {
+			result.localPath = document->filepath(true);
+		}
 	}
 	return result;
 }

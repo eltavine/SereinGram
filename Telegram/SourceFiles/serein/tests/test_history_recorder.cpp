@@ -75,6 +75,12 @@ void TestHistoryRecorder() {
 	Require(!ValidHistoryExclusions(R"({"peers":["5"]})"),
 		"exclusions without a version accepted");
 	Require(!recorder.recordDeleted(policy, Snapshot()), "empty snapshots are skipped");
+	auto withFile = Message(42);
+	withFile.localPath = u"/tmp/serein/file.pdf"_q;
+	Require(recorder.recordDeleted(policy, withFile), "message with a file saved");
+	const auto files = store->deleted({ .peerId = 555, .minMessageId = 42 });
+	Require(files.size() == 1 && files[0].localPath == withFile.localPath,
+		"deleted message file path not saved");
 
 	Require(recorder.recordEdit(policy, Message(3)), "first edit is saved");
 	now += 10;

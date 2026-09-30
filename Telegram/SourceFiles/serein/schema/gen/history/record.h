@@ -52,6 +52,7 @@ struct Record {
 	int apiLayer = 0;
 	QByteArray tlMessage;
 	QString mediaSummary;
+	QString localPath;
 
 	friend bool operator==(const Record &, const Record &) = default;
 };

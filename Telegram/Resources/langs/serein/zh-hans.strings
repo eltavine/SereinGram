@@ -486,6 +486,7 @@
 "lng_serein_menu_edit_history" = "编辑历史";
 "lng_serein_menu_deleted_messages" = "已删除的消息";
 "lng_serein_history_empty" = "此对话没有保存的已删除消息。";
+"lng_serein_history_open_file" = "打开文件";
 "lng_serein_history_clear" = "清除";
 "lng_serein_history_clear_chat" = "清除此对话";
 "lng_serein_history_clear_chat_sure" = "要从本设备删除此对话保存的全部已删除消息与编辑历史吗？";

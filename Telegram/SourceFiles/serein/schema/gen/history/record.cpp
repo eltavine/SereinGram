@@ -114,6 +114,7 @@ bool Read(
 			QLatin1StringView("apiLayer"),
 			QLatin1StringView("tlMessage"),
 			QLatin1StringView("mediaSummary"),
+			QLatin1StringView("localPath"),
 		}, error, path)) {
 		return false;
 	}
@@ -131,7 +132,8 @@ bool Read(
 		&& Codec::ReadField(object, QLatin1StringView("entities"), result.entities, error, path)
 		&& Codec::ReadField(object, QLatin1StringView("apiLayer"), result.apiLayer, error, path)
 		&& Codec::ReadField(object, QLatin1StringView("tlMessage"), result.tlMessage, error, path)
-		&& Codec::ReadField(object, QLatin1StringView("mediaSummary"), result.mediaSummary, error, path);
+		&& Codec::ReadField(object, QLatin1StringView("mediaSummary"), result.mediaSummary, error, path)
+		&& Codec::ReadField(object, QLatin1StringView("localPath"), result.localPath, error, path);
 }
 
 QJsonValue Write(const Record &value) {
@@ -149,6 +151,7 @@ QJsonValue Write(const Record &value) {
 	Codec::WriteField(object, QLatin1StringView("apiLayer"), value.apiLayer);
 	Codec::WriteField(object, QLatin1StringView("tlMessage"), value.tlMessage);
 	Codec::WriteField(object, QLatin1StringView("mediaSummary"), value.mediaSummary);
+	Codec::WriteField(object, QLatin1StringView("localPath"), value.localPath);
 	return object;
 }
 
@@ -179,6 +182,9 @@ bool Validate(
 	}
 	if (!(value.apiLayer >= 0)) {
 		return Codec::Fail(error, Codec::Child(path, QLatin1StringView("apiLayer")), QString::fromLatin1("violates the schema rules"));
+	}
+	if (!(value.localPath.toUcs4().size() <= 4096)) {
+		return Codec::Fail(error, Codec::Child(path, QLatin1StringView("localPath")), QString::fromLatin1("violates the schema rules"));
 	}
 	return true;
 }

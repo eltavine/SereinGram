@@ -43,4 +43,6 @@ message Record {
   int32 api_layer = 11 [(buf.validate.field).int32.gte = 0];
   bytes tl_message = 12;
   string media_summary = 13;
+  // Downloaded file of the message at deletion time, opened from history.
+  string local_path = 14 [(buf.validate.field).string.max_len = 4096];
 }

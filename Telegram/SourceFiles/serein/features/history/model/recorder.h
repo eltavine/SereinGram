@@ -19,6 +19,7 @@ struct Snapshot {
 	QString text;
 	std::vector<History::TextEntity> entities;
 	QString mediaSummary;
+	QString localPath;
 };
 
 struct Policy {

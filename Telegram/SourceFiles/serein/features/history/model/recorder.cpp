@@ -102,6 +102,7 @@ bool Recorder::record(History::RecordKind kind, const Snapshot &snapshot) {
 	record.text = snapshot.text;
 	record.entities = snapshot.entities;
 	record.mediaSummary = snapshot.mediaSummary;
+	record.localPath = snapshot.localPath;
 	return _store.save(record);
 }
 
