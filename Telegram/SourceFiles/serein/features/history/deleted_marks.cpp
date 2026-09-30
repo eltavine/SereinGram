@@ -28,14 +28,19 @@ std::vector<gsl::not_null<HistoryItem*>> KeepDeletedInPlace(
 			destroy.push_back(item);
 			continue;
 		}
-		const auto [i, fresh] = Marks().try_emplace(session);
-		if (fresh) {
-			session->lifetime().add([=] { Marks().erase(session); });
-		}
-		i->second.emplace(item->fullId());
+		MarkDeletedInPlace(item);
 		session->data().requestItemViewRefresh(item);
 	}
 	return destroy;
+}
+
+void MarkDeletedInPlace(gsl::not_null<HistoryItem*> item) {
+	const auto session = &item->history()->session();
+	const auto [i, fresh] = Marks().try_emplace(session);
+	if (fresh) {
+		session->lifetime().add([=] { Marks().erase(session); });
+	}
+	i->second.emplace(item->fullId());
 }
 
 bool DeletedInPlace(gsl::not_null<const HistoryItem*> item) {

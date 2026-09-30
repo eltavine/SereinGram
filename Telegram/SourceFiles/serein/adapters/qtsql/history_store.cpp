@@ -126,6 +126,12 @@ std::vector<History::Record> SqlHistoryStore::deleted(
 	if (query.recordedBefore) {
 		sql += u" AND recorded_at < ?"_q;
 	}
+	if (query.minMessageId) {
+		sql += u" AND message_id >= ?"_q;
+	}
+	if (query.maxMessageId) {
+		sql += u" AND message_id <= ?"_q;
+	}
 	sql += u" ORDER BY recorded_at DESC, message_id DESC LIMIT ?"_q;
 	auto select = QSqlQuery(Database(_connection));
 	select.prepare(sql);
@@ -136,6 +142,12 @@ std::vector<History::Record> SqlHistoryStore::deleted(
 	}
 	if (query.recordedBefore) {
 		select.addBindValue(*query.recordedBefore);
+	}
+	if (query.minMessageId) {
+		select.addBindValue(*query.minMessageId);
+	}
+	if (query.maxMessageId) {
+		select.addBindValue(*query.maxMessageId);
 	}
 	select.addBindValue(std::max(query.limit, 0));
 	return Run(select) ? collect(select) : std::vector<History::Record>();

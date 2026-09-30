@@ -7,6 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/history.h"
 #include "serein/hooks/chats/sort.h"
+#include "serein/hooks/history.h"
 #include "serein/hooks/privacy/alias.h"
 
 #include "history/view/history_view_element.h"
@@ -1843,6 +1844,7 @@ void History::addOlderSlice(const QVector<MTPMessage> &slice) {
 	}
 	checkLocalMessages();
 	checkLastMessage();
+	Serein::Hooks::OnHistorySliceAdded(this);
 }
 
 void History::addCreatedOlderSlice(
@@ -1896,6 +1898,7 @@ void History::addNewerSlice(const QVector<MTPMessage> &slice) {
 
 	checkLocalMessages();
 	checkLastMessage();
+	Serein::Hooks::OnHistorySliceAdded(this);
 }
 
 void History::checkLastMessage() {

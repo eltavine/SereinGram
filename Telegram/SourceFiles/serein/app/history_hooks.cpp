@@ -2,6 +2,7 @@
 
 #include "serein/adapters/openssl/aes_gcm_cipher.h"
 #include "serein/adapters/qtsql/history_store.h"
+#include "serein/app/history_entities.h"
 #include "serein/features/history/deleted_marks.h"
 #include "serein/features/history/model/recorder.h"
 #include "base/unixtime.h"
@@ -31,36 +32,6 @@ struct Backend {
 	std::unique_ptr<HistoryFeature::Recorder> recorder;
 };
 
-[[nodiscard]] QString EntityName(EntityType type) {
-	switch (type) {
-	case EntityType::Url: return u"url"_q;
-	case EntityType::CustomUrl: return u"custom_url"_q;
-	case EntityType::Email: return u"email"_q;
-	case EntityType::Hashtag: return u"hashtag"_q;
-	case EntityType::Cashtag: return u"cashtag"_q;
-	case EntityType::Mention: return u"mention"_q;
-	case EntityType::MentionName: return u"mention_name"_q;
-	case EntityType::CustomEmoji: return u"custom_emoji"_q;
-	case EntityType::BotCommand: return u"bot_command"_q;
-	case EntityType::MediaTimestamp: return u"media_timestamp"_q;
-	case EntityType::Phone: return u"phone"_q;
-	case EntityType::BankCard: return u"bank_card"_q;
-	case EntityType::Bold: return u"bold"_q;
-	case EntityType::Semibold: return u"semibold"_q;
-	case EntityType::Italic: return u"italic"_q;
-	case EntityType::Underline: return u"underline"_q;
-	case EntityType::StrikeOut: return u"strike"_q;
-	case EntityType::Code: return u"code"_q;
-	case EntityType::Pre: return u"pre"_q;
-	case EntityType::Blockquote: return u"blockquote"_q;
-	case EntityType::Spoiler: return u"spoiler"_q;
-	case EntityType::Subscript: return u"subscript"_q;
-	case EntityType::Superscript: return u"superscript"_q;
-	case EntityType::FormattedDate: return u"formatted_date"_q;
-	default: return QString();
-	}
-}
-
 [[nodiscard]] HistoryFeature::Snapshot TakeSnapshot(not_null<HistoryItem*> item) {
 	auto result = HistoryFeature::Snapshot();
 	result.peerId = qint64(item->history()->peer->id.value);
@@ -74,7 +45,7 @@ struct Backend {
 	const auto &text = item->originalText();
 	result.text = text.text;
 	for (const auto &entity : text.entities) {
-		const auto name = EntityName(entity.type());
+		const auto name = App::EntityName(entity.type());
 		if (!name.isEmpty() && entity.offset() >= 0 && entity.length() > 0) {
 			result.entities.push_back({
 				name,

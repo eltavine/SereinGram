@@ -4,6 +4,7 @@
 
 #include <vector>
 
+class History;
 class HistoryItem;
 class QPainter;
 struct TextWithEntities;
@@ -26,6 +27,7 @@ void OnBeforeEdition(
 [[nodiscard]] std::vector<gsl::not_null<HistoryItem*>> OnExpiredMessages(
 	std::vector<gsl::not_null<HistoryItem*>> items);
 [[nodiscard]] bool KeepExpiredMedia(gsl::not_null<const HistoryItem*> item);
+void OnHistorySliceAdded(gsl::not_null<::History*> history);
 
 [[nodiscard]] Ports::HistoryStore *HistoryStoreFor(
 	gsl::not_null<Main::Session*> session);

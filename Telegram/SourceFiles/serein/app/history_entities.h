@@ -1,0 +1,12 @@
+#pragma once
+
+#include "ui/text/text_entity.h"
+
+#include <optional>
+
+namespace Serein::App {
+
+[[nodiscard]] QString EntityName(EntityType type);
+[[nodiscard]] std::optional<EntityType> EntityTypeFromName(const QString &name);
+
+} // namespace Serein::App

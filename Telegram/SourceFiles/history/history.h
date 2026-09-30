@@ -150,6 +150,9 @@ public:
 					std::forward<Args>(args)...)).get());
 	}
 
+	void insertRestoredMessage(not_null<HistoryItem*> item) {
+		insertMessageToBlocks(item);
+	}
 	void destroyMessage(not_null<HistoryItem*> item);
 	void destroyMessagesByDates(TimeId minDate, TimeId maxDate);
 	void destroyMessagesByTopic(MsgId topicRootId);

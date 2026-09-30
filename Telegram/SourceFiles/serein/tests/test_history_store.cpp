@@ -71,6 +71,15 @@ void TestHistoryStore() {
 			"deleted records are listed newest first");
 		Require(store->deleted({ .peerId = 777, .recordedBefore = 300 }).size() == 1,
 			"deleted records page by time");
+		const auto ranged = store->deleted({
+			.peerId = 777,
+			.minMessageId = 2,
+			.maxMessageId = 5,
+		});
+		Require(ranged.size() == 1 && ranged[0].messageId == 2,
+			"deleted records filter by message id range");
+		Require(store->deleted({ .peerId = 777, .maxMessageId = 1 }).size() == 1,
+			"deleted records filter by upper message id");
 		Require(store->versions(777, 3).size() == 2, "edit versions are listed");
 		Require(store->nextRevision(777, 3) == 2, "revisions continue");
 		Require(store->nextRevision(777, 9) == 0, "revisions start at zero");

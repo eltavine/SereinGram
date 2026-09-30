@@ -20,6 +20,8 @@ struct HistoryQuery {
 	qint64 peerId = 0;
 	std::optional<qint64> topicRootId;
 	std::optional<qint64> recordedBefore;
+	std::optional<qint64> minMessageId;
+	std::optional<qint64> maxMessageId;
 	int limit = 50;
 };
 
