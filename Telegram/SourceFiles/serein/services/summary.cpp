@@ -11,6 +11,7 @@
 #include "history/view/history_view_element.h"
 #include "lang/lang_keys.h"
 #include "main/main_session.h"
+#include "spellcheck/spellcheck_types.h"
 #include "ui/layers/generic_box.h"
 #include "ui/widgets/labels.h"
 #include "window/window_session_controller.h"
