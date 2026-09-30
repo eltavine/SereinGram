@@ -49,3 +49,9 @@ SereinGram 是基于 Telegram Desktop 的第三方桌面客户端，功能对标
 1. 三平台 CI 构建成功，`test_serein` 全部通过。
 2. 守卫全部通过：源文件行数、模块边界、上游侵入预算、`buf lint` 与 `buf breaking`、生成代码无漂移、三语文案一致。
 3. 发布说明分别列出本版本 `Verified` 与仅 `Implemented` 的功能。
+
+## 5. 提交规范
+
+- 提交信息遵循 Conventional Commits（`type(scope): summary`），全部使用英文，并且必须有详细正文，说明改动的原因和内容。
+- CI 的 `Commit messages` 任务用 commitlint 与 `tools/serein/commitlint.config.mjs` 检查每次推送或 PR 新增的提交：标题不超过 72 字符，正文不少于 60 字符、每行不超过 100 字符，只允许可打印 ASCII。
+- 该规则自 2026-09-30 起生效，优先于 `AGENTS.md` 中“标题一行”的约定；此前已推送的提交不改写。

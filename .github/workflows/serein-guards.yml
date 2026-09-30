@@ -61,6 +61,34 @@ jobs:
       - name: Generated code matches the schema.
         run: uv run tools/serein/codegen/generate.py --check
 
+  commits:
+    name: Commit messages
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clone.
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 200
+
+      - name: Set up Node.
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      - name: Install commitlint.
+        run: npm install --no-save --no-package-lock @commitlint/cli@19 @commitlint/config-conventional@19
+
+      - name: New commits follow Conventional Commits in English.
+        env:
+          FROM: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+          TO: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+        run: |
+          if [[ "$FROM" =~ ^0+$ ]]; then
+            FROM="$TO~1"
+          fi
+          npx commitlint --config tools/serein/commitlint.config.mjs --from "$FROM" --to "$TO" --verbose
+
   core-tests:
     name: Core tests (Qt only)
     runs-on: ubuntu-latest

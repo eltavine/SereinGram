@@ -262,6 +262,11 @@ publication at a construction seam).
 
 ## Commits
 
+- SereinGram rule, overriding the subject-only guidance below: every commit
+  message follows Conventional Commits (`type(scope): summary`), is written
+  in English, and has a detailed body explaining why the change was made and
+  what it changes. CI enforces this with commitlint and
+  `tools/serein/commitlint.config.mjs`.
 - Subject: one concise, plain-language line summarizing the change, ~50-60 characters, matching the style of recent `git log` subjects. This is usually the entire message.
 - Decide the `[ai] ` prefix separately for each commit. Use it only when every
   retained change in that commit, and the commit's purpose, are exclusively

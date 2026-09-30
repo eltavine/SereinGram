@@ -9,10 +9,28 @@
     ".github/workflows/serein-*.yml"
   ],
   "extensions": [
-    ".c", ".cc", ".cpp", ".cxx", ".h", ".hh", ".hpp",
-    ".m", ".mm", ".swift",
-    ".py", ".sh", ".cmake", ".proto", ".style",
-    ".json", ".yml", ".yaml", ".j2"
+    ".c",
+    ".cc",
+    ".cpp",
+    ".cxx",
+    ".h",
+    ".hh",
+    ".hpp",
+    ".m",
+    ".mm",
+    ".swift",
+    ".py",
+    ".sh",
+    ".cmake",
+    ".proto",
+    ".style",
+    ".json",
+    ".yml",
+    ".yaml",
+    ".j2",
+    ".mjs"
   ],
-  "filenames": ["CMakeLists.txt"]
+  "filenames": [
+    "CMakeLists.txt"
+  ]
 }
