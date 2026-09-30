@@ -43,5 +43,48 @@ void TestLinks() {
 		"rule matched a different host");
 	Require(!Rewrite(raw, u"http://name:password@example.com/p"_q).error.isEmpty(),
 		"credential-bearing URL was rewritten");
+
+	const auto accepts = [&](QJsonObject object) {
+		return Validate(QJsonDocument(object).toJson(QJsonDocument::Compact));
+	};
+	const auto withRules = [&](QJsonArray rules) {
+		auto result = config;
+		result.insert(u"rules"_q, rules);
+		return result;
+	};
+	const auto withField = [&](const QString &key, const QJsonValue &value) {
+		auto rule = enabled;
+		rule.insert(key, value);
+		return withRules({ rule });
+	};
+	auto missing = config;
+	missing.remove(u"confirmAll"_q);
+	Require(!accepts(missing), "config without confirmAll accepted");
+	auto extra = config;
+	extra.insert(u"extra"_q, 1);
+	Require(!accepts(extra), "config with an unknown key accepted");
+	auto partial = enabled;
+	partial.remove(u"enabled"_q);
+	Require(!accepts(withRules({ partial })), "rule without enabled accepted");
+	Require(!accepts(withField(u"host"_q, u"Example.com"_q)), "uppercase host accepted");
+	Require(!accepts(withField(u"host"_q, u"example.com\n"_q)), "host with a newline accepted");
+	Require(!accepts(withField(u"host"_q, u"a..b"_q)), "host with an empty label accepted");
+	Require(!accepts(withField(u"id"_q, enabled.value(u"id"_q).toString().toUpper())),
+		"uppercase rule id accepted");
+	Require(!accepts(withField(u"removeParameters"_q, QJsonArray{ u"a"_q, u"a"_q })),
+		"duplicate parameters accepted");
+	Require(!accepts(withField(u"removeParameters"_q, QJsonArray{ u"a b"_q })),
+		"invalid parameter accepted");
+	auto idle = enabled;
+	idle.insert(u"replacementHost"_q, QString());
+	idle.insert(u"removeParameters"_q, QJsonArray());
+	Require(!accepts(withRules({ idle })), "rule that changes nothing accepted");
+	Require(!accepts(withRules({ enabled, enabled })), "duplicate rule ids accepted");
+	auto many = QJsonArray();
+	for (auto i = 0; i != 33; ++i) {
+		many.push_back(NewRule(u"example.com"_q, u"mirror.example"_q, {}));
+	}
+	Require(!accepts(withRules(many)), "more than 32 rules accepted");
+	Require(Validate(QByteArray()), "empty configuration rejected");
 	std::cout << "PASS: Serein link rules" << std::endl;
 }

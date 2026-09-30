@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package serein.config.v1;
+
+import "buf/validate/validate.proto";
+import "serein/options/v1/options.proto";
+
+option (serein.options.v1.file) = {cpp_namespace: "Links"};
+
+message LinkRules {
+  option (serein.options.v1.document) = {
+    version: 1
+    validator: "ValidLinkRules"
+  };
+  option (serein.options.v1.codec) = {require_fields: true};
+
+  bool confirm_all = 1;
+  repeated LinkRule rules = 2 [(buf.validate.field).repeated.max_items = 32];
+}
+
+message LinkRule {
+  option (serein.options.v1.codec) = {require_fields: true};
+
+  string id = 1 [(buf.validate.field).string.pattern = "^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$"];
+  string host = 2 [(buf.validate.field).string = {
+    max_len: 253
+    pattern: "^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)*$"
+  }];
+  string replacement_host = 3 [(buf.validate.field).string = {
+    max_len: 253
+    pattern: "^([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)*)?$"
+  }];
+  repeated string remove_parameters = 4 [(buf.validate.field).repeated = {
+    max_items: 32
+    unique: true
+    items: {
+      string: {pattern: "^[a-zA-Z0-9_+.-]{1,64}\\*?$"}
+    }
+  }];
+  bool enabled = 5;
+}

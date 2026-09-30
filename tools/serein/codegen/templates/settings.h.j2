@@ -2,9 +2,8 @@
 #pragma once
 
 #include "serein/core/options.h"
-{% if page.needs_regex %}
-
-#include <QtCore/QRegularExpression>
+{% if page.needs_codec %}
+#include "serein/schema/codec.h"
 {% endif %}
 
 namespace Serein::{{ page.namespace }} {

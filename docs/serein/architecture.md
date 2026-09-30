@@ -126,7 +126,7 @@ message MessagesSettings {
 - 校验使用 protovalidate 的标准注解；生成器只接受其中的范围、枚举、长度约束，遇到不支持的约束直接报错。
 - 生成器 `tools/serein/codegen`（`uv run tools/serein/codegen/generate.py`）读取 `buf build` 的 JSON 映像，用 Jinja2 为每个设置页生成 `serein/schema/gen/settings/<页>.h`：类型化的 `Option<T>` 句柄、校验与 `RegisterOptions`。命名约定：常量 `k<字段名驼峰>`、存储键 `serein.<json_name>`、标题 `lng_serein_<字段名>`，只有例外才写 `cpp_name`、`title`。
 - 已迁移：界面、会话列表、消息、输入、媒体、隐私 6 个页面共 103 个选项；原 `options.h` 只转发到生成头文件。其余 8 个结构化 JSON 选项（菜单、服务、过滤、链接、别名、截图等）改用生成的编解码后再迁移。
-- 编解码：带文件选项的 proto 生成 `serein/schema/gen/<目录>/<名>.h/.cpp`（值类型、`Read`/`Write`/`Validate`、文档级 `Parse…`/`Serialize…`），手写运行时只有 `serein/schema/codec.h`。生成的 `.cpp` 列在 `serein/schema/gen/sources.cmake`，主构建与测试构建都直接引入。第一个使用者是消息历史记录 `proto/serein/history/v1/record.proto`。
+- 编解码：带文件选项的 proto 生成 `serein/schema/gen/<目录>/<名>.h/.cpp`（值类型、`Read`/`Write`/`Validate`、文档级 `Parse…`/`Serialize…`），手写运行时只有 `serein/schema/codec.h`。生成的 `.cpp` 列在 `serein/schema/gen/sources.cmake`，主构建与测试构建都直接引入。使用者：消息历史记录 `proto/serein/history/v1/record.proto`；链接规则 `proto/serein/config/v1/links.proto`（第一个迁移的既有配置，结构与主机名、参数、UUID 约束改由 schema 声明，`require_fields` 保持旧格式的严格性，新增测试同时在迁移前后的实现上通过）。
 - 生成代码提交入库：三平台与发行版构建不需要 Buf 或 Python 依赖；CI 运行 `buf lint`、`tools/serein/proto_breaking.sh` 与 `generate.py --check`。
 
 ## 6. 存储（ADR-0003）

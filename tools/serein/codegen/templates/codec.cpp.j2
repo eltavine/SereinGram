@@ -53,6 +53,14 @@ bool Read(
 {% endfor %}
 		}, error, path)) {
 		return false;
+{% if message.require_fields %}
+	} else if (!Codec::RequiredKeys(object, {
+{% for field in message.fields %}
+			QLatin1StringView("{{ field.key }}"),
+{% endfor %}
+		}, error, path)) {
+		return false;
+{% endif %}
 	}
 	result = {{ message.name }}();
 {% if message.fields %}

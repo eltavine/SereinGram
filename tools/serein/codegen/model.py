@@ -85,7 +85,7 @@ class Page:
     header: str
     options: list
     custom_validators: list
-    needs_regex: bool
+    needs_codec: bool
 
 
 def camel_upper(name):
@@ -141,8 +141,7 @@ def string_conditions(rules, where):
             conditions.append(f"value == QString::fromUtf8({cpp_string(value)})")
         else:
             conditions.append(
-                f"QRegularExpression(QString::fromUtf8({cpp_string(value)}))"
-                ".match(value).hasMatch()")
+                f"Codec::Matches(value, QString::fromUtf8({cpp_string(value)}))")
     return conditions
 
 
@@ -224,7 +223,7 @@ def build_page(source, message):
         header=f"settings/{stem}.h",
         options=options,
         custom_validators=custom,
-        needs_regex=any("QRegularExpression" in line
+        needs_codec=any("Codec::" in line
                         for option in options for line in option.validator),
     )
 

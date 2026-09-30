@@ -6,6 +6,7 @@ from model import RULES_EXTENSION, SchemaError, camel_upper, cpp_string
 
 FILE_EXTENSION = "[serein.options.v1.file]"
 DOCUMENT_EXTENSION = "[serein.options.v1.document]"
+CODEC_EXTENSION = "[serein.options.v1.codec]"
 SCALARS = {
     "TYPE_BOOL": ("bool", "false"),
     "TYPE_INT32": ("int", "0"),
@@ -49,6 +50,7 @@ class Message:
     checks: list
     version: int = 0
     validator: str = ""
+    require_fields: bool = False
 
 
 @dataclass
@@ -241,14 +243,16 @@ def build_file(file):
             if built.key == "version" and DOCUMENT_EXTENSION in message.get("options", {}):
                 raise SchemaError(f"{where}: 'version' is reserved in documents")
             fields.append(built)
-            if dependency and not built.cpp_type.startswith("std::vector"):
+            if dependency:
                 needs.add(dependency)
         document = message.get("options", {}).get(DOCUMENT_EXTENSION, {})
         messages[message["name"]] = Message(
             name=message["name"], fields=fields,
             checks=[line for built in fields for line in built.checks],
             version=int(document.get("version", 0)),
-            validator=document.get("validator", ""))
+            validator=document.get("validator", ""),
+            require_fields=bool(message.get("options", {}).get(
+                CODEC_EXTENSION, {}).get("requireFields", False)))
         dependencies[message["name"]] = needs
     directory = source.split("/")[1]
     stem = source.rsplit("/", 1)[-1].removesuffix(".proto")

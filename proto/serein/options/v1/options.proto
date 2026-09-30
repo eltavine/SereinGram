@@ -71,6 +71,11 @@ message DocumentOptions {
   string validator = 2;
 }
 
+message CodecOptions {
+  // Every field must be present on read, as the existing formats require.
+  bool require_fields = 1;
+}
+
 extend google.protobuf.FileOptions {
   FileOptions file = 50001;
 }
@@ -78,6 +83,7 @@ extend google.protobuf.FileOptions {
 extend google.protobuf.MessageOptions {
   PageOptions page = 50001;
   DocumentOptions document = 50002;
+  CodecOptions codec = 50003;
 }
 
 extend google.protobuf.FieldOptions {

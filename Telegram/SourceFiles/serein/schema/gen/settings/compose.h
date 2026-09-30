@@ -2,8 +2,7 @@
 #pragma once
 
 #include "serein/core/options.h"
-
-#include <QtCore/QRegularExpression>
+#include "serein/schema/codec.h"
 
 namespace Serein::Compose {
 
@@ -155,7 +154,7 @@ inline const auto kDefaultCodeLanguage = Option<QString>{
 	0,
 	[](const QString &value) {
 		return (value == QString())
-			|| ((value.toUcs4().size() <= 32) && (QRegularExpression(QString::fromUtf8("^[A-Za-z0-9+-]*$")).match(value).hasMatch()));
+			|| ((value.toUcs4().size() <= 32) && (Codec::Matches(value, QString::fromUtf8("^[A-Za-z0-9+-]*$"))));
 	} };
 inline const auto kQuickReplies = Option<QByteArray>{
 	"serein.quickReplies",

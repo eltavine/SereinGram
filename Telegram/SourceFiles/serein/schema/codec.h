@@ -38,6 +38,11 @@ bool FailExpected(Error &error, const QString &path, const char *what);
 	std::initializer_list<QLatin1StringView> keys,
 	Error &error,
 	const QString &path);
+[[nodiscard]] bool RequiredKeys(
+	const QJsonObject &object,
+	std::initializer_list<QLatin1StringView> keys,
+	Error &error,
+	const QString &path);
 [[nodiscard]] std::optional<QJsonObject> ParseObject(
 	const QByteArray &raw,
 	Error &error);

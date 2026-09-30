@@ -70,10 +70,11 @@ class ModelTest(unittest.TestCase):
             model.RULES_EXTENSION: {"int32": {"in": [0, 500]}}}))
         self.assertIn("(value == 0 || value == 500)", option.validator[2])
 
-    def test_string_rules_need_regex(self):
+    def test_string_rules_use_the_codec_matcher(self):
         page = model.build_pages(image(field("code", "code", "TYPE_STRING", {
             model.RULES_EXTENSION: {"string": {"maxLen": "32", "pattern": "^[a-z]*$"}}})))[0]
-        self.assertTrue(page.needs_regex)
+        self.assertTrue(page.needs_codec)
+        self.assertIn("Codec::Matches(value", page.options[0].validator[2])
         self.assertIn("value.toUcs4().size() <= 32", page.options[0].validator[2])
 
     def test_custom_validator_is_declared(self):

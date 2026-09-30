@@ -1,6 +1,7 @@
 #pragma once
 
 #include "serein/core/options.h"
+#include "serein/schema/gen/config/links.h"
 
 #include <QtCore/QJsonObject>
 #include <QtCore/QUrl>

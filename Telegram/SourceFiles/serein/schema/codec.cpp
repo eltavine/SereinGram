@@ -112,6 +112,19 @@ bool KnownKeys(
 	return true;
 }
 
+bool RequiredKeys(
+		const QJsonObject &object,
+		std::initializer_list<QLatin1StringView> keys,
+		Error &error,
+		const QString &path) {
+	for (const auto &key : keys) {
+		if (!object.contains(key)) {
+			return Fail(error, path, u"missing field "_q + QString(key));
+		}
+	}
+	return true;
+}
+
 std::optional<QJsonObject> ParseObject(const QByteArray &raw, Error &error) {
 	auto parseError = QJsonParseError();
 	const auto document = QJsonDocument::fromJson(raw, &parseError);
@@ -132,11 +145,38 @@ bool IsUuid(const QString &value) {
 	return pattern.match(value).hasMatch();
 }
 
+namespace {
+
+[[nodiscard]] QString EndAnchorsAsRe2(const QString &pattern) {
+	auto result = QString();
+	result.reserve(pattern.size() + 4);
+	auto escaped = false;
+	auto inClass = false;
+	for (const auto ch : pattern) {
+		if (escaped) {
+			escaped = false;
+		} else if (ch == u'\\') {
+			escaped = true;
+		} else if (inClass) {
+			inClass = (ch != u']');
+		} else if (ch == u'[') {
+			inClass = true;
+		} else if (ch == u'$') {
+			result += u"\\z"_q;
+			continue;
+		}
+		result += ch;
+	}
+	return result;
+}
+
+} // namespace
+
 bool Matches(const QString &value, const QString &pattern) {
 	thread_local auto cache = QHash<QString, QRegularExpression>();
 	auto i = cache.find(pattern);
 	if (i == cache.end()) {
-		i = cache.insert(pattern, QRegularExpression(pattern));
+		i = cache.insert(pattern, QRegularExpression(EndAnchorsAsRe2(pattern)));
 	}
 	return i->match(value).hasMatch();
 }
