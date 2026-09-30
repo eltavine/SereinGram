@@ -1,4 +1,4 @@
-#include "serein/chats/managed_folders.h"
+#include "serein/hooks/chats/managed_folders.h"
 
 #include "serein/chats/options.h"
 #include "data/data_channel.h"

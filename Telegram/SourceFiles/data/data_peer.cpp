@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "data/data_peer.h"
-#include "serein/interface/roundness.h"
+#include "serein/hooks/interface/roundness.h"
 #include "serein/hooks/privacy/alias.h"
 
 #include "api/api_sensitive_content.h"

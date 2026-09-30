@@ -7,7 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "settings/sections/settings_main.h"
 
-#include "serein/settings/home.h"
+#include "serein/hooks/settings/home.h"
 
 #include "settings/settings_common_session.h"
 

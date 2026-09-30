@@ -8,7 +8,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "boxes/translate_box.h"
 #include "boxes/translate_box_content.h"
 #include "lang/translate_provider.h"
-#include "serein/services/translation.h"
+#include "serein/hooks/services/translation.h"
 
 #include "base/weak_ptr.h"
 #include "core/application.h"

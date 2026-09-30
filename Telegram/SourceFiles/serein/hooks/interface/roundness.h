@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ui/userpic_view.h"
+#include "base/basic_types.h"
 
 #include <QtGui/QImage>
 
@@ -9,6 +9,7 @@
 
 class PeerData;
 namespace Media::Streaming { class Instance; }
+namespace Ui { enum class PeerUserpicShape : uint8; }
 
 namespace Serein::Interface {
 

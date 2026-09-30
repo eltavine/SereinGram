@@ -6,7 +6,7 @@
 #include "serein/media/options.h"
 #include "serein/menu/model.h"
 #include "serein/privacy/options.h"
-#include "serein/hooks/privacy/alias.h"
+#include "serein/privacy/alias.h"
 #include "serein/messages/options.h"
 #include "serein/hooks/services/model.h"
 #include "serein/filters/model.h"

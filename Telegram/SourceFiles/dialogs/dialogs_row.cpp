@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "dialogs/dialogs_row.h"
-#include "serein/interface/roundness.h"
+#include "serein/hooks/interface/roundness.h"
 #include "serein/hooks/chats/layout.h"
 
 #include "ui/chat/chat_theme.h" // CountAverageColor.

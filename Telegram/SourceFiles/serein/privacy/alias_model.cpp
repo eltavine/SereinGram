@@ -1,4 +1,4 @@
-#include "serein/hooks/privacy/alias.h"
+#include "serein/privacy/alias.h"
 
 #include "data/data_peer_id.h"
 

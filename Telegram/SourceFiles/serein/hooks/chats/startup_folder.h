@@ -1,15 +1,15 @@
 #pragma once
 
-#include "data/data_types.h"
+#include "base/basic_types.h"
 
 namespace Main { class Session; }
 
 namespace Serein::Chats {
 
-[[nodiscard]] FilterId StartupFolder(
+[[nodiscard]] int32 StartupFolder(
 	gsl::not_null<Main::Session*> session,
-	FilterId defaultId);
+	int32 defaultId);
 void VerifyStartupFolder(gsl::not_null<Main::Session*> session);
-void RememberFolder(gsl::not_null<Main::Session*> session, FilterId id);
+void RememberFolder(gsl::not_null<Main::Session*> session, int32 id);
 
 } // namespace Serein::Chats

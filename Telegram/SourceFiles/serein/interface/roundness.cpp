@@ -1,10 +1,11 @@
-#include "serein/interface/roundness.h"
+#include "serein/hooks/interface/roundness.h"
 
 #include "serein/interface/options.h"
 #include "data/data_peer.h"
 #include "media/streaming/media_streaming_instance.h"
 #include "ui/image/image_prepare.h"
 #include "ui/style/style_core.h"
+#include "ui/userpic_view.h"
 
 #include <algorithm>
 

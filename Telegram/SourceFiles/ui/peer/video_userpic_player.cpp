@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "ui/peer/video_userpic_player.h"
-#include "serein/interface/roundness.h"
+#include "serein/hooks/interface/roundness.h"
 
 #include "data/data_peer.h"
 #include "data/data_photo.h"

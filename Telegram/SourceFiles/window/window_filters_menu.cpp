@@ -6,9 +6,8 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "window/window_filters_menu.h"
-#include "serein/chats/managed_folders.h"
+#include "serein/hooks/chats/managed_folders.h"
 #include "serein/hooks/gen/chats.h"
-#include "serein/core/options.h"
 
 #include "menu/menu_mark_as_read.h"
 #include "mainwindow.h"

@@ -1,14 +1,10 @@
-#pragma once
+#include "serein/hooks/compose/buttons.h"
 
-#include "serein/compose/options.h"
+#include "serein/core/options.h"
 
 namespace Serein::Compose {
 
-inline bool Hidden(const Option<bool> &option) {
-	return ForDevice().Get(option);
-}
-
-inline rpl::producer<> ButtonsChanged() {
+rpl::producer<> ButtonsChanged() {
 	return ForDevice().changes()
 		| rpl::filter([](std::string_view key) {
 			return RegisteredOptions().HasFlag(

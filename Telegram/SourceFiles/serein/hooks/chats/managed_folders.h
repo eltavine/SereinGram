@@ -1,6 +1,6 @@
 #pragma once
 
-#include "data/data_types.h"
+#include "base/basic_types.h"
 
 class History;
 namespace Main { class Session; }
@@ -10,10 +10,10 @@ namespace Serein::Chats {
 
 [[nodiscard]] bool AllowedInFolder(
 	gsl::not_null<History*> history,
-	FilterId folderId);
+	int32 folderId);
 void AddManagedOnlyAction(
 	const Ui::Menu::MenuCallback &addAction,
 	gsl::not_null<Main::Session*> session,
-	FilterId folderId);
+	int32 folderId);
 
 } // namespace Serein::Chats

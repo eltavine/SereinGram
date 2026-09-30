@@ -87,7 +87,8 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "history/view/controls/history_view_draft_options.h"
 #include "history/view/controls/history_view_suggest_options.h"
 #include "history/view/controls/history_view_ttl_button.h"
-#include "serein/compose/buttons.h"
+#include "serein/hooks/compose/buttons.h"
+#include "serein/hooks/gen/compose.h"
 #include "serein/hooks/compose/placeholder.h"
 #include "history/view/controls/history_view_voice_record_bar.h"
 #include "history/view/controls/history_view_webpage_processor.h"
@@ -1431,8 +1432,7 @@ ComposeControls::ComposeControls(
 				updateControlsGeometry(_wrap->size());
 			} else if (_botKeyboardHide && !has) {
 				_botKeyboardHide = nullptr;
-				_tabbedSelectorToggle->setVisible(!Serein::Compose::Hidden(
-					Serein::Compose::kHideEmojiButton));
+				_tabbedSelectorToggle->setVisible(!Serein::Hooks::Compose::HideEmojiButton());
 				updateControlsGeometry(_wrap->size());
 			}
 		}, _wrap->lifetime());
@@ -2932,8 +2932,7 @@ void ComposeControls::init() {
 
 	rpl::merge(
 		session().attachWebView().attachBotsUpdates(),
-		Serein::ForDevice().Value(Serein::Compose::kDisableAttachHover
-		) | rpl::skip(1) | rpl::to_empty
+		Serein::Hooks::Compose::DisableAttachHoverValue() | rpl::skip(1) | rpl::to_empty
 	) | rpl::on_next([=] {
 		updateAttachBotsMenu();
 	}, _wrap->lifetime());
@@ -2957,7 +2956,7 @@ void ComposeControls::orderControls() {
 }
 
 bool ComposeControls::showRecordButton() const {
-	return !Serein::Compose::Hidden(Serein::Compose::kHideRecordingButton)
+	return !Serein::Hooks::Compose::HideRecordingButton()
 		&& _features.recordMediaMessage
 		&& (_recordAvailability != Webrtc::RecordAvailability::None)
 		&& !_voiceRecordBar->isListenState()
@@ -5102,7 +5101,7 @@ void ComposeControls::updateControlsVisibility() {
 		_botCommandStart->setVisible(_botCommandShown);
 	}
 	_tabbedSelectorToggle->setVisible(!_botKeyboardHide
-		&& !Serein::Compose::Hidden(Serein::Compose::kHideEmojiButton));
+		&& !Serein::Hooks::Compose::HideEmojiButton());
 	if (_silent) {
 		_silent->setVisible(!hide);
 	}
@@ -5116,8 +5115,7 @@ void ComposeControls::updateControlsVisibility() {
 		_ttlInfo->setVisible(!hide);
 	}
 	if (_sendAs) {
-		_sendAs->setVisible(!Serein::Compose::Hidden(
-			Serein::Compose::kHideSendAsButton));
+		_sendAs->setVisible(!Serein::Hooks::Compose::HideSendAsButton());
 	}
 	if (_replaceMedia) {
 		_replaceMedia->show();
@@ -5127,8 +5125,7 @@ void ComposeControls::updateControlsVisibility() {
 	}
 	if (_attachToggle) {
 		_attachToggle->setVisible(!_replaceMedia
-			&& !Serein::Compose::Hidden(
-				Serein::Compose::kHideAttachButton));
+			&& !Serein::Hooks::Compose::HideAttachButton());
 	}
 	if (_scheduled) {
 		_scheduled->setVisible(!hide);
@@ -5143,8 +5140,7 @@ void ComposeControls::updateControlsVisibility() {
 		_commentsShown->setVisible(!_commentsShownHidden.current());
 	}
 	if (_starsReaction) {
-		_starsReaction->setVisible(!Serein::Compose::Hidden(
-			Serein::Compose::kHideStarsReactionButton));
+		_starsReaction->setVisible(!Serein::Hooks::Compose::HideStarsReactionButton());
 	}
 	updateAiButtonVisibility();
 	updateSendAsFileVisibility();
@@ -5153,7 +5149,7 @@ void ComposeControls::updateControlsVisibility() {
 }
 
 void ComposeControls::updateAiButtonVisibility() {
-	const auto hidden = Serein::Compose::Hidden(Serein::Compose::kHideAiButton)
+	const auto hidden = Serein::Hooks::Compose::HideAiButton()
 		|| !hasEnoughLinesForAi()
 		|| !_wrap->isVisible()
 		|| _recording.current()
@@ -5384,7 +5380,7 @@ bool ComposeControls::textExceedsMaxSize() const {
 bool ComposeControls::updateBotCommandShown() {
 	auto shown = false;
 	const auto peer = _history ? _history->peer.get() : nullptr;
-	if (!Serein::Compose::Hidden(Serein::Compose::kHideBotCommandButton)
+	if (!Serein::Hooks::Compose::HideBotCommandButton()
 			&& _botCommandStart
 			&& peer
 			&& _botCommandStartExtraGuard.current()
@@ -5433,7 +5429,7 @@ bool ComposeControls::refreshBotMenuButton() {
 		return changed;
 	}
 	auto buttonChanged = false;
-	if (Serein::Compose::Hidden(Serein::Compose::kHideBotMenu)
+	if (Serein::Hooks::Compose::HideBotMenu()
 		|| !bot
 		|| (_mode != Mode::Normal)
 		|| (bot->botInfo->botMenuButtonUrl.isEmpty()
@@ -5518,8 +5514,7 @@ void ComposeControls::updateOuterGeometry(QRect rect) {
 
 void ComposeControls::updateMessagesTTLShown() {
 	const auto peer = _history ? _history->peer.get() : nullptr;
-	const auto shown = !Serein::Compose::Hidden(
-		Serein::Compose::kHideAutoDeleteButton)
+	const auto shown = !Serein::Hooks::Compose::HideAutoDeleteButton()
 		&& _features.ttlInfo
 		&& peer
 		&& (peer->messagesTTL() > 0);
@@ -5547,7 +5542,7 @@ void ComposeControls::refreshSendGiftToggle() {
 		| Type::Limited
 		| Type::Unique;
 	const auto has = _regularWindow
-		&& !Serein::Compose::Hidden(Serein::Compose::kHideGiftButton)
+		&& !Serein::Hooks::Compose::HideGiftButton()
 		&& user
 		&& !_writeRestriction.current()
 		&& !user->isServiceUser()
@@ -5637,8 +5632,7 @@ void ComposeControls::updateAttachBotsMenu() {
 	_attachBotsMenu->setOrigin(
 		Ui::PanelAnimation::Origin::BottomLeft);
 	if (!ChatHelpers::ShowPanelOnClick()
-		&& !Serein::Compose::Hidden(
-			Serein::Compose::kDisableAttachHover)) {
+		&& !Serein::Hooks::Compose::DisableAttachHover()) {
 		_attachToggle->installEventFilter(_attachBotsMenu.get());
 	}
 	_attachBotsMenu->heightValue(

@@ -2,6 +2,7 @@
 
 #include "ui/text/text_entity.h"
 #include "lang/translate_provider.h"
+#include "serein/hooks/services/translation.h"
 
 namespace Main {
 class Session;
@@ -29,9 +30,6 @@ struct TranslationPlan {
 	const QStringList &translated);
 [[nodiscard]] std::unique_ptr<Ui::TranslateProvider> CreateServiceTranslateProvider(
 	const ServiceDefinition &service,
-	Fn<void(QString)> error);
-[[nodiscard]] std::unique_ptr<Ui::TranslateProvider> CreateInteractiveTranslateProvider(
-	not_null<Main::Session*> session,
 	Fn<void(QString)> error);
 
 } // namespace Serein

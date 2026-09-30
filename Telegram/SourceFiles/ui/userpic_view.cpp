@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "ui/userpic_view.h"
-#include "serein/interface/roundness.h"
+#include "serein/hooks/interface/roundness.h"
 
 #include "ui/empty_userpic.h"
 #include "ui/painter.h"

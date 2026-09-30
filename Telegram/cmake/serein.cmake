@@ -2,6 +2,7 @@ set(serein_sources
     serein/chats/layout.cpp
     serein/chats/list_refresher.cpp
     serein/chats/promotions.cpp
+    serein/compose/buttons.cpp
     serein/compose/confirm.cpp
     serein/compose/placeholder.cpp
     serein/compose/spacing.cpp

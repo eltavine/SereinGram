@@ -123,7 +123,8 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "history/view/controls/history_view_voice_record_bar.h"
 #include "history/view/controls/history_view_webpage_processor.h"
 #include "history/view/reactions/history_view_reactions_button.h"
-#include "serein/compose/buttons.h"
+#include "serein/hooks/compose/buttons.h"
+#include "serein/hooks/gen/compose.h"
 #include "serein/hooks/compose/confirm.h"
 #include "serein/hooks/compose/placeholder.h"
 #include "history/view/history_view_chat_section.h"
@@ -666,8 +667,7 @@ HistoryWidget::HistoryWidget(
 	session().attachWebView().requestBots();
 	rpl::merge(
 		session().attachWebView().attachBotsUpdates(),
-		Serein::ForDevice().Value(Serein::Compose::kDisableAttachHover
-		) | rpl::skip(1) | rpl::to_empty,
+		Serein::Hooks::Compose::DisableAttachHoverValue() | rpl::skip(1) | rpl::to_empty,
 		session().changes().peerUpdates(
 			Data::PeerUpdate::Flag::Rights
 			| Data::PeerUpdate::Flag::StarsPerMessage
@@ -3631,8 +3631,7 @@ void HistoryWidget::refreshAttachBotsMenu() {
 	_attachBotsMenu->setOrigin(
 		Ui::PanelAnimation::Origin::BottomLeft);
 	if (!ChatHelpers::ShowPanelOnClick()
-		&& !Serein::Compose::Hidden(
-			Serein::Compose::kDisableAttachHover)) {
+		&& !Serein::Hooks::Compose::DisableAttachHover()) {
 		_attachToggle->installEventFilter(_attachBotsMenu.get());
 	}
 	_attachBotsMenu->heightValue(
@@ -3921,7 +3920,7 @@ void HistoryWidget::refreshSendGiftToggle() {
 		| Type::Limited
 		| Type::Unique;
 	const auto has = user
-		&& !Serein::Compose::Hidden(Serein::Compose::kHideGiftButton)
+		&& !Serein::Hooks::Compose::HideGiftButton()
 		&& _canSendMessages
 		&& !user->isServiceUser()
 		&& !user->isSelf()
@@ -4247,15 +4246,13 @@ void HistoryWidget::updateControlsVisibility() {
 			_botCommandStart->hide();
 		} else if (_kbReplyTo) {
 			_kbScroll->hide();
-			_tabbedSelectorToggle->setVisible(!Serein::Compose::Hidden(
-				Serein::Compose::kHideEmojiButton));
+			_tabbedSelectorToggle->setVisible(!Serein::Hooks::Compose::HideEmojiButton());
 			_botKeyboardHide->hide();
 			_botKeyboardShow->hide();
 			_botCommandStart->hide();
 		} else {
 			_kbScroll->hide();
-			_tabbedSelectorToggle->setVisible(!Serein::Compose::Hidden(
-				Serein::Compose::kHideEmojiButton));
+			_tabbedSelectorToggle->setVisible(!Serein::Hooks::Compose::HideEmojiButton());
 			_botKeyboardHide->hide();
 			if (_keyboard->hasMarkup()) {
 				_botKeyboardShow->show();
@@ -4269,8 +4266,7 @@ void HistoryWidget::updateControlsVisibility() {
 			_replaceMedia->show();
 			_attachToggle->hide();
 		} else {
-			_attachToggle->setVisible(!Serein::Compose::Hidden(
-				Serein::Compose::kHideAttachButton));
+			_attachToggle->setVisible(!Serein::Hooks::Compose::HideAttachButton());
 		}
 		if (_botMenu.button) {
 			_botMenu.button->show();
@@ -4325,8 +4321,7 @@ void HistoryWidget::updateControlsVisibility() {
 			}
 		}
 		if (_sendAs) {
-			_sendAs->setVisible(!Serein::Compose::Hidden(
-				Serein::Compose::kHideSendAsButton));
+			_sendAs->setVisible(!Serein::Hooks::Compose::HideSendAsButton());
 		}
 		updateFieldPlaceholder();
 
@@ -6466,7 +6461,7 @@ void HistoryWidget::sendBotCommand(
 	}
 	if (!request.replyTo
 		&& _canSendTexts
-		&& Serein::ForDevice().Get(Serein::Compose::kBotCommandsToDraft)) {
+		&& Serein::Hooks::Compose::BotCommandsToDraft()) {
 		insertBotCommand(Bot::WrapCommandInChat(
 			_peer, request.command, request.context));
 		setInnerFocus();
@@ -6716,8 +6711,7 @@ bool HistoryWidget::isChoosingTheme() const {
 
 bool HistoryWidget::isMuteUnmute() const {
 	return _peer
-		&& !Serein::Compose::Hidden(
-			Serein::Compose::kHideChannelMuteButton)
+		&& !Serein::Hooks::Compose::HideChannelMuteButton()
 		&& ((_peer->isBroadcast() && !_peer->asChannel()->canPostMessages())
 			|| (_peer->isGigagroup() && !Data::CanSendAnything(_peer))
 			|| _peer->isRepliesChat()
@@ -6729,7 +6723,7 @@ bool HistoryWidget::isSearching() const {
 }
 
 bool HistoryWidget::showRecordButton() const {
-	return !Serein::Compose::Hidden(Serein::Compose::kHideRecordingButton)
+	return !Serein::Hooks::Compose::HideRecordingButton()
 		&& (_recordAvailability != Webrtc::RecordAvailability::None)
 		&& !_voiceRecordBar->isListenState()
 		&& !_voiceRecordBar->isRecordingByAnotherBar()
@@ -6833,7 +6827,7 @@ bool HistoryWidget::updateCmdStartShown() {
 		? _peer->asUser()
 		: nullptr;
 	auto cmdStartShown = false;
-	if (!Serein::Compose::Hidden(Serein::Compose::kHideBotCommandButton)
+	if (!Serein::Hooks::Compose::HideBotCommandButton()
 		&& _history
 		&& _peer
 		&& (false
@@ -6853,7 +6847,7 @@ bool HistoryWidget::updateCmdStartShown() {
 	constexpr auto kSmallMenuAfter = 10;
 	const auto commandsChanged = (_cmdStartShown != cmdStartShown);
 	auto buttonChanged = false;
-	if (Serein::Compose::Hidden(Serein::Compose::kHideBotMenu)
+	if (Serein::Hooks::Compose::HideBotMenu()
 		|| !bot
 		|| (bot->botInfo->botMenuButtonUrl.isEmpty()
 			&& bot->botInfo->commands.empty())) {
@@ -7114,8 +7108,7 @@ void HistoryWidget::toggleKeyboard(bool manual) {
 	if (_botKeyboardHide->isHidden()
 		&& canWriteMessage()
 		&& !_showAnimation) {
-		_tabbedSelectorToggle->setVisible(!Serein::Compose::Hidden(
-			Serein::Compose::kHideEmojiButton));
+		_tabbedSelectorToggle->setVisible(!Serein::Hooks::Compose::HideEmojiButton());
 	} else {
 		_tabbedSelectorToggle->hide();
 	}
@@ -7290,7 +7283,7 @@ bool HistoryWidget::textExceedsMaxSize() const {
 }
 
 void HistoryWidget::updateAiButtonVisibility() {
-	const auto hidden = Serein::Compose::Hidden(Serein::Compose::kHideAiButton)
+	const auto hidden = Serein::Hooks::Compose::HideAiButton()
 		|| !hasEnoughLinesForAi()
 		|| !_send->isVisible()
 		|| !_field->isVisible();
@@ -8844,8 +8837,7 @@ void HistoryWidget::updateBotKeyboard(History *h, bool force) {
 					showKeyboardHideButton();
 				} else {
 					_kbScroll->hide();
-					_tabbedSelectorToggle->setVisible(!Serein::Compose::Hidden(
-						Serein::Compose::kHideEmojiButton));
+					_tabbedSelectorToggle->setVisible(!Serein::Hooks::Compose::HideEmojiButton());
 					_botKeyboardHide->hide();
 				}
 				_botKeyboardShow->hide();
@@ -8869,8 +8861,7 @@ void HistoryWidget::updateBotKeyboard(History *h, bool force) {
 		} else {
 			if (!_showAnimation) {
 				_kbScroll->hide();
-				_tabbedSelectorToggle->setVisible(!Serein::Compose::Hidden(
-					Serein::Compose::kHideEmojiButton));
+				_tabbedSelectorToggle->setVisible(!Serein::Hooks::Compose::HideEmojiButton());
 				_botKeyboardHide->hide();
 				_botKeyboardShow->show();
 				_botCommandStart->hide();
@@ -8889,8 +8880,7 @@ void HistoryWidget::updateBotKeyboard(History *h, bool force) {
 	} else {
 		if (!_scroll->isHidden()) {
 			_kbScroll->hide();
-			_tabbedSelectorToggle->setVisible(!Serein::Compose::Hidden(
-				Serein::Compose::kHideEmojiButton));
+			_tabbedSelectorToggle->setVisible(!Serein::Hooks::Compose::HideEmojiButton());
 			_botKeyboardHide->hide();
 			_botKeyboardShow->hide();
 			_botCommandStart->setVisible(!_editMsgId);
@@ -9690,7 +9680,7 @@ void HistoryWidget::clearHidingPinnedBar() {
 }
 
 void HistoryWidget::checkMessagesTTL() {
-	if (Serein::Compose::Hidden(Serein::Compose::kHideAutoDeleteButton)
+	if (Serein::Hooks::Compose::HideAutoDeleteButton()
 		|| !_peer || !_peer->messagesTTL()) {
 		if (_ttlInfo) {
 			_ttlInfo = nullptr;
