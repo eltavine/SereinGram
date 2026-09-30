@@ -122,6 +122,8 @@ set(serein_sources
     serein/services/translation.cpp
     serein/services/draft_translation.cpp
     serein/services/credentials_local.cpp
+    serein/services/summary.cpp
+    serein/services/summary_protocol.cpp
     serein/services/transcription.cpp
     serein/services/system_ai.cpp
 )

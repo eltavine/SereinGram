@@ -7,6 +7,7 @@
 #include "serein/chats/options.h"
 #include "serein/chats/quick_actions.h"
 #include "serein/features/history/viewer.h"
+#include "serein/services/summary.h"
 #include "serein/hooks/privacy/alias.h"
 #include "data/data_forum_topic.h"
 #include "data/data_peer.h"
@@ -39,6 +40,11 @@ void FillHistoryMenu(
 	}, &st::menuIconShowInChat);
 	if (!topic) {
 		Chats::FillQuickActions(addAction, controller, peer);
+	}
+	if (!topic && CanSummarizeChats()) {
+		addAction(tr::lng_serein_summary_action(tr::now), [=] {
+			ShowChatSummary(controller, peer);
+		}, &st::menuIconTranslate);
 	}
 	if (!topic && ForDevice().Get(Chats::kLocalPinning)) {
 		const auto id = SerializePeerId(peer->id);

@@ -18,6 +18,7 @@ void TestMentionQuery();
 void TestRecorders();
 void TestReadingPositions();
 void TestLocalPins();
+void TestSummary();
 void TestChinese();
 void TestAliases();
 void TestStickerCatalog();
@@ -117,6 +118,7 @@ int main() {
 		TestRecorders();
 		TestReadingPositions();
 		TestLocalPins();
+		TestSummary();
 		TestChinese();
 		TestAliases();
 		TestStickerCatalog();

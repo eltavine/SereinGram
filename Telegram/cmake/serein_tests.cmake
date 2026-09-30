@@ -12,6 +12,7 @@ set(serein_test_sources
     serein/tests/test_recorders.cpp
     serein/tests/test_reading_positions.cpp
     serein/tests/test_local_pins.cpp
+    serein/tests/test_summary.cpp
     serein/tests/test_chinese.cpp
     serein/tests/test_aliases.cpp
     serein/tests/test_sticker_catalog.cpp
@@ -47,6 +48,7 @@ set(serein_test_sources
     serein/menu/model.cpp
     serein/services/model.cpp
     serein/services/translation_protocol.cpp
+    serein/services/summary_protocol.cpp
     serein/filters/model.cpp
     serein/links/model.cpp
 )

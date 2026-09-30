@@ -335,6 +335,11 @@
 "lng_serein_service_translation" = "手動翻譯";
 "lng_serein_translate_apply" = "套用到草稿";
 "lng_serein_translate_draft" = "翻譯草稿…";
+"lng_serein_summary_action" = "總結最近的訊息";
+"lng_serein_summary_title" = "對話摘要";
+"lng_serein_summary_about" = "為產生摘要，本對話中最多 60 則最近載入的訊息會傳送給 {name}。";
+"lng_serein_summary_loading" = "正在總結…";
+"lng_serein_summary_empty" = "沒有可總結的已載入文字訊息。";
 "lng_serein_system_translation_unavailable" = "目前裝置或系統版本不支援系統翻譯。請選擇 Telegram 或已設定的服務。";
 "lng_serein_service_transcription" = "語音轉寫";
 "lng_serein_transcribe_upload_about" = "使用 {name} 處理此音訊？\n{url}\n\n開始後會將音訊傳送到此服務。關閉視窗將取消上傳或請求。";

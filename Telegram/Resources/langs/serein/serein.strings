@@ -339,6 +339,11 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_service_translation" = "Manual translation";
 "lng_serein_translate_apply" = "Use in draft";
 "lng_serein_translate_draft" = "Translate draft…";
+"lng_serein_summary_action" = "Summarize recent messages";
+"lng_serein_summary_title" = "Chat summary";
+"lng_serein_summary_about" = "Up to 60 of the latest loaded messages in this chat are sent to {name} to write this summary.";
+"lng_serein_summary_loading" = "Summarizing…";
+"lng_serein_summary_empty" = "There are no loaded text messages to summarize.";
 "lng_serein_system_translation_unavailable" = "System translation is unavailable on this device or OS version. Choose Telegram or a configured service.";
 "lng_serein_service_transcription" = "Voice transcription";
 "lng_serein_transcribe_upload_about" = "Process this audio with {name}?\n{url}\n\nStarting sends the audio to this service. Closing this window cancels the upload/request.";
