@@ -37,6 +37,8 @@
 namespace Serein::Hooks {
 namespace {
 
+constexpr auto kRemovedChatLimit = 500;
+
 struct Backend {
 	std::unique_ptr<Adapters::AesGcmCipher> cipher;
 	std::unique_ptr<Adapters::SqlHistoryStore> store;
@@ -282,11 +284,16 @@ void WatchRemovedChats(gsl::not_null<Main::Session*> session) {
 		if (!policy.saveDeleted || !policy.keepRemovedChats || !history) {
 			return;
 		}
-		for (const auto &block : history->blocks) {
-			for (const auto &view : block->messages) {
-				const auto item = view->data();
-				if (item->isRegular() && !item->isService()) {
+		auto left = kRemovedChatLimit;
+		for (auto i = history->blocks.rbegin(); i != history->blocks.rend(); ++i) {
+			const auto &messages = (*i)->messages;
+			for (auto j = messages.rbegin(); j != messages.rend(); ++j) {
+				const auto item = (*j)->data();
+				if (!left) {
+					return;
+				} else if (item->isRegular() && !item->isService()) {
 					RecordDeleted(session, policy, item);
+					--left;
 				}
 			}
 		}
