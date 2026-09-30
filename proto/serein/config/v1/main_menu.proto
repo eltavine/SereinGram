@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package serein.config.v1;
+
+import "buf/validate/validate.proto";
+import "serein/options/v1/options.proto";
+
+option (serein.options.v1.file) = {cpp_namespace: "Interface"};
+
+message MainMenuConfig {
+  option (serein.options.v1.document) = {
+    version: 1
+    validator: "ValidMainMenuTitle"
+  };
+  option (serein.options.v1.codec) = {require_fields: true};
+
+  string title = 1;
+  bool seasonal_decorations = 2;
+  repeated string order = 3 [(buf.validate.field).repeated = {
+    unique: true
+    items: {
+      string: {
+        in: ["profile", "bots", "newGroup", "newChannel", "contacts", "calls", "savedMessages", "settings", "nightMode"]
+      }
+    }
+  }];
+  // The settings entry must stay reachable, so it cannot be hidden.
+  repeated string hidden = 4 [(buf.validate.field).repeated = {
+    unique: true
+    items: {
+      string: {
+        in: ["profile", "bots", "newGroup", "newChannel", "contacts", "calls", "savedMessages", "nightMode"]
+      }
+    }
+  }];
+}

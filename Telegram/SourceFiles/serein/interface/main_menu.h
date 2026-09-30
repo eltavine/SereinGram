@@ -1,5 +1,6 @@
 #pragma once
 
+#include "serein/schema/gen/config/main_menu.h"
 #include <QtCore/QByteArray>
 #include <QtCore/QJsonObject>
 #include <gsl/pointers>

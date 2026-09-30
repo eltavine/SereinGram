@@ -1,4 +1,5 @@
 #include "serein/core/options.h"
+#include "base/basic_types.h"
 #include "serein/core/exchange.h"
 #include "serein/core/device_options.h"
 #include "serein/interface/options.h"
@@ -176,6 +177,31 @@ void TestOptions() {
 		"settings cannot be hidden");
 	Require(!Interface::ValidMainMenuBytes(R"({"version":1,"order":["calls","calls"],"hidden":[],"title":"","seasonalDecorations":true})"),
 		"duplicate menu action accepted");
+	const auto menu = [](const QString &changes) {
+		auto value = Interface::MainMenuDefaults();
+		const auto patch = QJsonDocument::fromJson(changes.toUtf8()).object();
+		for (auto i = patch.begin(); i != patch.end(); ++i) {
+			if (i.value().isNull()) {
+				value.remove(i.key());
+			} else {
+				value.insert(i.key(), i.value());
+			}
+		}
+		return Interface::ValidMainMenuBytes(
+			QJsonDocument(value).toJson(QJsonDocument::Compact));
+	};
+	Require(menu(u"{\"hidden\":[\"calls\"],\"order\":[\"nightMode\",\"profile\"]}"_q),
+		"valid menu config rejected");
+	Require(!menu(u"{\"order\":[\"unknown\"]}"_q), "unknown menu action accepted");
+	Require(!menu(u"{\"order\":[7]}"_q), "numeric menu action accepted");
+	Require(!menu(u"{\"title\":\"%1\"}"_q.arg(QString(97, u'x'))),
+		"long menu title accepted");
+	Require(menu(u"{\"title\":\"%1\"}"_q.arg(QString(96, u'x'))),
+		"menu title at the limit rejected");
+	Require(!menu(u"{\"title\":\"a\\nb\"}"_q), "menu title with a newline accepted");
+	Require(!menu(u"{\"seasonalDecorations\":null}"_q), "menu without a key accepted");
+	Require(!menu(u"{\"extra\":1}"_q), "menu with an unknown key accepted");
+	Require(!menu(u"{\"version\":2}"_q), "unknown menu version accepted");
 	Require(Interface::kNotificationDelay.validate(0)
 		&& Interface::kNotificationDelay.validate(500)
 		&& Interface::kNotificationDelay.validate(60000)
