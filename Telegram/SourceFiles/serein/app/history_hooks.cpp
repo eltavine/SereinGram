@@ -5,6 +5,7 @@
 #include "serein/features/history/deleted_marks.h"
 #include "serein/features/history/model/recorder.h"
 #include "base/unixtime.h"
+#include "core/application.h"
 #include "data/data_media_types.h"
 #include "data/data_peer.h"
 #include "data/data_user.h"
@@ -16,6 +17,7 @@
 #include "storage/storage_account.h"
 #include "ui/text/text_entity.h"
 
+#include <QtCore/QFile>
 #include <QtCore/QFileInfo>
 
 #include <map>
@@ -93,6 +95,12 @@ struct Backend {
 		+ u"/serein_history.sqlite3"_q;
 }
 
+void RemoveDatabase(const QString &path) {
+	for (const auto &suffix : { u""_q, u"-journal"_q, u"-wal"_q, u"-shm"_q }) {
+		QFile::remove(path + suffix);
+	}
+}
+
 [[nodiscard]] std::unique_ptr<Backend> OpenBackend(
 		not_null<Main::Session*> session) {
 	const auto key = session->local().peekLegacyLocalKey();
@@ -134,7 +142,12 @@ struct Backend {
 	}
 	auto &slot = backends[session];
 	slot = OpenBackend(session);
-	session->lifetime().add([=] { backends.erase(session); });
+	session->lifetime().add([=, path = DatabasePath(session)] {
+		backends.erase(session);
+		if (!Core::Quitting()) {
+			RemoveDatabase(path);
+		}
+	});
 	return slot.get();
 }
 
