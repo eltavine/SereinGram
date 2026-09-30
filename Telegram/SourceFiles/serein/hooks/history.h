@@ -38,6 +38,7 @@ void OnHistorySliceAdded(gsl::not_null<::History*> history);
 [[nodiscard]] Ports::HistoryStore *HistoryStoreFor(
 	gsl::not_null<Main::Session*> session);
 void PruneHistory(gsl::not_null<Main::Session*> session);
+void WatchRemovedChats(gsl::not_null<Main::Session*> session);
 [[nodiscard]] bool ClearHistory(
 	gsl::not_null<Main::Session*> session,
 	long long peerId);

@@ -21,6 +21,7 @@ constexpr auto kModules = std::array{
 	Module{ "interface.roundness", Interface::StartRoundness },
 	Module{ "interface.text", Interface::StartUiText },
 	Module{ "history.retention", nullptr, Hooks::PruneHistory },
+	Module{ "history.removed_chats", nullptr, Hooks::WatchRemovedChats },
 	Module{ "updates.check", StartUpdateChecks },
 	Module{ "chats.sorting", nullptr, Chats::WatchSorting },
 	Module{ "app.shortcuts", StartShortcuts },

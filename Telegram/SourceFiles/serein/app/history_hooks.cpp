@@ -10,6 +10,8 @@
 #include "core/application.h"
 #include "core/file_utilities.h"
 #include "data/data_document.h"
+#include "data/data_changes.h"
+#include "data/data_channel.h"
 #include "data/data_document_media.h"
 #include "data/data_media_types.h"
 #include "data/data_peer.h"
@@ -18,6 +20,7 @@
 #include "data/data_user.h"
 #include "history/history.h"
 #include "history/history_item.h"
+#include "history/view/history_view_element.h"
 #include "logs.h"
 #include "main/main_session.h"
 #include "mtproto/mtproto_auth_key.h"
@@ -264,6 +267,30 @@ void PruneHistory(gsl::not_null<Main::Session*> session) {
 			MediaDirectory(session),
 			*backend->store);
 	}
+}
+
+void WatchRemovedChats(gsl::not_null<Main::Session*> session) {
+	session->changes().peerUpdates(
+		Data::PeerUpdate::Flag::ChannelAmIn
+	) | rpl::on_next([=](const Data::PeerUpdate &update) {
+		const auto channel = update.peer->asChannel();
+		if (!channel || !channel->isForbidden()) {
+			return;
+		}
+		const auto policy = HistoryFeature::Read(ForAccount(session));
+		const auto history = session->data().historyLoaded(channel);
+		if (!policy.saveDeleted || !policy.keepRemovedChats || !history) {
+			return;
+		}
+		for (const auto &block : history->blocks) {
+			for (const auto &view : block->messages) {
+				const auto item = view->data();
+				if (item->isRegular() && !item->isService()) {
+					RecordDeleted(session, policy, item);
+				}
+			}
+		}
+	}, session->lifetime());
 }
 
 bool ClearHistory(gsl::not_null<Main::Session*> session, long long peerId) {

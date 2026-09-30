@@ -531,6 +531,11 @@
 "lng_serein_history_save_deleted" = "保留已刪除的訊息";
 "lng_serein_history_keep_deleted_in_place" = "在聊天中保留已刪除訊息";
 "lng_serein_history_keep_expired_media" = "保留已過期的限時媒體";
+"lng_serein_history_keep_removed_chats" = "保留被移出的對話的訊息";
+"lng_serein_history_keep_removed_chats_note" = "被群組或頻道封鎖、移出時，本裝置上已載入的訊息會像已刪除訊息一樣存入本機歷史。需要開啟「保留已刪除訊息」。";
+"lng_serein_history_saved_chats" = "瀏覽已儲存的對話";
+"lng_serein_history_saved_chats_empty" = "還沒有儲存過已刪除訊息的對話。";
+"lng_serein_history_unknown_chat" = "對話 {id}";
 "lng_serein_deleted_mark" = "已刪除";
 "lng_serein_history_save_edits" = "保留編輯歷史";
 "lng_serein_history_include_bots" = "包含機器人的訊息";

@@ -22,6 +22,7 @@ namespace Serein::HistoryFeature {
 void ShowDeletedMessages(
 	gsl::not_null<Window::SessionController*> controller,
 	gsl::not_null<PeerData*> peer);
+void ShowSavedChats(gsl::not_null<Window::SessionController*> controller);
 void ConfirmClearHistory(
 	gsl::not_null<Window::SessionController*> controller,
 	PeerData *peer,

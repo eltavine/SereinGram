@@ -83,6 +83,18 @@ void TestHistoryStore() {
 		Require(store->versions(777, 3).size() == 2, "edit versions are listed");
 		Require(store->nextRevision(777, 3) == 2, "revisions continue");
 		Require(store->nextRevision(777, 9) == 0, "revisions start at zero");
+		auto otherPeer = Record(4, 400);
+		otherPeer.peerId = 888;
+		auto editOnly = Record(6, 600, Kind::Edited, 0);
+		editOnly.peerId = 999;
+		Require(store->save(otherPeer) && store->save(editOnly),
+			"records of other chats save");
+		Require(store->peersWithDeleted(10) == std::vector<qint64>{ 888, 777 },
+			"chats with deleted records not listed newest first");
+		Require(store->peersWithDeleted(1) == std::vector<qint64>{ 888 },
+			"chats with deleted records not limited");
+		Require(store->clearPeer(888) && store->clearPeer(999),
+			"other chats clear");
 	}
 	{
 		auto store = Adapters::SqlHistoryStore::Open(path, cipher);

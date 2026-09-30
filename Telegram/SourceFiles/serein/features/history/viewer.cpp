@@ -26,6 +26,7 @@ namespace Serein::HistoryFeature {
 namespace {
 
 constexpr auto kDeletedLimit = 100;
+constexpr auto kSavedChatsLimit = 200;
 
 [[nodiscard]] std::vector<History::Record> DeletedFor(
 		not_null<Main::Session*> session,
@@ -156,6 +157,40 @@ void ShowDeletedMessages(
 				ConfirmClearHistory(controller, peer, crl::guard(box, [=] {
 					box->closeBox();
 				}));
+			});
+		}
+		box->addButton(tr::lng_close(), [=] { box->closeBox(); });
+	}));
+}
+
+void ShowSavedChats(gsl::not_null<Window::SessionController*> controller) {
+	const auto session = &controller->session();
+	const auto store = Hooks::HistoryStoreFor(session);
+	const auto peers = store
+		? store->peersWithDeleted(kSavedChatsLimit)
+		: std::vector<qint64>();
+	controller->show(Box([=](not_null<Ui::GenericBox*> box) {
+		box->setTitle(tr::lng_serein_history_saved_chats());
+		if (peers.empty()) {
+			box->addRow(object_ptr<Ui::FlatLabel>(
+				box,
+				tr::lng_serein_history_saved_chats_empty(tr::now),
+				st::boxLabel));
+		}
+		for (const auto id : peers) {
+			const auto peer = session->data().peer(
+				PeerId(PeerIdHelper(BareId(id))));
+			const auto name = peer->name().isEmpty()
+				? tr::lng_serein_history_unknown_chat(
+					tr::now,
+					lt_id,
+					QString::number(peerToBareMTPInt(peer->id).v))
+				: peer->name();
+			const auto open = box->addRow(object_ptr<Ui::LinkButton>(
+				box,
+				name));
+			open->setClickedCallback([=] {
+				ShowDeletedMessages(controller, peer);
 			});
 		}
 		box->addButton(tr::lng_close(), [=] { box->closeBox(); });

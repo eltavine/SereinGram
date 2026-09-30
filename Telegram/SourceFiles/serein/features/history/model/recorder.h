@@ -26,6 +26,7 @@ struct Snapshot {
 struct Policy {
 	bool saveDeleted = false;
 	bool saveEdits = false;
+	bool keepRemovedChats = false;
 	bool includeBots = false;
 	int retentionDays = 0;
 	int maxRecords = 0;

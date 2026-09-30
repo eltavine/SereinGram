@@ -164,6 +164,21 @@ std::vector<History::Record> SqlHistoryStore::versions(
 	return Run(select) ? collect(select) : std::vector<History::Record>();
 }
 
+std::vector<qint64> SqlHistoryStore::peersWithDeleted(int limit) {
+	auto select = QSqlQuery(Database(_connection));
+	select.prepare(u"SELECT peer_id FROM records WHERE kind = ? "
+		"GROUP BY peer_id ORDER BY MAX(recorded_at) DESC LIMIT ?"_q);
+	select.addBindValue(int(History::RecordKind::Deleted));
+	select.addBindValue(std::max(limit, 0));
+	auto result = std::vector<qint64>();
+	if (Run(select)) {
+		while (select.next()) {
+			result.push_back(select.value(0).toLongLong());
+		}
+	}
+	return result;
+}
+
 int SqlHistoryStore::nextRevision(qint64 peerId, qint64 messageId) {
 	auto select = QSqlQuery(Database(_connection));
 	select.prepare(u"SELECT COALESCE(MAX(revision) + 1, 0) FROM records "

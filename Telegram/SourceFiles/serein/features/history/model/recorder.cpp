@@ -35,6 +35,7 @@ Policy Read(Options &account) {
 	return {
 		.saveDeleted = account.Get(kHistorySaveDeleted),
 		.saveEdits = account.Get(kHistorySaveEdits),
+		.keepRemovedChats = account.Get(kHistoryKeepRemovedChats),
 		.includeBots = account.Get(kHistoryIncludeBots),
 		.retentionDays = account.Get(kHistoryRetentionDays),
 		.maxRecords = account.Get(kHistoryMaxRecords),

@@ -35,6 +35,7 @@ public:
 	[[nodiscard]] virtual std::vector<History::Record> versions(
 		qint64 peerId,
 		qint64 messageId) = 0;
+	[[nodiscard]] virtual std::vector<qint64> peersWithDeleted(int limit) = 0;
 	[[nodiscard]] virtual int nextRevision(qint64 peerId, qint64 messageId) = 0;
 	[[nodiscard]] virtual bool clearPeer(qint64 peerId) = 0;
 	[[nodiscard]] virtual bool clearAll() = 0;

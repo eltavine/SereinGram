@@ -24,6 +24,7 @@ public:
 	[[nodiscard]] std::vector<History::Record> versions(
 		qint64 peerId,
 		qint64 messageId) override;
+	[[nodiscard]] std::vector<qint64> peersWithDeleted(int limit) override;
 	[[nodiscard]] int nextRevision(qint64 peerId, qint64 messageId) override;
 	[[nodiscard]] bool clearPeer(qint64 peerId) override;
 	[[nodiscard]] bool clearAll() override;

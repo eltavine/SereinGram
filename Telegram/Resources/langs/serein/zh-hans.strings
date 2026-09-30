@@ -531,6 +531,11 @@
 "lng_serein_history_save_deleted" = "保留已删除的消息";
 "lng_serein_history_keep_deleted_in_place" = "在聊天中保留已删除消息";
 "lng_serein_history_keep_expired_media" = "保留已过期的限时媒体";
+"lng_serein_history_keep_removed_chats" = "保留被移出的对话的消息";
+"lng_serein_history_keep_removed_chats_note" = "被群组或频道封禁、移出时，本设备上已加载的消息会像已删除消息一样存入本地历史。需要开启“保留已删除消息”。";
+"lng_serein_history_saved_chats" = "浏览已保存的对话";
+"lng_serein_history_saved_chats_empty" = "还没有保存过已删除消息的对话。";
+"lng_serein_history_unknown_chat" = "对话 {id}";
 "lng_serein_deleted_mark" = "已删除";
 "lng_serein_history_save_edits" = "保留编辑历史";
 "lng_serein_history_include_bots" = "包含机器人的消息";

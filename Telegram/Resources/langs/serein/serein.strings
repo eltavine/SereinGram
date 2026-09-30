@@ -535,6 +535,11 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_history_save_deleted" = "Keep deleted messages";
 "lng_serein_history_keep_deleted_in_place" = "Keep deleted messages in chat";
 "lng_serein_history_keep_expired_media" = "Keep self-destructing media after it expires";
+"lng_serein_history_keep_removed_chats" = "Keep messages of chats you are removed from";
+"lng_serein_history_keep_removed_chats_note" = "When you are banned or removed from a group or channel, the messages loaded on this device are saved to the local history, as if they were deleted. Needs “Keep deleted messages”.";
+"lng_serein_history_saved_chats" = "Browse saved chats";
+"lng_serein_history_saved_chats_empty" = "No chats have saved deleted messages.";
+"lng_serein_history_unknown_chat" = "Chat {id}";
 "lng_serein_deleted_mark" = "deleted";
 "lng_serein_history_save_edits" = "Keep edit history";
 "lng_serein_history_include_bots" = "Include messages from bots";

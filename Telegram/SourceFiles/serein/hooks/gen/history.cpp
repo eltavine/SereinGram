@@ -30,6 +30,14 @@ rpl::producer<bool> HistoryKeepExpiredMediaValue(gsl::not_null<Main::Session*> s
 	return ForAccount(session).Value(Serein::HistorySettings::kHistoryKeepExpiredMedia);
 }
 
+bool HistoryKeepRemovedChats(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Get(Serein::HistorySettings::kHistoryKeepRemovedChats);
+}
+
+rpl::producer<bool> HistoryKeepRemovedChatsValue(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Value(Serein::HistorySettings::kHistoryKeepRemovedChats);
+}
+
 bool HistorySaveEdits(gsl::not_null<Main::Session*> session) {
 	return ForAccount(session).Get(Serein::HistorySettings::kHistorySaveEdits);
 }

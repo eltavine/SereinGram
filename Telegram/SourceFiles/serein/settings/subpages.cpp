@@ -69,6 +69,17 @@ const auto kHistoryMeta = BuildHelper({
 	HistorySettings::AddLayout(builder);
 	const auto controller = builder.controller();
 	builder.addButton({
+		.id = u"serein/privacy/history-saved-chats"_q,
+		.title = tr::lng_serein_history_saved_chats(),
+		.st = &st::settingsButtonNoIcon,
+		.onClick = [=] {
+			if (controller) {
+				HistoryFeature::ShowSavedChats(controller);
+			}
+		},
+		.keywords = { u"history"_q, u"deleted"_q, u"chats"_q },
+	});
+	builder.addButton({
 		.id = u"serein/privacy/history-clear-all"_q,
 		.title = tr::lng_serein_history_clear_all(),
 		.st = &st::settingsAttentionButton,
