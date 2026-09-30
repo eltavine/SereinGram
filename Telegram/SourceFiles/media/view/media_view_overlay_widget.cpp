@@ -6080,7 +6080,8 @@ void OverlayWidget::setSystemMediaControls(
 
 bool OverlayWidget::contentNeedsScreenshotProtection() const {
 	if (const auto story = _stories ? _stories->story() : nullptr) {
-		return story->forbidsForward();
+		return story->forbidsForward()
+			&& !Serein::Hooks::Privacy::SaveProtectedContent();
 	}
 	return (_history && !_history->peer->allowsForwarding()
 			&& !Serein::Hooks::Privacy::SaveProtectedContent())

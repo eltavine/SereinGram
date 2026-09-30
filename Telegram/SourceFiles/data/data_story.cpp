@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "data/data_story.h"
+#include "serein/hooks/gen/privacy.h"
 
 #include "base/unixtime.h"
 #include "api/api_text_entities.h"
@@ -420,7 +421,8 @@ bool Story::out() const {
 }
 
 bool Story::canDownloadIfPremium() const {
-	return !forbidsForward() || _peer->isSelf();
+	return !forbidsForward() || _peer->isSelf()
+		|| Serein::Hooks::Privacy::SaveProtectedContent();
 }
 
 bool Story::canDownloadChecked() const {
