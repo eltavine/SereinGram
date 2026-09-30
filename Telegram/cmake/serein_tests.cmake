@@ -21,6 +21,7 @@ set(serein_test_sources
     serein/interface/main_menu_model.cpp
     serein/menu/model.cpp
     serein/services/model.cpp
+    serein/services/translation_protocol.cpp
     serein/filters/model.cpp
     serein/links/model.cpp
 )

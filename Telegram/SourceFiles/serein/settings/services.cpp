@@ -6,6 +6,7 @@
 #include "lang/lang_keys.h"
 #include "serein/services/credentials.h"
 #include "serein/services/request.h"
+#include "serein/services/translation_protocol.h"
 #include "serein/services/system_ai.h"
 #include "platform/platform_translate_provider.h"
 #include "settings/settings_builder.h"
@@ -26,6 +27,8 @@
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
 #include <QtCore/QUuid>
+
+#include <array>
 
 #include <algorithm>
 
@@ -274,35 +277,24 @@ void ServiceTestBox(
 		box->addButton(tr::lng_serein_service_test_translation(), [=] {
 			stop();
 			result->setText(tr::lng_serein_service_testing(tr::now));
-			const auto body = service.protocol == u"deepl"_q
-				? QJsonObject{
-					{ u"text"_q, QJsonArray{ u"Hello, world!"_q } },
-					{ u"target_lang"_q, u"ZH"_q },
-				} : QJsonObject{
-					{ u"model"_q, service.model },
-					{ u"messages"_q, QJsonArray{ QJsonObject{
-						{ u"role"_q, u"user"_q },
-						{ u"content"_q, u"Translate 'Hello, world!' to Chinese."_q },
-					} } },
-				};
-			request->json(service, body, crl::guard(box, [=](ServiceResult response) {
+			const auto call = BuildTranslationCall(
+				service,
+				{ u"Hello, world!"_q },
+				u"zh"_q);
+			request->translate(service, call, crl::guard(box, [=](
+					ServiceResult response) {
 				if (response.error != ServiceError::None) {
 					status(std::move(response));
 					return;
 				}
-				const auto root = QJsonDocument::fromJson(response.body).object();
-				const auto entries = root.value(service.protocol == u"deepl"_q
-					? u"translations"_q : u"choices"_q).toArray();
-				const auto first = entries.isEmpty()
-					? QJsonObject() : entries[0].toObject();
-				const auto text = service.protocol == u"deepl"_q
-					? first.value(u"text"_q).toString()
-					: first.value(u"message"_q).toObject()
-						.value(u"content"_q).toString();
-				if (text.isEmpty() || text.size() > 16384) {
+				const auto values = ParseTranslationResponse(
+					service,
+					response.body,
+					1);
+				if (!values || values->front().size() > 16384) {
 					status({ .error = ServiceError::Response });
 				} else {
-					result->setText(text);
+					result->setText(values->front());
 				}
 			}));
 		});
@@ -389,20 +381,25 @@ void ServiceBox(
 	const auto language = !translation ? add(tr::lng_serein_service_language(), original.language) : nullptr;
 	const auto temperature = openai ? add(tr::lng_serein_service_temperature(),
 		original.temperature ? QString::number(*original.temperature) : QString()) : nullptr;
-	const auto useKey = box->addRow(object_ptr<Ui::SettingsButton>(
-		box, tr::lng_serein_service_use_key(), st::settingsButtonNoIcon));
-	useKey->toggleOn(rpl::single(original.useKey));
-	const auto enabled = box->lifetime().make_state<bool>(original.useKey);
-	useKey->toggledChanges() | rpl::on_next([=](bool value) {
-		*enabled = value;
-	}, box->lifetime());
-	const auto keyRow = box->addRow(object_ptr<Ui::RpWidget>(box));
-	keyRow->resize(keyRow->width(), st::defaultInputField.heightMin);
-	const auto key = Ui::CreateChild<Ui::PasswordInput>(
-		keyRow, st::defaultInputField, tr::lng_serein_service_key());
-	keyRow->widthValue() | rpl::on_next([=](int width) {
-		key->resize(width, key->height());
-	}, keyRow->lifetime());
+	const auto keyed = (original.protocol != u"google"_q);
+	const auto enabled = box->lifetime().make_state<bool>(
+		keyed && original.useKey);
+	auto key = (Ui::PasswordInput*)nullptr;
+	if (keyed) {
+		const auto useKey = box->addRow(object_ptr<Ui::SettingsButton>(
+			box, tr::lng_serein_service_use_key(), st::settingsButtonNoIcon));
+		useKey->toggleOn(rpl::single(original.useKey));
+		useKey->toggledChanges() | rpl::on_next([=](bool value) {
+			*enabled = value;
+		}, box->lifetime());
+		const auto keyRow = box->addRow(object_ptr<Ui::RpWidget>(box));
+		keyRow->resize(keyRow->width(), st::defaultInputField.heightMin);
+		key = Ui::CreateChild<Ui::PasswordInput>(
+			keyRow, st::defaultInputField, tr::lng_serein_service_key());
+		keyRow->widthValue() | rpl::on_next([=](int width) {
+			key->resize(width, key->height());
+		}, keyRow->lifetime());
+	}
 	box->addRow(object_ptr<Ui::FlatLabel>(box, tr::lng_serein_service_edit_about(), st::boxLabel));
 	box->addButton(tr::lng_settings_save(), [=] {
 		if (!Current(box, current)) {
@@ -445,7 +442,7 @@ void ServiceBox(
 			instances.push_back(value);
 		}
 		updated.insert(u"instances"_q, instances);
-		auto secret = key->getLastText().toUtf8();
+		auto secret = key ? key->getLastText().toUtf8() : QByteArray();
 		if (service.useKey) {
 			const auto account = CredentialAccount(service);
 			const auto error = !secret.isEmpty()
@@ -552,19 +549,35 @@ void ServicesBox(not_null<Ui::GenericBox*> box, QJsonObject initial) {
 				});
 			}
 		}
-		for (const auto type : { 0, 1, 2 }) {
-			const auto deepl = type == 1;
-			const auto transcription = type == 2;
-			add(transcription ? tr::lng_serein_service_add_transcription(tr::now)
-				: deepl ? tr::lng_serein_service_add_deepl(tr::now)
-				: tr::lng_serein_service_add_openai(tr::now), [=] {
+		struct Preset {
+			tr::phrase<> title;
+			ServiceKind kind = ServiceKind::Translation;
+			QString protocol;
+			QString baseUrl;
+			QString endpoint;
+			bool useKey = true;
+		};
+		const auto presets = std::array{
+			Preset{ tr::lng_serein_service_add_openai, ServiceKind::Translation,
+				u"openai"_q, u"https://api.openai.com/v1/"_q, u"chat/completions"_q },
+			Preset{ tr::lng_serein_service_add_deepl, ServiceKind::Translation,
+				u"deepl"_q, u"https://api.deepl.com/v2/"_q, u"translate"_q },
+			Preset{ tr::lng_serein_service_add_google, ServiceKind::Translation,
+				u"google"_q, u"https://translate.googleapis.com/"_q,
+				u"translate_a/single"_q, false },
+			Preset{ tr::lng_serein_service_add_transcription, ServiceKind::Transcription,
+				u"openai"_q, u"https://api.openai.com/v1/"_q, u"audio/transcriptions"_q },
+		};
+		for (const auto &preset : presets) {
+			add(preset.title(tr::now), [=] {
 				auto service = ServiceDefinition{
 					.id = QUuid::createUuid().toString(QUuid::WithoutBraces),
-					.kind = transcription ? ServiceKind::Transcription : ServiceKind::Translation,
-					.protocol = deepl ? u"deepl"_q : u"openai"_q,
-					.baseUrl = QUrl(deepl ? u"https://api.deepl.com/v2/"_q : u"https://api.openai.com/v1/"_q),
-					.endpoint = deepl ? u"translate"_q : transcription ? u"audio/transcriptions"_q : u"chat/completions"_q,
+					.kind = preset.kind,
+					.protocol = preset.protocol,
+					.baseUrl = QUrl(preset.baseUrl),
+					.endpoint = preset.endpoint,
 					.credentialRef = QUuid::createUuid().toString(QUuid::WithoutBraces),
+					.useKey = preset.useKey,
 				};
 				box->uiShow()->showBox(Box(ServiceBox, current, std::move(service), changed));
 			});

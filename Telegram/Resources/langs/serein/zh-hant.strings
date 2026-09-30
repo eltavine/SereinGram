@@ -243,6 +243,7 @@
 "lng_serein_quick_reply_insert" = "插入快速回覆 {index}";
 "lng_serein_config_changed_error" = "編輯期間設定發生了變化。請重新開啟服務後再試。";
 "lng_serein_service_add_deepl" = "新增 DeepL 翻譯";
+"lng_serein_service_add_google" = "新增 Google 翻譯";
 "lng_serein_service_add_openai" = "新增 OpenAI 相容翻譯";
 "lng_serein_service_add_transcription" = "新增 OpenAI 相容轉寫";
 "lng_serein_service_audio_filter" = "音訊 (*.flac *.mp3 *.mp4 *.mpeg *.mpga *.m4a *.ogg *.wav *.webm)";

@@ -11,6 +11,8 @@ class QHttpMultiPart;
 
 namespace Serein {
 
+struct TranslationCall;
+
 enum class ServiceError {
 	None,
 	Configuration,
@@ -38,6 +40,10 @@ public:
 	void json(
 		const ServiceDefinition &service,
 		const QJsonObject &body,
+		Fn<void(ServiceResult)> done);
+	void translate(
+		const ServiceDefinition &service,
+		const TranslationCall &call,
 		Fn<void(ServiceResult)> done);
 	void models(
 		const ServiceDefinition &service,

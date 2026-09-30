@@ -86,13 +86,14 @@ std::optional<ServiceDefinition> ParseService(const QJsonObject &value) {
 	const auto kind = value.value(u"kind"_q).toString();
 	const auto protocol = value.value(u"protocol"_q).toString();
 	if ((kind != u"translation"_q && kind != u"transcription"_q)
-		|| (protocol != u"openai"_q && protocol != u"deepl"_q)
+		|| (protocol != u"openai"_q && protocol != u"deepl"_q && protocol != u"google"_q)
 		|| (kind == u"transcription"_q && protocol != u"openai"_q)
+		|| (protocol == u"google"_q && value.value(u"useKey"_q).toBool())
 		|| value.value(u"name"_q).toString().trimmed().isEmpty()
 		|| (protocol == u"openai"_q && value.value(u"model"_q).toString().trimmed().isEmpty())) {
 		return std::nullopt;
 	}
-	if ((protocol == u"deepl"_q
+	if (((protocol == u"deepl"_q || protocol == u"google"_q)
 		&& (!value.value(u"model"_q).toString().isEmpty()
 			|| !value.value(u"systemPrompt"_q).toString().isEmpty()
 			|| !value.value(u"prompt"_q).toString().isEmpty()

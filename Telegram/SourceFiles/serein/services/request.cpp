@@ -2,6 +2,7 @@
 
 #include "lang/lang_keys.h"
 #include "serein/services/credentials.h"
+#include "serein/services/translation_protocol.h"
 
 #include <QtCore/QJsonDocument>
 #include <QtNetwork/QHttpMultiPart>
@@ -106,6 +107,31 @@ void ServiceRequest::json(
 	}
 	request->setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 	start(_network.post(*request, bytes), std::move(done));
+}
+
+void ServiceRequest::translate(
+		const ServiceDefinition &service,
+		const TranslationCall &call,
+		Fn<void(ServiceResult)> done) {
+	if (!call.form) {
+		json(service, call.json, std::move(done));
+		return;
+	} else if (call.form->size() > kMaximumJson) {
+		cancel();
+		done({ .error = ServiceError::TooLarge });
+		return;
+	}
+	auto request = prepare(service, done);
+	if (!request) {
+		return;
+	}
+	auto url = request->url();
+	url.setQuery(call.query);
+	request->setUrl(url);
+	request->setHeader(
+		QNetworkRequest::ContentTypeHeader,
+		"application/x-www-form-urlencoded");
+	start(_network.post(*request, *call.form), std::move(done));
 }
 
 void ServiceRequest::models(

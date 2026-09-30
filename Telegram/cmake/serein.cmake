@@ -69,6 +69,7 @@ set(serein_sources
     serein/settings/services.cpp
     serein/services/credentials.cpp
     serein/services/model.cpp
+    serein/services/translation_protocol.cpp
     serein/services/store.cpp
     serein/services/request.cpp
     serein/services/translation.cpp

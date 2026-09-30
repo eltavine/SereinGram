@@ -217,7 +217,7 @@ SG-HIST-05 的“已编辑”标记文字已由 C09 实现，删除标记随 SG-
 | --- | --- | --- | --- | --- |
 | SG-TRANS-01 | 服务实例：OpenAI 兼容与 DeepL 协议、连接测试、密钥存入系统凭据库（H03） | Ni | Implemented | P1 |
 | SG-TRANS-02 | 翻译服务选择与草稿翻译（H01） | Ad Ni | Implemented | P1 |
-| SG-TRANS-03 | 更多服务：Google、Yandex、Microsoft、Transmart、DeepLX、Anthropic 与 Gemini 协议 | Ad Ni Na | Planned | P1 |
+| SG-TRANS-03 | 更多服务：Google、Yandex、Microsoft、Transmart、DeepLX、Anthropic 与 Gemini 协议（Google 已接入；协议构造与解析集中在 `services/translation_protocol`，新增协议只改这一处） | Ad Ni Na | In Progress | P1 |
 | SG-TRANS-04 | 简繁转换改用 OpenCC 词组级转换，三平台可用（替代现有系统逐字转换） | Na | Planned | P1 |
 | SG-TRANS-05 | 语音转写服务（H02） | Ni | Implemented | P2 |
 | SG-TRANS-06 | 系统 AI 草稿预览（H04，macOS） | Ni | Implemented | P2 |
