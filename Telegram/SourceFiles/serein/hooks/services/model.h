@@ -1,6 +1,7 @@
 #pragma once
 
 #include "serein/core/options.h"
+#include "serein/schema/gen/settings/services.h"
 
 #include <QtCore/QJsonObject>
 #include <QtCore/QUrl>
@@ -11,19 +12,8 @@
 
 namespace Serein {
 
-[[nodiscard]] bool ValidServicesBytes(const QByteArray &raw);
-inline const auto kServicesConfig = Option<QByteArray>{
-	"serein.services", Scope::Device, QByteArray(),
-	Category::Services, "lng_serein_services", 0, ValidServicesBytes };
-inline constexpr auto kPreferSystemAi = Option<bool>{
-	"serein.preferSystemAi", Scope::Device, false,
-	Category::Services, "lng_serein_system_ai",
-	static_cast<unsigned>(Flag::RefreshComposeButtons) };
-
-inline void RegisterServiceOptions(Registry &registry) {
-	Expects(registry.Add(kServicesConfig));
-	Expects(registry.Add(kPreferSystemAi));
-}
+using ServiceSettings::kPreferSystemAi;
+using ServiceSettings::kServicesConfig;
 
 enum class ServiceKind {
 	Translation,

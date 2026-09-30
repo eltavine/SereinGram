@@ -107,7 +107,7 @@ const Registry &RegisteredOptions() {
 		Filters::RegisterOptions(result);
 		Links::RegisterOptions(result);
 		Snapshot::RegisterOptions(result);
-		RegisterServiceOptions(result);
+		ServiceSettings::RegisterOptions(result);
 		Ghost::RegisterOptions(result);
 		HistorySettings::RegisterOptions(result);
 		return result;

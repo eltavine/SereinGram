@@ -23,5 +23,6 @@ set(serein_generated_hook_sources
     serein/hooks/gen/menu.cpp
     serein/hooks/gen/messages.cpp
     serein/hooks/gen/privacy.cpp
+    serein/hooks/gen/services.cpp
     serein/hooks/gen/snapshot.cpp
 )

@@ -185,7 +185,7 @@ bool ValidServices(const QJsonObject &value) {
 		UpgradeServices(value)).toJson(QJsonDocument::Compact)).has_value();
 }
 
-bool ValidServicesBytes(const QByteArray &raw) {
+bool ServiceSettings::ValidServicesBytes(const QByteArray &raw) {
 	if (raw.isEmpty()) {
 		return true;
 	}

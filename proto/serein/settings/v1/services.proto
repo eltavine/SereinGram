@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package serein.settings.v1;
+
+import "serein/options/v1/options.proto";
+
+// Translation and transcription services; the services page edits them by hand.
+message ServicesSettings {
+  option (serein.options.v1.page) = {
+    cpp_namespace: "ServiceSettings"
+    scope: SCOPE_DEVICE
+    category: CATEGORY_SERVICES
+  };
+
+  optional bytes services = 1 [(serein.options.v1.field) = {
+    cpp_name: "kServicesConfig"
+    title: "lng_serein_services"
+    custom_ui: true
+    validator: "ValidServicesBytes"
+  }];
+  optional bool prefer_system_ai = 2 [(serein.options.v1.field) = {
+    title: "lng_serein_system_ai"
+    custom_ui: true
+    refresh: [REFRESH_COMPOSE_BUTTONS]
+  }];
+}

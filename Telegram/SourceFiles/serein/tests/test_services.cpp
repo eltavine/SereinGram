@@ -39,7 +39,7 @@ void TestServices() {
 	config.insert(u"instances"_q, QJsonArray{ serialized });
 	config.insert(u"translation"_q, service.id);
 	Require(ValidServices(config), "valid service selection rejected");
-	Require(ValidServicesBytes(QJsonDocument(config).toJson()),
+	Require(ServiceSettings::ValidServicesBytes(QJsonDocument(config).toJson()),
 		"valid service bytes rejected");
 	const auto account = CredentialAccount(service);
 	auto changed = service;
@@ -57,7 +57,7 @@ void TestServices() {
 	Require(!ParseService(invalid), "secret field accepted");
 	config.insert(u"transcription"_q, service.id);
 	Require(!ValidServices(config), "cross-kind selection accepted");
-	Require(!ValidServicesBytes("{broken"), "invalid JSON accepted");
+	Require(!ServiceSettings::ValidServicesBytes("{broken"), "invalid JSON accepted");
 	invalid = serialized;
 	invalid.remove(u"temperature"_q);
 	Require(!ParseService(invalid), "service without temperature accepted");
@@ -107,7 +107,7 @@ void TestServices() {
 	legacyInstance.remove(u"region"_q);
 	legacy.insert(u"instances"_q, QJsonArray{ legacyInstance });
 	Require(ValidServices(legacy)
-		&& ValidServicesBytes(QJsonDocument(legacy).toJson()),
+		&& ServiceSettings::ValidServicesBytes(QJsonDocument(legacy).toJson()),
 		"version 1 services config rejected");
 	const auto upgraded = UpgradeServices(legacy);
 	Require(upgraded.value(u"version"_q) == QJsonValue(2)
