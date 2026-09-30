@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "window/window_main_menu.h"
-#include "nagram/interface/main_menu.h"
+#include "serein/interface/main_menu.h"
 
 #include "apiwrap.h"
 #include "base/event_filter.h"
@@ -309,7 +309,7 @@ MainMenu::MainMenu(
 	not_null<SessionController*> controller)
 : LayerWidget(parent)
 , _controller(controller)
-, _nagramTitle(Nagram::Interface::MainMenuTitle())
+, _sereinTitle(Serein::Interface::MainMenuTitle())
 , _userpicButton(
 	this,
 	_controller->session().user(),
@@ -386,8 +386,8 @@ MainMenu::MainMenu(
 	parentResized();
 
 	_telegram->setMarkedText(tr::link(
-		u"Nagram Desktop"_q,
-		u"https://github.com/NextAlone/Nagram-qt"_q));
+		u"SereinGram"_q,
+		u"https://github.com/eltavine/SereinGram"_q));
 	_telegram->setLinksTrusted();
 	// The canary version is too long for the "Version {version}" form.
 	_version->setMarkedText(
@@ -430,7 +430,7 @@ MainMenu::MainMenu(
 	initResetScaleButton();
 
 	if (CanCheckSpecialEvent() && CheckSpecialEvent()
-		&& Nagram::Interface::MainMenuSeasonal()) {
+		&& Serein::Interface::MainMenuSeasonal()) {
 		const auto snowLifetime = lifetime().make_state<rpl::lifetime>();
 		const auto rebuild = [=] {
 			const auto snowRaw = Ui::CreateChild<Ui::RpWidget>(this);
@@ -663,13 +663,13 @@ void MainMenu::setupMenu() {
 		return AddButtonWithIcon(
 			id.isEmpty()
 				? _menu.get()
-				: Nagram::Interface::AddMainMenuGroup(_menu, id).get(),
+				: Serein::Interface::AddMainMenuGroup(_menu, id).get(),
 			std::move(text),
 			st::mainMenuButton,
 			std::move(descriptor));
 	};
 	if (!_controller->session().supportMode()) {
-		const auto profile = Nagram::Interface::AddMainMenuGroup(
+		const auto profile = Serein::Interface::AddMainMenuGroup(
 			_menu, u"profile"_q);
 		profile->add(
 			CreateButtonWithIcon(
@@ -682,10 +682,10 @@ void MainMenu::setupMenu() {
 				Info::Stories::Make(controller->session().user()));
 		});
 
-		SetupMenuBots(Nagram::Interface::AddMainMenuGroup(
+		SetupMenuBots(Serein::Interface::AddMainMenuGroup(
 			_menu, u"bots"_q), controller);
 
-		if (!Nagram::Interface::MainMenuCustomOrder()) {
+		if (!Serein::Interface::MainMenuCustomOrder()) {
 			_menu->add(
 				object_ptr<Ui::PlainShadow>(_menu),
 				{ 0, st::mainMenuSkip, 0, st::mainMenuSkip });
@@ -910,7 +910,7 @@ void MainMenu::drawName(Painter &p) {
 		_nameVersion = user->nameVersion();
 		_name.setText(
 			st::semiboldTextStyle,
-			_nagramTitle.isEmpty() ? user->name() : _nagramTitle,
+			_sereinTitle.isEmpty() ? user->name() : _sereinTitle,
 			Ui::NameTextOptions());
 		moveBadge();
 	}

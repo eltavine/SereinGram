@@ -28,7 +28,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "chat_helpers/message_field.h" // ConvertTextTagsToEntities.
 #include "chat_helpers/stickers_dice_pack.h" // DicePacks::kDiceString.
 #include "ui/text/text_entity.h" // TextWithEntities.
-#include "nagram/compose/text.h"
+#include "serein/compose/text.h"
 #include "ui/item_text_options.h" // Ui::ItemTextOptions.
 #include "ui/chat/attach/attach_prepare.h"
 #include "main/main_session.h"
@@ -245,7 +245,7 @@ void SendExistingMedia(
 		TextUtilities::ConvertTextTagsToEntities(message.textWithTags.tags)
 	};
 	TextUtilities::Trim(caption);
-	caption = Nagram::Compose::PrepareText(caption, false);
+	caption = Serein::Compose::PrepareText(caption, false);
 	auto sentEntities = EntitiesToMTP(
 		session,
 		caption.entities,
@@ -739,7 +739,7 @@ void SendMusicSelection(
 		TextUtilities::ConvertTextTagsToEntities(message.textWithTags.tags)
 	};
 	TextUtilities::Trim(caption);
-	caption = Nagram::Compose::PrepareText(caption, false);
+	caption = Serein::Compose::PrepareText(caption, false);
 
 	const auto api = &message.action.history->session().api();
 
@@ -1012,7 +1012,7 @@ struct ConfirmedLocalFile {
 		session->user()).flags;
 	TextUtilities::PrepareForSending(caption, prepareFlags);
 	TextUtilities::Trim(caption);
-	caption = Nagram::Compose::PrepareText(caption, false);
+	caption = Serein::Compose::PrepareText(caption, false);
 	return caption;
 }
 

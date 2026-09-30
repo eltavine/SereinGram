@@ -7,9 +7,9 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "chat_helpers/message_field.h"
 
-#include "nagram/compose/options.h"
-#include "nagram/compose/text.h"
-#include "nagram/services/draft_translation.h"
+#include "serein/compose/options.h"
+#include "serein/compose/text.h"
+#include "serein/services/draft_translation.h"
 
 #include "history/history_widget.h"
 #include "history/history.h" // History::session
@@ -571,16 +571,16 @@ auto InitMessageFieldHandlers(MessageFieldHandlersArgs &&args)
 	}, [paused] {
 		return On(PowerSaving::kChatSpoiler) || paused();
 	});
-	Nagram::Compose::InstallQuickReplies(field);
+	Serein::Compose::InstallQuickReplies(field);
 	if (args.show) {
-		Nagram::InstallDraftTranslation(field, args.show);
+		Serein::InstallDraftTranslation(field, args.show);
 	}
 	field->setInstantReplaces(Ui::InstantReplaces::Default());
 	field->setInstantReplacesEnabled(
 		Core::App().settings().replaceEmojiValue(),
 		Core::App().settings().systemTextReplaceValue());
 	field->setMarkdownReplacesEnabled(
-		Nagram::ForDevice().Value(Nagram::Compose::kDisableAutoMarkdown)
+		Serein::ForDevice().Value(Serein::Compose::kDisableAutoMarkdown)
 		| rpl::map([
 			tags = std::move(args.allowMarkdownTags),
 			typed = args.allowTypedMarkdown,

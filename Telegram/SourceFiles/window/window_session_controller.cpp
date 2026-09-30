@@ -6,8 +6,8 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "window/window_session_controller.h"
-#include "nagram/chats/startup_folder.h"
-#include "nagram/chats/sort.h"
+#include "serein/chats/startup_folder.h"
+#include "serein/chats/sort.h"
 
 #include "apiwrap.h"
 #include "api/api_cloud_password.h"
@@ -1585,7 +1585,7 @@ SessionController::SessionController(
 , _defaultChatTheme(std::make_shared<Ui::ChatTheme>())
 , _chatStyle(std::make_unique<Ui::ChatStyle>(session->colorIndicesValue())) {
 	init();
-	if (_isPrimary) Nagram::Chats::WatchSorting(session, lifetime());
+	if (_isPrimary) Serein::Chats::WatchSorting(session, lifetime());
 
 	_chatStyleTheme = _defaultChatTheme;
 	_chatStyle->apply(_defaultChatTheme.get());
@@ -2044,7 +2044,7 @@ rpl::producer<> SessionController::filtersMenuChanged() const {
 }
 
 void SessionController::checkOpenedFilter() {
-	Nagram::Chats::VerifyStartupFolder(&session());
+	Serein::Chats::VerifyStartupFolder(&session());
 	activateFirstChatsFilter();
 	if (const auto filterId = activeChatsFilterCurrent()) {
 		const auto &list = session().data().chatsFilters().list();
@@ -2064,7 +2064,7 @@ void SessionController::activateFirstChatsFilter() {
 		return;
 	}
 	_filtersActivated = true;
-	setActiveChatsFilter(Nagram::Chats::StartupFolder(
+	setActiveChatsFilter(Serein::Chats::StartupFolder(
 		&session(), session().data().chatsFilters().defaultId()));
 }
 
@@ -3325,7 +3325,7 @@ void SessionController::setActiveChatsFilter(
 		resetFakeUnreadWhileOpened();
 	}
 	_activeChatsFilter.force_assign(id);
-	Nagram::Chats::RememberFolder(&session(), id);
+	Serein::Chats::RememberFolder(&session(), id);
 	if (id || !changed) {
 		closeForum();
 		closeFolder();

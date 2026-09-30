@@ -73,7 +73,7 @@ namespace Window {
 struct SectionShow;
 } // namespace Window
 
-namespace Nagram::Menu { class Selection; }
+namespace Serein::Menu { class Selection; }
 namespace HistoryView {
 
 class AboutView;
@@ -330,7 +330,7 @@ class ListWidget final
 	: public Ui::RpWidget
 	, public ElementDelegate
 	, public Ui::AbstractTooltipShower {
-	friend class Nagram::Menu::Selection;
+	friend class Serein::Menu::Selection;
 public:
 	ListWidget(
 		QWidget *parent,

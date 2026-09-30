@@ -1,9 +1,9 @@
-#define MyAppShortName "Nagram"
-#define MyAppName "Nagram Desktop"
-#define MyAppPublisher "NextAlone and Nagram contributors"
-#define MyAppURL "https://github.com/NextAlone/Nagram-qt"
-#define MyAppExeName "Nagram.exe"
-#define MyAppId "F113D826-7421-5D5F-91E5-E07C9D902EFF"
+#define MyAppShortName "SereinGram"
+#define MyAppName "SereinGram"
+#define MyAppPublisher "SereinGram contributors"
+#define MyAppURL "https://github.com/eltavine/SereinGram"
+#define MyAppExeName "SereinGram.exe"
+#define MyAppId "7BDAE480-498A-409E-816D-B1EE06F99A03"
 #define CurrentYear GetDateTimeString('yyyy','','')
 
 [Setup]
@@ -24,7 +24,7 @@ AllowNoIcons=yes
 OutputDir={#ReleasePath}
 SetupIconFile={#SourcePath}..\Resources\art\icon256.ico
 UninstallDisplayName={#MyAppName}
-UninstallDisplayIcon={app}\Nagram.exe
+UninstallDisplayIcon={app}\SereinGram.exe
 Compression=lzma
 SolidCompression=yes
 DisableStartupPrompt=yes
@@ -78,7 +78,7 @@ Name: "ua";      MessagesFile: "compiler:Languages\Ukrainian.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
 
 [Files]
-Source: "{#ReleasePath}\Nagram.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#ReleasePath}\SereinGram.exe"; DestDir: "{app}"; Flags: ignoreversion
 #if MyBuildTarget != "winarm"
 Source: "{#ReleasePath}\{#ModulesFolder}\d3d\d3dcompiler_47.dll"; DestDir: "{app}\{#ModulesFolder}\d3d"; Flags: ignoreversion
 #endif

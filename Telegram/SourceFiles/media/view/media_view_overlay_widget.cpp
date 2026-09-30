@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "media/view/media_view_overlay_widget.h"
-#include "nagram/media/options.h"
+#include "serein/media/options.h"
 
 #include "apiwrap.h"
 #include "api/api_attached_stickers.h"
@@ -1488,7 +1488,7 @@ bool OverlayWidget::streamingRequiresControls() const {
 		&& _document
 		&& (!_document->isAnimation()
 			|| _document->isVideoMessage()
-			|| Nagram::ForDevice().Get(Nagram::Media::kGifPlaybackControls));
+			|| Serein::ForDevice().Get(Serein::Media::kGifPlaybackControls));
 }
 
 QImage OverlayWidget::videoFrame() const {

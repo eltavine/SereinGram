@@ -272,7 +272,7 @@ void Tray::showTrayMessage() const {
 	if (!cSeenTrayTooltip() && _icon) {
 		_icon->showMessage(
 			AppName.utf16(),
-			tr::lng_nagram_tray_icon_text(tr::now),
+			tr::lng_serein_tray_icon_text(tr::now),
 			QIcon(),
 			QPlatformSystemTrayIcon::Information,
 			kTooltipDelay);

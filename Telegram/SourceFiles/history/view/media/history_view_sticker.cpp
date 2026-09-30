@@ -6,8 +6,8 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/media/history_view_sticker.h"
-#include "nagram/messages/effects.h"
-#include "nagram/media/options.h"
+#include "serein/messages/effects.h"
+#include "serein/media/options.h"
 
 #include "base/options.h"
 #include "boxes/sticker_set_box.h"
@@ -152,7 +152,7 @@ Sticker::~Sticker() {
 
 bool Sticker::hasPremiumEffect() const {
 	return !_skipPremiumEffect && _data->isPremiumSticker()
-		&& !Nagram::Messages::PremiumStickerEffectDisabled();
+		&& !Serein::Messages::PremiumStickerEffectDisabled();
 }
 
 bool Sticker::customEmojiPart() const {
@@ -217,7 +217,7 @@ bool Sticker::readyToDrawAnimationFrame() {
 
 QSize Sticker::Size() {
 	const auto base = UnscaledStickerSize();
-	const auto scale = Nagram::ForDevice().Get(Nagram::Media::kStickerScale);
+	const auto scale = Serein::ForDevice().Get(Serein::Media::kStickerScale);
 	return { base.width() * scale / 100, base.height() * scale / 100 };
 }
 

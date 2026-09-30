@@ -6,12 +6,12 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "dialogs/dialogs_inner_widget.h"
-#include "nagram/privacy/options.h"
-#include "nagram/chats/list_refresher.h"
-#include "nagram/chats/layout.h"
-#include "nagram/chats/promotions.h"
-#include "nagram/messages/content.h"
-#include "nagram/messages/badges.h"
+#include "serein/privacy/options.h"
+#include "serein/chats/list_refresher.h"
+#include "serein/chats/layout.h"
+#include "serein/chats/promotions.h"
+#include "serein/messages/content.h"
+#include "serein/messages/badges.h"
 
 #include "dialogs/dialogs_three_state_icon.h"
 #include "dialogs/ui/chat_search_empty.h"
@@ -317,9 +317,9 @@ InnerWidget::InnerWidget(
 , _childListShown(std::move(childListShown))
 , _freezeTimer([=] { _shownList->unfreeze(); update(); }) {
 	setAttribute(Qt::WA_OpaquePaintEvent, true);
-	Nagram::Messages::AttachActivityRefresh(this);
-	Nagram::Messages::AttachPremiumRefresh(this);
-	Nagram::ListRefresher::Attach(this);
+	Serein::Messages::AttachActivityRefresh(this);
+	Serein::Messages::AttachPremiumRefresh(this);
+	Serein::ListRefresher::Attach(this);
 	setAccessibleName(tr::lng_recent_chats(tr::now));
 
 	_communityViewable.setRepaint([=] { update(); });
@@ -688,7 +688,7 @@ void InnerWidget::refreshWithCollapsedRows(bool toTop) {
 	} else {
 		_skipTopDialog = false;
 	}
-	if (_filterId > 0 && Nagram::Chats::ShowArchiveInFolders()) {
+	if (_filterId > 0 && Serein::Chats::ShowArchiveInFolders()) {
 		_collapsedRows.push_back(std::make_unique<CollapsedRow>(
 			session().data().folder(Data::Folder::kId)));
 	}
@@ -1866,11 +1866,11 @@ void InnerWidget::paintPeerSearchResult(
 			: context.selected
 			? st::dialogsBgOver
 			: currentBg()));
-	if (Nagram::Privacy::DemoMode()) {
+	if (Serein::Privacy::DemoMode()) {
 		p.setFont(st::semiboldFont);
 		p.setPen(st::dialogsNameFg);
 		p.drawTextLeft(context.st->nameLeft, context.st->nameTop,
-			context.width, tr::lng_nagram_demo_hidden(tr::now));
+			context.width, tr::lng_serein_demo_hidden(tr::now));
 		return;
 	}
 	if (!context.active) {
@@ -4756,7 +4756,7 @@ void InnerWidget::peerSearchReceived(Api::PeerSearchResult result) {
 	if (_state != WidgetState::Filtered) {
 		return;
 	}
-	if (Nagram::Chats::HideSponsoredMessages()) {
+	if (Serein::Chats::HideSponsoredMessages()) {
 		result.sponsored.clear();
 	}
 
@@ -4812,7 +4812,7 @@ Data::CommunityInfo *InnerWidget::shownCommunity() const {
 
 bool InnerWidget::needCollapsedRowsRefresh() const {
 	if (_filterId > 0) {
-		const auto expected = Nagram::Chats::ShowArchiveInFolders();
+		const auto expected = Serein::Chats::ShowArchiveInFolders();
 		return _skipTopDialog || (_collapsedRows.empty() == expected);
 	}
 	const auto archive = !_shownList->empty()

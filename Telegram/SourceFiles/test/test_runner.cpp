@@ -10,7 +10,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "test/test_runner.h"
 
 #include "test/test_agent.h"
-#include "nagram/tests/menu_scenario.h"
+#include "serein/tests/menu_scenario.h"
 #include "test/test_capture.h"
 #include "test/test_log.h"
 #include "base/call_delayed.h"
@@ -484,7 +484,7 @@ void Start() {
 	Started = true;
 	static auto runner = Runner();
 	SetupScenario(&runner);
-	Nagram::Tests::AppendMenuScenario(&runner);
+	Serein::Tests::AppendMenuScenario(&runner);
 	if (runner.empty()) {
 		Note(u"no scenario registered"_q);
 		return;

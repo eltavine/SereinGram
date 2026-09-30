@@ -87,8 +87,8 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "history/view/controls/history_view_draft_options.h"
 #include "history/view/controls/history_view_suggest_options.h"
 #include "history/view/controls/history_view_ttl_button.h"
-#include "nagram/compose/buttons.h"
-#include "nagram/compose/placeholder.h"
+#include "serein/compose/buttons.h"
+#include "serein/compose/placeholder.h"
 #include "history/view/controls/history_view_voice_record_bar.h"
 #include "history/view/controls/history_view_webpage_processor.h"
 #include "history/view/history_view_reply.h"
@@ -1431,8 +1431,8 @@ ComposeControls::ComposeControls(
 				updateControlsGeometry(_wrap->size());
 			} else if (_botKeyboardHide && !has) {
 				_botKeyboardHide = nullptr;
-				_tabbedSelectorToggle->setVisible(!Nagram::Compose::Hidden(
-					Nagram::Compose::kHideEmojiButton));
+				_tabbedSelectorToggle->setVisible(!Serein::Compose::Hidden(
+					Serein::Compose::kHideEmojiButton));
 				updateControlsGeometry(_wrap->size());
 			}
 		}, _wrap->lifetime());
@@ -2932,12 +2932,12 @@ void ComposeControls::init() {
 
 	rpl::merge(
 		session().attachWebView().attachBotsUpdates(),
-		Nagram::ForDevice().Value(Nagram::Compose::kDisableAttachHover
+		Serein::ForDevice().Value(Serein::Compose::kDisableAttachHover
 		) | rpl::skip(1) | rpl::to_empty
 	) | rpl::on_next([=] {
 		updateAttachBotsMenu();
 	}, _wrap->lifetime());
-	Nagram::Compose::ButtonsChanged(
+	Serein::Compose::ButtonsChanged(
 	) | rpl::on_next([=] {
 		updateBotCommandShown();
 		refreshBotMenuButton();
@@ -2957,7 +2957,7 @@ void ComposeControls::orderControls() {
 }
 
 bool ComposeControls::showRecordButton() const {
-	return !Nagram::Compose::Hidden(Nagram::Compose::kHideRecordingButton)
+	return !Serein::Compose::Hidden(Serein::Compose::kHideRecordingButton)
 		&& _features.recordMediaMessage
 		&& (_recordAvailability != Webrtc::RecordAvailability::None)
 		&& !_voiceRecordBar->isListenState()
@@ -3326,10 +3326,10 @@ void ComposeControls::updateFieldPlaceholder() {
 			} else if (channel->adminRights() & ChatAdminRight::Anonymous) {
 				return tr::lng_send_anonymous_ph();
 			} else {
-				return Nagram::Compose::InputPlaceholder(peer);
+				return Serein::Compose::InputPlaceholder(peer);
 			}
 		} else {
-			return Nagram::Compose::InputPlaceholder(peer);
+			return Serein::Compose::InputPlaceholder(peer);
 		}
 	}();
 	_field->setPlaceholder(rpl::combine(
@@ -5102,7 +5102,7 @@ void ComposeControls::updateControlsVisibility() {
 		_botCommandStart->setVisible(_botCommandShown);
 	}
 	_tabbedSelectorToggle->setVisible(!_botKeyboardHide
-		&& !Nagram::Compose::Hidden(Nagram::Compose::kHideEmojiButton));
+		&& !Serein::Compose::Hidden(Serein::Compose::kHideEmojiButton));
 	if (_silent) {
 		_silent->setVisible(!hide);
 	}
@@ -5116,8 +5116,8 @@ void ComposeControls::updateControlsVisibility() {
 		_ttlInfo->setVisible(!hide);
 	}
 	if (_sendAs) {
-		_sendAs->setVisible(!Nagram::Compose::Hidden(
-			Nagram::Compose::kHideSendAsButton));
+		_sendAs->setVisible(!Serein::Compose::Hidden(
+			Serein::Compose::kHideSendAsButton));
 	}
 	if (_replaceMedia) {
 		_replaceMedia->show();
@@ -5127,8 +5127,8 @@ void ComposeControls::updateControlsVisibility() {
 	}
 	if (_attachToggle) {
 		_attachToggle->setVisible(!_replaceMedia
-			&& !Nagram::Compose::Hidden(
-				Nagram::Compose::kHideAttachButton));
+			&& !Serein::Compose::Hidden(
+				Serein::Compose::kHideAttachButton));
 	}
 	if (_scheduled) {
 		_scheduled->setVisible(!hide);
@@ -5143,8 +5143,8 @@ void ComposeControls::updateControlsVisibility() {
 		_commentsShown->setVisible(!_commentsShownHidden.current());
 	}
 	if (_starsReaction) {
-		_starsReaction->setVisible(!Nagram::Compose::Hidden(
-			Nagram::Compose::kHideStarsReactionButton));
+		_starsReaction->setVisible(!Serein::Compose::Hidden(
+			Serein::Compose::kHideStarsReactionButton));
 	}
 	updateAiButtonVisibility();
 	updateSendAsFileVisibility();
@@ -5153,7 +5153,7 @@ void ComposeControls::updateControlsVisibility() {
 }
 
 void ComposeControls::updateAiButtonVisibility() {
-	const auto hidden = Nagram::Compose::Hidden(Nagram::Compose::kHideAiButton)
+	const auto hidden = Serein::Compose::Hidden(Serein::Compose::kHideAiButton)
 		|| !hasEnoughLinesForAi()
 		|| !_wrap->isVisible()
 		|| _recording.current()
@@ -5384,7 +5384,7 @@ bool ComposeControls::textExceedsMaxSize() const {
 bool ComposeControls::updateBotCommandShown() {
 	auto shown = false;
 	const auto peer = _history ? _history->peer.get() : nullptr;
-	if (!Nagram::Compose::Hidden(Nagram::Compose::kHideBotCommandButton)
+	if (!Serein::Compose::Hidden(Serein::Compose::kHideBotCommandButton)
 			&& _botCommandStart
 			&& peer
 			&& _botCommandStartExtraGuard.current()
@@ -5433,7 +5433,7 @@ bool ComposeControls::refreshBotMenuButton() {
 		return changed;
 	}
 	auto buttonChanged = false;
-	if (Nagram::Compose::Hidden(Nagram::Compose::kHideBotMenu)
+	if (Serein::Compose::Hidden(Serein::Compose::kHideBotMenu)
 		|| !bot
 		|| (_mode != Mode::Normal)
 		|| (bot->botInfo->botMenuButtonUrl.isEmpty()
@@ -5518,8 +5518,8 @@ void ComposeControls::updateOuterGeometry(QRect rect) {
 
 void ComposeControls::updateMessagesTTLShown() {
 	const auto peer = _history ? _history->peer.get() : nullptr;
-	const auto shown = !Nagram::Compose::Hidden(
-		Nagram::Compose::kHideAutoDeleteButton)
+	const auto shown = !Serein::Compose::Hidden(
+		Serein::Compose::kHideAutoDeleteButton)
 		&& _features.ttlInfo
 		&& peer
 		&& (peer->messagesTTL() > 0);
@@ -5547,7 +5547,7 @@ void ComposeControls::refreshSendGiftToggle() {
 		| Type::Limited
 		| Type::Unique;
 	const auto has = _regularWindow
-		&& !Nagram::Compose::Hidden(Nagram::Compose::kHideGiftButton)
+		&& !Serein::Compose::Hidden(Serein::Compose::kHideGiftButton)
 		&& user
 		&& !_writeRestriction.current()
 		&& !user->isServiceUser()
@@ -5637,8 +5637,8 @@ void ComposeControls::updateAttachBotsMenu() {
 	_attachBotsMenu->setOrigin(
 		Ui::PanelAnimation::Origin::BottomLeft);
 	if (!ChatHelpers::ShowPanelOnClick()
-		&& !Nagram::Compose::Hidden(
-			Nagram::Compose::kDisableAttachHover)) {
+		&& !Serein::Compose::Hidden(
+			Serein::Compose::kDisableAttachHover)) {
 		_attachToggle->installEventFilter(_attachBotsMenu.get());
 	}
 	_attachBotsMenu->heightValue(

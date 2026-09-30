@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "api/api_editing.h"
-#include "nagram/compose/text.h"
+#include "serein/compose/text.h"
 
 #include "apiwrap.h"
 #include "api/api_media.h"
@@ -302,7 +302,7 @@ mtpRequestId EditMessage(
 		DoneCallback &&done,
 		FailCallback &&fail,
 		std::optional<MTPInputMedia> inputMedia = std::nullopt) {
-	const auto textWithEntities = Nagram::Compose::PrepareText(originalText, true);
+	const auto textWithEntities = Serein::Compose::PrepareText(originalText, true);
 	if (item->computeSuggestionActions()
 		== SuggestionActions::AcceptAndDecline) {
 		return SuggestMessageOrMedia(

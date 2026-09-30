@@ -6,9 +6,9 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "window/window_filters_menu.h"
-#include "nagram/chats/managed_folders.h"
-#include "nagram/chats/options.h"
-#include "nagram/core/options.h"
+#include "serein/chats/managed_folders.h"
+#include "serein/chats/options.h"
+#include "serein/core/options.h"
 
 #include "menu/menu_mark_as_read.h"
 #include "mainwindow.h"
@@ -161,7 +161,7 @@ void FiltersMenu::setup() {
 	rpl::combine(
 		rpl::single(rpl::empty) | rpl::then(filters->changed()),
 		std::move(premium),
-		Nagram::ForDevice().Value(Nagram::Chats::kHideAllChatsFolder)
+		Serein::ForDevice().Value(Serein::Chats::kHideAllChatsFolder)
 	) | rpl::on_next([=] {
 		refresh();
 	}, _outer.lifetime());
@@ -618,8 +618,8 @@ base::unique_qptr<Ui::SideBarButton> FiltersMenu::prepareButton(
 		rpl::combine(
 			Data::UnreadStateValue(&_session->session(), id),
 			Data::IncludeMutedCounterFoldersValue(),
-			Nagram::ForDevice().Value(
-				Nagram::Chats::kHideFolderUnreadCounters)
+			Serein::ForDevice().Value(
+				Serein::Chats::kHideFolderUnreadCounters)
 		) | rpl::on_next([=](
 				const Dialogs::UnreadState &state,
 				bool includeMuted,
@@ -775,7 +775,7 @@ void FiltersMenu::showMenu(QPoint position, FilterId id) {
 			tr::lng_filters_context_edit(tr::now),
 			crl::guard(&_outer, [=] { EditExistingFilter(_session, id); }),
 			&st::menuIconEdit);
-		Nagram::Chats::AddManagedOnlyAction(addAction, &_session->session(), id);
+		Serein::Chats::AddManagedOnlyAction(addAction, &_session->session(), id);
 
 		auto filteredChats = [=] {
 			return _session->session().data().chatsFilters().chatsList(id);

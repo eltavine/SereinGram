@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "chat_helpers/stickers_list_widget.h"
-#include "nagram/media/options.h"
+#include "serein/media/options.h"
 
 #include "base/options.h"
 #include "base/timer_rpl.h"
@@ -300,11 +300,11 @@ StickersListWidget::StickersListWidget(
 		}, lifetime());
 	}
 	rpl::merge(
-		Nagram::ForDevice().Value(Nagram::Media::kRecentStickerLimit
+		Serein::ForDevice().Value(Serein::Media::kRecentStickerLimit
 		) | rpl::skip(1) | rpl::to_empty,
-		Nagram::ForDevice().Value(Nagram::Media::kHideGroupStickers
+		Serein::ForDevice().Value(Serein::Media::kHideGroupStickers
 		) | rpl::skip(1) | rpl::to_empty,
-		Nagram::ForDevice().Value(Nagram::Media::kHideRecommendedStickers
+		Serein::ForDevice().Value(Serein::Media::kHideRecommendedStickers
 		) | rpl::skip(1) | rpl::to_empty
 	) | rpl::on_next([=] {
 		refreshStickers();
@@ -370,8 +370,8 @@ object_ptr<TabbedSelector::InnerFooter> StickersListWidget::createFooter() {
 	) | rpl::on_next([=] {
 		const auto onlyFeatured = !_isMasks
 			&& _mySets.empty()
-			&& !Nagram::ForDevice().Get(
-				Nagram::Media::kHideRecommendedStickers);
+			&& !Serein::ForDevice().Get(
+				Serein::Media::kHideRecommendedStickers);
 		_show->showBox(Box<StickersBox>(
 			_show,
 			(onlyFeatured
@@ -3135,7 +3135,7 @@ void StickersListWidget::refreshMySets() {
 
 	refreshFavedStickers();
 	refreshRecentStickers(false);
-	if (!Nagram::ForDevice().Get(Nagram::Media::kHideGroupStickers)) {
+	if (!Serein::ForDevice().Get(Serein::Media::kHideGroupStickers)) {
 		refreshMegagroupStickers(GroupStickersPlace::Visible);
 	}
 
@@ -3143,7 +3143,7 @@ void StickersListWidget::refreshMySets() {
 		const auto externalLayout = false;
 		appendSet(_mySets, setId, externalLayout, AppendSkip::Archived);
 	}
-	if (!Nagram::ForDevice().Get(Nagram::Media::kHideGroupStickers)) {
+	if (!Serein::ForDevice().Get(Serein::Media::kHideGroupStickers)) {
 		refreshMegagroupStickers(GroupStickersPlace::Hidden);
 	}
 
@@ -3151,7 +3151,7 @@ void StickersListWidget::refreshMySets() {
 }
 
 void StickersListWidget::refreshFeaturedSets() {
-	if (Nagram::ForDevice().Get(Nagram::Media::kHideRecommendedStickers)) {
+	if (Serein::ForDevice().Get(Serein::Media::kHideRecommendedStickers)) {
 		_officialSets.clear();
 		_featuredSetsCount = 0;
 		if (_section == Section::Featured) {
@@ -3375,8 +3375,8 @@ auto StickersListWidget::collectRecentStickers() -> std::vector<Sticker> {
 	result.reserve(cloudCount + recent.size() + customCount);
 	_custom.reserve(cloudCount + recent.size() + customCount);
 
-	const auto configured = Nagram::ForDevice().Get(
-		Nagram::Media::kRecentStickerLimit);
+	const auto configured = Serein::ForDevice().Get(
+		Serein::Media::kRecentStickerLimit);
 	auto add = [&](not_null<DocumentData*> document, bool custom) {
 		if (result.size() >= (configured ? configured : kRecentDisplayLimit)
 			&& (configured || !OptionUnlimitedRecentStickers.value())) {
@@ -3834,8 +3834,8 @@ void StickersListWidget::showStickerSet(uint64 setId) {
 	}
 
 	if (setId == Data::Stickers::FeaturedSetId) {
-		if (Nagram::ForDevice().Get(
-				Nagram::Media::kHideRecommendedStickers)) {
+		if (Serein::ForDevice().Get(
+				Serein::Media::kHideRecommendedStickers)) {
 			return;
 		}
 		if (_section != Section::Featured) {

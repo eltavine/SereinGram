@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "data/components/ephemeral_messages.h"
-#include "nagram/compose/text.h"
+#include "serein/compose/text.h"
 
 #include "api/api_common.h"
 #include "api/api_text_entities.h"
@@ -662,7 +662,7 @@ bool EphemeralMessages::trySend(const Api::MessageToSend &message) {
 		TextUtilities::ConvertTextTagsToEntities(message.textWithTags.tags),
 	};
 	TextUtilities::Trim(text);
-	text = Nagram::Compose::PrepareText(text, false);
+	text = Serein::Compose::PrepareText(text, false);
 	if (text.text.isEmpty()) {
 		return false;
 	}

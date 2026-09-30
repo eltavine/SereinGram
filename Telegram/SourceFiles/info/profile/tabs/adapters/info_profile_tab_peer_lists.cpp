@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "info/profile/tabs/adapters/info_profile_tab_peer_lists.h"
-#include "nagram/privacy/options.h"
+#include "serein/privacy/options.h"
 
 #include "data/components/recent_shared_media_gifts.h"
 #include "data/data_channel.h"
@@ -234,7 +234,7 @@ MediaTabDescriptor MakeGiftsTabDescriptor(not_null<PeerData*> peer) {
 		.title = GiftsTabTitleValue(peer),
 		.shown = rpl::combine(
 			PeerGiftsCountValue(peer),
-			Nagram::ForDevice().Value(Nagram::Privacy::kHideProfileGifts)
+			Serein::ForDevice().Value(Serein::Privacy::kHideProfileGifts)
 		) | rpl::map([](int count, bool hidden) {
 			return count > 0 && !hidden;
 		}),

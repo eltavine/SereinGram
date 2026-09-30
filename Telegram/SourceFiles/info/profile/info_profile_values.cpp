@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "info/profile/info_profile_values.h"
-#include "nagram/privacy/alias.h"
+#include "serein/privacy/alias.h"
 
 #include "api/api_chat_participants.h"
 #include "apiwrap.h"
@@ -101,7 +101,7 @@ rpl::producer<QString> NameValue(not_null<PeerData*> peer) {
 	return peer->session().changes().peerFlagsValue(
 		peer,
 		UpdateFlag::Name
-	) | rpl::map([=] { return Nagram::Privacy::DisplayName(peer); });
+	) | rpl::map([=] { return Serein::Privacy::DisplayName(peer); });
 }
 
 rpl::producer<QString> TitleValue(not_null<Data::ForumTopic*> topic) {

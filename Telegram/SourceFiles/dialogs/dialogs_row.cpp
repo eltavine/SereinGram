@@ -6,8 +6,8 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "dialogs/dialogs_row.h"
-#include "nagram/interface/roundness.h"
-#include "nagram/chats/layout.h"
+#include "serein/interface/roundness.h"
+#include "serein/chats/layout.h"
 
 #include "ui/chat/chat_theme.h" // CountAverageColor.
 #include "ui/color_contrast.h"
@@ -412,7 +412,7 @@ const style::DialogRow &Row::ComputeSt(
 		const auto hasTags = entry->hasChatsFilterTags(filterId);
 		const auto wideRow = history->peer->displayAsForum()
 			|| history->amMonoforumAdmin();
-		return Nagram::Chats::RowStyle(hasTags, wideRow);
+		return Serein::Chats::RowStyle(hasTags, wideRow);
 	} else if (entry->asTopic()) {
 		return st::forumTopicRow;
 	}
@@ -568,7 +568,7 @@ void Row::PaintCornerBadgeFrame(
 			}
 		}
 		if (const auto radius = peer
-				? Nagram::Interface::AvatarRadius(
+				? Serein::Interface::AvatarRadius(
 					context.st->photoSize, peer->userpicShape())
 				: std::nullopt) {
 			Ui::PaintOutlineSegments(q, outline, *radius, segments);

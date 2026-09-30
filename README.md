@@ -1,22 +1,22 @@
-# Nagram Desktop
+# SereinGram
 
-<img src="Telegram/Resources/branding/nagram.png" width="160" alt="Nagram app icon">
+SereinGram is an open-source Telegram client for macOS, Windows and major
+Linux distributions. It is based on
+[Telegram Desktop](https://github.com/telegramdesktop/tdesktop) and inspired
+by Nagram and AyuGram.
 
-Nagram Desktop is an independent Telegram client built with Qt, based on
-[Telegram Desktop](https://github.com/telegramdesktop/tdesktop).
-
-- [Feature requirements](docs/nagram/requirements.md) ·
-  [Design and roadmap](docs/nagram/design.md)
+- [Product specification](docs/serein/README.md) ·
+  [Feature matrix](docs/serein/features.md) ·
+  [Architecture](docs/serein/architecture.md)
 - [Brand assets and application identity](BRANDING.md)
 - Build instructions: [macOS](docs/building-mac.md),
   [Windows](docs/building-win.md), [Linux](docs/building-linux.md)
-- [Source](https://github.com/NextAlone/Nagram-qt) ·
-  [Releases](https://github.com/NextAlone/Nagram-qt/releases)
+- [Source](https://github.com/eltavine/SereinGram) ·
+  [Releases](https://github.com/eltavine/SereinGram/releases)
 
-The upstream CMake target remains `Telegram`; the resulting desktop executable
-is named `Nagram`. Builds require your own Telegram API credentials for
-distribution. Upstream automatic updates are disabled; no Nagram update service
-or store distribution has been configured.
+The upstream CMake target remains `Telegram`; the resulting executable is
+named `SereinGram`. Distributed builds require your own Telegram API
+credentials. Upstream automatic updates and crash reporting are disabled.
 
-Source code retains the upstream [GPLv3 license](LICENSE) and [legal notices](LEGAL).
-Nagram icon artwork is Copyright © MaitungTM; see [BRANDING.md](BRANDING.md).
+Source code retains the upstream [GPLv3 license](LICENSE) and
+[legal notices](LEGAL).

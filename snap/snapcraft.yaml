@@ -1,4 +1,4 @@
-name: nagram-desktop
+name: sereingram
 adopt-info: telegram
 icon: Telegram/Resources/art/icon512@2x.png
 
@@ -8,11 +8,11 @@ confinement: strict
 compression: lzo
 
 apps:
-  nagram-desktop:
-    command: usr/bin/Nagram
-    common-id: xyz.nextalone.nagram.desktop
-    desktop: usr/share/applications/xyz.nextalone.nagram.desktop.desktop
-    autostart: nagram-desktop_nagram-desktop.desktop
+  sereingram:
+    command: usr/bin/SereinGram
+    common-id: io.github.eltavine.SereinGram
+    desktop: usr/share/applications/io.github.eltavine.SereinGram.desktop
+    autostart: sereingram_sereingram.desktop
     extensions: [gnome]
     plugs:
       - audio-playback
@@ -38,7 +38,7 @@ parts:
     plugin: cmake
     source: .
     source-type: git
-    parse-info: [usr/share/metainfo/xyz.nextalone.nagram.desktop.metainfo.xml]
+    parse-info: [usr/share/metainfo/io.github.eltavine.SereinGram.metainfo.xml]
     build-environment:
       - LDFLAGS: ${LDFLAGS:+$LDFLAGS} -Wl,--push-state,--no-as-needed,-ldav1d,--pop-state
     build-packages:
@@ -70,9 +70,9 @@ parts:
       craftctl set version="$version"
     override-build: |
       craftctl default
-      "$CRAFT_PART_SRC/Telegram/build/minidebug.sh" "$CRAFT_PART_INSTALL/usr/bin/Nagram"
+      "$CRAFT_PART_SRC/Telegram/build/minidebug.sh" "$CRAFT_PART_INSTALL/usr/bin/SereinGram"
 
-      APP_ID=xyz.nextalone.nagram.desktop
+      APP_ID=io.github.eltavine.SereinGram
       sed -i "s/^Icon=$APP_ID$/Icon=snap.$CRAFT_PROJECT_NAME./g" "$CRAFT_PART_INSTALL/usr/share/applications/$APP_ID.desktop"
       for i in $(find "$CRAFT_PART_INSTALL/usr/share/icons" -name "$APP_ID*.svg" -o -name "$APP_ID*.png"); do
         PREFIXED="$(dirname "$i")/snap.$CRAFT_PROJECT_NAME.$(basename "$i" | sed "s/$APP_ID//")"

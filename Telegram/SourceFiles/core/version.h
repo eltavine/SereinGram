@@ -18,10 +18,10 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #endif // TDESKTOP_ALLOW_CLOSED_ALPHA
 
 // used in Updater.cpp and Setup.iss for Windows
-constexpr auto AppId = "{F113D826-7421-5D5F-91E5-E07C9D902EFF}"_cs;
-constexpr auto AppNameOld = "Nagram Desktop"_cs;
-constexpr auto AppName = "Nagram Desktop"_cs;
-constexpr auto AppFile = "Nagram"_cs;
+constexpr auto AppId = "{7BDAE480-498A-409E-816D-B1EE06F99A03}"_cs;
+constexpr auto AppNameOld = "SereinGram"_cs;
+constexpr auto AppName = "SereinGram"_cs;
+constexpr auto AppFile = "SereinGram"_cs;
 constexpr auto AppVersion = 7002010;
 constexpr auto AppVersionStr = "7.2.10";
 constexpr auto AppBetaVersion = true;

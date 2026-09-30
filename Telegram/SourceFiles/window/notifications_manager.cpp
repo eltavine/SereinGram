@@ -6,8 +6,8 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "window/notifications_manager.h"
-#include "nagram/interface/notifications.h"
-#include "nagram/privacy/options.h"
+#include "serein/interface/notifications.h"
+#include "serein/privacy/options.h"
 
 #include "base/options.h"
 #include "base/platform/base_platform_info.h"
@@ -409,7 +409,7 @@ System::Timing System::countTiming(
 	} else if (cOtherOnline() >= t) {
 		delay = config.notifyDefaultDelay;
 	}
-	delay = Nagram::Interface::NotificationDelay(delay, minimalDelay, otherActive);
+	delay = Serein::Interface::NotificationDelay(delay, minimalDelay, otherActive);
 	return {
 		.delay = delay,
 		.when = ms + delay,
@@ -1557,7 +1557,7 @@ void NativeManager::doShowNotification(NotificationFields &&fields) {
 			: Data::ItemNotificationType::Reaction)
 		: Data::ItemNotificationType::Message;
 	auto options = getNotificationOptions(fields.item, type);
-	const auto demo = Nagram::Privacy::DemoMode();
+	const auto demo = Serein::Privacy::DemoMode();
 	if (demo) {
 		options.hideNameAndPhoto = true;
 		options.hideMessageText = true;
@@ -1587,7 +1587,7 @@ void NativeManager::doShowNotification(NotificationFields &&fields) {
 		: (scheduled && peer->isSelf())
 		? tr::lng_notification_reminder(tr::now)
 		: subWithChat();
-	const auto fullTitle = demo ? u"Nagram"_q : addTargetAccountName(title, &peer->session());
+	const auto fullTitle = demo ? u"SereinGram"_q : addTargetAccountName(title, &peer->session());
 	const auto hideReactionSender = reactionFrom
 		&& !peer->session().api().reactionsNotifySettings()
 			.showPreviewsCurrent();

@@ -6,9 +6,9 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "ui/widgets/chat_filters_tabs_strip.h"
-#include "nagram/chats/managed_folders.h"
-#include "nagram/chats/options.h"
-#include "nagram/core/options.h"
+#include "serein/chats/managed_folders.h"
+#include "serein/chats/options.h"
+#include "serein/core/options.h"
 
 #include "api/api_chat_filters_remove_manager.h"
 #include "boxes/choose_filter_box.h"
@@ -88,7 +88,7 @@ void ShowMenu(
 			tr::lng_filters_context_edit(tr::now),
 			[=] { EditExistingFilter(controller, id); },
 			&st::menuIconEdit);
-		Nagram::Chats::AddManagedOnlyAction(addAction, session, id);
+		Serein::Chats::AddManagedOnlyAction(addAction, session, id);
 
 		MarkAsReadMenu::AddChatListAction(
 			controller,
@@ -237,8 +237,8 @@ not_null<Ui::RpWidget*> AddChatFiltersTabsStrip(
 			rpl::combine(
 				Data::UnreadStateValue(session, list[i].id()),
 				rpl::duplicate(includeMuted),
-				Nagram::ForDevice().Value(
-					Nagram::Chats::kHideFolderUnreadCounters)
+				Serein::ForDevice().Value(
+					Serein::Chats::kHideFolderUnreadCounters)
 			) | rpl::on_next([=](
 					const Dialogs::UnreadState &state,
 					bool includeMuted,
@@ -523,7 +523,7 @@ not_null<Ui::RpWidget*> AddChatFiltersTabsStrip(
 	rpl::combine(
 		session->data().chatsFilters().changed(),
 		Data::AmPremiumValue(session) | rpl::to_empty,
-		Nagram::ForDevice().Value(Nagram::Chats::kHideAllChatsFolder)
+		Serein::ForDevice().Value(Serein::Chats::kHideAllChatsFolder)
 			| rpl::to_empty
 	) | rpl::on_next(rebuild, wrap->lifetime());
 	Core::App().settings().chatFiltersTabsModeValue(

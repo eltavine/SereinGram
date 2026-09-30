@@ -147,8 +147,8 @@ message MessagesSettings {
 | 上游侵入预算 | `tools/serein/upstream_budget.py`，与 `policy/upstream.json` 记录的上游基线比较；预算只降不升，并统计上游文件直接包含非门面头文件的数量 | 已实施 |
 | schema 兼容 | `buf lint`、`buf breaking --against` 目标分支 | Phase 0 |
 | 生成代码漂移 | `buf generate` 后 `git diff --exit-code` | Phase 0 |
-| 三语文案一致 | `test_serein` | 已有（改名前为 `test_nagram`） |
-| 构建与单元测试 | `serein-{mac,win,linux}.yml` | 已有（改名前为 `nagram-*.yml`） |
+| 三语文案一致 | `test_serein` | 已有 |
+| 构建与单元测试 | `serein-{mac,win,linux}.yml` | 已有 |
 
 ## 8. 迁移步骤
 

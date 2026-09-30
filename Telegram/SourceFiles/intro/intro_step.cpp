@@ -475,7 +475,7 @@ void Step::paintCover(QPainter &p, int top) {
 	st::introCoverRight.paint(p, width() - right - st::introCoverRight.width(), coverHeight - st::introCoverRight.height(), width());
 
 	static const auto logo = QImage(u":/gui/art/logo_256.png"_q);
-	const auto size = st::introNagramSize;
+	const auto size = st::introSereinSize;
 	p.save();
 	p.setRenderHint(QPainter::SmoothPixmapTransform);
 	p.drawImage(

@@ -10,7 +10,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "base/options.h"
 #include "boxes/compose_ai_box.h"
 #include "core/mime_type.h"
-#include "nagram/services/model.h"
+#include "serein/services/model.h"
 #include "data/data_ai_compose_tones.h"
 #include "data/data_premium_limits.h"
 #include "data/data_session.h"
@@ -39,7 +39,7 @@ bool HasEnoughLinesForAi(
 		not_null<Ui::InputField*> field) {
 	if (HideAiButtonOption.value()
 		|| (session->data().aiComposeTones().list().empty()
-			&& !Nagram::ForDevice().Get(Nagram::kPreferSystemAi))) {
+			&& !Serein::ForDevice().Get(Serein::kPreferSystemAi))) {
 		return false;
 	}
 	const auto &style = field->st().style;
@@ -210,7 +210,7 @@ auto SetupCaptionAiButton(SetupCaptionAiButtonArgs &&args)
 		field->heightChanges() | rpl::to_empty,
 		field->changes() | rpl::to_empty,
 		field->shownValue() | rpl::to_empty,
-		Nagram::ForDevice().Value(Nagram::kPreferSystemAi) | rpl::to_empty
+		Serein::ForDevice().Value(Serein::kPreferSystemAi) | rpl::to_empty
 	) | rpl::on_next([=] {
 		updateVisibility();
 	}, button->lifetime());

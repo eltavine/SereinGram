@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "info/profile/info_profile_actions.h"
-#include "nagram/privacy/profile.h"
+#include "serein/privacy/profile.h"
 
 #include "api/api_blocked_peers.h"
 #include "api/api_chat_participants.h"
@@ -1879,10 +1879,10 @@ Section DetailsFiller::makeInfo() {
 		}
 	}
 	if (!_topic) {
-		addInfoOneLine(tr::lng_nagram_profile_id(),
-			Nagram::Privacy::ProfileIdValue(_peer), QString());
-		addInfoOneLine(tr::lng_nagram_profile_dc(),
-			Nagram::Privacy::ProfileDcValue(_peer), QString());
+		addInfoOneLine(tr::lng_serein_profile_id(),
+			Serein::Privacy::ProfileIdValue(_peer), QString());
+		addInfoOneLine(tr::lng_serein_profile_dc(),
+			Serein::Privacy::ProfileDcValue(_peer), QString());
 	}
 	raw->toggleOn(tracker.atLeastOneShownValue());
 	raw->finishAnimating();

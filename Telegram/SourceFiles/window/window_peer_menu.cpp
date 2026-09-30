@@ -6,8 +6,8 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "window/window_peer_menu.h"
-#include "nagram/privacy/options.h"
-#include "nagram/privacy/alias.h"
+#include "serein/privacy/options.h"
+#include "serein/privacy/alias.h"
 
 #include "base/call_delayed.h"
 #include "menu/menu_check_item.h"
@@ -1170,8 +1170,8 @@ void Filler::addLocalAlias() {
 	}
 	const auto peer = _peer;
 	const auto show = _controller->uiShow();
-	_addAction(tr::lng_nagram_peer_alias(tr::now), [=] {
-		Nagram::Privacy::ShowAlias(show, peer);
+	_addAction(tr::lng_serein_peer_alias(tr::now), [=] {
+		Serein::Privacy::ShowAlias(show, peer);
 	}, &st::menuIconEdit);
 }
 
@@ -1447,8 +1447,8 @@ void Filler::addCreatePoll() {
 }
 
 void Filler::addCreateTodoList() {
-	if (skipCreateActions() || Nagram::ForDevice().Get(
-		Nagram::Privacy::kHideCreateTodo)) {
+	if (skipCreateActions() || Serein::ForDevice().Get(
+		Serein::Privacy::kHideCreateTodo)) {
 		return;
 	}
 	const auto can = _topic

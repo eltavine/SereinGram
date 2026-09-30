@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/history_view_emoji_interactions.h"
-#include "nagram/messages/effects.h"
+#include "serein/messages/effects.h"
 
 #include "history/view/history_view_element.h"
 #include "history/view/media/history_view_sticker.h"
@@ -47,7 +47,7 @@ constexpr auto kDropDelayedAfterDelay = crl::time(2000);
 } // namespace
 
 bool CanPlayEmojiInteraction(not_null<const Element*> view) {
-	if (!view->media() || Nagram::Messages::EffectDisabled(
+	if (!view->media() || Serein::Messages::EffectDisabled(
 			Stickers::EffectType::EmojiInteraction)) {
 		// Large emoji may be disabled.
 		return false;
@@ -67,7 +67,7 @@ EmojiInteractions::EmojiInteractions(
 , _layerParent(layerParent)
 , _session(session)
 , _itemTop(std::move(itemTop)) {
-	Nagram::Messages::Effects::Attach(this);
+	Serein::Messages::Effects::Attach(this);
 	_session->data().viewRemoved(
 	) | rpl::filter([=] {
 		return !_plays.empty() || !_delayed.empty();
@@ -113,7 +113,7 @@ void EmojiInteractions::play(
 bool EmojiInteractions::playPremiumEffect(
 		not_null<const Element*> view,
 		Element *replacing) {
-	if (Nagram::Messages::EffectDisabled(
+	if (Serein::Messages::EffectDisabled(
 			Stickers::EffectType::PremiumSticker)) {
 		return false;
 	}
@@ -180,7 +180,7 @@ void EmojiInteractions::playEffectOnRead(not_null<const Element*> view) {
 }
 
 void EmojiInteractions::playEffect(not_null<const Element*> view) {
-	if (Nagram::Messages::EffectDisabled(
+	if (Serein::Messages::EffectDisabled(
 			Stickers::EffectType::MessageEffect)) {
 		return;
 	}
@@ -262,7 +262,7 @@ void EmojiInteractions::addPendingEffect(not_null<const Element*> view) {
 }
 
 void EmojiInteractions::checkPendingEffects() {
-	if (!Nagram::Messages::Effects::ShouldProcessPending(this)) {
+	if (!Serein::Messages::Effects::ShouldProcessPending(this)) {
 		return;
 	}
 	auto waitingDownload = false;

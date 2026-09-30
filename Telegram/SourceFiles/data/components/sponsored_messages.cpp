@@ -6,8 +6,8 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "data/components/sponsored_messages.h"
-#include "nagram/chats/options.h"
-#include "nagram/chats/promotions.h"
+#include "serein/chats/options.h"
+#include "serein/chats/promotions.h"
 
 #include "api/api_text_entities.h"
 #include "api/api_peer_search.h" // SponsoredSearchResult
@@ -65,7 +65,7 @@ SponsoredMessages::SponsoredMessages(not_null<Main::Session*> session)
 			clear();
 		}
 	}, _lifetime);
-	Nagram::ForDevice().Value(Nagram::Chats::kHideSponsoredMessages
+	Serein::ForDevice().Value(Serein::Chats::kHideSponsoredMessages
 	) | rpl::skip(1) | rpl::on_next([=](bool hidden) {
 		if (hidden) {
 			for (const auto &entry : _data) {
@@ -113,7 +113,7 @@ void SponsoredMessages::clearOldRequests() {
 
 SponsoredMessages::AppendResult SponsoredMessages::append(
 		not_null<History*> history) {
-	if (Nagram::Chats::HideSponsoredMessages()) {
+	if (Serein::Chats::HideSponsoredMessages()) {
 		return SponsoredMessages::AppendResult::None;
 	}
 	if (isTopBarFor(history)) {
@@ -285,7 +285,7 @@ auto SponsoredMessages::injectState(not_null<History*> history)
 HistoryItem *SponsoredMessages::injectItem(
 		not_null<History*> history,
 		not_null<HistoryItem*> after) {
-	if (Nagram::Chats::HideSponsoredMessages()) {
+	if (Serein::Chats::HideSponsoredMessages()) {
 		return nullptr;
 	}
 	const auto it = _data.find(history);
@@ -318,7 +318,7 @@ HistoryItem *SponsoredMessages::injectItem(
 }
 
 bool SponsoredMessages::canHaveFor(not_null<History*> history) const {
-	if (Nagram::Chats::HideSponsoredMessages()) {
+	if (Serein::Chats::HideSponsoredMessages()) {
 		return false;
 	}
 	if (history->peer->isChannel()) {
@@ -330,7 +330,7 @@ bool SponsoredMessages::canHaveFor(not_null<History*> history) const {
 }
 
 bool SponsoredMessages::canHaveFor(not_null<HistoryItem*> item) const {
-	return !Nagram::Chats::HideSponsoredMessages()
+	return !Serein::Chats::HideSponsoredMessages()
 		&& item->history()->peer->isBroadcast()
 		&& item->isRegular();
 }
@@ -519,7 +519,7 @@ void SponsoredMessages::parseForVideo(
 
 SponsoredForVideo SponsoredMessages::prepareForVideo(
 		not_null<PeerData*> peer) {
-	if (Nagram::Chats::HideSponsoredMessages()) {
+	if (Serein::Chats::HideSponsoredMessages()) {
 		return {};
 	}
 	const auto i = _dataForVideo.find(peer);

@@ -6,8 +6,8 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/history.h"
-#include "nagram/chats/sort.h"
-#include "nagram/privacy/alias.h"
+#include "serein/chats/sort.h"
+#include "serein/privacy/alias.h"
 
 #include "history/view/history_view_element.h"
 #include "history/view/history_view_item_preview.h"
@@ -168,7 +168,7 @@ History::History(not_null<Data::Session*> owner, PeerId peerId)
 : Thread(owner, Type::History)
 , peer(owner->peer(peerId))
 , _delegateMixin(HistoryInner::DelegateMixin())
-, _chatListNameSortKey(TextUtilities::NameSortKey(Nagram::Privacy::DisplayName(peer)))
+, _chatListNameSortKey(TextUtilities::NameSortKey(Serein::Privacy::DisplayName(peer)))
 , _sendActionPainter(this) {
 	Thread::setMuted(owner->notifySettings().isMuted(peer));
 
@@ -2370,7 +2370,7 @@ void History::setMuted(bool muted) {
 		const auto notifier = unreadStateChangeNotifier(notify);
 		Thread::setMuted(muted);
 	}
-	if (Nagram::Chats::SortingEnabled()) updateChatListSortPosition();
+	if (Serein::Chats::SortingEnabled()) updateChatListSortPosition();
 	session().changes().peerUpdated(
 		peer,
 		Data::PeerUpdate::Flag::Notifications);
@@ -2881,9 +2881,9 @@ bool History::chatListMessageKnown() const {
 
 const QString &History::chatListName() const {
 	if (const auto broadcast = peer->monoforumBroadcast()) {
-		return Nagram::Privacy::DisplayName(broadcast);
+		return Serein::Privacy::DisplayName(broadcast);
 	}
-	return Nagram::Privacy::DisplayName(peer);
+	return Serein::Privacy::DisplayName(peer);
 }
 
 const QString &History::chatListNameSortKey() const {
@@ -2892,7 +2892,7 @@ const QString &History::chatListNameSortKey() const {
 
 void History::refreshChatListNameSortKey() {
 	_chatListNameSortKey = TextUtilities::NameSortKey(
-		Nagram::Privacy::DisplayName(peer));
+		Serein::Privacy::DisplayName(peer));
 }
 
 const base::flat_set<QString> &History::chatListNameWords() const {

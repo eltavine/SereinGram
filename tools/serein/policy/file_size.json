@@ -3,13 +3,10 @@
   "max_lines": 1000,
   "owned": [
     "Telegram/SourceFiles/serein/",
-    "Telegram/SourceFiles/nagram/",
     "Telegram/cmake/serein*.cmake",
-    "Telegram/cmake/nagram*.cmake",
     "proto/",
     "tools/serein/",
-    ".github/workflows/serein-*.yml",
-    ".github/workflows/nagram-*.yml"
+    ".github/workflows/serein-*.yml"
   ],
   "extensions": [
     ".c", ".cc", ".cpp", ".cxx", ".h", ".hh", ".hpp",

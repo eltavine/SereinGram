@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "dialogs/dialogs_search_tags.h"
-#include "nagram/messages/content.h"
+#include "serein/messages/content.h"
 
 #include "base/qt/qt_key_modifiers.h"
 #include "boxes/premium_preview_box.h"
@@ -93,7 +93,7 @@ SearchTags::SearchTags(
 	rpl::combine(
 		std::move(tags),
 		Data::AmPremiumValue(&owner->session()),
-		Nagram::Messages::SavedTagsValue()
+		Serein::Messages::SavedTagsValue()
 	) | rpl::on_next([=](
 			const std::vector<Data::Reaction> &list,
 			bool premium,
@@ -146,7 +146,7 @@ void SearchTags::fill(
 		}));
 	};
 	const auto push = [&](Data::ReactionId id, const QString &text) {
-		if (!Nagram::Messages::ShowSavedTag(id, selected, _added)) {
+		if (!Serein::Messages::ShowSavedTag(id, selected, _added)) {
 			return;
 		}
 		const auto customId = id.custom();
@@ -166,7 +166,7 @@ void SearchTags::fill(
 			_owner->reactions().preloadReactionImageFor(id);
 		}
 	};
-	if (!premium && !Nagram::Messages::HideSavedTags()) {
+	if (!premium && !Serein::Messages::HideSavedTags()) {
 		const auto text = (list.empty() && _added.empty())
 			? tr::lng_add_tag_button(tr::now)
 			: tr::lng_unlock_tags(tr::now);

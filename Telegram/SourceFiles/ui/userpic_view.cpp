@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "ui/userpic_view.h"
-#include "nagram/interface/roundness.h"
+#include "serein/interface/roundness.h"
 
 #include "ui/empty_userpic.h"
 #include "ui/painter.h"
@@ -154,7 +154,7 @@ void ValidateUserpicCache(
 	view.empty = empty;
 	view.shape = shapeValue;
 	view.paletteVersion = version;
-	const auto customRadius = Nagram::Interface::AvatarRadius(size, shape);
+	const auto customRadius = Serein::Interface::AvatarRadius(size, shape);
 
 	if (cloud) {
 		view.cached = cloud->scaled(

@@ -88,7 +88,7 @@ private:
 	void drawName(Painter &p);
 
 	const not_null<SessionController*> _controller;
-	const QString _nagramTitle;
+	const QString _sereinTitle;
 	object_ptr<Ui::UserpicButton> _userpicButton;
 	Ui::Text::String _name;
 	int _nameVersion = 0;

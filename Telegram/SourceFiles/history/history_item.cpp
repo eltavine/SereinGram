@@ -4053,8 +4053,8 @@ TextForMimeData HistoryItem::clipboardText() const {
 		: TextForMimeData::WithExpandedLinks(translatedText());
 }
 
-void HistoryItem::nagramToggleOriginalShown() {
-	_nagramOriginalShown = !_nagramOriginalShown;
+void HistoryItem::sereinToggleOriginalShown() {
+	_sereinOriginalShown = !_sereinOriginalShown;
 	history()->owner().requestItemViewRefresh(this);
 	history()->owner().requestItemResize(this);
 }

@@ -9,9 +9,9 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 
 #include "base/unique_qptr.h"
 
-namespace Nagram::Messages {
+namespace Serein::Messages {
 class Effects;
-} // namespace Nagram::Messages
+} // namespace Serein::Messages
 
 namespace Data {
 class DocumentMedia;
@@ -68,7 +68,7 @@ public:
 	[[nodiscard]] rpl::producer<QString> playStarted() const;
 
 private:
-	friend class Nagram::Messages::Effects;
+	friend class Serein::Messages::Effects;
 	struct Play {
 		not_null<const Element*> view;
 		std::unique_ptr<Lottie::SinglePlayer> lottie;

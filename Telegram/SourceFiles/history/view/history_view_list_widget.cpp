@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/history_view_list_widget.h"
-#include "nagram/messages/reactions.h"
+#include "serein/messages/reactions.h"
 
 #include "history/view/history_view_about_view.h"
 #include "base/unixtime.h"
@@ -4170,7 +4170,7 @@ void ListWidget::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 		? _overElement->data().get()
 		: nullptr;
 	const auto attached = (reactItem
-		&& Nagram::Messages::AllowReactionSelector(hasSelection))
+		&& Serein::Messages::AllowReactionSelector(hasSelection))
 		? AttachSelectorToMenu(
 			_menu.get(),
 			controller(),

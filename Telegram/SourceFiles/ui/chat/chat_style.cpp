@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "ui/chat/chat_style.h"
-#include "nagram/interface/options.h"
+#include "serein/interface/options.h"
 
 #include "ui/chat/chat_theme.h"
 #include "ui/image/image_prepare.h" // ImageRoundRadius
@@ -81,7 +81,7 @@ not_null<const MessageImageStyle*> ChatPaintContext::imageStyle() const {
 not_null<Text::QuotePaintCache*> ChatPaintContext::quoteCache(
 		const std::shared_ptr<ColorCollectible> &colorCollectible,
 		uint8 colorIndex) const {
-	if (Nagram::ForDevice().Get(Nagram::Interface::kThemeReplyColors)) {
+	if (Serein::ForDevice().Get(Serein::Interface::kThemeReplyColors)) {
 		return outbg
 			? messageStyle()->quoteCache[0].get()
 			: st->coloredQuoteCache(selected(), 0).get();

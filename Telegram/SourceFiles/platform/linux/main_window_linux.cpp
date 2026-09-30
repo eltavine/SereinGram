@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "platform/linux/main_window_linux.h"
-#include "nagram/interface/notifications.h"
+#include "serein/interface/notifications.h"
 
 #include "platform/linux/specific_linux.h"
 #include "history/history.h"
@@ -156,7 +156,7 @@ void MainWindow::updateWindowIcon() {
 
 void MainWindow::updateUnityCounter() {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 6, 0)
-	qApp->setBadgeNumber(Nagram::Interface::AppIconBadge(
+	qApp->setBadgeNumber(Serein::Interface::AppIconBadge(
 		Core::App().unreadBadge()));
 #else // Qt >= 6.6.0
 	using namespace gi::repository;
@@ -173,7 +173,7 @@ void MainWindow::updateUnityCounter() {
 		+ QGuiApplication::desktopFileName().toStdString()
 		+ ".desktop";
 
-	const auto counterSlice = std::min(Nagram::Interface::AppIconBadge(
+	const auto counterSlice = std::min(Serein::Interface::AppIconBadge(
 		Core::App().unreadBadge()), 9999);
 
 	auto connection = Gio::bus_get_sync(Gio::BusType::SESSION_, nullptr);
@@ -224,7 +224,7 @@ void MainWindow::createGlobalMenu() {
 		});
 
 	auto quit = file->addAction(
-		tr::lng_mac_menu_quit_telegram(tr::now, lt_telegram, u"Nagram"_q),
+		tr::lng_mac_menu_quit_telegram(tr::now, lt_telegram, u"SereinGram"_q),
 		this,
 		[=] { quitFromTray(); },
 		QKeySequence::Quit);
@@ -423,7 +423,7 @@ void MainWindow::createGlobalMenu() {
 		tr::lng_mac_menu_about_telegram(
 			tr::now,
 			lt_telegram,
-			u"Nagram"_q),
+			u"SereinGram"_q),
 		[=] {
 			ensureWindowShown();
 			controller().show(Box(AboutBox));

@@ -6,8 +6,8 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/history_view_bottom_info.h"
-#include "nagram/messages/format.h"
-#include "nagram/media/options.h"
+#include "serein/messages/format.h"
+#include "serein/media/options.h"
 
 #include "ui/chat/message_bubble.h"
 #include "ui/chat/chat_style.h"
@@ -481,7 +481,7 @@ void BottomInfo::layoutDateText() {
 		: updated
 		? (tr::lng_ephemeral_updated(tr::now) + ' ')
 		: (_data.flags & Data::Flag::Edited)
-		? (Nagram::Messages::EditedMark() + ' ')
+		? (Serein::Messages::EditedMark() + ' ')
 		: (_data.flags & Data::Flag::EstimateDate)
 		? (tr::lng_approximate(tr::now) + ' ')
 		: _data.scheduleRepeatPeriod
@@ -491,10 +491,10 @@ void BottomInfo::layoutDateText() {
 	const auto date = (_data.flags & Data::Flag::HideDate)
 		? QString()
 		: editedPrimary
-		? Nagram::Messages::FormatEditedDate(_data.date, _data.editedDate)
+		? Serein::Messages::FormatEditedDate(_data.date, _data.editedDate)
 		: edited + ((_data.flags & Data::Flag::ForwardedDate)
-		? Nagram::Messages::FormatSavedFrom(_data.date)
-		: Nagram::Messages::FormatTime(_data.date.time()));
+		? Serein::Messages::FormatSavedFrom(_data.date)
+		: Serein::Messages::FormatTime(_data.date.time()));
 	const auto prefix = (!author.isEmpty() && !date.isEmpty())
 		? u", "_q : QString();
 	const auto afterAuthor = prefix + date;
@@ -551,7 +551,7 @@ void BottomInfo::layoutViewsText() {
 	}
 	_views.setText(
 		st::msgDateTextStyle,
-		Nagram::Messages::FormatCounter(std::max(*_data.views, 1)),
+		Serein::Messages::FormatCounter(std::max(*_data.views, 1)),
 		Ui::NameTextOptions());
 }
 
@@ -566,7 +566,7 @@ void BottomInfo::layoutRepliesText() {
 	}
 	_replies.setText(
 		st::msgDateTextStyle,
-		Nagram::Messages::FormatCounter(*_data.replies),
+		Serein::Messages::FormatCounter(*_data.replies),
 		Ui::NameTextOptions());
 }
 
@@ -726,7 +726,7 @@ BottomInfo::Data BottomInfoDataFromMessage(not_null<Message*> message) {
 	if (const auto media = item->media()) {
 		if (const auto document = media->document(); document
 			&& document->sticker()
-			&& Nagram::ForDevice().Get(Nagram::Media::kHideStickerTime)) {
+			&& Serein::ForDevice().Get(Serein::Media::kHideStickerTime)) {
 			result.flags |= Flag::HideDate;
 		}
 		if (const auto outcome = media->diceGameOutcome()) {
@@ -746,7 +746,7 @@ BottomInfo::Data BottomInfoDataFromMessage(not_null<Message*> message) {
 			result.flags |= Flag::Silent;
 		}
 	}
-	Nagram::Messages::ApplyInfoOptions(result);
+	Serein::Messages::ApplyInfoOptions(result);
 	if (!forwarded) {
 		return result;
 	}
@@ -760,7 +760,7 @@ BottomInfo::Data BottomInfoDataFromMessage(not_null<Message*> message) {
 		result.date = base::unixtime::parse(forwarded->originalDate);
 		result.flags |= Flag::ForwardedDate;
 	}
-	Nagram::Messages::ApplyForwardedDate(result, item);
+	Serein::Messages::ApplyForwardedDate(result, item);
 	// We don't want to pass and update it in Data for now.
 	//if (item->unread()) {
 	//	result.flags |= Flag::Unread;

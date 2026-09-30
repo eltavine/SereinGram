@@ -6,8 +6,8 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "data/data_peer.h"
-#include "nagram/interface/roundness.h"
-#include "nagram/privacy/alias.h"
+#include "serein/interface/roundness.h"
+#include "serein/privacy/alias.h"
 
 #include "api/api_sensitive_content.h"
 #include "data/data_user.h"
@@ -530,7 +530,7 @@ QImage PeerData::GenerateUserpicImage(
 			return image;
 		} else if (radius) {
 			return round(*radius);
-		} else if (const auto custom = Nagram::Interface::AvatarRadius(
+		} else if (const auto custom = Serein::Interface::AvatarRadius(
 				size, peer->userpicShape())) {
 			return round(*custom);
 		} else if (peer->isForum()) {
@@ -550,7 +550,7 @@ QImage PeerData::GenerateUserpicImage(
 	} else if (radius) {
 		const auto r = *radius;
 		peer->ensureEmptyUserpic()->paintRounded(p, 0, 0, size, size, r);
-	} else if (const auto custom = Nagram::Interface::AvatarRadius(
+	} else if (const auto custom = Serein::Interface::AvatarRadius(
 			size, peer->userpicShape())) {
 		peer->ensureEmptyUserpic()->paintRounded(
 			p, 0, 0, size, size, *custom);
@@ -1098,7 +1098,7 @@ void PeerData::fillNames() {
 	};
 
 	appendToIndex(name());
-	appendToIndex(Nagram::Privacy::Alias(this));
+	appendToIndex(Serein::Privacy::Alias(this));
 	const auto appendTranslit = !toIndexList.isEmpty()
 		&& cRussianLetters().match(toIndexList.front()).hasMatch();
 	if (appendTranslit) {
@@ -1329,7 +1329,7 @@ const QString &PeerData::topBarNameText() const {
 	if (const auto to = migrateTo()) {
 		return to->topBarNameText();
 	}
-	const auto &alias = Nagram::Privacy::Alias(this);
+	const auto &alias = Serein::Privacy::Alias(this);
 	if (!alias.isEmpty()) {
 		return alias;
 	} else if (const auto user = asUser()) {

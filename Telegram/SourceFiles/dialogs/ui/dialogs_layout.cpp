@@ -6,8 +6,8 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "dialogs/ui/dialogs_layout.h"
-#include "nagram/chats/layout.h"
-#include "nagram/privacy/options.h"
+#include "serein/chats/layout.h"
+#include "serein/privacy/options.h"
 
 #include "base/options.h"
 #include "base/unixtime.h"
@@ -487,14 +487,14 @@ void PaintRow(
 		p.translate(swipeMirrored ? swipeTranslation : -swipeTranslation, 0);
 	}
 	p.fillRect(geometry, bg);
-	if (Nagram::Privacy::DemoMode()) {
+	if (Serein::Privacy::DemoMode()) {
 		p.setFont(st::semiboldFont);
 		p.setPen(st::dialogsNameFg);
 		p.drawTextLeft(
 			context.st->nameLeft,
 			context.st->nameTop,
 			context.width,
-			tr::lng_nagram_demo_hidden(tr::now));
+			tr::lng_serein_demo_hidden(tr::now));
 		return;
 	}
 	if (!(flags & Flag::TopicJumpRipple)) {
@@ -618,7 +618,7 @@ void PaintRow(
 		}
 	}
 	auto texttop = context.st->textTop;
-	if (Nagram::Chats::HidePreview(entry->asFolder(),
+	if (Serein::Chats::HidePreview(entry->asFolder(),
 				history && history->peer->isSelf())) {
 		if (history) {
 			PaintDialogDate(p, entry, fakeRow, date, rectForName, context);
@@ -1258,10 +1258,10 @@ void RowPainter::Paint(
 					[=] { entry->updateChatListEntry(); },
 					{});
 			}
-			if (Nagram::Chats::PreviewLines() > 1 && !forum && !monoforum
+			if (Serein::Chats::PreviewLines() > 1 && !forum && !monoforum
 				&& !entry->hasChatsFilterTags(context.filter)) {
 				rect.setHeight(st::dialogsTextFont->height
-					* Nagram::Chats::PreviewLines());
+					* Serein::Chats::PreviewLines());
 			}
 			if (forum || monoforum) {
 				rect.setHeight(context.st->topicsHeight + rect.height());

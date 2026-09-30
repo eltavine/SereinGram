@@ -6,9 +6,9 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "data/data_chat_filters.h"
-#include "nagram/chats/managed_folders.h"
-#include "nagram/chats/options.h"
-#include "nagram/core/options.h"
+#include "serein/chats/managed_folders.h"
+#include "serein/chats/options.h"
+#include "serein/core/options.h"
 #include "data/data_premium_limits.h"
 
 #include "api/api_text_entities.h"
@@ -343,7 +343,7 @@ const base::flat_set<not_null<History*>> &ChatFilter::never() const {
 bool ChatFilter::contains(
 		not_null<History*> history,
 		bool ignoreFakeUnread) const {
-	if (!Nagram::Chats::AllowedInFolder(history, _id)) return false;
+	if (!Serein::Chats::AllowedInFolder(history, _id)) return false;
 	const auto flag = [&] {
 		const auto peer = history->peer;
 		if (const auto user = peer->asUser()) {
@@ -907,7 +907,7 @@ const std::vector<ChatFilter> &ChatFilters::list() const {
 }
 
 bool ChatFilters::allChatsHidden() const {
-	if (!Nagram::ForDevice().Get(Nagram::Chats::kHideAllChatsFolder)) {
+	if (!Serein::ForDevice().Get(Serein::Chats::kHideAllChatsFolder)) {
 		return false;
 	}
 	const auto limit = 1 + PremiumLimits(&_owner->session())

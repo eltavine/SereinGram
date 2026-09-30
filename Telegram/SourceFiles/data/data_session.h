@@ -38,9 +38,9 @@ namespace Main {
 class Session;
 } // namespace Main
 
-namespace Nagram {
+namespace Serein {
 class ViewRefresher;
-} // namespace Nagram
+} // namespace Serein
 
 namespace Ui {
 class BoxContent;
@@ -1038,7 +1038,7 @@ public:
 	[[nodiscard]] HistoryItem *messageWithPeer(PeerId id) const;
 
 private:
-	friend class Nagram::ViewRefresher;
+	friend class Serein::ViewRefresher;
 	using Messages = std::unordered_map<MsgId, not_null<HistoryItem*>>;
 
 	struct NextToUpgradeGift {

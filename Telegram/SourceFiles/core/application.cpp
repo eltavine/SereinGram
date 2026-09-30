@@ -6,10 +6,10 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "core/application.h"
-#include "nagram/interface/roundness.h"
-#include "nagram/interface/text.h"
-#include "nagram/core/options.h"
-#include "nagram/privacy/options.h"
+#include "serein/interface/roundness.h"
+#include "serein/interface/text.h"
+#include "serein/core/options.h"
+#include "serein/privacy/options.h"
 
 #include "data/data_abstract_structure.h"
 #include "data/data_channel.h"
@@ -191,8 +191,8 @@ Application::Application()
 
 	_platformIntegration->init();
 	_screenshotProtection->addContentReason(
-		Nagram::ForDevice().Value(Nagram::Privacy::kDemoMode), _lifetime);
-	Nagram::ForDevice().Value(Nagram::Privacy::kDemoMode)
+		Serein::ForDevice().Value(Serein::Privacy::kDemoMode), _lifetime);
+	Serein::ForDevice().Value(Serein::Privacy::kDemoMode)
 		| rpl::on_next([=](bool) {
 			updateWindowTitles();
 			for (const auto widget : QApplication::allWidgets()) {
@@ -322,8 +322,8 @@ void Application::run() {
 	_notifications = std::make_unique<Window::Notifications::System>();
 
 	startLocalStorage();
-	Nagram::Interface::StartRoundness();
-	Nagram::Interface::StartUiText();
+	Serein::Interface::StartRoundness();
+	Serein::Interface::StartUiText();
 
 	style::SetCustomFont(settings().customFontFamily());
 	style::internal::StartFonts();
@@ -1287,7 +1287,7 @@ bool Application::openInternalUrl(const QString &url, QVariant context) {
 }
 
 QString Application::changelogLink() const {
-	return u"https://github.com/NextAlone/Nagram-qt/releases"_q;
+	return u"https://github.com/eltavine/SereinGram/releases"_q;
 }
 
 bool Application::openCustomUrl(
@@ -2064,7 +2064,7 @@ void Application::RegisterUrlScheme() {
 		.arguments = arguments,
 		.protocol = u"tg"_q,
 		.protocolName = u"Telegram Link"_q,
-		.shortAppName = u"nagram-desktop"_q,
+		.shortAppName = u"sereingram"_q,
 		.longAppName = QCoreApplication::applicationName(),
 		.displayAppName = AppName.utf16(),
 		.displayAppDescription = AppName.utf16(),
@@ -2075,7 +2075,7 @@ void Application::RegisterUrlScheme() {
 		.arguments = arguments,
 		.protocol = u"tonsite"_q,
 		.protocolName = u"TonSite Link"_q,
-		.shortAppName = u"nagram-desktop"_q,
+		.shortAppName = u"sereingram"_q,
 		.longAppName = QCoreApplication::applicationName(),
 		.displayAppName = AppName.utf16(),
 		.displayAppDescription = AppName.utf16(),

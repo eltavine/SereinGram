@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "ui/peer/video_userpic_player.h"
-#include "nagram/interface/roundness.h"
+#include "serein/interface/roundness.h"
 
 #include "data/data_peer.h"
 #include "data/data_photo.h"
@@ -62,7 +62,7 @@ QImage VideoUserpicPlayer::frame(
 	request.outer = request.resize = size * ratio;
 
 	const auto shape = peer->userpicShape();
-	const auto customRadius = Nagram::Interface::AvatarRadius(size.width(), shape);
+	const auto customRadius = Serein::Interface::AvatarRadius(size.width(), shape);
 	const auto broadcast = peer->monoforumBroadcast() && !customRadius;
 
 	if (broadcast) {

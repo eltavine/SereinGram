@@ -8,7 +8,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "boxes/translate_box.h"
 #include "boxes/translate_box_content.h"
 #include "lang/translate_provider.h"
-#include "nagram/services/translation.h"
+#include "serein/services/translation.h"
 
 #include "base/weak_ptr.h"
 #include "core/application.h"
@@ -429,7 +429,7 @@ void TranslateBox(
 		bool hasCopyRestriction) {
 	struct State {
 		State(not_null<Main::Session*> session, not_null<GenericBox*> box)
-		: provider(Nagram::CreateInteractiveTranslateProvider(session,
+		: provider(Serein::CreateInteractiveTranslateProvider(session,
 			crl::guard(box, [=](QString error) { box->showToast(error); }))) {
 		}
 

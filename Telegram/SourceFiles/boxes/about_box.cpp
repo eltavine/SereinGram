@@ -36,7 +36,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 namespace {
 
 rpl::producer<TextWithEntities> Text1() {
-	return tr::lng_nagram_about_api(
+	return tr::lng_serein_about_api(
 		lt_api_link,
 		tr::lng_about_text1_api(tr::url(u"https://core.telegram.org/api"_q)),
 		tr::marked);
@@ -47,11 +47,11 @@ rpl::producer<TextWithEntities> Text2() {
 		lt_gpl_link,
 		rpl::single(tr::link(
 			"GNU GPL",
-			"https://github.com/NextAlone/Nagram-qt/blob/main/LICENSE")),
+			"https://github.com/eltavine/SereinGram/blob/main/LICENSE")),
 		lt_github_link,
 		rpl::single(tr::link(
 			"GitHub",
-			"https://github.com/NextAlone/Nagram-qt")),
+			"https://github.com/eltavine/SereinGram")),
 		tr::marked);
 }
 
@@ -65,7 +65,7 @@ rpl::producer<TextWithEntities> Text3() {
 } // namespace
 
 void AboutBox(not_null<Ui::GenericBox*> box) {
-	box->setTitle(u"Nagram Desktop"_q);
+	box->setTitle(u"SereinGram"_q);
 
 	auto layout = box->verticalLayout();
 
@@ -124,7 +124,7 @@ void AboutBox(not_null<Ui::GenericBox*> box) {
 		Ui::AddSkip(layout, st::aboutSkip);
 	};
 
-	addText(tr::lng_nagram_about(tr::marked));
+	addText(tr::lng_serein_about(tr::marked));
 	addText(Text1());
 	addText(Text2());
 	addText(Text3());

@@ -6,8 +6,8 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "dialogs/dialogs_inner_widget_accessibility.h"
-#include "nagram/chats/layout.h"
-#include "nagram/messages/badges.h"
+#include "serein/chats/layout.h"
+#include "serein/messages/badges.h"
 
 #include "data/notify/data_notify_settings.h"
 #include "data/data_channel.h"
@@ -208,7 +208,7 @@ QString RowAccessibilityName(
 	}
 
 	if (const auto user = peer->asUser()) {
-		if (user->isPremium() && Nagram::Messages::ShowPremiumBadges()) {
+		if (user->isPremium() && Serein::Messages::ShowPremiumBadges()) {
 			parts << tr::lng_premium(tr::now);
 		}
 	}
@@ -255,7 +255,7 @@ QString RowAccessibilityName(
 		parts << tr::lng_sr_chat_mention(tr::now);
 	}
 
-	if (!Nagram::Chats::HidePreview(false, peer->isSelf())
+	if (!Serein::Chats::HidePreview(false, peer->isSelf())
 			&& history->chatListMessage()) {
 		const auto item = history->chatListMessage();
 		parts += MessageTailParts(item, history, peer);
@@ -363,7 +363,7 @@ QString SubItemValue(
 	case SubItem::Premium:
 		if (const auto user = peer->asUser()) {
 			if (user->isPremium()
-				&& Nagram::Messages::ShowPremiumBadges()) {
+				&& Serein::Messages::ShowPremiumBadges()) {
 				return tr::lng_premium(tr::now);
 			}
 		}
@@ -433,7 +433,7 @@ QString SubItemValue(
 		return {};
 	}
 	case SubItem::Message: {
-		if (Nagram::Chats::HidePreview(false, peer->isSelf())) {
+		if (Serein::Chats::HidePreview(false, peer->isSelf())) {
 			return {};
 		}
 		const auto chatItem = history->chatListMessage();
@@ -628,7 +628,7 @@ QString PeerSearchResultAccessibilityName(
 	}
 
 	if (const auto user = peer->asUser()) {
-		if (user->isPremium() && Nagram::Messages::ShowPremiumBadges()) {
+		if (user->isPremium() && Serein::Messages::ShowPremiumBadges()) {
 			parts << tr::lng_premium(tr::now);
 		}
 	}

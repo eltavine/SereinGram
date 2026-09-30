@@ -75,5 +75,5 @@ settings.local.json
 # Generated changelog page (built by CI, deployed to GitHub Pages)
 /docs/changelog/
 
-# Nagram local API credentials
+# Serein local API credentials
 /Telegram/build/api_credentials.local.cmake

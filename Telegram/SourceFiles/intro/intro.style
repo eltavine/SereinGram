@@ -23,7 +23,7 @@ introCoverIcon: icon {
 };
 introCoverIconLeft: 50px;
 introCoverIconTop: 46px;
-introNagramSize: 128px;
+introSereinSize: 128px;
 
 introSettingsSkip: 10px;
 

@@ -503,8 +503,8 @@ public:
 	[[nodiscard]] Data::SendError errorTextForForwardIgnoreRights(
 		not_null<Data::Thread*> to) const;
 	[[nodiscard]] const HistoryMessageTranslation *translation() const;
-	[[nodiscard]] bool nagramOriginalShown() const { return _nagramOriginalShown; }
-	void nagramToggleOriginalShown();
+	[[nodiscard]] bool sereinOriginalShown() const { return _sereinOriginalShown; }
+	void sereinToggleOriginalShown();
 	[[nodiscard]] bool translationShowRequiresCheck(LanguageId to) const;
 	bool translationShowRequiresRequest(LanguageId to);
 	void translationDone(LanguageId to, TextWithEntities result);
@@ -816,7 +816,7 @@ private:
 	mutable MessageFlags _flags = 0;
 
 	TextWithEntities _text;
-	bool _nagramOriginalShown = false;
+	bool _sereinOriginalShown = false;
 
 	std::unique_ptr<Data::Media> _media;
 	std::unique_ptr<Data::MessageReactions> _reactions;

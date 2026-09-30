@@ -19,8 +19,8 @@ endif()
 project(Telegram
     LANGUAGES C CXX
     VERSION ${desktop_app_version_cmake}
-    DESCRIPTION "Nagram Desktop messenger"
-    HOMEPAGE_URL "https://github.com/NextAlone/Nagram-qt"
+    DESCRIPTION "SereinGram messenger"
+    HOMEPAGE_URL "https://github.com/eltavine/SereinGram"
 )
 
 if (APPLE)
@@ -47,7 +47,7 @@ set(DESKTOP_APP_DISABLE_AUTOUPDATE ON CACHE BOOL "Disable upstream updates." FOR
 set(DESKTOP_APP_DISABLE_CRASH_REPORTS ON CACHE BOOL "Disable upstream crash reports." FORCE)
 
 if (DESKTOP_APP_SPECIAL_TARGET MATCHES "^(macstore|uwp)")
-    message(FATAL_ERROR "Nagram store distribution is not configured. Use a desktop target.")
+    message(FATAL_ERROR "Serein store distribution is not configured. Use a desktop target.")
 endif()
 
 include(cmake/variables.cmake)

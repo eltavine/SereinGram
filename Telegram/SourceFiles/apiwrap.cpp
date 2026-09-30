@@ -81,8 +81,8 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "history/history_item_components.h"
 #include "history/history_item_helpers.h"
 #include "history/view/controls/history_view_forward_panel.h"
-#include "nagram/compose/options.h"
-#include "nagram/compose/text.h"
+#include "serein/compose/options.h"
+#include "serein/compose/text.h"
 #include "iv/editor/iv_editor_session.h"
 #include "iv/iv_rich_message_serializer.h"
 #include "main/main_session.h"
@@ -4554,8 +4554,8 @@ void ApiWrap::sendRichMessage(
 	const auto submittedSummary = item->originalText();
 
 	StripEphemeralReply(_session, action.replyTo);
-	const auto forwardFirst = Nagram::ForDevice().Get(
-		Nagram::Compose::kForwardBeforeComment);
+	const auto forwardFirst = Serein::ForDevice().Get(
+		Serein::Compose::kForwardBeforeComment);
 	if (forwardFirst) {
 		finishForwarding(action);
 	}
@@ -4769,8 +4769,8 @@ void ApiWrap::sendMessage(
 	if (Api::SendDice(message)) {
 		return;
 	}
-	const auto forwardFirst = Nagram::ForDevice().Get(
-		Nagram::Compose::kForwardBeforeComment);
+	const auto forwardFirst = Serein::ForDevice().Get(
+		Serein::Compose::kForwardBeforeComment);
 	if (forwardFirst) {
 		finishForwarding(action);
 	}
@@ -4781,7 +4781,7 @@ void ApiWrap::sendMessage(
 		textWithTags.text,
 		TextUtilities::ConvertTextTagsToEntities(textWithTags.tags)
 	};
-	left = Nagram::Compose::PrepareText(left, false);
+	left = Serein::Compose::PrepareText(left, false);
 	auto prepareFlags = Ui::ItemTextOptions(
 		history,
 		_session->user()).flags;
@@ -4827,8 +4827,8 @@ void ApiWrap::sendMessage(
 			mediaFlags |= MTPmessages_SendMedia::Flag::f_reply_to;
 		}
 		const auto ignoreWebPage = message.webPage.removed
-			|| (Nagram::ForDevice().Get(
-				Nagram::Compose::kDisableLinkPreview) && !message.webPage.manual)
+			|| (Serein::ForDevice().Get(
+				Serein::Compose::kDisableLinkPreview) && !message.webPage.manual)
 			|| (exactWebPage && !isLast);
 		const auto manualWebPage = exactWebPage
 			&& !ignoreWebPage

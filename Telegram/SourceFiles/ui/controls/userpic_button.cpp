@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "ui/controls/userpic_button.h"
-#include "nagram/interface/roundness.h"
+#include "serein/interface/roundness.h"
 
 #include "apiwrap.h"
 #include "api/api_peer_photo.h"
@@ -716,9 +716,9 @@ void UserpicButton::paintEvent(QPaintEvent *e) {
 			.progressFg = st::historyFileThumbRadialFg,
 			.overlayFg = st::songCoverOverlayFg,
 			.cancelIcon = &st::userpicUploadCancel,
-			.roundRadius = double(Nagram::Interface::AvatarRadius(
+			.roundRadius = double(Serein::Interface::AvatarRadius(
 				_st.photoSize,
-				Nagram::Interface::ResolvedAvatarShape(_shape, _peer)).value_or(
+				Serein::Interface::ResolvedAvatarShape(_shape, _peer)).value_or(
 				useForumShape()
 					? int(_st.photoSize * ForumUserpicRadiusMultiplier()) : 0)),
 		});
@@ -730,10 +730,10 @@ void UserpicButton::paintUserpicFrame(Painter &p, QPoint photoPosition) {
 	if (_streamed
 		&& _streamed->player().ready()
 		&& !_streamed->player().videoSize().isEmpty()) {
-		if (const auto radius = Nagram::Interface::AvatarRadius(
+		if (const auto radius = Serein::Interface::AvatarRadius(
 				_st.photoSize,
-				Nagram::Interface::ResolvedAvatarShape(_shape, _peer))) {
-			const auto frame = Nagram::Interface::RoundedAvatarFrame(
+				Serein::Interface::ResolvedAvatarShape(_shape, _peer))) {
+			const auto frame = Serein::Interface::RoundedAvatarFrame(
 				*_streamed, _st.photoSize, *radius, _roundingCorners);
 			p.drawImage(QRect(photoPosition, Size(_st.photoSize)), frame);
 			if (!_controller || !_controller->isGifPausedAtLeastFor(
@@ -806,9 +806,9 @@ QPoint UserpicButton::countPhotoPosition() const {
 
 QImage UserpicButton::prepareRippleMask() const {
 	const auto size = QSize(_st.photoSize, _st.photoSize);
-	if (const auto radius = Nagram::Interface::AvatarRadius(
+	if (const auto radius = Serein::Interface::AvatarRadius(
 			_st.photoSize,
-			Nagram::Interface::ResolvedAvatarShape(_shape, _peer))) {
+			Serein::Interface::ResolvedAvatarShape(_shape, _peer))) {
 		return Ui::RippleAnimation::RoundRectMask(size, *radius);
 	}
 	return useForumShape()
@@ -1162,9 +1162,9 @@ void UserpicButton::showCustom(QImage &&image) {
 			size * style::DevicePixelRatio(),
 			Qt::IgnoreAspectRatio,
 			Qt::SmoothTransformation);
-		const auto radius = Nagram::Interface::AvatarRadius(
+		const auto radius = Serein::Interface::AvatarRadius(
 			_st.photoSize,
-			Nagram::Interface::ResolvedAvatarShape(_shape, _peer));
+			Serein::Interface::ResolvedAvatarShape(_shape, _peer));
 		_userpic = Ui::PixmapFromImage(radius
 			? Images::Round(std::move(small), Images::CornersMask(*radius))
 			: useForumShape()
@@ -1258,8 +1258,8 @@ void UserpicButton::fillShape(QPainter &p, QBrush brush) const {
 	p.setPen(Qt::NoPen);
 	p.setBrush(brush);
 	const auto size = _st.photoSize;
-	if (const auto radius = Nagram::Interface::AvatarRadius(
-			size, Nagram::Interface::ResolvedAvatarShape(_shape, _peer))) {
+	if (const auto radius = Serein::Interface::AvatarRadius(
+			size, Serein::Interface::ResolvedAvatarShape(_shape, _peer))) {
 		p.drawRoundedRect(0, 0, size, size, *radius, *radius);
 	} else if (useForumShape()) {
 		const auto radius = size * Ui::ForumUserpicRadiusMultiplier();
@@ -1297,8 +1297,8 @@ void UserpicButton::prepareUserpicPixmap() {
 						QSize(size, size) * ratio,
 						Qt::IgnoreAspectRatio,
 						Qt::SmoothTransformation);
-					const auto radius = Nagram::Interface::AvatarRadius(
-						size, Nagram::Interface::ResolvedAvatarShape(_shape, _peer));
+					const auto radius = Serein::Interface::AvatarRadius(
+						size, Serein::Interface::ResolvedAvatarShape(_shape, _peer));
 					image = radius
 						? Images::Round(std::move(image), Images::CornersMask(*radius))
 						: useForumShape()
@@ -1317,8 +1317,8 @@ void UserpicButton::prepareUserpicPixmap() {
 					((user && user->isInaccessible())
 						? Ui::EmptyUserpic::InaccessibleName()
 						: _peer->name()));
-				if (const auto radius = Nagram::Interface::AvatarRadius(
-						size, Nagram::Interface::ResolvedAvatarShape(_shape, _peer))) {
+				if (const auto radius = Serein::Interface::AvatarRadius(
+						size, Serein::Interface::ResolvedAvatarShape(_shape, _peer))) {
 					empty.paintRounded(p, 0, 0, size, size, *radius);
 				} else if (useForumShape()) {
 					empty.paintRounded(

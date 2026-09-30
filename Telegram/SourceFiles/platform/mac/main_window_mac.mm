@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "platform/mac/main_window_mac.h"
-#include "nagram/interface/notifications.h"
+#include "serein/interface/notifications.h"
 
 #include "data/data_session.h"
 #include "core/application.h"
@@ -302,7 +302,7 @@ void MainWindow::unreadCounterChangedHook() {
 }
 
 void MainWindow::updateDockCounter() {
-	const auto counter = Nagram::Interface::AppIconBadge(Core::App().unreadBadge());
+	const auto counter = Serein::Interface::AppIconBadge(Core::App().unreadBadge());
 
 	const auto string = !counter
 		? QString()

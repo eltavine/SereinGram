@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/history_view_send_action.h"
-#include "nagram/messages/content.h"
+#include "serein/messages/content.h"
 
 #include "data/data_user.h"
 #include "data/data_send_action.h"
@@ -149,7 +149,7 @@ bool SendActionPainter::paint(
 		int outerWidth,
 		style::color color,
 		crl::time ms) {
-	if (Nagram::Messages::HidePrivateActivity(_history->peer)) {
+	if (Serein::Messages::HidePrivateActivity(_history->peer)) {
 		return false;
 	}
 	if (_sendActionAnimation) {

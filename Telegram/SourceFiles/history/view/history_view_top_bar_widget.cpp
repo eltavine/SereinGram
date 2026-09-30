@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/history_view_top_bar_widget.h"
-#include "nagram/messages/content.h"
+#include "serein/messages/content.h"
 
 #include "history/history.h"
 #include "history/view/history_view_send_action.h"
@@ -132,7 +132,7 @@ TopBarWidget::TopBarWidget(
 , _titlePeerText(st::windowMinWidth / 3)
 , _onlineUpdater([=] { updateOnlineDisplay(); }) {
 	setAttribute(Qt::WA_OpaquePaintEvent);
-	Nagram::Messages::AttachActivityRefresh(this);
+	Serein::Messages::AttachActivityRefresh(this);
 
 	_clear->setTextTransform(Ui::RoundButtonTextTransform::ToUpper);
 	_forward->setTextTransform(Ui::RoundButtonTextTransform::ToUpper);
@@ -741,7 +741,7 @@ bool TopBarWidget::paintSendAction(
 		int outerWidth,
 		style::color fg,
 		crl::time now) {
-	if (!_sendAction || Nagram::Messages::HidePrivateActivity(
+	if (!_sendAction || Serein::Messages::HidePrivateActivity(
 			_activeChat.key.peer())) {
 		return false;
 	}

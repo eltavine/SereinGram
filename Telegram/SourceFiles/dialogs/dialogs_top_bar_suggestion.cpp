@@ -6,9 +6,9 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "dialogs/dialogs_top_bar_suggestion.h"
-#include "nagram/chats/options.h"
-#include "nagram/chats/promotions.h"
-#include "nagram/core/options.h"
+#include "serein/chats/options.h"
+#include "serein/chats/promotions.h"
+#include "serein/core/options.h"
 
 #include "api/api_authorizations.h"
 #include "apiwrap.h"
@@ -128,7 +128,7 @@ rpl::producer<Ui::SlideWrap<Ui::RpWidget>*> TopBarSuggestionValue(
 			auto winner = (const TopBarSuggestions::Spec*)(nullptr);
 			for (auto i = 0; i < int(specs->size()); ++i) {
 				const auto &spec = (*specs)[i];
-				if (Nagram::Chats::HideSuggestion(spec.priority)) {
+				if (Serein::Chats::HideSuggestion(spec.priority)) {
 					continue;
 				}
 				if (spec.available(context)) {
@@ -240,11 +240,11 @@ rpl::producer<Ui::SlideWrap<Ui::RpWidget>*> TopBarSuggestionValue(
 		}, lifetime);
 
 		rpl::merge(
-			Nagram::ForDevice().Value(
-				Nagram::Chats::kHidePremiumPromotions)
+			Serein::ForDevice().Value(
+				Serein::Chats::kHidePremiumPromotions)
 				| rpl::skip(1) | rpl::to_empty,
-			Nagram::ForDevice().Value(
-				Nagram::Chats::kHideBirthdaySuggestions)
+			Serein::ForDevice().Value(
+				Serein::Chats::kHideBirthdaySuggestions)
 				| rpl::skip(1) | rpl::to_empty,
 			session->promoSuggestions().value(),
 			session->api().authorizations().unreviewedChanges(),

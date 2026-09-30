@@ -6,8 +6,8 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/history_view_context_menu.h"
-#include "nagram/menu/actions.h"
-#include "nagram/menu/selection.h"
+#include "serein/menu/actions.h"
+#include "serein/menu/selection.h"
 
 #include "api/api_attached_stickers.h"
 #include "api/api_editing.h"
@@ -378,14 +378,14 @@ void AddPhotoActions(
 				&photo->session(),
 				[=] { SavePhotoToFile(photo); }),
 			&st::menuIconSaveImage);
-		Nagram::Menu::Tag(menu->actions().back(), Nagram::Menu::ActionId::Image);
+		Serein::Menu::Tag(menu->actions().back(), Serein::Menu::ActionId::Image);
 		menu->addAction(tr::lng_context_copy_image(tr::now), [=] {
 			const auto item = photo->owner().message(contextId);
 			if (!list->showCopyMediaRestriction(item)) {
 				CopyImage(photo);
 			}
 		}, &st::menuIconCopy);
-		Nagram::Menu::Tag(menu->actions().back(), Nagram::Menu::ActionId::Image);
+		Serein::Menu::Tag(menu->actions().back(), Serein::Menu::ActionId::Image);
 	}
 	if (photo->hasAttachedStickers()) {
 		const auto controller = list->controller();
@@ -397,7 +397,7 @@ void AddPhotoActions(
 			tr::lng_context_attached_stickers(tr::now),
 			std::move(callback),
 			&st::menuIconStickers);
-		Nagram::Menu::Tag(menu->actions().back(), Nagram::Menu::ActionId::StickerPack);
+		Serein::Menu::Tag(menu->actions().back(), Serein::Menu::ActionId::StickerPack);
 	}
 }
 
@@ -475,7 +475,7 @@ void AddDocumentActions(
 				: tr::lng_context_pack_add(tr::now)),
 			[=] { ShowStickerPackInfo(document, list); },
 			&st::menuIconStickers);
-		Nagram::Menu::Tag(menu->actions().back(), Nagram::Menu::ActionId::StickerPack);
+		Serein::Menu::Tag(menu->actions().back(), Serein::Menu::ActionId::StickerPack);
 	}
 	const auto sending = item && item->isSending();
 	if (!sending && document->sticker() && !document->sticker()->set) {
@@ -511,7 +511,7 @@ void AddDocumentActions(
 			tr::lng_context_attached_stickers(tr::now),
 			std::move(callback),
 			&st::menuIconStickers);
-		Nagram::Menu::Tag(menu->actions().back(), Nagram::Menu::ActionId::StickerPack);
+		Serein::Menu::Tag(menu->actions().back(), Serein::Menu::ActionId::StickerPack);
 	}
 	if (item && !list->hasCopyMediaRestriction(item)) {
 		const auto controller = list->controller();
@@ -558,7 +558,7 @@ void AddPostLinkAction(
 			: tr::lng_context_copy_post_link)(tr::now),
 		[=] { CopyPostLink(controller, itemId, context); },
 		&st::menuIconLink);
-	Nagram::Menu::Tag(menu->actions().back(), Nagram::Menu::ActionId::CopyLink);
+	Serein::Menu::Tag(menu->actions().back(), Serein::Menu::ActionId::CopyLink);
 }
 
 MessageIdsList ExtractIdsList(const SelectedItems &items) {
@@ -592,7 +592,7 @@ bool AddForwardSelectedAction(
 			ExtractIdsList(request.selectedItems),
 			callback);
 	}, &st::menuIconForward);
-	Nagram::Menu::Tag(menu->actions().back(), Nagram::Menu::ActionId::Forward);
+	Serein::Menu::Tag(menu->actions().back(), Serein::Menu::ActionId::Forward);
 	return true;
 }
 
@@ -627,7 +627,7 @@ bool AddForwardMessageAction(
 					: MessageIdsList{ 1, itemId }));
 		}
 	}, &st::menuIconForward);
-	Nagram::Menu::Tag(menu->actions().back(), Nagram::Menu::ActionId::Forward);
+	Serein::Menu::Tag(menu->actions().back(), Serein::Menu::ActionId::Forward);
 	return true;
 }
 
@@ -878,7 +878,7 @@ bool AddReplyToMessageAction(
 			.todoItemId = todoListTaskId,
 		}, base::IsCtrlPressed());
 	}, &st::menuIconReply);
-	Nagram::Menu::Tag(menu->actions().back(), Nagram::Menu::ActionId::Reply);
+	Serein::Menu::Tag(menu->actions().back(), Serein::Menu::ActionId::Reply);
 	return true;
 }
 
@@ -989,7 +989,7 @@ bool AddEditMessageAction(
 		}
 		list->editMessageRequestNotify(item->fullId());
 	}, &st::menuIconEdit);
-	Nagram::Menu::Tag(menu->actions().back(), Nagram::Menu::ActionId::Edit);
+	Serein::Menu::Tag(menu->actions().back(), Serein::Menu::ActionId::Edit);
 	return true;
 }
 
@@ -1052,7 +1052,7 @@ bool AddPinMessageAction(
 					Window::UnpinMessages(controller, ids, clear);
 				}),
 				&st::menuIconUnpin);
-			Nagram::Menu::Tag(menu->actions().back(), Nagram::Menu::ActionId::Pin);
+			Serein::Menu::Tag(menu->actions().back(), Serein::Menu::ActionId::Pin);
 			return true;
 		}
 	}
@@ -1068,7 +1068,7 @@ bool AddPinMessageAction(
 	menu->addAction(isPinned ? tr::lng_context_unpin_msg(tr::now) : tr::lng_context_pin_msg(tr::now), crl::guard(controller, [=] {
 		Window::ToggleMessagePinned(controller, pinItemId, !isPinned);
 	}), isPinned ? &st::menuIconUnpin : &st::menuIconPin);
-	Nagram::Menu::Tag(menu->actions().back(), Nagram::Menu::ActionId::Pin);
+	Serein::Menu::Tag(menu->actions().back(), Serein::Menu::ActionId::Pin);
 	return true;
 }
 
@@ -1138,7 +1138,7 @@ bool AddDeleteSelectedAction(
 		box->setDeleteConfirmedCallback(clear);
 		request.navigation->parentController()->show(std::move(box));
 	}, &st::menuIconDelete);
-	Nagram::Menu::Tag(menu->actions().back(), Nagram::Menu::ActionId::Delete);
+	Serein::Menu::Tag(menu->actions().back(), Serein::Menu::ActionId::Delete);
 	return true;
 }
 
@@ -1214,7 +1214,7 @@ bool AddDeleteMessageAction(
 		callback,
 		item->ttlDestroyAt(),
 		[=] { delete menu; }));
-	Nagram::Menu::Tag(menu->actions().back(), Nagram::Menu::ActionId::Delete);
+	Serein::Menu::Tag(menu->actions().back(), Serein::Menu::ActionId::Delete);
 	return true;
 }
 
@@ -1290,7 +1290,7 @@ void AddReportAction(
 		tr::lng_context_report_msg(tr::now),
 		callback,
 		&st::menuIconReport);
-	Nagram::Menu::Tag(menu->actions().back(), Nagram::Menu::ActionId::Report);
+	Serein::Menu::Tag(menu->actions().back(), Serein::Menu::ActionId::Report);
 }
 
 void AddBlockSenderAction(
@@ -1312,7 +1312,7 @@ void AddBlockSenderAction(
 				Box(Window::BlockSenderFromRepliesBox, controller, itemId));
 		}
 	}), &st::menuIconBlock);
-	Nagram::Menu::Tag(menu->actions().back(), Nagram::Menu::ActionId::BlockSender);
+	Serein::Menu::Tag(menu->actions().back(), Serein::Menu::ActionId::BlockSender);
 }
 
 bool AddClearSelectionAction(
@@ -1325,7 +1325,7 @@ bool AddClearSelectionAction(
 	menu->addAction(tr::lng_context_clear_selection(tr::now), [=] {
 		list->cancelSelection();
 	}, &st::menuIconSelect);
-	Nagram::Menu::Tag(menu->actions().back(), Nagram::Menu::ActionId::Select);
+	Serein::Menu::Tag(menu->actions().back(), Serein::Menu::ActionId::Select);
 	return true;
 }
 
@@ -1355,14 +1355,14 @@ bool AddSelectMessageAction(
 			}
 		}
 	}, &st::menuIconSelect);
-	Nagram::Menu::Tag(menu->actions().back(), Nagram::Menu::ActionId::Select);
+	Serein::Menu::Tag(menu->actions().back(), Serein::Menu::ActionId::Select);
 	if (!request.selectedItems.empty() && list->canSelectItemsUpTo(item)) {
 		menu->addAction(tr::lng_context_select_msg_bulk(tr::now), [=] {
 			if (const auto item = owner->message(itemId)) {
 				list->selectItemsUpTo(item);
 			}
 		}, &st::menuIconSelect);
-		Nagram::Menu::Tag(menu->actions().back(), Nagram::Menu::ActionId::Select);
+		Serein::Menu::Tag(menu->actions().back(), Serein::Menu::ActionId::Select);
 	}
 	return true;
 }
@@ -1401,7 +1401,7 @@ bool AddViewStatisticsAction(
 	menu->addAction(tr::lng_stats_title(tr::now), crl::guard(controller, [=] {
 		controller->showSection(Info::Statistics::Make(channel, itemId, {}));
 	}), &st::menuIconStats);
-	Nagram::Menu::Tag(menu->actions().back(), Nagram::Menu::ActionId::Statistics);
+	Serein::Menu::Tag(menu->actions().back(), Serein::Menu::ActionId::Statistics);
 	return true;
 }
 
@@ -1841,7 +1841,7 @@ void FillContextMenuItems(
 		result->addAction(text, [=] {
 			list->copySelectedText();
 		}, &st::menuIconCopy);
-		Nagram::Menu::Tag(result->actions().back(), Nagram::Menu::ActionId::Copy);
+		Serein::Menu::Tag(result->actions().back(), Serein::Menu::ActionId::Copy);
 	}
 	if (request.overSelection
 		&& view
@@ -1857,7 +1857,7 @@ void FillContextMenuItems(
 					list->hasCopyRestrictionForSelected()));
 			}
 		}, &st::menuIconTranslate);
-		Nagram::Menu::Tag(result->actions().back(), Nagram::Menu::ActionId::Translate);
+		Serein::Menu::Tag(result->actions().back(), Serein::Menu::ActionId::Translate);
 	}
 
 	AddTopMessageActions(result, request, list);
@@ -1934,7 +1934,7 @@ void FillContextMenuItems(
 						}
 					}
 				}, &st::menuIconCopy);
-				Nagram::Menu::Tag(result->actions().back(), Nagram::Menu::ActionId::Copy);
+				Serein::Menu::Tag(result->actions().back(), Serein::Menu::ActionId::Copy);
 			}
 
 			const auto translate = mediaHasTextForCopy
@@ -1957,7 +1957,7 @@ void FillContextMenuItems(
 							list->hasCopyRestriction(view->data())));
 					}
 				}, &st::menuIconTranslate);
-				Nagram::Menu::Tag(result->actions().back(), Nagram::Menu::ActionId::Translate);
+				Serein::Menu::Tag(result->actions().back(), Serein::Menu::ActionId::Translate);
 			}
 		}
 	}
@@ -2037,14 +2037,14 @@ base::unique_qptr<Ui::PopupMenu> FillContextMenu(
 				});
 		});
 	}
-	Nagram::Menu::Apply(result.get(),
+	Serein::Menu::Apply(result.get(),
 		(request.pointState != PointState::Outside
 			&& request.selectedItems.empty()) ? item : nullptr,
 		list->controller(),
 		(request.pointState != PointState::Outside && request.overSelection)
 			? ExtractIdsList(request.selectedItems) : MessageIdsList(),
 		crl::guard(list, [=](HistoryItem *item) {
-			Nagram::Menu::Selection::Select(list, item);
+			Serein::Menu::Selection::Select(list, item);
 		}));
 	return result;
 }
@@ -2968,7 +2968,7 @@ void AddEmojiPacksAction(
 	});
 	menu->addAction(std::move(button));
 	if (source == EmojiPacksSource::Message) {
-		Nagram::Menu::Tag(menu->actions().back(), Nagram::Menu::ActionId::StickerPack);
+		Serein::Menu::Tag(menu->actions().back(), Serein::Menu::ActionId::StickerPack);
 	}
 }
 

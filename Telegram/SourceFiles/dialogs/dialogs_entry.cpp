@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "dialogs/dialogs_entry.h"
-#include "nagram/chats/sort.h"
+#include "serein/chats/sort.h"
 
 #include "dialogs/dialogs_key.h"
 #include "dialogs/dialogs_indexed_list.h"
@@ -223,7 +223,7 @@ void Entry::updateChatListSortPosition() {
 		&& hasUnreadUnmutedForSort())
 		? UnreadOnTopDialogPos(sortKeyByDate)
 		: sortKeyByDate;
-	_sortKeyByDate = Nagram::Chats::SortKey(*this, _sortKeyByDate);
+	_sortKeyByDate = Serein::Chats::SortKey(*this, _sortKeyByDate);
 	const auto fixedIndex = fixedOnTopIndex();
 	_sortKeyInChatList = fixedIndex
 		? FixedOnTopDialogPos(fixedIndex)
@@ -324,7 +324,7 @@ void Entry::notifyUnreadStateChange(const UnreadState &wasState) {
 			sublist,
 			Data::SublistUpdate::Flag::UnreadView);
 	}
-	if (owner().dialogsUnreadOnTop() || Nagram::Chats::SortingEnabled()) {
+	if (owner().dialogsUnreadOnTop() || Serein::Chats::SortingEnabled()) {
 		updateChatListSortPosition();
 	}
 	updateChatListEntryPostponed();
