@@ -161,4 +161,22 @@ TextWithEntities DisplayText(
 	return Serein::Filters::DisplayText(Project(item, source));
 }
 
+TextWithEntities ReplyText(
+		HistoryItem *quoted,
+		const TextWithEntities &text) {
+	return Hidden(quoted)
+		? TextWithEntities{ tr::lng_serein_filter_hidden(tr::now) }
+		: text;
+}
+
+bool HiddenPeer(PeerData *peer) {
+	if (!peer || !peer->isBlocked()) {
+		return false;
+	}
+	const auto raw = ForAccount(&peer->session()).Get(
+		Serein::Filters::kRules);
+	return !raw.isEmpty() && QJsonDocument::fromJson(raw).object().value(
+		u"hideBlocked"_q).toBool();
+}
+
 } // namespace Serein::Hooks::Filters

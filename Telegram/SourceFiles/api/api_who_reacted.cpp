@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "api/api_who_reacted.h"
+#include "serein/hooks/filters/view.h"
 #include "serein/hooks/gen/privacy.h"
 #include "serein/hooks/gen/messages.h"
 #include "serein/hooks/messages/time_format.h"
@@ -479,7 +480,8 @@ bool UpdateUserpics(
 			.reaction = id.reaction,
 		};
 	}) | ranges::views::filter([](ResolvedPeer resolved) {
-		return resolved.peer != nullptr;
+		return resolved.peer
+			&& !Serein::Hooks::Filters::HiddenPeer(resolved.peer);
 	}) | ranges::to_vector;
 
 	const auto same = [&] {

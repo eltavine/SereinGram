@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/history_view_reply.h"
+#include "serein/hooks/filters/view.h"
 #include "serein/hooks/gen/interface.h"
 
 #include "core/click_handler_types.h"
@@ -464,7 +465,7 @@ void Reply::update(
 		: TextWithEntities();
 	_text.setMarkedText(
 		st::defaultTextStyle,
-		text,
+		Serein::Hooks::Filters::ReplyText(message, text),
 		_multiline ? Ui::ItemTextDefaultOptions() : Ui::DialogTextOptions(),
 		helper.context());
 
