@@ -11,7 +11,7 @@
 
 | 能力 | 现状 | 替换为 | 理由 |
 | --- | --- | --- | --- |
-| 简繁转换 | macOS `CFStringTransform`、Windows `LCMapStringEx` 逐字转换；Linux 不可用 | OpenCC（Apache-2.0） | 词组级转换，三平台一致；手机版 Nagram 使用同一库；以子模块在源码树内构建，发行版打包使用系统 `opencc` |
+| 简繁转换 | macOS `CFStringTransform`、Windows `LCMapStringEx` 逐字转换；Linux 不可用 | OpenCC（Apache-2.0） | 词组级转换，三平台一致；手机版 Nagram 使用同一库；以子模块在源码树内构建，发行版打包可用 `SEREIN_USE_SYSTEM_OPENCC=ON` 改用系统 `opencc` |
 | 凭据存储 | 手写 Keychain 与 Windows 凭据管理器调用；Linux 不可用 | QtKeychain（BSD-3-Clause） | 覆盖 macOS Keychain、Windows 凭据管理器、Linux Secret Service；多数发行版有 `qt6keychain` 包 |
 | 单元测试 | 手写 `int main()` 测试框架 | Catch2 v3（BSL-1.0），仅测试目标使用 | 最广泛使用的 C++ 测试框架之一；上游 `lib_base` 的测试也采用 Catch 风格 |
 | 代码生成与守卫的 Python 依赖 | 无 | uv 锁定 `protobuf`、`jinja2` | 可复现；只在开发与 CI 的生成、检查步骤使用，不进入产品构建 |

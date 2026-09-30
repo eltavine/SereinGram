@@ -176,7 +176,8 @@ endif()
 
 nice_target_sources(Telegram ${res_loc} PRIVATE qrc/serein.qrc qrc/serein_opencc.qrc)
 
-if (DESKTOP_APP_USE_PACKAGED)
+option(SEREIN_USE_SYSTEM_OPENCC "Link the system OpenCC instead of the bundled submodule." OFF)
+if (SEREIN_USE_SYSTEM_OPENCC)
     find_package(PkgConfig REQUIRED)
     pkg_check_modules(SEREIN_OPENCC REQUIRED IMPORTED_TARGET opencc)
     add_library(serein_opencc_system INTERFACE)

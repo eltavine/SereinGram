@@ -10,7 +10,7 @@
 
 以 [OpenCC](https://github.com/BYVoid/OpenCC)（Apache License 2.0，与 GPLv3 兼容）替换系统接口，三平台使用同一套词组级转换。
 
-1. **来源**：以 git 子模块引入 `Telegram/ThirdParty/OpenCC`，固定到正式发布标签；打包构建（`DESKTOP_APP_USE_PACKAGED`）改用系统的 `opencc` pkg-config 包。
+1. **来源**：以 git 子模块引入 `Telegram/ThirdParty/OpenCC`，固定到正式发布标签；发行版打包可设 `SEREIN_USE_SYSTEM_OPENCC=ON` 改用系统的 `opencc` pkg-config 包。不复用 `DESKTOP_APP_USE_PACKAGED`：上游 Linux Docker 构建也开启它，其镜像里没有 OpenCC。
 2. **构建**：不使用 OpenCC 顶层 CMake（其 `data` 目录在配置期强制要求 Python，并引入 CTest 与命令行工具），改由 `Telegram/cmake/serein_opencc.cmake` 直接把 `src` 与自带 marisa 的源文件编译为静态库 `Serein::OpenCC`，导出宏头文件用 CMake 的 `GenerateExportHeader` 生成；该目标关闭警告即错误，包含目录标为 SYSTEM。升级 OpenCC 时核对源文件列表。
 3. **词典**：不在构建期运行 `opencc_dict` 生成 `.ocd2`，而是把 `STPhrases`、`STCharacters`、`TSPhrases`、`TSCharacters` 等文本词典随程序资源分发，配置使用 OpenCC 的 `text` 词典类型；首次使用时解压到本机数据目录并按版本号缓存。这样三平台不需要额外的构建期工具。
 4. **接口**：`ConvertChinese` 的签名不变，实现改为按转换方向缓存 `opencc::SimpleConverter`；实体偏移沿用现有的逐段映射，词组替换导致长度变化时按段重新计算偏移并由单元测试覆盖。
