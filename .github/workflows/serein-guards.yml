@@ -24,3 +24,11 @@ jobs:
 
       - name: Owned source files stay within 1000 lines.
         run: python3 tools/serein/check_file_size.py
+
+      - name: Fetch the upstream base commit.
+        run: |
+          base=$(python3 -c "import json; print(json.load(open('tools/serein/policy/upstream.json'))['base'])")
+          git fetch --no-tags --depth=1 origin "$base"
+
+      - name: Upstream intrusion stays within budget.
+        run: python3 tools/serein/upstream_budget.py --list

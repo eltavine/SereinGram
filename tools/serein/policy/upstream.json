@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "upstream": "https://github.com/telegramdesktop/tdesktop.git#dev",
+  "base": "0b4a7faa9d99ba24ab4f3624cd3d7a5d38cc1ef8",
+  "source_root": "Telegram/SourceFiles/",
+  "owned_extra": [
+    "docs/serein/",
+    "docs/nagram/",
+    "Telegram/Resources/langs/serein/",
+    "Telegram/Resources/langs/nagram/",
+    "Telegram/Resources/branding/",
+    "Telegram/Resources/qrc/serein.qrc",
+    "Telegram/Resources/qrc/nagram.qrc",
+    "Telegram/build/api_credentials.local.cmake.example",
+    "BRANDING.md"
+  ],
+  "own_include_prefixes": ["serein/", "nagram/"],
+  "hook_include_prefixes": ["serein/hooks/"],
+  "budget": {
+    "all_files": 190,
+    "all_added_lines": 1611,
+    "source_files": 123,
+    "source_added_lines": 1386,
+    "direct_include_files": 87
+  }
+}
