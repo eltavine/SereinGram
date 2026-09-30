@@ -1,5 +1,7 @@
 #include "serein/services/credentials.h"
 
+#include "serein/services/credentials_local.h"
+
 #ifdef Q_OS_MAC
 #include <Security/Security.h>
 #elif defined Q_OS_WIN
@@ -102,7 +104,7 @@ CredentialResult ReadCredential(const QString &account) {
 	CredFree(credential);
 	return { .secret = std::move(secret) };
 #else
-	return { .error = CredentialError::Unavailable };
+	return LocalCredentials::Read(account);
 #endif
 }
 
@@ -138,7 +140,7 @@ CredentialError WriteCredential(const QString &account, const QByteArray &secret
 	credential.Persist = CRED_PERSIST_LOCAL_MACHINE;
 	return CredWriteW(&credential, 0) ? CredentialError::None : CredentialError::Denied;
 #else
-	return CredentialError::Unavailable;
+	return LocalCredentials::Write(account, secret);
 #endif
 }
 
@@ -156,7 +158,7 @@ CredentialError DeleteCredential(const QString &account) {
 		|| GetLastError() == ERROR_NOT_FOUND)
 		? CredentialError::None : CredentialError::Denied;
 #else
-	return CredentialError::Unavailable;
+	return LocalCredentials::Remove(account);
 #endif
 }
 

@@ -118,6 +118,7 @@ set(serein_sources
     serein/services/request.cpp
     serein/services/translation.cpp
     serein/services/draft_translation.cpp
+    serein/services/credentials_local.cpp
     serein/services/transcription.cpp
     serein/services/system_ai.cpp
 )

@@ -149,7 +149,7 @@ message MessagesSettings {
 | --- | --- | --- |
 | 设备设置 | 上游 `Core::Settings` 的偏好 KV，每个页面一个键 `serein.<页面>` | schema 的 JSON |
 | 账号设置 | 上游 `Storage::Account` 的偏好 KV | schema 的 JSON |
-| 凭据 | 系统凭据库（QtKeychain，ADR-0004） | 不进偏好、不导出 |
+| 凭据 | macOS Keychain、Windows 凭据管理器；其他平台为用本地密钥加密的 `tdata/serein_credentials`（ADR-0004 修订） | 不进偏好、不导出 |
 | 消息历史 | 账号数据目录下 `serein/history.sqlite3`，Qt SQL + SQLite | 元数据列 + 加密载荷（`HistoryRecord` 的 JSON，含原始 TL 与 layer） |
 
 历史库用 `PRAGMA user_version` 管理迁移；每个格式版本在 `serein/tests/fixtures/history/vN/` 保留不可变样本，测试必须能读取所有受支持版本并拒绝未知版本。
@@ -187,7 +187,7 @@ Phase 0 基础（全部 P0，每步独立提交、可回退）：
 3. 品牌：应用名、图标、应用 ID、数据目录、链接（见第 9 节待定项）。
 4. Schema：`proto/`、Buf、生成器；先让一个功能族（消息）端到端跑通，再迁移其余；随后删除手写注册表与通用设置页代码。
 5. 挂钩门面：现有内联挂钩改走 `serein/hooks`，达到第 4 节预算。
-6. 依赖替换：OpenCC、QtKeychain、测试框架（ADR-0004）。
+6. 依赖替换：OpenCC 已接入；凭据存储按 ADR-0004 修订改为系统凭据库加本地加密存储；测试框架迁移暂缓（ADR-0004）。
 7. 三平台 CI 通过。
 
 Phase 1（P1）：GHOST、HIST、SG-FILTER-03 之前的过滤项补验、SG-PRIV-02、SG-TRANS-03、SG-TRANS-04、SG-ACCT-02。
