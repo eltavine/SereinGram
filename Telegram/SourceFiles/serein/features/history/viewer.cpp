@@ -88,6 +88,16 @@ void ShowDeletedMessages(
 					box,
 					tr::lng_serein_history_open_file(tr::now)));
 				open->setClickedCallback([=] { File::Launch(path); });
+			} else if (!record.cachedMediaName.isEmpty()) {
+				const auto open = box->addRow(object_ptr<Ui::LinkButton>(
+					box,
+					tr::lng_serein_history_open_media(tr::now)));
+				open->setClickedCallback([=] {
+					if (!Hooks::OpenCachedMedia(session, record)) {
+						box->uiShow()->showToast(
+							tr::lng_serein_history_media_missing(tr::now));
+					}
+				});
 			}
 		}
 		if (!records.empty()) {
@@ -112,9 +122,7 @@ void ConfirmClearHistory(
 			? tr::lng_serein_history_clear_chat_sure()
 			: tr::lng_serein_history_clear_all_sure()),
 		.confirmed = [=](Fn<void()> &&close) {
-			const auto store = Hooks::HistoryStoreFor(session);
-			const auto cleared = !store
-				|| (peerId ? store->clearPeer(peerId) : store->clearAll());
+			const auto cleared = Hooks::ClearHistory(session, peerId);
 			close();
 			controller->uiShow()->showToast(cleared
 				? tr::lng_serein_history_cleared(tr::now)

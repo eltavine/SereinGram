@@ -27,6 +27,7 @@ void TestGhost();
 void TestCipher();
 void TestHistoryStore();
 void TestHistoryRecorder();
+void TestCachedMedia();
 
 namespace {
 
@@ -127,6 +128,7 @@ int main() {
 		QCoreApplication application(argc, argv);
 		TestHistoryStore();
 		TestHistoryRecorder();
+		TestCachedMedia();
 #endif // SEREIN_HAVE_QT_SQL
 		const auto root = std::string(SEREIN_LANG_SOURCE_DIR);
 		const auto upstream = ReadStrings(root + "/lang.strings", false);

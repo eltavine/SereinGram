@@ -17,6 +17,7 @@ set(serein_sources
     serein/schema/codec.cpp
     serein/features/ghost/model/policy.cpp
     serein/features/history/deleted_marks.cpp
+    serein/features/history/media_store.cpp
     serein/features/history/model/recorder.cpp
     serein/features/updates/model/release.cpp
     serein/features/regdate/model/estimate.cpp

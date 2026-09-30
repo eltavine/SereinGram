@@ -22,6 +22,7 @@ set(serein_test_sources
     serein/tests/text_entity_support.cpp
     serein/adapters/openssl/aes_gcm_cipher.cpp
     serein/features/ghost/model/policy.cpp
+    serein/features/history/media_store.cpp
     serein/features/history/model/recorder.cpp
     serein/features/updates/model/release.cpp
     serein/features/regdate/model/estimate.cpp
@@ -49,4 +50,5 @@ set(serein_sql_test_sources
     serein/adapters/qtsql/history_store.cpp
     serein/tests/test_history_store.cpp
     serein/tests/test_history_recorder.cpp
+    serein/tests/test_history_media.cpp
 )

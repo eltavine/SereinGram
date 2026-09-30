@@ -4,12 +4,17 @@
 #include "serein/adapters/qtsql/history_store.h"
 #include "serein/app/history_entities.h"
 #include "serein/features/history/deleted_marks.h"
+#include "serein/features/history/media_store.h"
 #include "serein/features/history/model/recorder.h"
 #include "base/unixtime.h"
 #include "core/application.h"
+#include "core/file_utilities.h"
 #include "data/data_document.h"
+#include "data/data_document_media.h"
 #include "data/data_media_types.h"
 #include "data/data_peer.h"
+#include "data/data_photo.h"
+#include "data/data_photo_media.h"
 #include "data/data_user.h"
 #include "history/history.h"
 #include "history/history_item.h"
@@ -19,8 +24,10 @@
 #include "storage/storage_account.h"
 #include "ui/text/text_entity.h"
 
+#include <QtCore/QDir>
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
+#include <QtCore/QMimeDatabase>
 
 #include <map>
 
@@ -32,6 +39,52 @@ struct Backend {
 	std::unique_ptr<Adapters::SqlHistoryStore> store;
 	std::unique_ptr<HistoryFeature::Recorder> recorder;
 };
+
+struct CachedMedia {
+	QByteArray bytes;
+	QString name;
+};
+
+[[nodiscard]] QString SafeName(const QString &name) {
+	auto result = QFileInfo(name).fileName().left(255);
+	for (auto &ch : result) {
+		if (ch < QChar(0x20) || QStringView(u"<>:\"/\\|?*").contains(ch)) {
+			ch = u'_';
+		}
+	}
+	return result;
+}
+
+[[nodiscard]] std::optional<CachedMedia> CaptureCachedMedia(
+		not_null<HistoryItem*> item) {
+	const auto media = item->media();
+	if (const auto photo = media ? media->photo() : nullptr) {
+		const auto view = photo->activeMediaView();
+		auto bytes = view
+			? view->imageBytes(Data::PhotoSize::Large)
+			: QByteArray();
+		if (!bytes.isEmpty()) {
+			return CachedMedia{
+				std::move(bytes),
+				u"photo_%1.jpg"_q.arg(item->id.bare),
+			};
+		}
+	} else if (const auto document = media ? media->document() : nullptr) {
+		const auto view = document->activeMediaView();
+		auto bytes = view ? view->bytes() : QByteArray();
+		if (!bytes.isEmpty()) {
+			auto name = SafeName(document->filename());
+			if (name.isEmpty()) {
+				const auto suffix = QMimeDatabase().mimeTypeForName(
+					document->mimeString()).preferredSuffix();
+				name = u"file_%1"_q.arg(item->id.bare)
+					+ (suffix.isEmpty() ? QString() : (u'.' + suffix));
+			}
+			return CachedMedia{ std::move(bytes), name };
+		}
+	}
+	return std::nullopt;
+}
 
 [[nodiscard]] HistoryFeature::Snapshot TakeSnapshot(not_null<HistoryItem*> item) {
 	auto result = HistoryFeature::Snapshot();
@@ -70,6 +123,11 @@ struct Backend {
 		+ u"/serein_history.sqlite3"_q;
 }
 
+[[nodiscard]] QString MediaDirectory(not_null<Main::Session*> session) {
+	return QFileInfo(session->local().supportModePath()).absolutePath()
+		+ u"/serein_media"_q;
+}
+
 void RemoveDatabase(const QString &path) {
 	for (const auto &suffix : { u""_q, u"-journal"_q, u"-wal"_q, u"-shm"_q }) {
 		QFile::remove(path + suffix);
@@ -103,6 +161,9 @@ void RemoveDatabase(const QString &path) {
 		*backend->store,
 		[] { return qint64(base::unixtime::now()); });
 	backend->recorder->prune(HistoryFeature::Read(ForAccount(session)));
+	HistoryFeature::RemoveOrphanedCachedMedia(
+		MediaDirectory(session),
+		*backend->store);
 	return backend;
 }
 
@@ -117,10 +178,13 @@ void RemoveDatabase(const QString &path) {
 	}
 	auto &slot = backends[session];
 	slot = OpenBackend(session);
-	session->lifetime().add([=, path = DatabasePath(session)] {
+	session->lifetime().add([=,
+			path = DatabasePath(session),
+			media = MediaDirectory(session)] {
 		backends.erase(session);
 		if (!Core::Quitting()) {
 			RemoveDatabase(path);
+			HistoryFeature::RemoveCachedMedia(media, 0);
 		}
 	});
 	return slot.get();
@@ -132,6 +196,36 @@ void RemoveDatabase(const QString &path) {
 	return backend ? backend->recorder.get() : nullptr;
 }
 
+void RecordDeleted(
+		not_null<Main::Session*> session,
+		const HistoryFeature::Policy &policy,
+		not_null<HistoryItem*> item) {
+	const auto backend = BackendFor(session, true);
+	if (!backend) {
+		return;
+	}
+	auto snapshot = TakeSnapshot(item);
+	const auto path = HistoryFeature::CachedMediaPath(
+		MediaDirectory(session),
+		snapshot.peerId,
+		snapshot.messageId);
+	auto written = false;
+	if (snapshot.localPath.isEmpty()) {
+		if (const auto media = CaptureCachedMedia(item)) {
+			written = HistoryFeature::WriteCachedMedia(
+				*backend->cipher,
+				path,
+				media->bytes);
+			if (written) {
+				snapshot.cachedMediaName = media->name;
+			}
+		}
+	}
+	if (!backend->recorder->recordDeleted(policy, snapshot) && written) {
+		QFile::remove(path);
+	}
+}
+
 } // namespace
 
 std::vector<gsl::not_null<HistoryItem*>> OnServerDeleted(
@@ -139,10 +233,8 @@ std::vector<gsl::not_null<HistoryItem*>> OnServerDeleted(
 	for (const auto &item : items) {
 		const auto session = &item->history()->session();
 		const auto policy = HistoryFeature::Read(ForAccount(session));
-		if (!policy.saveDeleted) {
-			continue;
-		} else if (const auto recorder = RecorderFor(session)) {
-			recorder->recordDeleted(policy, TakeSnapshot(item));
+		if (policy.saveDeleted) {
+			RecordDeleted(session, policy, item);
 		}
 	}
 	return HistoryFeature::KeepDeletedInPlace(std::move(items));
@@ -168,7 +260,52 @@ Ports::HistoryStore *HistoryStoreFor(gsl::not_null<Main::Session*> session) {
 void PruneHistory(gsl::not_null<Main::Session*> session) {
 	if (const auto backend = BackendFor(session, false)) {
 		backend->recorder->prune(HistoryFeature::Read(ForAccount(session)));
+		HistoryFeature::RemoveOrphanedCachedMedia(
+			MediaDirectory(session),
+			*backend->store);
 	}
+}
+
+bool ClearHistory(gsl::not_null<Main::Session*> session, long long peerId) {
+	const auto backend = BackendFor(session, false);
+	if (!backend) {
+		return true;
+	}
+	const auto cleared = peerId
+		? backend->store->clearPeer(peerId)
+		: backend->store->clearAll();
+	if (cleared) {
+		HistoryFeature::RemoveCachedMedia(MediaDirectory(session), peerId);
+	}
+	return cleared;
+}
+
+bool OpenCachedMedia(
+		gsl::not_null<Main::Session*> session,
+		const Serein::History::Record &record) {
+	const auto backend = BackendFor(session, false);
+	const auto name = SafeName(record.cachedMediaName);
+	if (!backend || name.isEmpty()) {
+		return false;
+	}
+	const auto bytes = HistoryFeature::ReadCachedMedia(
+		*backend->cipher,
+		HistoryFeature::CachedMediaPath(
+			MediaDirectory(session),
+			record.peerId,
+			record.messageId));
+	const auto folder = QDir::temp().filePath(u"SereinGram"_q);
+	const auto path = QDir(folder).filePath(name);
+	auto file = QFile(path);
+	if (!bytes
+		|| !QDir().mkpath(folder)
+		|| !file.open(QIODevice::WriteOnly)
+		|| file.write(*bytes) != bytes->size()) {
+		return false;
+	}
+	file.close();
+	File::Launch(path);
+	return true;
 }
 
 } // namespace Serein::Hooks

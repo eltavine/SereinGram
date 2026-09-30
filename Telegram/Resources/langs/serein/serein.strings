@@ -505,6 +505,8 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_menu_deleted_messages" = "Deleted messages";
 "lng_serein_history_empty" = "No deleted messages are saved for this chat.";
 "lng_serein_history_open_file" = "Open file";
+"lng_serein_history_open_media" = "Open media";
+"lng_serein_history_media_missing" = "This media is no longer available.";
 "lng_serein_history_clear" = "Clear";
 "lng_serein_history_clear_chat" = "Clear this chat";
 "lng_serein_history_clear_chat_sure" = "Delete all saved deleted messages and edit history for this chat from this device?";

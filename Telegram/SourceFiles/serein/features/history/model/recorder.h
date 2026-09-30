@@ -20,6 +20,7 @@ struct Snapshot {
 	std::vector<History::TextEntity> entities;
 	QString mediaSummary;
 	QString localPath;
+	QString cachedMediaName;
 };
 
 struct Policy {

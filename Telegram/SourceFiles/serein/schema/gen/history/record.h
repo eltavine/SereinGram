@@ -53,6 +53,7 @@ struct Record {
 	QByteArray tlMessage;
 	QString mediaSummary;
 	QString localPath;
+	QString cachedMediaName;
 
 	friend bool operator==(const Record &, const Record &) = default;
 };

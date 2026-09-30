@@ -17,6 +17,10 @@ namespace Serein::Ports {
 class HistoryStore;
 } // namespace Serein::Ports
 
+namespace Serein::History {
+struct Record;
+} // namespace Serein::History
+
 namespace Serein::Hooks {
 
 [[nodiscard]] std::vector<gsl::not_null<HistoryItem*>> OnServerDeleted(
@@ -32,6 +36,12 @@ void OnHistorySliceAdded(gsl::not_null<::History*> history);
 [[nodiscard]] Ports::HistoryStore *HistoryStoreFor(
 	gsl::not_null<Main::Session*> session);
 void PruneHistory(gsl::not_null<Main::Session*> session);
+[[nodiscard]] bool ClearHistory(
+	gsl::not_null<Main::Session*> session,
+	long long peerId);
+[[nodiscard]] bool OpenCachedMedia(
+	gsl::not_null<Main::Session*> session,
+	const Serein::History::Record &record);
 
 class FadedPaint final {
 public:

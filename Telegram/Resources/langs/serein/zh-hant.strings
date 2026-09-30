@@ -501,6 +501,8 @@
 "lng_serein_menu_deleted_messages" = "已刪除的訊息";
 "lng_serein_history_empty" = "此對話沒有儲存的已刪除訊息。";
 "lng_serein_history_open_file" = "開啟檔案";
+"lng_serein_history_open_media" = "開啟媒體";
+"lng_serein_history_media_missing" = "這份媒體已不存在。";
 "lng_serein_history_clear" = "清除";
 "lng_serein_history_clear_chat" = "清除此對話";
 "lng_serein_history_clear_chat_sure" = "要從本裝置刪除此對話儲存的全部已刪除訊息與編輯歷史嗎？";
