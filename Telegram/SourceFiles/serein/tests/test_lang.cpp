@@ -12,6 +12,7 @@ void TestServices();
 void TestFilters();
 void TestLinks();
 void TestCodec();
+void TestHistoryStore();
 
 namespace {
 
@@ -93,6 +94,9 @@ int main() {
 		TestFilters();
 		TestLinks();
 		TestCodec();
+#ifdef SEREIN_HAVE_QT_SQL
+		TestHistoryStore();
+#endif // SEREIN_HAVE_QT_SQL
 		const auto root = std::string(SEREIN_LANG_SOURCE_DIR);
 		const auto upstream = ReadStrings(root + "/lang.strings", false);
 		const auto english = ReadStrings(root + "/serein/serein.strings", true);

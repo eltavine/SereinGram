@@ -74,7 +74,7 @@ Nagram 的品牌政策要求分支使用不同品牌并替换 Nagram 名称与�
 | --- | --- | --- | --- | --- |
 | SG-HIST-01 | 保存已接收的删除消息并在原位显示，附删除标记（防撤回） | Ad Aa Na | Planned | P1 |
 | SG-HIST-02 | 保存编辑历史，在消息菜单查看各版本 | Ad Aa Na | Planned | P1 |
-| SG-HIST-03 | 历史库加密存储（账号本地密钥派生），退出账号时按设置清理 | D | Planned | P1 |
+| SG-HIST-03 | 历史库加密存储（账号本地密钥派生），退出账号时按设置清理（存储端口与 Qt SQL 适配器已实现） | D | In Progress | P1 |
 | SG-HIST-04 | 保留期限、容量上限、单对话清理与全部清理 | Na | Planned | P1 |
 | SG-HIST-05 | 自定义已删除、已编辑标记文字；已删除消息半透明 | Aa Na | In Progress | P2 |
 | SG-HIST-06 | 按对话浏览已删除消息 | Ad Aa | Planned | P2 |

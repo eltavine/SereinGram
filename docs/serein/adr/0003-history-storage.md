@@ -28,6 +28,8 @@ SG-HIST 需要按账号保存已删除消息与编辑历史，并支持按对话
 
 验证门槛：在三平台 CI 中确认 `Qt6::Sql` 与 SQLite 静态插件可用。任一平台不可用时，改用方案 C 中的 SQLite3 Multiple Ciphers，并以子模块方式接入。
 
+实施记录：端口 `serein/ports/history_store.h`（存储与加密接口）和适配器 `serein/adapters/qtsql/history_store.*` 已实现，Homebrew Qt 6.11.2 与 CI 的 Linux 核心测试覆盖保存、分页、版本、裁剪、损坏行与新版本 schema 拒绝。主构建只在找到 `Qt6::Sql` 时给 `test_serein` 编译并运行存储测试，配置日志会打印结果；主程序在 SG-HIST 接入前不链接 Qt SQL。
+
 ## 后果
 
 - 元数据（谁、何时、在哪个对话）以明文存在本机；需要整库加密时按方案 C 升级，载荷格式不变。

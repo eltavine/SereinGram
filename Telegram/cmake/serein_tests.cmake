@@ -20,3 +20,8 @@ set(serein_test_sources
     serein/links/model.cpp
 )
 list(APPEND serein_test_sources ${serein_generated_sources})
+
+set(serein_sql_test_sources
+    serein/adapters/qtsql/history_store.cpp
+    serein/tests/test_history_store.cpp
+)

@@ -127,6 +127,19 @@ if (DESKTOP_APP_TEST_APPS)
     include(cmake/serein_tests.cmake)
     nice_target_sources(test_serein ${src_loc} PRIVATE ${serein_test_sources})
 
+    find_package(Qt6 QUIET COMPONENTS Sql)
+    if (TARGET Qt6::Sql)
+        message(STATUS "Serein: Qt Sql found, history store tests enabled.")
+        nice_target_sources(test_serein ${src_loc} PRIVATE ${serein_sql_test_sources})
+        target_link_libraries(test_serein PRIVATE Qt6::Sql)
+        target_compile_definitions(test_serein PRIVATE SEREIN_HAVE_QT_SQL)
+        if (TARGET Qt6::QSQLiteDriverPlugin)
+            qt_import_plugins(test_serein INCLUDE Qt6::QSQLiteDriverPlugin)
+        endif()
+    else()
+        message(STATUS "Serein: Qt Sql not found, history store tests skipped.")
+    endif()
+
     target_include_directories(test_serein PRIVATE
         ${src_loc}
         ${CMAKE_CURRENT_SOURCE_DIR}/lib_ui)
