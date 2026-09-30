@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package serein.config.v1;
+
+import "buf/validate/validate.proto";
+import "serein/options/v1/options.proto";
+
+option (serein.options.v1.file) = {cpp_namespace: "Compose"};
+
+message QuickReplies {
+  option (serein.options.v1.document) = {version: 1};
+  option (serein.options.v1.codec) = {require_fields: true};
+
+  repeated string replies = 1 [(buf.validate.field).repeated = {
+    min_items: 2
+    max_items: 2
+  }];
+}

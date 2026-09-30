@@ -191,7 +191,15 @@ void TestOptions() {
 	Require(Compose::kQuickReplies.validate(
 		R"({"version":1,"replies":["one","two"]})")
 		&& !Compose::kQuickReplies.validate(
-			R"({"version":1,"replies":["one"]})"),
+			R"({"version":1,"replies":["one"]})")
+		&& !Compose::kQuickReplies.validate(
+			R"({"version":2,"replies":["one","two"]})")
+		&& !Compose::kQuickReplies.validate(
+			R"({"version":1,"replies":["one",2]})")
+		&& !Compose::kQuickReplies.validate(
+			R"({"version":1,"replies":["one","two"],"extra":1})")
+		&& !Compose::kQuickReplies.validate(R"({"version":1})")
+		&& !Compose::kQuickReplies.validate("not json"),
 		"quick reply schema");
 	for (const auto &entry : compose.All()) {
 		if (entry.key != Compose::kDisableEmojiHover.key
