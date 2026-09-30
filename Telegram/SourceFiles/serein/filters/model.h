@@ -8,10 +8,11 @@
 #include "serein/schema/gen/settings/filters.h"
 
 #include <QtCore/QByteArray>
-#include <QtCore/QJsonObject>
+
+#include <optional>
+#include <vector>
 
 namespace Serein::Filters {
-
 
 struct Result {
 	TextWithEntities text;
@@ -20,7 +21,10 @@ struct Result {
 	int matches = 0;
 };
 
-[[nodiscard]] QJsonObject Defaults();
+[[nodiscard]] std::optional<FilterRules> ReadRules(const QByteArray &raw);
+[[nodiscard]] std::optional<std::vector<FilterRule>> ReadRuleList(
+	const QByteArray &raw);
+[[nodiscard]] QByteArray WriteRuleList(std::vector<FilterRule> rules);
 [[nodiscard]] bool Validate(const QByteArray &raw);
 [[nodiscard]] Result Apply(
 	const QByteArray &raw,

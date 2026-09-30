@@ -21,6 +21,7 @@ bool Read(
 			QLatin1StringView("caseInsensitive"),
 			QLatin1StringView("reversed"),
 			QLatin1StringView("action"),
+			QLatin1StringView("peers"),
 		}, error, path)) {
 		return false;
 	} else if (!Codec::RequiredKeys(object, {
@@ -32,6 +33,7 @@ bool Read(
 			QLatin1StringView("caseInsensitive"),
 			QLatin1StringView("reversed"),
 			QLatin1StringView("action"),
+			QLatin1StringView("peers"),
 		}, error, path)) {
 		return false;
 	}
@@ -44,7 +46,8 @@ bool Read(
 		&& Codec::ReadField(object, QLatin1StringView("enabled"), result.enabled, error, path)
 		&& Codec::ReadField(object, QLatin1StringView("caseInsensitive"), result.caseInsensitive, error, path)
 		&& Codec::ReadField(object, QLatin1StringView("reversed"), result.reversed, error, path)
-		&& Codec::ReadField(object, QLatin1StringView("action"), result.action, error, path);
+		&& Codec::ReadField(object, QLatin1StringView("action"), result.action, error, path)
+		&& Codec::ReadField(object, QLatin1StringView("peers"), result.peers, error, path);
 }
 
 QJsonValue Write(const FilterRule &value) {
@@ -57,6 +60,7 @@ QJsonValue Write(const FilterRule &value) {
 	Codec::WriteField(object, QLatin1StringView("caseInsensitive"), value.caseInsensitive);
 	Codec::WriteField(object, QLatin1StringView("reversed"), value.reversed);
 	Codec::WriteField(object, QLatin1StringView("action"), value.action);
+	Codec::WriteField(object, QLatin1StringView("peers"), value.peers);
 	return object;
 }
 
@@ -69,6 +73,18 @@ bool Validate(
 	}
 	if (!((value.action == QString::fromUtf8("mask") || value.action == QString::fromUtf8("replace") || value.action == QString::fromUtf8("hide")))) {
 		return Codec::Fail(error, Codec::Child(path, QLatin1StringView("action")), QString::fromLatin1("violates the schema rules"));
+	}
+	if (!(qsizetype(value.peers.size()) <= 100)) {
+		return Codec::Fail(error, Codec::Child(path, QLatin1StringView("peers")), QString::fromLatin1("violates the schema rules"));
+	}
+	if (!(Codec::Unique(value.peers))) {
+		return Codec::Fail(error, Codec::Child(path, QLatin1StringView("peers")), QString::fromLatin1("violates the schema rules"));
+	}
+	for (auto i = qsizetype(); i != qsizetype(value.peers.size()); ++i) {
+		const auto &item = value.peers[i];
+		if (!(Codec::Matches(item, QString::fromUtf8("^[1-9][0-9]*$")))) {
+			return Codec::Fail(error, Codec::Item(Codec::Child(path, QLatin1StringView("peers")), i), QString::fromLatin1("violates the schema rules"));
+		}
 	}
 	return true;
 }
@@ -174,7 +190,7 @@ std::optional<FilterRules> ParseFilterRules(
 	auto object = Codec::ParseObject(raw, out);
 	if (!object) {
 		return std::nullopt;
-	} else if (object->value(QLatin1StringView("version")) != QJsonValue(1)) {
+	} else if (object->value(QLatin1StringView("version")) != QJsonValue(2)) {
 		Codec::Fail(out, QString::fromLatin1("version"), QString::fromLatin1("unsupported version"));
 		return std::nullopt;
 	}
@@ -191,7 +207,78 @@ std::optional<FilterRules> ParseFilterRules(
 
 QByteArray SerializeFilterRules(const FilterRules &value) {
 	auto object = Write(value).toObject();
-	object.insert(QLatin1StringView("version"), 1);
+	object.insert(QLatin1StringView("version"), 2);
+	return Codec::Serialize(object);
+}
+
+bool Read(
+		const QJsonValue &json,
+		FilterRuleList &result,
+		Codec::Error &error,
+		const QString &path) {
+	if (!json.isObject()) {
+		return Codec::FailExpected(error, path, "an object");
+	}
+	const auto object = json.toObject();
+	if (!Codec::KnownKeys(object, {
+			QLatin1StringView("rules"),
+		}, error, path)) {
+		return false;
+	} else if (!Codec::RequiredKeys(object, {
+			QLatin1StringView("rules"),
+		}, error, path)) {
+		return false;
+	}
+	result = FilterRuleList();
+	return true
+		&& Codec::ReadField(object, QLatin1StringView("rules"), result.rules, error, path);
+}
+
+QJsonValue Write(const FilterRuleList &value) {
+	auto object = QJsonObject();
+	Codec::WriteField(object, QLatin1StringView("rules"), value.rules);
+	return object;
+}
+
+bool Validate(
+		const FilterRuleList &value,
+		Codec::Error &error,
+		const QString &path) {
+	if (!(qsizetype(value.rules.size()) <= 32)) {
+		return Codec::Fail(error, Codec::Child(path, QLatin1StringView("rules")), QString::fromLatin1("violates the schema rules"));
+	}
+	for (auto i = qsizetype(); i != qsizetype(value.rules.size()); ++i) {
+		const auto &item = value.rules[i];
+		if (!Validate(item, error, Codec::Item(Codec::Child(path, QLatin1StringView("rules")), i))) {
+			return false;
+		}
+	}
+	return true;
+}
+
+std::optional<FilterRuleList> ParseFilterRuleList(
+		const QByteArray &raw,
+		Codec::Error *error) {
+	auto ignored = Codec::Error();
+	auto &out = error ? *error : ignored;
+	auto object = Codec::ParseObject(raw, out);
+	if (!object) {
+		return std::nullopt;
+	} else if (object->value(QLatin1StringView("version")) != QJsonValue(2)) {
+		Codec::Fail(out, QString::fromLatin1("version"), QString::fromLatin1("unsupported version"));
+		return std::nullopt;
+	}
+	object->remove(QLatin1StringView("version"));
+	auto result = FilterRuleList();
+	if (!Read(*object, result, out, QString()) || !Validate(result, out, QString())) {
+		return std::nullopt;
+	}
+	return result;
+}
+
+QByteArray SerializeFilterRuleList(const FilterRuleList &value) {
+	auto object = Write(value).toObject();
+	object.insert(QLatin1StringView("version"), 2);
 	return Codec::Serialize(object);
 }
 

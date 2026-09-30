@@ -354,6 +354,7 @@
 "lng_serein_filter_title" = "規則名稱";
 "lng_serein_filter_pattern" = "正規表示式";
 "lng_serein_filter_replacement" = "取代文字（不解析引用）";
+"lng_serein_filter_rule_peers" = "僅在這些對話中生效（對話 ID，以逗號分隔；留空表示所有對話）";
 "lng_serein_filter_rule_enabled" = "啟用此規則";
 "lng_serein_filter_case" = "忽略大小寫";
 "lng_serein_filter_reverse" = "比對不符合表示式的訊息";

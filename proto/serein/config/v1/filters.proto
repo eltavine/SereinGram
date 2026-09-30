@@ -9,7 +9,7 @@ option (serein.options.v1.file) = {cpp_namespace: "Filters"};
 
 message FilterRules {
   option (serein.options.v1.document) = {
-    version: 1
+    version: 2
     validator: "ValidFilterRules"
   };
   option (serein.options.v1.codec) = {require_fields: true};
@@ -48,4 +48,20 @@ message FilterRule {
   string action = 8 [(buf.validate.field).string = {
     in: ["mask", "replace", "hide"]
   }];
+  // Serialized peer ids the rule is limited to; empty applies everywhere.
+  repeated string peers = 9 [(buf.validate.field).repeated = {
+    max_items: 100
+    unique: true
+    items: {
+      string: {pattern: "^[1-9][0-9]*$"}
+    }
+  }];
+}
+
+// Rules shared through the clipboard, without account-specific switches.
+message FilterRuleList {
+  option (serein.options.v1.document) = {version: 2};
+  option (serein.options.v1.codec) = {require_fields: true};
+
+  repeated FilterRule rules = 1 [(buf.validate.field).repeated.max_items = 32];
 }

@@ -14,6 +14,7 @@ struct FilterRule {
 	bool caseInsensitive = false;
 	bool reversed = false;
 	QString action;
+	std::vector<QString> peers;
 
 	friend bool operator==(const FilterRule &, const FilterRule &) = default;
 };
@@ -56,5 +57,26 @@ struct FilterRules {
 	const QByteArray &raw,
 	Codec::Error *error = nullptr);
 [[nodiscard]] QByteArray SerializeFilterRules(const FilterRules &value);
+
+struct FilterRuleList {
+	std::vector<FilterRule> rules;
+
+	friend bool operator==(const FilterRuleList &, const FilterRuleList &) = default;
+};
+
+[[nodiscard]] bool Read(
+	const QJsonValue &json,
+	FilterRuleList &result,
+	Codec::Error &error,
+	const QString &path);
+[[nodiscard]] QJsonValue Write(const FilterRuleList &value);
+[[nodiscard]] bool Validate(
+	const FilterRuleList &value,
+	Codec::Error &error,
+	const QString &path);
+[[nodiscard]] std::optional<FilterRuleList> ParseFilterRuleList(
+	const QByteArray &raw,
+	Codec::Error *error = nullptr);
+[[nodiscard]] QByteArray SerializeFilterRuleList(const FilterRuleList &value);
 
 } // namespace Serein::Filters

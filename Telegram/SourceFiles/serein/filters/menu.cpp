@@ -30,7 +30,7 @@ void InsertAuthorAction(
 	const auto author = QString::number(SerializePeerId(item->from()->id));
 	const auto read = [=]() -> std::optional<FilterRules> {
 		const auto raw = ForAccount(session).Get(kRules);
-		return raw.isEmpty() ? FilterRules() : ParseFilterRules(raw);
+		return ReadRules(raw);
 	};
 	const auto config = read();
 	if (!config) {

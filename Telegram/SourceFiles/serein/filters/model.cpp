@@ -2,6 +2,8 @@
 
 #include <QtCore/QElapsedTimer>
 #include <QtCore/QJsonArray>
+#include <QtCore/QJsonDocument>
+#include <QtCore/QJsonObject>
 #include <QtCore/QRegularExpression>
 #include <QtCore/QSet>
 #include <QtCore/QUuid>
@@ -119,19 +121,49 @@ std::vector<Edit> ZalgoEdits(const QString &text) {
 	return edits;
 }
 
+[[nodiscard]] QByteArray Upgraded(const QByteArray &raw) {
+	auto root = QJsonDocument::fromJson(raw).object();
+	if (root.value(u"version"_q) != QJsonValue(1)) {
+		return raw;
+	}
+	if (const auto value = root.value(u"rules"_q); value.isArray()) {
+		auto rules = QJsonArray();
+		for (const auto &entry : value.toArray()) {
+			auto rule = entry.toObject();
+			if (entry.isObject() && !rule.contains(u"peers"_q)) {
+				rule.insert(u"peers"_q, QJsonArray());
+			}
+			rules.push_back(entry.isObject() ? QJsonValue(rule) : entry);
+		}
+		root.insert(u"rules"_q, rules);
+	}
+	root.insert(u"version"_q, 2);
+	return QJsonDocument(root).toJson(QJsonDocument::Compact);
+}
+
 } // namespace
 
-QJsonObject Defaults() {
-	return {
-		{ u"version"_q, 1 },
-		{ u"enabled"_q, false },
-		{ u"filterOutgoing"_q, false },
-		{ u"hideBlocked"_q, false },
-		{ u"stripZalgo"_q, false },
-		{ u"hiddenAuthors"_q, QJsonArray() },
-		{ u"excludedPeers"_q, QJsonArray() },
-		{ u"rules"_q, QJsonArray() },
-	};
+std::optional<FilterRules> ReadRules(const QByteArray &raw) {
+	return raw.isEmpty() ? FilterRules() : ParseFilterRules(Upgraded(raw));
+}
+
+std::optional<std::vector<FilterRule>> ReadRuleList(const QByteArray &raw) {
+	if (raw.size() > kMaxConfigBytes) {
+		return std::nullopt;
+	}
+	const auto list = ParseFilterRuleList(Upgraded(raw));
+	if (!list) {
+		return std::nullopt;
+	}
+	auto check = FilterRules();
+	check.rules = list->rules;
+	return ValidFilterRules(check)
+		? std::make_optional(list->rules)
+		: std::nullopt;
+}
+
+QByteArray WriteRuleList(std::vector<FilterRule> rules) {
+	return SerializeFilterRuleList({ .rules = std::move(rules) });
 }
 
 bool ValidFilterRules(const FilterRules &value) {
@@ -157,7 +189,7 @@ bool ValidFilterRules(const FilterRules &value) {
 }
 
 bool Validate(const QByteArray &raw) {
-	return raw.isEmpty() || ParseFilterRules(raw).has_value();
+	return ReadRules(raw).has_value();
 }
 
 Result Apply(
@@ -172,7 +204,7 @@ Result Apply(
 	if (raw.isEmpty()) {
 		return result;
 	}
-	const auto config = ParseFilterRules(raw);
+	const auto config = ReadRules(raw);
 	if (!config) {
 		result.error = u"invalid filter configuration"_q;
 		return result;
@@ -203,7 +235,8 @@ Result Apply(
 		return { .text = source, .error = result.error };
 	}
 	for (const auto &rule : config->rules) {
-		if (!rule.enabled) {
+		if (!rule.enabled
+			|| (!rule.peers.empty() && !contains(rule.peers, peer))) {
 			continue;
 		}
 		const auto expression = CompilePattern(

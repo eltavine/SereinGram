@@ -358,6 +358,7 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_filter_title" = "Rule name";
 "lng_serein_filter_pattern" = "Regular expression";
 "lng_serein_filter_replacement" = "Literal replacement text";
+"lng_serein_filter_rule_peers" = "Only in these chats (IDs separated by commas, empty for all chats)";
 "lng_serein_filter_rule_enabled" = "Enable this rule";
 "lng_serein_filter_case" = "Ignore letter case";
 "lng_serein_filter_reverse" = "Match messages that do not match the pattern";

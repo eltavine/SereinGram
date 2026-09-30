@@ -83,7 +83,7 @@ QString Searchable(not_null<HistoryItem*> item) {
 	if (raw.isEmpty()) {
 		return { .text = source };
 	}
-	const auto config = ParseFilterRules(raw);
+	const auto config = ReadRules(raw);
 	const auto forwarded = item->Get<HistoryMessageForwarded>();
 	const auto sources = std::array<PeerData*, 3>{
 		item->from().get(),
@@ -179,7 +179,7 @@ bool HiddenPeer(PeerData *peer) {
 		Serein::Filters::kRules);
 	const auto config = raw.isEmpty()
 		? std::nullopt
-		: Serein::Filters::ParseFilterRules(raw);
+		: Serein::Filters::ReadRules(raw);
 	return config && config->enabled && config->hideBlocked;
 }
 

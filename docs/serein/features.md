@@ -96,7 +96,7 @@ SG-HIST-05 的“已编辑”标记文字已由 C09 实现，删除标记随 SG-
 | SG-FILTER-01 | 正则过滤：遮盖、替换、隐藏，排除对话，规则测试框，导入导出（I01） | Ad Aa Ni Na | Implemented | P1 |
 | SG-FILTER-02 | 隐藏已屏蔽用户的消息（I01 子项） | Ad Na | Implemented | P1 |
 | SG-FILTER-03 | 在回复引用、反应列表、成员列表中也隐藏已屏蔽用户（回复引用被过滤的消息时显示“已隐藏”占位；开启“隐藏已屏蔽用户”后，“谁已读/谁回应”列表不列出已屏蔽用户，服务端给出的总数不变；成员列表保持完整，便于管理员管理） | Ad | Implemented | P2 |
-| SG-FILTER-04 | 按对话的过滤规则与共享规则列表导入 | Ad | Planned | P2 |
+| SG-FILTER-04 | 按对话的过滤规则与共享规则列表导入（规则可限定在若干对话 ID 内，留空对所有对话生效；剪贴板规则列表的格式由 `FilterRuleList` 声明，导入时追加为停用的新规则并需确认，导出时去掉对话范围；过滤配置升级到 v2 并自动迁移 v1） | Ad | Implemented | P2 |
 | SG-FILTER-05 | Zalgo 字符过滤 | Ni | Implemented | P2 |
 | SG-FILTER-06 | 消息菜单“隐藏此人的消息”（E23） | Ni | Implemented | P2 |
 | SG-FILTER-07 | 链接规则：URL 修正、参数清理、打开前确认（I02） | Ni | Implemented | P2 |

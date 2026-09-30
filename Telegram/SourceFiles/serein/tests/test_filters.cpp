@@ -28,8 +28,21 @@ QJsonObject Rule(const QString &pattern, const QString &action) {
 	};
 }
 
+QJsonObject LegacyDefaults() {
+	return {
+		{ u"version"_q, 1 },
+		{ u"enabled"_q, false },
+		{ u"filterOutgoing"_q, false },
+		{ u"hideBlocked"_q, false },
+		{ u"stripZalgo"_q, false },
+		{ u"hiddenAuthors"_q, QJsonArray() },
+		{ u"excludedPeers"_q, QJsonArray() },
+		{ u"rules"_q, QJsonArray() },
+	};
+}
+
 QByteArray Config(const QJsonObject &rule) {
-	auto config = Serein::Filters::Defaults();
+	auto config = LegacyDefaults();
 	config.insert(u"enabled"_q, true);
 	config.insert(u"rules"_q, QJsonArray{ rule });
 	return QJsonDocument(config).toJson(QJsonDocument::Compact);
@@ -37,8 +50,52 @@ QByteArray Config(const QJsonObject &rule) {
 
 } // namespace
 
+void TestFilterScopes() {
+	using namespace Serein::Filters;
+	auto scoped = Rule(u"foo"_q, u"replace"_q);
+	scoped.insert(u"peers"_q, QJsonArray{ u"42"_q });
+	auto config = QJsonDocument::fromJson(Config(scoped)).object();
+	config.insert(u"version"_q, 2);
+	const auto raw = QJsonDocument(config).toJson(QJsonDocument::Compact);
+	Require(Validate(raw), "chat scoped rule rejected");
+	Require(Apply(raw, { u"foo"_q }, {}, u"42"_q, false, false).text.text
+			== u"bar"_q,
+		"chat scoped rule skipped in its chat");
+	Require(Apply(raw, { u"foo"_q }, {}, u"7"_q, false, false).text.text
+			== u"foo"_q,
+		"chat scoped rule applied in another chat");
+	const auto upgraded = ReadRules(Config(Rule(u"foo"_q, u"mask"_q)));
+	Require(upgraded && upgraded->rules.size() == 1
+		&& upgraded->rules[0].peers.empty(),
+		"version 1 filter rules not upgraded");
+	auto missing = QJsonDocument::fromJson(Config(Rule(u"foo"_q, u"mask"_q)))
+		.object();
+	missing.insert(u"version"_q, 2);
+	Require(!Validate(QJsonDocument(missing).toJson(QJsonDocument::Compact)),
+		"version 2 rule without peers accepted");
+	scoped.insert(u"peers"_q, QJsonArray{ u"0"_q });
+	auto badPeer = QJsonDocument::fromJson(Config(scoped)).object();
+	badPeer.insert(u"version"_q, 2);
+	Require(!Validate(QJsonDocument(badPeer).toJson(QJsonDocument::Compact)),
+		"malformed chat scope accepted");
+
+	const auto list = ReadRuleList(QJsonDocument(QJsonObject{
+		{ u"version"_q, 1 },
+		{ u"rules"_q, QJsonArray{ Rule(u"foo"_q, u"hide"_q) } },
+	}).toJson(QJsonDocument::Compact));
+	Require(list && list->size() == 1, "version 1 rule list not imported");
+	Require(ReadRuleList(WriteRuleList(*list)) == list,
+		"rule list does not round trip");
+	Require(!ReadRuleList(QJsonDocument(QJsonObject{
+		{ u"version"_q, 1 },
+		{ u"rules"_q, QJsonArray{ Rule(u"("_q, u"hide"_q) } },
+	}).toJson(QJsonDocument::Compact)), "rule list with a broken regex accepted");
+	Require(!ReadRuleList("{\"version\":1}"), "rule list without rules accepted");
+}
+
 void TestFilters() {
 	using namespace Serein::Filters;
+	TestFilterScopes();
 	Require(Validate({}), "empty filter config rejected");
 	const auto replace = Config(Rule(u"foo"_q, u"replace"_q));
 	Require(Validate(replace), "valid filter config rejected");
