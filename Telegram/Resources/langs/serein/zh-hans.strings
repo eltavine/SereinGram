@@ -249,6 +249,9 @@
 "lng_serein_sorting" = "排序";
 "lng_serein_chat_sort" = "会话排序";
 "lng_serein_recent_chats" = "最近会话";
+"lng_serein_remember_reading_position" = "记住阅读位置";
+"lng_serein_remember_reading_position_note" = "重启后第一次打开没有未读消息的对话时，从上次读到的位置继续，而不是跳到最新消息。";
+"lng_serein_reading_positions" = "已保存的阅读位置";
 "lng_serein_recent_chats_empty" = "打开过的对话会显示在这里。";
 "lng_serein_recent_chats_clear" = "清空";
 "lng_serein_sort_unread" = "未读";

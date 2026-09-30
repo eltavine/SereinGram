@@ -123,6 +123,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "history/view/controls/history_view_voice_record_bar.h"
 #include "history/view/controls/history_view_webpage_processor.h"
 #include "history/view/reactions/history_view_reactions_button.h"
+#include "serein/hooks/chats/reading_position.h"
 #include "serein/hooks/compose/buttons.h"
 #include "serein/hooks/gen/compose.h"
 #include "serein/hooks/compose/confirm.h"
@@ -3066,6 +3067,9 @@ void HistoryWidget::showHistory(
 	if (startBot || _showAndMaybeSendStart) {
 		showAtMsgId = ShowAtTheEndMsgId;
 	}
+	showAtMsgId = Serein::Hooks::ReadingPosition(
+		&session(), peerId.value, showAtMsgId,
+		_history && _peer->id == peerId);
 
 	_highlighter.clear();
 	controller()->sendingAnimation().clear();

@@ -47,7 +47,11 @@ namespace Serein::Hooks::Chats {
 [[nodiscard]] rpl::producer<bool> DisableScrollToNextChannelValue();
 [[nodiscard]] bool DisableScrollToNextTopic();
 [[nodiscard]] rpl::producer<bool> DisableScrollToNextTopicValue();
+[[nodiscard]] bool RememberReadingPosition();
+[[nodiscard]] rpl::producer<bool> RememberReadingPositionValue();
 [[nodiscard]] QString RecentChats(gsl::not_null<Main::Session*> session);
 [[nodiscard]] rpl::producer<QString> RecentChatsValue(gsl::not_null<Main::Session*> session);
+[[nodiscard]] QString ReadingPositions(gsl::not_null<Main::Session*> session);
+[[nodiscard]] rpl::producer<QString> ReadingPositionsValue(gsl::not_null<Main::Session*> session);
 
 } // namespace Serein::Hooks::Chats

@@ -150,12 +150,28 @@ rpl::producer<bool> DisableScrollToNextTopicValue() {
 	return ForDevice().Value(Serein::Chats::kDisableScrollToNextTopic);
 }
 
+bool RememberReadingPosition() {
+	return ForDevice().Get(Serein::Chats::kRememberReadingPosition);
+}
+
+rpl::producer<bool> RememberReadingPositionValue() {
+	return ForDevice().Value(Serein::Chats::kRememberReadingPosition);
+}
+
 QString RecentChats(gsl::not_null<Main::Session*> session) {
 	return ForAccount(session).Get(Serein::Chats::kRecentChats);
 }
 
 rpl::producer<QString> RecentChatsValue(gsl::not_null<Main::Session*> session) {
 	return ForAccount(session).Value(Serein::Chats::kRecentChats);
+}
+
+QString ReadingPositions(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Get(Serein::Chats::kReadingPositions);
+}
+
+rpl::producer<QString> ReadingPositionsValue(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Value(Serein::Chats::kReadingPositions);
 }
 
 } // namespace Serein::Hooks::Chats

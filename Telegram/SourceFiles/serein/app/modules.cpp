@@ -3,6 +3,7 @@
 #include "serein/app/auto_demo.h"
 #include "serein/app/updates.h"
 
+#include "serein/app/reading_positions.h"
 #include "serein/app/recent_chats.h"
 #include "serein/app/shortcuts.h"
 
@@ -25,6 +26,7 @@ constexpr auto kModules = std::array{
 	Module{ "app.shortcuts", StartShortcuts },
 	Module{ "privacy.auto_demo", StartAutoDemoMode },
 	Module{ "chats.recent", nullptr, nullptr, TrackRecentChats },
+	Module{ "chats.reading_position", nullptr, nullptr, TrackReadingPositions },
 };
 
 } // namespace

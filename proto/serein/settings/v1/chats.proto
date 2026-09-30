@@ -111,6 +111,10 @@ message ChatsSettings {
   optional bool disable_scroll_to_next_topic = 18 [(serein.options.v1.field) = {
     keywords: ["scroll", "topic"]
   }];
+  optional bool remember_reading_position = 20 [(serein.options.v1.field) = {
+    keywords: ["scroll", "position", "resume"]
+    note: "lng_serein_remember_reading_position_note"
+  }];
   // Serialized peer ids of recently opened chats, newest first.
   optional string recent_chats = 19 [
     (serein.options.v1.field) = {
@@ -118,6 +122,15 @@ message ChatsSettings {
       title: "lng_serein_recent_chats"
       scope: SCOPE_ACCOUNT
       validator: "ValidRecentChats"
+    }
+  ];
+  // Serialized peer:message pairs of saved reading positions, newest first.
+  optional string reading_positions = 21 [
+    (serein.options.v1.field) = {
+      hidden: true
+      title: "lng_serein_reading_positions"
+      scope: SCOPE_ACCOUNT
+      validator: "ValidReadingPositions"
     }
   ];
 }

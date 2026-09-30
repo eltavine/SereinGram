@@ -8,6 +8,7 @@ namespace Serein::Chats {
 [[nodiscard]] bool ValidChatSort(const int &value);
 [[nodiscard]] bool ValidManagedFolderIds(const QString &value);
 [[nodiscard]] bool ValidRecentChats(const QString &value);
+[[nodiscard]] bool ValidReadingPositions(const QString &value);
 
 inline constexpr auto kCompactList = Option<bool>{
 	"serein.chatListCompact",
@@ -153,6 +154,13 @@ inline constexpr auto kDisableScrollToNextTopic = Option<bool>{
 	Category::Chats,
 	"lng_serein_disable_scroll_to_next_topic",
 	0 };
+inline constexpr auto kRememberReadingPosition = Option<bool>{
+	"serein.rememberReadingPosition",
+	Scope::Device,
+	false,
+	Category::Chats,
+	"lng_serein_remember_reading_position",
+	0 };
 inline const auto kRecentChats = Option<QString>{
 	"serein.recentChats",
 	Scope::Account,
@@ -161,6 +169,14 @@ inline const auto kRecentChats = Option<QString>{
 	"lng_serein_recent_chats",
 	static_cast<unsigned>(Flag::Hidden),
 	&ValidRecentChats };
+inline const auto kReadingPositions = Option<QString>{
+	"serein.readingPositions",
+	Scope::Account,
+	QString(),
+	Category::Chats,
+	"lng_serein_reading_positions",
+	static_cast<unsigned>(Flag::Hidden),
+	&ValidReadingPositions };
 
 inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kCompactList));
@@ -181,7 +197,9 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kHideBirthdaySuggestions));
 	Expects(registry.Add(kDisableScrollToNextChannel));
 	Expects(registry.Add(kDisableScrollToNextTopic));
+	Expects(registry.Add(kRememberReadingPosition));
 	Expects(registry.Add(kRecentChats));
+	Expects(registry.Add(kReadingPositions));
 }
 
 } // namespace Serein::Chats

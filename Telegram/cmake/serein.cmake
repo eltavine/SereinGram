@@ -51,6 +51,8 @@ set(serein_sources
     serein/chats/sort.cpp
     serein/chats/validators.cpp
     serein/chats/recent.cpp
+    serein/chats/reading_positions.cpp
+    serein/app/reading_positions.cpp
     serein/chats/managed_folders.cpp
     serein/interface/roundness.cpp
     serein/settings/interface.cpp

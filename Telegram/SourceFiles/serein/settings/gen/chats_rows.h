@@ -10,7 +10,7 @@
 
 namespace Serein::Chats {
 
-inline const auto kToggleRows = std::array<ToggleRow, 12>{ {
+inline const auto kToggleRows = std::array<ToggleRow, 13>{ {
 	{
 		&kCompactList,
 		tr::lng_serein_compact_chat_list,
@@ -83,6 +83,12 @@ inline const auto kToggleRows = std::array<ToggleRow, 12>{ {
 		u"serein/chats/disable-scroll-to-next-topic"_q,
 		{ u"scroll"_q, u"topic"_q },
 	},
+	{
+		&kRememberReadingPosition,
+		tr::lng_serein_remember_reading_position,
+		u"serein/chats/remember-reading-position"_q,
+		{ u"scroll"_q, u"position"_q, u"resume"_q },
+	},
 } };
 
 struct CustomRows {
@@ -140,6 +146,8 @@ inline void AddLayout(
 	});
 	AddToggle(builder, kToggleRows[10]);
 	AddToggle(builder, kToggleRows[11]);
+	AddToggle(builder, kToggleRows[12]);
+	AddNote(builder, tr::lng_serein_remember_reading_position_note);
 }
 
 } // namespace Serein::Chats

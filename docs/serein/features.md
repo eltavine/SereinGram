@@ -149,7 +149,7 @@ SG-HIST-05 的“已编辑”标记文字已由 C09 实现，删除标记随 SG-
 | SG-CHATS-08 | 跳到对话开头（聊天窗口菜单“跳到对话开头”，由 `serein/app/peer_menu.cpp` 提供；话题内跳到话题的首条消息） | Ad Ni | Implemented | P2 |
 | SG-CHATS-09 | 最近会话列表（按账号记录最近打开的 30 个对话；主菜单“最近会话”与快捷键命令 `serein_recent_chats` 打开列表，点击进入对话，可清空） | Ni | Implemented | P2 |
 | SG-CHATS-10 | 聊天顶部工具栏：搜索、媒体、置顶、跳到开头、静音、清缓存 | Ni | Planned | P2 |
-| SG-CHATS-11 | 保存并恢复阅读位置 | Ni | Planned | P2 |
+| SG-CHATS-11 | 保存并恢复阅读位置（聊天设置“记住阅读位置”，默认关闭：离开对话时记下顶部可见的服务器消息，滚到底部则清除，按账号保存最近 100 个对话；重启后第一次打开没有未读消息的对话时从记下的位置打开，已有本次运行的滚动状态或有未读时照常） | Ni | Implemented | P2 |
 | SG-CHATS-12 | 本地置顶扩展 | Ni | Planned | P3 |
 
 ## MSG 消息显示与资料
