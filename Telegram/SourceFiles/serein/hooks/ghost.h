@@ -45,10 +45,10 @@ private:
 
 };
 
-void OnSendingMessage(gsl::not_null<History*> history);
+void OnSendingMessage(gsl::not_null<::History*> history);
 
 [[nodiscard]] bool ReadInboxLocally(
-	gsl::not_null<History*> history,
+	gsl::not_null<::History*> history,
 	MsgId tillId,
 	std::optional<int> stillUnread);
 

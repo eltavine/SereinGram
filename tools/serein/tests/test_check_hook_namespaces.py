@@ -50,6 +50,19 @@ class CheckHookNamespacesTest(unittest.TestCase):
                 "} // namespace Serein::App\n"))
             self.assertEqual(check_hook_namespaces.problems(root), [])
 
+    def test_flags_unqualified_history_class_in_facades(self):
+        with tempfile.TemporaryDirectory() as root:
+            write(root, "serein/hooks/gen/ghost.h", FACADE)
+            write(root, "serein/hooks/send.h", (
+                "class History;\n"
+                "namespace Serein::Hooks {\n"
+                "void A(gsl::not_null<History*> history);\n"
+                "void B(gsl::not_null<::History*> history);\n"
+                "} // namespace Serein::Hooks\n"))
+            found = check_hook_namespaces.problems(root)
+            self.assertEqual(len(found), 1)
+            self.assertIn("serein/hooks/send.h:3: write ::History", found[0])
+
     def test_repository_sources_are_clean(self):
         root = Path(__file__).resolve().parents[3] / "Telegram/SourceFiles"
         self.assertEqual(check_hook_namespaces.problems(root), [])

@@ -9,7 +9,7 @@ namespace Ui::Menu { struct MenuCallback; }
 namespace Serein::Chats {
 
 [[nodiscard]] bool AllowedInFolder(
-	gsl::not_null<History*> history,
+	gsl::not_null<::History*> history,
 	int32 folderId);
 void AddManagedOnlyAction(
 	const Ui::Menu::MenuCallback &addAction,

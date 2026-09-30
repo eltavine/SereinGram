@@ -33,10 +33,21 @@ def closure(root, path, seen):
     return seen
 
 
+HISTORY_TYPE = re.compile(r"(?<![\w:])History\s*[*&>]")
+
+
 def problems(root):
     root = Path(root)
     known = facades(root)
     result = []
+    for header in sorted((root / "serein/hooks").rglob("*.h")):
+        relative = str(header.relative_to(root))
+        for number, line in enumerate(
+                header.read_text(encoding="utf-8").splitlines(), 1):
+            if HISTORY_TYPE.search(line):
+                result.append(
+                    f"{relative}:{number}: write ::History, because the "
+                    "Serein::History record namespace shadows the class")
     for source in sorted((root / "serein").rglob("*")):
         if source.suffix not in (".cpp", ".h") or "/gen/" in str(source):
             continue

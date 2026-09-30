@@ -11,7 +11,7 @@ struct SendOptions;
 namespace Serein::Hooks {
 
 void ApplySendOptions(
-	gsl::not_null<History*> history,
+	gsl::not_null<::History*> history,
 	Api::SendOptions &options);
 
 } // namespace Serein::Hooks
