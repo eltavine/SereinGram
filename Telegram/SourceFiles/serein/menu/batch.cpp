@@ -1,6 +1,6 @@
 #include "serein/menu/batch.h"
 
-#include "serein/menu/actions.h"
+#include "serein/hooks/menu/actions.h"
 #include "data/data_changes.h"
 #include "data/data_chat_participant_status.h"
 #include "data/data_drafts.h"

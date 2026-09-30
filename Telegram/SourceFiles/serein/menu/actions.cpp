@@ -1,4 +1,7 @@
-#include "serein/menu/actions.h"
+#include "serein/hooks/menu/actions.h"
+
+#include "serein/menu/model.h"
+#include "data/data_types.h"
 #include "serein/menu/buttons.h"
 #include "serein/menu/details.h"
 #include "serein/menu/repeat.h"

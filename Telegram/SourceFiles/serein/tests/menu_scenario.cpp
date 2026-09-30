@@ -1,6 +1,8 @@
 #ifdef _DEBUG
 
-#include "serein/tests/menu_scenario.h"
+#include "serein/hooks/tests/menu_scenario.h"
+
+#include "test/test_runner.h"
 
 #include "serein/compose/options.h"
 #include "serein/hooks/compose/text.h"

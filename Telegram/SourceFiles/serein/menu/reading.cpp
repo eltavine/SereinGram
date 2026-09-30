@@ -1,6 +1,6 @@
 #include "serein/menu/reading.h"
 
-#include "serein/menu/actions.h"
+#include "serein/hooks/menu/actions.h"
 #include "serein/messages/options.h"
 #include "serein/hooks/messages/reading.h"
 #include "data/data_session.h"

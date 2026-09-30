@@ -1,7 +1,7 @@
 #include "serein/filters/menu.h"
 
 #include "serein/filters/model.h"
-#include "serein/menu/actions.h"
+#include "serein/hooks/menu/actions.h"
 #include "data/data_peer.h"
 #include "data/data_peer_id.h"
 #include "history/history.h"

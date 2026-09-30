@@ -1,6 +1,6 @@
 #include "serein/menu/details.h"
 
-#include "serein/menu/actions.h"
+#include "serein/hooks/menu/actions.h"
 #include "serein/privacy/peer_id.h"
 #include "base/unixtime.h"
 #include "data/data_document.h"

@@ -1,6 +1,6 @@
 #include "serein/menu/buttons.h"
 
-#include "serein/menu/actions.h"
+#include "serein/hooks/menu/actions.h"
 #include "history/history_item.h"
 #include "history/history_item_components.h"
 #include "lang/lang_keys.h"

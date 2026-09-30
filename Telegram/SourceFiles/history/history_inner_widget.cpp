@@ -8,7 +8,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "history/history_inner_widget.h"
 #include "serein/hooks/messages/reactions.h"
 #include "serein/hooks/gen/privacy.h"
-#include "serein/menu/actions.h"
+#include "serein/hooks/menu/actions.h"
 #include "serein/hooks/menu/selection.h"
 
 #include "api/api_polls.h"

@@ -1,5 +1,5 @@
 #include "serein/snapshot/snapshot.h"
-#include "serein/menu/actions.h"
+#include "serein/hooks/menu/actions.h"
 
 #include "core/application.h"
 #include "serein/core/options.h"

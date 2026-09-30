@@ -2,7 +2,7 @@
 
 #include "serein/features/history/model/recorder.h"
 #include "serein/hooks/history.h"
-#include "serein/menu/actions.h"
+#include "serein/hooks/menu/actions.h"
 #include "serein/ports/history_store.h"
 #include "base/unixtime.h"
 #include "data/data_peer.h"

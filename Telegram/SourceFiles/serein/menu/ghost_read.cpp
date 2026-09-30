@@ -2,7 +2,7 @@
 
 #include "serein/features/ghost/model/policy.h"
 #include "serein/hooks/ghost.h"
-#include "serein/menu/actions.h"
+#include "serein/hooks/menu/actions.h"
 #include "data/data_histories.h"
 #include "data/data_session.h"
 #include "history/history_item.h"

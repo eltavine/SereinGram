@@ -1,6 +1,7 @@
 #pragma once
 
 #include "serein/core/options.h"
+#include "data/data_types.h"
 
 #include <QtCore/QJsonObject>
 #include <QtGui/QImage>
