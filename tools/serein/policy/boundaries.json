@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "source_root": "Telegram/SourceFiles/",
+  "app_prefixes": ["styles/"],
+  "modules": {
+    "serein/schema/": {
+      "own": ["serein/schema/", "serein/core/options.h"],
+      "app": false,
+      "libraries": true
+    },
+    "serein/ports/": {
+      "own": ["serein/ports/", "serein/schema/"],
+      "app": false,
+      "libraries": false
+    },
+    "serein/adapters/": {
+      "own": ["serein/adapters/", "serein/ports/", "serein/schema/"],
+      "app": true,
+      "libraries": true
+    },
+    "serein/tests/": {
+      "own": ["serein/"],
+      "app": true,
+      "libraries": true
+    },
+    "serein/": {
+      "own": ["serein/"],
+      "app": true,
+      "libraries": true
+    }
+  }
+}

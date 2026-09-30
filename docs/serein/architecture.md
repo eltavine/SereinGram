@@ -145,7 +145,7 @@ message MessagesSettings {
 | 守卫 | 工具 | 状态 |
 | --- | --- | --- |
 | 自有源文件 ≤ 1000 行 | `tools/serein/check_file_size.py` + `serein-guards.yml` | 已实施 |
-| 模块依赖方向 | `tools/serein/check_boundaries.py`，按 `#include` 与策略文件检查 | Phase 0 |
+| 模块依赖方向 | `tools/serein/check_boundaries.py` 按 `policy/boundaries.json` 检查每个 `#include`：`schema`、`ports`、`adapters` 严格执行；旧功能目录暂归宽松的 `serein/` 兜底规则，迁移一个收紧一个 | 已实施 |
 | 上游侵入预算 | `tools/serein/upstream_budget.py`，与 `policy/upstream.json` 记录的上游基线比较；预算只降不升，并统计上游文件直接包含非门面头文件的数量 | 已实施 |
 | schema 兼容 | `buf lint`；`tools/serein/proto_breaking.sh` 与推送前的提交或 PR 目标分支比较（`FILE` 级） | 已实施 |
 | 生成代码漂移 | `uv run tools/serein/codegen/generate.py --check` | 已实施 |
