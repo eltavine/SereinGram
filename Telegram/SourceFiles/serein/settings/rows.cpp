@@ -88,6 +88,31 @@ void ChoiceBox(
 	});
 }
 
+void TextBox(
+		not_null<Ui::GenericBox*> box,
+		const TextRow &row,
+		Fn<Options&()> store) {
+	box->setTitle(row.title());
+	const auto field = box->addRow(
+		object_ptr<Ui::InputField>(
+			box,
+			st::defaultInputField,
+			row.placeholder(),
+			store().Get(*row.option)),
+		st::boxRowPadding);
+	box->setFocusCallback([=] { field->setFocusFast(); });
+	const auto submit = [=] {
+		if (store().Set(*row.option, field->getLastText().trimmed())) {
+			box->closeBox();
+		} else {
+			field->showError();
+		}
+	};
+	field->submits() | rpl::on_next(submit, field->lifetime());
+	box->addButton(tr::lng_settings_save(), submit);
+	box->addButton(tr::lng_cancel(), [=] { box->closeBox(); });
+}
+
 } // namespace
 
 void AddToggle(
@@ -183,6 +208,35 @@ void AddChoice(
 			}
 		},
 		.keywords = row.keywords,
+	});
+}
+
+void AddText(
+		::Settings::Builder::SectionBuilder &builder,
+		const TextRow &row) {
+	Expects(row.option != nullptr);
+
+	const auto store = StoreFor(builder, *row.option);
+	const auto controller = builder.controller();
+	auto shown = rpl::producer<bool>();
+	if (row.hiddenBy) {
+		shown = StoreFor(builder, *row.hiddenBy)().Value(*row.hiddenBy)
+			| rpl::map([](bool hidden) { return !hidden; });
+	}
+	builder.addButton({
+		.id = row.id,
+		.title = row.title(),
+		.st = &st::settingsButtonNoIcon,
+		.label = store().Value(*row.option) | rpl::map([=](const QString &text) {
+			return text.isEmpty() ? row.placeholder(tr::now) : text;
+		}),
+		.onClick = [=] {
+			if (controller) {
+				controller->show(Box(TextBox, row, store));
+			}
+		},
+		.keywords = row.keywords,
+		.shown = std::move(shown),
 	});
 }
 

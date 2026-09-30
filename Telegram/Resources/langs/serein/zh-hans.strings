@@ -120,6 +120,7 @@
 "lng_serein_hide_channel_signature" = "隐藏频道消息签名";
 "lng_serein_hide_edited_badge" = "隐藏“已编辑”标记";
 "lng_serein_edited_mark" = "“已编辑”标记文字";
+"lng_serein_deleted_mark_title" = "已删除标记文字";
 "lng_serein_reactions" = "反应";
 "lng_serein_hide_reactions" = "隐藏消息反应";
 "lng_serein_hide_private_reactions" = "私聊";

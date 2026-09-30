@@ -89,7 +89,10 @@ void ApplyInfoOptions(Data &data, not_null<HistoryItem*> item) {
 		data.flags &= ~(Flag::Edited | Flag::EditedPrimary);
 	}
 	if (HistoryFeature::DeletedInPlace(item)) {
-		const auto mark = tr::lng_serein_deleted_mark(tr::now);
+		const auto custom = ForDevice().Get(kDeletedMark);
+		const auto mark = custom.isEmpty()
+			? tr::lng_serein_deleted_mark(tr::now)
+			: custom;
 		data.author = data.author.isEmpty()
 			? mark
 			: (mark + u" \u00B7 "_q + data.author);

@@ -78,6 +78,14 @@ rpl::producer<QString> EditedMarkValue() {
 	return ForDevice().Value(Serein::Messages::kEditedMark);
 }
 
+QString DeletedMark() {
+	return ForDevice().Get(Serein::Messages::kDeletedMark);
+}
+
+rpl::producer<QString> DeletedMarkValue() {
+	return ForDevice().Value(Serein::Messages::kDeletedMark);
+}
+
 bool HideReactions() {
 	return ForDevice().Get(Serein::Messages::kHideReactions);
 }

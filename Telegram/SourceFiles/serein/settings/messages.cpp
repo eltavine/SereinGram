@@ -12,7 +12,6 @@
 #include "ui/layers/generic_box.h"
 #include "ui/widgets/buttons.h"
 #include "ui/widgets/checkbox.h"
-#include "ui/widgets/fields/input_field.h"
 #include "ui/wrap/vertical_layout.h"
 #include "window/window_session_controller.h"
 #include "styles/style_menu_icons.h"
@@ -42,26 +41,6 @@ public:
 
 	static const SectionBuildMethod kBuild;
 };
-
-void EditMarkBox(not_null<Ui::GenericBox*> box) {
-	box->setTitle(tr::lng_serein_edited_mark());
-	const auto field = box->addRow(
-		object_ptr<Ui::InputField>(
-			box,
-			st::defaultInputField,
-			tr::lng_edited(),
-			ForDevice().Get(Messages::kEditedMark)),
-		st::boxRowPadding);
-	box->setFocusCallback([=] { field->setFocusFast(); });
-	const auto submit = [=] {
-		if (ForDevice().Set(Messages::kEditedMark, field->getLastText())) {
-			box->closeBox();
-		}
-	};
-	field->submits() | rpl::on_next(submit, field->lifetime());
-	box->addButton(tr::lng_settings_save(), submit);
-	box->addButton(tr::lng_cancel(), [=] { box->closeBox(); });
-}
 
 QString ReadingChineseLabel(int value) {
 	switch (value) {
@@ -94,23 +73,6 @@ const auto kMeta = BuildHelper({
 }, [](SectionBuilder &builder) {
 	const auto controller = builder.controller();
 	Messages::AddLayout(builder, {
-		.editedMark = [&] {
-			builder.addButton({
-				.id = u"serein/messages/edited-mark"_q,
-				.title = tr::lng_serein_edited_mark(),
-				.st = &st::settingsButtonNoIcon,
-				.label = ForDevice().Value(Messages::kEditedMark)
-					| rpl::map([](const QString &text) {
-						return text.isEmpty()
-							? tr::lng_settings_notifications_display_default(tr::now)
-							: text;
-					}),
-				.onClick = [=] { controller->show(Box(EditMarkBox)); },
-				.keywords = { u"edited"_q, u"label"_q, u"text"_q },
-				.shown = ForDevice().Value(Messages::kHideEditedBadge)
-					| rpl::map([](bool hidden) { return !hidden; }),
-			});
-		},
 		.readingChinese = [&] {
 			const auto available = Messages::ChineseConversionAvailable();
 			const auto chinese = builder.addButton({

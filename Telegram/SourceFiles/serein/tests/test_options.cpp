@@ -124,14 +124,14 @@ void TestOptions() {
 	Require(registry.All().size() == 1, "registry count");
 	auto messages = Registry();
 	Messages::RegisterOptions(messages);
-	Require(messages.All().size() == 26, "message option count");
+	Require(messages.All().size() == 27, "message option count");
 	auto refreshCount = 0;
 	for (const auto &entry : messages.All()) {
 		Require(entry.scope == Scope::Device, "message option scope");
 		Require(entry.category == Category::Messages, "message option category");
 		refreshCount += messages.HasFlag(entry.key, Flag::RefreshMessageView);
 	}
-	Require(refreshCount == 19, "message refresh option count");
+	Require(refreshCount == 20, "message refresh option count");
 	Require(Messages::kReadingChinese.validate(0)
 		&& Messages::kReadingChinese.validate(1)
 		&& Messages::kReadingChinese.validate(2)

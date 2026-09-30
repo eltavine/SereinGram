@@ -86,6 +86,17 @@ inline void AddLayout(
 		.suffix = u{{ item.suffix | tojson }}_q,
 {% endif %}
 	});
+{% elif item.kind == "text" %}
+	AddText(builder, {
+		.option = &{{ item.cpp_name }},
+		.title = tr::{{ item.title }},
+		.id = u"{{ item.id }}"_q,
+		.keywords = { {{ item.keywords }} },
+		.placeholder = tr::{{ item.placeholder }},
+{% if item.hidden_by %}
+		.hiddenBy = &{{ item.hidden_by }},
+{% endif %}
+	});
 {% elif item.kind == "custom" %}
 	custom.{{ item.member }}();
 {% else %}

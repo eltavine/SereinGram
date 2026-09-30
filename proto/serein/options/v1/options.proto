@@ -70,6 +70,12 @@ message FieldOptions {
   NumberInput number = 16;
   // Generates a single choice row for an int32 option.
   ChoiceInput choice = 17;
+  TextInput text = 18;
+}
+
+message TextInput {
+  // Lang key shown in the empty field and as the row label while unset.
+  string placeholder = 1;
 }
 
 message ChoiceInput {

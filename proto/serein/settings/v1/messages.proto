@@ -64,8 +64,21 @@ message MessagesSettings {
   ];
   optional string edited_mark = 9 [
     (serein.options.v1.field) = {
+      keywords: ["edited", "label", "text"]
       refresh: REFRESH_MESSAGE_VIEW
-    }
+      disabled_by: "hide_edited_badge"
+      text: {placeholder: "lng_edited"}
+    },
+    (buf.validate.field).string.max_len = 64
+  ];
+  optional string deleted_mark = 27 [
+    (serein.options.v1.field) = {
+      title: "lng_serein_deleted_mark_title"
+      keywords: ["deleted", "label", "text", "anti-recall"]
+      refresh: REFRESH_MESSAGE_VIEW
+      text: {placeholder: "lng_serein_deleted_mark"}
+    },
+    (buf.validate.field).string.max_len = 64
   ];
   optional bool hide_reactions = 10 [
     (serein.options.v1.field) = {

@@ -121,6 +121,8 @@ class LayoutItem:
     labels: list = field(default_factory=list)
     suffix: str = ""
     hint: str = ""
+    placeholder: str = ""
+    hidden_by: str = ""
 
 
 @dataclass
@@ -325,15 +327,13 @@ def build_layout(message, options, stem, where):
             layout.append(number_item(item, option, custom["number"], stem, place))
         elif "choice" in custom and not option.custom_ui:
             layout.append(choice_item(item, option, custom["choice"], stem, place))
+        elif "text" in custom and not option.custom_ui:
+            layout.append(text_item(
+                option, custom["text"], stem, place,
+                visible_toggle(by_name, custom.get("disabledBy", ""), option, place)))
         elif option.toggle:
-            disabled_by = custom.get("disabledBy", "")
-            if disabled_by:
-                source = by_name.get(disabled_by)
-                if not source or not source.toggle or source is option:
-                    raise SchemaError(
-                        f"{place}: disabled_by '{disabled_by}' is not a visible "
-                        "boolean option of this page")
-                disabled_by = source.cpp_name
+            disabled_by = visible_toggle(
+                by_name, custom.get("disabledBy", ""), option, place)
             layout.append(LayoutItem("toggle", index=len(rows)))
             rows.append(Row(
                 cpp_name=option.cpp_name,
@@ -366,11 +366,38 @@ def build_pages(image):
         raise SchemaError(f"duplicate storage keys: {duplicates}")
     ids = [row.id for page in pages for row in page.rows]
     ids += [item.id for page in pages for item in page.layout
-            if item.kind in ("section", "number", "choice")]
+            if item.kind in ("section", "number", "choice", "text")]
     duplicates = sorted({id for id in ids if ids.count(id) > 1})
     if duplicates:
         raise SchemaError(f"duplicate settings row ids: {duplicates}")
     return pages
+
+
+def visible_toggle(by_name, name, option, place):
+    if not name:
+        return ""
+    source = by_name.get(name)
+    if not source or not source.toggle or source is option:
+        raise SchemaError(
+            f"{place}: disabled_by '{name}' is not a visible "
+            "boolean option of this page")
+    return source.cpp_name
+
+
+def text_item(option, text, stem, place, hidden_by):
+    if option.ctype != "QString":
+        raise SchemaError(f"{place}: text inputs need a string option")
+    if not text.get("placeholder"):
+        raise SchemaError(f"{place}: text inputs need a placeholder")
+    return LayoutItem(
+        "text",
+        id=f"serein/{stem}/{option.name.replace('_', '-')}",
+        title=option.title,
+        keywords=cpp_keywords(option.keywords),
+        cpp_name=option.cpp_name,
+        placeholder=text["placeholder"],
+        hidden_by=hidden_by,
+    )
 
 
 def number_item(item, option, number, stem, place):
@@ -424,11 +451,12 @@ def choice_item(item, option, choice, stem, place):
 def check_titles(pages, known):
     titles = {row.title for page in pages for row in page.rows}
     titles |= {item.title for page in pages for item in page.layout
-               if item.kind in ("section", "note", "number", "choice")}
+               if item.kind in ("section", "note", "number", "choice", "text")}
     titles |= {label for page in pages for item in page.layout
                for label in item.labels}
     titles |= {label for page in pages for item in page.layout
-               for label in (item.zero_label, item.count_format, item.hint)
+               for label in (item.zero_label, item.count_format, item.hint,
+                             item.placeholder)
                if label}
     missing = sorted(title for title in titles if title not in known)
     if missing:

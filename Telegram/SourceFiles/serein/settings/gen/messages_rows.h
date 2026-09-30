@@ -161,7 +161,6 @@ inline const auto kToggleRows = std::array<ToggleRow, 24>{ {
 } };
 
 struct CustomRows {
-	CustomRow editedMark;
 	CustomRow readingChinese;
 };
 
@@ -186,7 +185,21 @@ inline void AddLayout(
 	AddToggle(builder, kToggleRows[5]);
 	AddToggle(builder, kToggleRows[6]);
 	AddToggle(builder, kToggleRows[7]);
-	custom.editedMark();
+	AddText(builder, {
+		.option = &kEditedMark,
+		.title = tr::lng_serein_edited_mark,
+		.id = u"serein/messages/edited-mark"_q,
+		.keywords = { u"edited"_q, u"label"_q, u"text"_q },
+		.placeholder = tr::lng_edited,
+		.hiddenBy = &kHideEditedBadge,
+	});
+	AddText(builder, {
+		.option = &kDeletedMark,
+		.title = tr::lng_serein_deleted_mark_title,
+		.id = u"serein/messages/deleted-mark"_q,
+		.keywords = { u"deleted"_q, u"label"_q, u"text"_q, u"anti-recall"_q },
+		.placeholder = tr::lng_serein_deleted_mark,
+	});
 	AddSection(builder, {
 		u"serein/messages/reactions"_q,
 		tr::lng_serein_reactions,

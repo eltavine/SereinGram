@@ -204,6 +204,34 @@ class ModelTest(unittest.TestCase):
                 model.RULES_EXTENSION: {"int32": {"gte": 0, "lte": 2}},
             })))
 
+    def test_text_inputs(self):
+        page = model.build_pages(image(
+            field("hide_mark", "hideMark"),
+            field("mark", "mark", "TYPE_STRING", {
+                model.FIELD_EXTENSION: {
+                    "text": {"placeholder": "lng_edited"},
+                    "disabledBy": "hide_mark",
+                    "keywords": ["label"],
+                }}),
+        ))[0]
+        self.assertEqual(page.customs, [])
+        item = page.layout[1]
+        self.assertEqual((item.kind, item.cpp_name, item.placeholder, item.hidden_by),
+                         ("text", "kMark", "lng_edited", "kHideMark"))
+        self.assertEqual(item.id, "serein/messages/mark")
+
+    def test_text_inputs_are_validated(self):
+        with self.assertRaisesRegex(model.SchemaError, "string option"):
+            model.build_pages(image(field("flag", "flag", options={
+                model.FIELD_EXTENSION: {"text": {"placeholder": "lng_x"}}})))
+        with self.assertRaisesRegex(model.SchemaError, "placeholder"):
+            model.build_pages(image(field("mark", "mark", "TYPE_STRING", {
+                model.FIELD_EXTENSION: {"text": {}}})))
+        with self.assertRaisesRegex(model.SchemaError, "disabled_by 'missing'"):
+            model.build_pages(image(field("mark", "mark", "TYPE_STRING", {
+                model.FIELD_EXTENSION: {
+                    "text": {"placeholder": "lng_x"}, "disabledBy": "missing"}})))
+
     def test_page_without_visible_options_has_no_rows_header(self):
         page = model.build_pages(image(field("secret_flag", "secretFlag", options={
             model.FIELD_EXTENSION: {"hidden": True}})))[0]
@@ -303,6 +331,20 @@ class RenderTest(unittest.TestCase):
         rows = output["settings/gen/messages_rows.h"]
         self.assertIn("\t\t.values = { 0, 1 },", rows)
         self.assertIn("\t\t.labels = { tr::lng_a, tr::lng_b },", rows)
+
+    def test_renders_text_inputs(self):
+        import generate
+        output = generate.render(image(field("mark", "mark", "TYPE_STRING", {
+            model.FIELD_EXTENSION: {"text": {"placeholder": "lng_edited"}},
+        })), known_strings={"lng_serein_mark", "lng_edited"})
+        rows = output["settings/gen/messages_rows.h"]
+        self.assertIn("\tAddText(builder, {\n\t\t.option = &kMark,", rows)
+        self.assertIn("\t\t.placeholder = tr::lng_edited,", rows)
+        self.assertNotIn(".hiddenBy", rows)
+        with self.assertRaisesRegex(model.SchemaError, "lng_edited"):
+            generate.render(image(field("mark", "mark", "TYPE_STRING", {
+                model.FIELD_EXTENSION: {"text": {"placeholder": "lng_edited"}},
+            })), known_strings={"lng_serein_mark"})
 
     def test_renders_custom_rows(self):
         import generate

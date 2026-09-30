@@ -48,6 +48,15 @@ struct ChoiceRow {
 	QString suffix;
 };
 
+struct TextRow {
+	const Option<QString> *option = nullptr;
+	tr::phrase<> title;
+	QString id;
+	QStringList keywords;
+	tr::phrase<> placeholder;
+	const Option<bool> *hiddenBy = nullptr;
+};
+
 class CustomRow final {
 public:
 	template <typename Callback>
@@ -80,6 +89,9 @@ void AddNumber(
 void AddChoice(
 	::Settings::Builder::SectionBuilder &builder,
 	const ChoiceRow &row);
+void AddText(
+	::Settings::Builder::SectionBuilder &builder,
+	const TextRow &row);
 void AddNote(
 	::Settings::Builder::SectionBuilder &builder,
 	tr::phrase<> text);

@@ -67,7 +67,22 @@ inline const auto kEditedMark = Option<QString>{
 	QString(),
 	Category::Messages,
 	"lng_serein_edited_mark",
-	static_cast<unsigned>(Flag::RefreshMessageView) };
+	static_cast<unsigned>(Flag::RefreshMessageView),
+	[](const QString &value) {
+		return (value == QString())
+			|| ((value.toUcs4().size() <= 64));
+	} };
+inline const auto kDeletedMark = Option<QString>{
+	"serein.deletedMark",
+	Scope::Device,
+	QString(),
+	Category::Messages,
+	"lng_serein_deleted_mark_title",
+	static_cast<unsigned>(Flag::RefreshMessageView),
+	[](const QString &value) {
+		return (value == QString())
+			|| ((value.toUcs4().size() <= 64));
+	} };
 inline constexpr auto kHideReactions = Option<bool>{
 	"serein.hideReactions",
 	Scope::Device,
@@ -202,6 +217,7 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kHideChannelSignature));
 	Expects(registry.Add(kHideEditedBadge));
 	Expects(registry.Add(kEditedMark));
+	Expects(registry.Add(kDeletedMark));
 	Expects(registry.Add(kHideReactions));
 	Expects(registry.Add(kHidePrivateReactions));
 	Expects(registry.Add(kHideGroupReactions));

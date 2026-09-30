@@ -24,6 +24,8 @@ namespace Serein::Hooks::Messages {
 [[nodiscard]] rpl::producer<bool> HideEditedBadgeValue();
 [[nodiscard]] QString EditedMark();
 [[nodiscard]] rpl::producer<QString> EditedMarkValue();
+[[nodiscard]] QString DeletedMark();
+[[nodiscard]] rpl::producer<QString> DeletedMarkValue();
 [[nodiscard]] bool HideReactions();
 [[nodiscard]] rpl::producer<bool> HideReactionsValue();
 [[nodiscard]] bool HidePrivateReactions();
