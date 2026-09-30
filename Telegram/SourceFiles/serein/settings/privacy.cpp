@@ -1,5 +1,6 @@
 #include "serein/settings/privacy.h"
 
+#include "serein/admin/unblock_all.h"
 #include "serein/privacy/options.h"
 #include "serein/settings/gen/ghost_rows.h"
 #include "serein/settings/gen/history_rows.h"
@@ -66,6 +67,18 @@ const auto kMeta = BuildHelper({
 		}, button->lifetime());
 	}
 	Privacy::AddLayout(builder);
+	const auto controller = builder.controller();
+	builder.addButton({
+		.id = u"serein/privacy/unblock-all"_q,
+		.title = tr::lng_serein_unblock_all(),
+		.st = &st::settingsAttentionButton,
+		.onClick = [=] {
+			if (controller) {
+				Admin::ConfirmUnblockAll(controller);
+			}
+		},
+		.keywords = { u"blocked"_q, u"unblock"_q },
+	});
 });
 
 const SectionBuildMethod PrivacySection::kBuild = kMeta.build;

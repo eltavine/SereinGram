@@ -58,6 +58,7 @@ set(serein_sources
     serein/settings/subpages.cpp
     serein/app/auto_demo.cpp
     serein/admin/delete_mine.cpp
+    serein/admin/unblock_all.cpp
     serein/privacy/recorders.cpp
     serein/privacy/recorders_platform.cpp
     serein/menu/actions.cpp

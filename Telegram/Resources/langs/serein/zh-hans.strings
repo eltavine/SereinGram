@@ -442,6 +442,11 @@
 "lng_serein_delete_mine_sure" = "要为所有人删除你在“{chat}”中的全部消息吗？此操作无法撤销。";
 "lng_serein_delete_mine_done" = "已删除消息：{amount}";
 "lng_serein_delete_mine_none" = "在此对话中没有找到你的消息。";
+"lng_serein_unblock_all" = "解除屏蔽所有用户";
+"lng_serein_unblock_all_sure" = "要解除屏蔽列表中的所有用户和对话吗？他们将可以再次给你发消息和打电话。";
+"lng_serein_unblock_all_confirm" = "全部解除";
+"lng_serein_unblock_all_done" = "已解除屏蔽：{amount}";
+"lng_serein_unblock_all_failed" = "已解除 {amount} 个后停止，请稍后再试。";
 "lng_serein_alias_about" = "此名称只在本机的当前账号中显示。留空可恢复原名。";
 "lng_serein_alias_invalid" = "本地名称无效，或名称列表已满。";
 "lng_serein_alias_changed" = "本地名称已变化，请重新打开此窗口。";

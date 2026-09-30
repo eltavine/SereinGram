@@ -446,6 +446,11 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_delete_mine_sure" = "Delete all your messages in {chat} for everyone? This cannot be undone.";
 "lng_serein_delete_mine_done" = "Messages deleted: {amount}";
 "lng_serein_delete_mine_none" = "No messages of yours were found in this chat.";
+"lng_serein_unblock_all" = "Unblock all users";
+"lng_serein_unblock_all_sure" = "Unblock every user and chat on your blocked list? They will be able to message and call you again.";
+"lng_serein_unblock_all_confirm" = "Unblock all";
+"lng_serein_unblock_all_done" = "Unblocked: {amount}";
+"lng_serein_unblock_all_failed" = "Stopped after unblocking {amount}. Try again later.";
 "lng_serein_alias_about" = "This name is visible only in this account on this device. Leave it empty to restore the original name.";
 "lng_serein_alias_invalid" = "The local name is invalid or the list is full.";
 "lng_serein_alias_changed" = "The local name changed. Reopen this dialog and try again.";
