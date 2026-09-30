@@ -82,6 +82,8 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_confirm_send_gif" = "Send this GIF?";
 "lng_serein_confirm_start_call" = "Start a private call?";
 "lng_serein_forwarding" = "Forwarding";
+"lng_serein_sending" = "Sending";
+"lng_serein_send_silently" = "Always send silently";
 "lng_serein_forward_before_comment" = "Send forwarded content before the comment";
 "lng_serein_media" = "Media and stickers";
 "lng_serein_sticker_scale" = "Sticker size";

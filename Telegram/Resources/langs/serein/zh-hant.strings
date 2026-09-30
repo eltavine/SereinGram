@@ -78,6 +78,8 @@
 "lng_serein_confirm_send_gif" = "傳送這個 GIF？";
 "lng_serein_confirm_start_call" = "發起私人通話？";
 "lng_serein_forwarding" = "轉傳";
+"lng_serein_sending" = "傳送";
+"lng_serein_send_silently" = "總是靜音傳送";
 "lng_serein_forward_before_comment" = "先傳送轉傳內容，再傳送附言";
 "lng_serein_media" = "媒體與貼圖";
 "lng_serein_sticker_scale" = "貼圖大小";

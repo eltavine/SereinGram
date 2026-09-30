@@ -61,5 +61,7 @@ namespace Serein::Hooks::Compose {
 [[nodiscard]] rpl::producer<bool> ConfirmPrivateCallValue();
 [[nodiscard]] bool ForwardBeforeComment();
 [[nodiscard]] rpl::producer<bool> ForwardBeforeCommentValue();
+[[nodiscard]] bool SendSilently();
+[[nodiscard]] rpl::producer<bool> SendSilentlyValue();
 
 } // namespace Serein::Hooks::Compose

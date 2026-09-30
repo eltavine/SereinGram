@@ -22,6 +22,7 @@ set(serein_sources
     serein/app/lifecycle.cpp
     serein/app/modules.cpp
     serein/app/peer_menu.cpp
+    serein/app/send_options.cpp
     serein/app/tray_menu.cpp
     serein/app/updates.cpp
     serein/app/ghost_menu.cpp

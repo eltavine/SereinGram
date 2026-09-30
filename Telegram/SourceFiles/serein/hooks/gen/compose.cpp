@@ -222,4 +222,12 @@ rpl::producer<bool> ForwardBeforeCommentValue() {
 	return ForDevice().Value(Serein::Compose::kForwardBeforeComment);
 }
 
+bool SendSilently() {
+	return ForDevice().Get(Serein::Compose::kSendSilently);
+}
+
+rpl::producer<bool> SendSilentlyValue() {
+	return ForDevice().Value(Serein::Compose::kSendSilently);
+}
+
 } // namespace Serein::Hooks::Compose

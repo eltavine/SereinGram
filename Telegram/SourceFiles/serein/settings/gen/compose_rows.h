@@ -10,7 +10,7 @@
 
 namespace Serein::Compose {
 
-inline const auto kToggleRows = std::array<ToggleRow, 24>{ {
+inline const auto kToggleRows = std::array<ToggleRow, 25>{ {
 	{
 		&kHideAttachButton,
 		tr::lng_serein_hide_attach_button,
@@ -155,6 +155,12 @@ inline const auto kToggleRows = std::array<ToggleRow, 24>{ {
 		u"serein/compose/forward-before-comment"_q,
 		{ u"forward"_q, u"comment"_q, u"order"_q },
 	},
+	{
+		&kSendSilently,
+		tr::lng_serein_send_silently,
+		u"serein/compose/send-silently"_q,
+		{ u"silent"_q, u"notification"_q, u"send"_q },
+	},
 } };
 
 struct CustomRows {
@@ -224,6 +230,12 @@ inline void AddLayout(
 		{ u"forward"_q },
 	});
 	AddToggle(builder, kToggleRows[23]);
+	AddSection(builder, {
+		u"serein/compose/sending"_q,
+		tr::lng_serein_sending,
+		{ u"send"_q },
+	});
+	AddToggle(builder, kToggleRows[24]);
 }
 
 } // namespace Serein::Compose

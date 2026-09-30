@@ -206,6 +206,13 @@ inline constexpr auto kForwardBeforeComment = Option<bool>{
 	Category::Compose,
 	"lng_serein_forward_before_comment",
 	0 };
+inline constexpr auto kSendSilently = Option<bool>{
+	"serein.sendSilently",
+	Scope::Device,
+	false,
+	Category::Compose,
+	"lng_serein_send_silently",
+	0 };
 
 inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kHideAttachButton));
@@ -235,6 +242,7 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kPreviewRoundVideo));
 	Expects(registry.Add(kConfirmPrivateCall));
 	Expects(registry.Add(kForwardBeforeComment));
+	Expects(registry.Add(kSendSilently));
 }
 
 } // namespace Serein::Compose

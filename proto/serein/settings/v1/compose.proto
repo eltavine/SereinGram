@@ -141,4 +141,8 @@ message ComposeSettings {
     section: {title: "lng_serein_forwarding" id: "forwarding" keywords: ["forward"]}
     keywords: ["forward", "comment", "order"]
   }];
+  optional bool send_silently = 28 [(serein.options.v1.field) = {
+    section: {title: "lng_serein_sending" id: "sending" keywords: ["send"]}
+    keywords: ["silent", "notification", "send"]
+  }];
 }

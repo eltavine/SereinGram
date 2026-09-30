@@ -78,6 +78,8 @@
 "lng_serein_confirm_send_gif" = "发送这个 GIF？";
 "lng_serein_confirm_start_call" = "发起私聊通话？";
 "lng_serein_forwarding" = "转发";
+"lng_serein_sending" = "发送";
+"lng_serein_send_silently" = "总是静音发送";
 "lng_serein_forward_before_comment" = "先发送转发内容，再发送附言";
 "lng_serein_media" = "媒体与贴纸";
 "lng_serein_sticker_scale" = "贴纸大小";
