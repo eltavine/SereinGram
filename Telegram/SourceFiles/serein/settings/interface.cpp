@@ -2,6 +2,7 @@
 
 #include "serein/interface/options.h"
 #include "serein/hooks/interface/main_menu.h"
+#include "serein/interface/app_icon.h"
 #include "serein/settings/gen/interface_rows.h"
 #include "serein/settings/home.h"
 #include "serein/settings/restart.h"
@@ -199,6 +200,19 @@ const auto kMeta = BuildHelper({
 				.st = &st::settingsButtonNoIcon,
 				.onClick = [=] { controller->show(Box(Interface::MainMenuBox)); },
 				.keywords = { u"menu"_q, u"order"_q, u"visibility"_q },
+			});
+			builder.addButton({
+				.id = u"serein/interface/app-icon"_q,
+				.title = tr::lng_serein_app_icon(),
+				.st = &st::settingsButtonNoIcon,
+				.label = Interface::CustomAppIconValue(
+				) | rpl::map([](bool custom) {
+					return custom
+						? tr::lng_serein_app_icon_custom(tr::now)
+						: tr::lng_serein_app_icon_default(tr::now);
+				}),
+				.onClick = [=] { controller->show(Box(Interface::AppIconBox)); },
+				.keywords = { u"icon"_q, u"dock"_q, u"taskbar"_q },
 			});
 		},
 		.notificationDelay = [&] {

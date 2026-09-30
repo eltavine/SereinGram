@@ -11,6 +11,7 @@
 #include "serein/hooks/history.h"
 #include "serein/hooks/interface/roundness.h"
 #include "serein/hooks/interface/text.h"
+#include "serein/interface/app_icon.h"
 
 #include <array>
 
@@ -20,6 +21,7 @@ namespace {
 constexpr auto kModules = std::array{
 	Module{ "interface.roundness", Interface::StartRoundness },
 	Module{ "interface.text", Interface::StartUiText },
+	Module{ "interface.app_icon", Interface::StartAppIcon },
 	Module{ "history.retention", nullptr, Hooks::PruneHistory },
 	Module{ "history.removed_chats", nullptr, Hooks::WatchRemovedChats },
 	Module{ "updates.check", StartUpdateChecks },

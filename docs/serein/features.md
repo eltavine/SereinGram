@@ -127,7 +127,7 @@ SG-HIST-05 的“已编辑”标记文字已由 C09 实现，删除标记随 SG-
 | SG-APPEAR-04 | 应用图标角标、通知延迟（A12–A14） | Ni | Implemented | P2 |
 | SG-APPEAR-05 | 界面半角标点（A15） | Ni | Implemented | P2 |
 | SG-APPEAR-06 | 主字体与等宽字体自定义（主字体由上游 `customFontFamily` 提供；等宽字体的字体族写死在 lib_ui，需上游支持后接入） | Ad Ni | In Progress | P2 |
-| SG-APPEAR-07 | 应用图标选择 | Ad Ni | Planned | P2 |
+| SG-APPEAR-07 | 应用图标选择（界面设置“应用图标”：选择至少 64×64 的 PNG、JPEG 或 WebP 图片，缩到 512 像素以内存为 `tdata/serein_app_icon.png`，启动时经上游 `Window::OverrideApplicationIcon` 替换窗口与任务栏图标，macOS 另经 `base::SetCustomAppIcon` 替换程序坞与访达图标；可恢复默认；内置图标方案待有正式图标素材后再加） | Ad Ni | Implemented | P2 |
 | SG-APPEAR-08 | 以频道身份发言时显示频道徽标（消息页开关，默认开启：超级群中以广播频道身份发送的消息在名字右侧显示上游已有的“频道”标记；匿名管理员以群身份发言时不显示） | Ad Ni | Implemented | P2 |
 | SG-APPEAR-09 | 连续的文字、贴纸、圆形视频消息组的气泡尾巴修正 | Ad | Planned | P3 |
 | SG-APPEAR-10 | 圆角贴纸 | Ad | Planned | P3 |

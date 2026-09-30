@@ -216,6 +216,14 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_menu_media_bytes" = "Size in bytes";
 "lng_serein_menu_media_unknown" = "No media details are available.";
 "lng_serein_main_menu" = "Main menu";
+"lng_serein_app_icon" = "App icon";
+"lng_serein_app_icon_about" = "Choose a square image to use as the app icon on this device. It replaces the window and taskbar icon, and on macOS also the Dock and Finder icon.";
+"lng_serein_app_icon_choose" = "Choose image…";
+"lng_serein_app_icon_reset" = "Reset to default";
+"lng_serein_app_icon_invalid" = "Choose a PNG, JPEG or WebP image at least 64 × 64 pixels.";
+"lng_serein_app_icon_failed" = "Could not save the icon.";
+"lng_serein_app_icon_custom" = "Custom";
+"lng_serein_app_icon_default" = "Default";
 "lng_serein_main_menu_about" = "Drag rows to reorder them, or use each switch to show or hide an item. An empty title uses your account name. Settings stays visible. Changes appear when the menu is reopened.";
 "lng_serein_main_menu_title" = "Menu title (up to 96 characters)";
 "lng_serein_main_menu_seasonal" = "Show seasonal menu decorations";

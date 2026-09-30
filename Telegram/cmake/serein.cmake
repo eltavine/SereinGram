@@ -45,6 +45,7 @@ set(serein_sources
     serein/app/ghost_send.cpp
     serein/display/view_refresher.cpp
     serein/interface/main_menu.cpp
+    serein/interface/app_icon.cpp
     serein/interface/main_menu_model.cpp
     serein/interface/notifications.cpp
     serein/interface/text.cpp

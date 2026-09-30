@@ -212,6 +212,14 @@
 "lng_serein_menu_media_bytes" = "位元組數";
 "lng_serein_menu_media_unknown" = "沒有可用的媒體資訊。";
 "lng_serein_main_menu" = "主選單";
+"lng_serein_app_icon" = "應用程式圖示";
+"lng_serein_app_icon_about" = "選擇一張方形圖片作為本裝置上的應用程式圖示。它會替換視窗與工作列圖示，在 macOS 上也會替換 Dock 與 Finder 中的圖示。";
+"lng_serein_app_icon_choose" = "選擇圖片…";
+"lng_serein_app_icon_reset" = "恢復預設";
+"lng_serein_app_icon_invalid" = "請選擇至少 64 × 64 像素的 PNG、JPEG 或 WebP 圖片。";
+"lng_serein_app_icon_failed" = "無法儲存圖示。";
+"lng_serein_app_icon_custom" = "自訂";
+"lng_serein_app_icon_default" = "預設";
 "lng_serein_main_menu_about" = "拖曳各列調整順序，以開關顯示或隱藏選單項目。標題留空時顯示帳號名稱。「設定」始終可見。重新開啟選單後生效。";
 "lng_serein_main_menu_title" = "選單標題（最多 96 字元）";
 "lng_serein_main_menu_seasonal" = "顯示選單節日裝飾";

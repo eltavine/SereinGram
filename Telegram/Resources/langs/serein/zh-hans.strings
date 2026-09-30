@@ -212,6 +212,14 @@
 "lng_serein_menu_media_bytes" = "字节数";
 "lng_serein_menu_media_unknown" = "没有可用的媒体信息。";
 "lng_serein_main_menu" = "主菜单";
+"lng_serein_app_icon" = "应用图标";
+"lng_serein_app_icon_about" = "选择一张方形图片作为本设备上的应用图标。它会替换窗口与任务栏图标，在 macOS 上也会替换程序坞与访达中的图标。";
+"lng_serein_app_icon_choose" = "选择图片…";
+"lng_serein_app_icon_reset" = "恢复默认";
+"lng_serein_app_icon_invalid" = "请选择至少 64 × 64 像素的 PNG、JPEG 或 WebP 图片。";
+"lng_serein_app_icon_failed" = "无法保存图标。";
+"lng_serein_app_icon_custom" = "自定义";
+"lng_serein_app_icon_default" = "默认";
 "lng_serein_main_menu_about" = "拖动各行调整顺序，用开关显示或隐藏菜单项。标题留空时显示账号名称。“设置”始终可见。重新打开菜单后生效。";
 "lng_serein_main_menu_title" = "菜单标题（最多 96 字符）";
 "lng_serein_main_menu_seasonal" = "显示菜单节日装饰";
