@@ -14,6 +14,7 @@ void TestTranslationProtocols();
 void TestUpdates();
 void TestStickers();
 void TestRecentChats();
+void TestMentionQuery();
 void TestChinese();
 void TestAliases();
 void TestStickerCatalog();
@@ -108,6 +109,7 @@ int main() {
 		TestUpdates();
 		TestStickers();
 		TestRecentChats();
+		TestMentionQuery();
 		TestChinese();
 		TestAliases();
 		TestStickerCatalog();

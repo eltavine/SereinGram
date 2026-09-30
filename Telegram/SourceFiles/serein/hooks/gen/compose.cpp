@@ -158,6 +158,14 @@ rpl::producer<bool> SpaceOnEditValue() {
 	return ForDevice().Value(Serein::Compose::kSpaceOnEdit);
 }
 
+bool MentionMenu() {
+	return ForDevice().Get(Serein::Compose::kMentionMenu);
+}
+
+rpl::producer<bool> MentionMenuValue() {
+	return ForDevice().Value(Serein::Compose::kMentionMenu);
+}
+
 QString DefaultCodeLanguage() {
 	return ForDevice().Get(Serein::Compose::kDefaultCodeLanguage);
 }

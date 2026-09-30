@@ -261,6 +261,11 @@
 "lng_serein_quick_reply_one" = "快捷回复 1";
 "lng_serein_quick_reply_two" = "快捷回复 2";
 "lng_serein_quick_reply_insert" = "插入快捷回复 {index}";
+"lng_serein_mention_menu" = "在文本菜单中显示“提及…”";
+"lng_serein_mention_create" = "提及…";
+"lng_serein_mention_title" = "提及用户";
+"lng_serein_mention_placeholder" = "用户名、链接或用户 ID";
+"lng_serein_mention_not_found" = "未找到该用户。用户 ID 只对本账号已知的用户有效。";
 "lng_serein_config_changed_error" = "编辑期间设置发生了变化。请重新打开服务后再试。";
 "lng_serein_service_add_deepl" = "添加 DeepL 翻译";
 "lng_serein_service_add_google" = "添加 Google 翻译";

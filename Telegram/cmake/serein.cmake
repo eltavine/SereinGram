@@ -4,6 +4,9 @@ set(serein_sources
     serein/chats/promotions.cpp
     serein/compose/buttons.cpp
     serein/compose/confirm.cpp
+    serein/compose/field_menu.cpp
+    serein/compose/mention.cpp
+    serein/compose/mention_query.cpp
     serein/compose/placeholder.cpp
     serein/compose/spacing.cpp
     serein/compose/text.cpp

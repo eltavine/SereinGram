@@ -45,6 +45,8 @@ namespace Serein::Hooks::Compose {
 [[nodiscard]] rpl::producer<bool> SpaceOnSendValue();
 [[nodiscard]] bool SpaceOnEdit();
 [[nodiscard]] rpl::producer<bool> SpaceOnEditValue();
+[[nodiscard]] bool MentionMenu();
+[[nodiscard]] rpl::producer<bool> MentionMenuValue();
 [[nodiscard]] QString DefaultCodeLanguage();
 [[nodiscard]] rpl::producer<QString> DefaultCodeLanguageValue();
 [[nodiscard]] QByteArray QuickReplies();

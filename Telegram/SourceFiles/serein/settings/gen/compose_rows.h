@@ -10,7 +10,7 @@
 
 namespace Serein::Compose {
 
-inline const auto kToggleRows = std::array<ToggleRow, 25>{ {
+inline const auto kToggleRows = std::array<ToggleRow, 26>{ {
 	{
 		&kHideAttachButton,
 		tr::lng_serein_hide_attach_button,
@@ -120,6 +120,12 @@ inline const auto kToggleRows = std::array<ToggleRow, 25>{ {
 		{ u"spacing"_q, u"edit"_q },
 	},
 	{
+		&kMentionMenu,
+		tr::lng_serein_mention_menu,
+		u"serein/compose/mention-menu"_q,
+		{ u"mention"_q, u"format"_q },
+	},
+	{
 		&kConfirmSticker,
 		tr::lng_serein_confirm_sticker,
 		u"serein/compose/confirm-sticker"_q,
@@ -212,6 +218,7 @@ inline void AddLayout(
 	AddToggle(builder, kToggleRows[15]);
 	AddToggle(builder, kToggleRows[16]);
 	AddToggle(builder, kToggleRows[17]);
+	AddToggle(builder, kToggleRows[18]);
 	custom.defaultCodeLanguage();
 	custom.quickReplies();
 	AddSection(builder, {
@@ -219,23 +226,23 @@ inline void AddLayout(
 		tr::lng_serein_send_confirmation,
 		{ u"send"_q, u"confirm"_q },
 	});
-	AddToggle(builder, kToggleRows[18]);
 	AddToggle(builder, kToggleRows[19]);
 	AddToggle(builder, kToggleRows[20]);
 	AddToggle(builder, kToggleRows[21]);
 	AddToggle(builder, kToggleRows[22]);
+	AddToggle(builder, kToggleRows[23]);
 	AddSection(builder, {
 		u"serein/compose/forwarding"_q,
 		tr::lng_serein_forwarding,
 		{ u"forward"_q },
 	});
-	AddToggle(builder, kToggleRows[23]);
+	AddToggle(builder, kToggleRows[24]);
 	AddSection(builder, {
 		u"serein/compose/sending"_q,
 		tr::lng_serein_sending,
 		{ u"send"_q },
 	});
-	AddToggle(builder, kToggleRows[24]);
+	AddToggle(builder, kToggleRows[25]);
 }
 
 } // namespace Serein::Compose

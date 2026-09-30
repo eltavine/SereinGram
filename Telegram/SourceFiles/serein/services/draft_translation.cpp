@@ -1,4 +1,4 @@
-#include "serein/hooks/services/draft_translation.h"
+#include "serein/services/draft_translation.h"
 
 #include "serein/services/translation.h"
 #include "boxes/translate_box.h"

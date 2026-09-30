@@ -265,6 +265,11 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_quick_reply_one" = "Quick reply 1";
 "lng_serein_quick_reply_two" = "Quick reply 2";
 "lng_serein_quick_reply_insert" = "Insert quick reply {index}";
+"lng_serein_mention_menu" = "Show “Mention…” in the text menu";
+"lng_serein_mention_create" = "Mention…";
+"lng_serein_mention_title" = "Mention a user";
+"lng_serein_mention_placeholder" = "Username, link or user ID";
+"lng_serein_mention_not_found" = "User not found. A user ID works only for users this account already knows.";
 "lng_serein_config_changed_error" = "Settings changed while this editor was open. Reopen the service and try again.";
 "lng_serein_service_add_deepl" = "Add DeepL translation";
 "lng_serein_service_add_google" = "Add Google Translate";

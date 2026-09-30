@@ -145,6 +145,13 @@ inline constexpr auto kSpaceOnEdit = Option<bool>{
 	Category::Compose,
 	"lng_serein_space_on_edit",
 	0 };
+inline constexpr auto kMentionMenu = Option<bool>{
+	"serein.mentionMenu",
+	Scope::Device,
+	true,
+	Category::Compose,
+	"lng_serein_mention_menu",
+	0 };
 inline const auto kDefaultCodeLanguage = Option<QString>{
 	"serein.defaultCodeLanguage",
 	Scope::Device,
@@ -234,6 +241,7 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kDisableLinkPreview));
 	Expects(registry.Add(kSpaceOnSend));
 	Expects(registry.Add(kSpaceOnEdit));
+	Expects(registry.Add(kMentionMenu));
 	Expects(registry.Add(kDefaultCodeLanguage));
 	Expects(registry.Add(kQuickReplies));
 	Expects(registry.Add(kConfirmSticker));

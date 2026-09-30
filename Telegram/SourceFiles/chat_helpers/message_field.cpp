@@ -8,8 +8,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "chat_helpers/message_field.h"
 
 #include "serein/hooks/gen/compose.h"
-#include "serein/hooks/compose/text.h"
-#include "serein/hooks/services/draft_translation.h"
+#include "serein/hooks/compose/field_menu.h"
 
 #include "history/history_widget.h"
 #include "history/history.h" // History::session
@@ -571,10 +570,7 @@ auto InitMessageFieldHandlers(MessageFieldHandlersArgs &&args)
 	}, [paused] {
 		return On(PowerSaving::kChatSpoiler) || paused();
 	});
-	Serein::Compose::InstallQuickReplies(field);
-	if (args.show) {
-		Serein::InstallDraftTranslation(field, args.show);
-	}
+	Serein::Hooks::Compose::InstallFieldMenu(field, args.show);
 	field->setInstantReplaces(Ui::InstantReplaces::Default());
 	field->setInstantReplacesEnabled(
 		Core::App().settings().replaceEmojiValue(),
