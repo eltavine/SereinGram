@@ -73,6 +73,28 @@ jobs:
         shell: cmd
 
     steps:
+      # The Debug build fills the runner disk unless unused toolchains go.
+      - name: Free runner disk space.
+        shell: pwsh
+        run: |
+          Get-PSDrive C | Format-Table Name, Used, Free
+          $unused = @(
+            'C:\Android',
+            'C:\Program Files (x86)\Android',
+            'C:\Program Files\dotnet',
+            'C:\hostedtoolcache\windows\CodeQL',
+            'C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk',
+            'C:\Program Files\PostgreSQL',
+            'C:\Program Files\MySQL',
+            'C:\ghcup'
+          )
+          foreach ($path in $unused) {
+            if (Test-Path $path) {
+              cmd /c "rmdir /s /q `"$path`""
+            }
+          }
+          Get-PSDrive C | Format-Table Name, Used, Free
+
       - name: Prepare directories.
         run: |
           mkdir %userprofile%\TBuild\Libraries
