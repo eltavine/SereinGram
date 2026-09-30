@@ -12,13 +12,26 @@ message PrivacySettings {
     category: CATEGORY_PRIVACY
   };
 
-  optional bool demo_mode = 1;
-  optional bool hide_read_time = 2;
-  optional bool hide_share_phone_prompt = 3;
+  optional bool demo_mode = 1 [(serein.options.v1.field) = {
+    keywords: ["presentation", "capture"]
+    note: "lng_serein_demo_mode_note"
+  }];
+  optional bool hide_read_time = 2 [(serein.options.v1.field) = {
+    keywords: ["read", "time"]
+  }];
+  optional bool hide_share_phone_prompt = 3 [(serein.options.v1.field) = {
+    keywords: ["share", "phone"]
+  }];
   optional int32 profile_id_format = 4 [
     (buf.validate.field).int32 = {gte: 0, lte: 2}
   ];
-  optional bool show_profile_dc = 5;
-  optional bool hide_profile_gifts = 6;
-  optional bool hide_create_todo = 7;
+  optional bool show_profile_dc = 5 [(serein.options.v1.field) = {
+    keywords: ["profile", "DC"]
+  }];
+  optional bool hide_profile_gifts = 6 [(serein.options.v1.field) = {
+    keywords: ["profile", "gifts"]
+  }];
+  optional bool hide_create_todo = 7 [(serein.options.v1.field) = {
+    keywords: ["todo", "list"]
+  }];
 }

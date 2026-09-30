@@ -446,6 +446,8 @@
 "lng_serein_history_include_bots" = "包含機器人的訊息";
 "lng_serein_history_retention_days" = "歷史保留時長";
 "lng_serein_history_max_records" = "歷史記錄上限";
+"lng_serein_history_keep_forever" = "永久";
+"lng_serein_history_unlimited" = "不限";
 "lng_serein_history_note" = "此帳號收到的已刪除和已編輯訊息只以加密形式儲存在本機。";
 "lng_serein_menu_edit_history" = "編輯歷史";
 "lng_serein_menu_deleted_messages" = "已刪除的訊息";

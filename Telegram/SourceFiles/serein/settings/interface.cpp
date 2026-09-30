@@ -2,6 +2,7 @@
 
 #include "serein/interface/options.h"
 #include "serein/interface/main_menu.h"
+#include "serein/settings/gen/interface_rows.h"
 #include "serein/settings/home.h"
 #include "serein/settings/restart.h"
 #include "lang/lang_keys.h"
@@ -182,141 +183,79 @@ void AddDelay(
 	});
 }
 
-void AddToggle(
-		SectionBuilder &builder,
-		const Option<bool> &option,
-		rpl::producer<QString> title,
-		QString id,
-		QStringList keywords) {
-	const auto controller = builder.controller();
-	const auto button = builder.addButton({
-		.id = std::move(id),
-		.title = std::move(title),
-		.st = &st::settingsButtonNoIcon,
-		.toggled = ForDevice().Value(option),
-		.keywords = std::move(keywords),
-	});
-	if (button) {
-		button->toggledChanges(
-		) | rpl::on_next([option, controller](bool value) {
-			Expects(ForDevice().Set(option, value));
-			if (option.flags & Interface::kRestart) {
-				ShowRestartPrompt(controller);
-			}
-		}, button->lifetime());
-	}
-}
-
 const auto kMeta = BuildHelper({
 	.id = InterfaceSection::Id(),
 	.parentId = HomeId(),
 	.title = &tr::lng_serein_interface,
 	.icon = &st::menuIconChatBubble,
 }, [](SectionBuilder &builder) {
-	builder.addSubsectionTitle({
-		.id = u"serein/interface/roundness"_q,
-		.title = tr::lng_serein_roundness_and_shapes(),
-		.keywords = { u"corners"_q, u"shapes"_q },
-	});
-	AddRoundness(builder, Interface::kBubbleRoundness,
-		tr::lng_serein_bubble_roundness(),
-		u"serein/interface/bubble-roundness"_q,
-		{ u"bubble"_q, u"roundness"_q });
-	AddRoundness(builder, Interface::kAvatarRoundness,
-		tr::lng_serein_avatar_roundness(),
-		u"serein/interface/avatar-roundness"_q,
-		{ u"avatar"_q, u"roundness"_q });
 	const auto controller = builder.controller();
-	const auto button = builder.addButton({
-		.id = u"serein/interface/uniform-avatars"_q,
-		.title = tr::lng_serein_uniform_avatar_shapes(),
-		.st = &st::settingsButtonNoIcon,
-		.label = rpl::single(tr::lng_serein_restart_required(tr::now)),
-		.toggled = ForDevice().Value(Interface::kUniformAvatarShapes),
-		.keywords = { u"forum"_q, u"channel"_q, u"avatar"_q },
-		.shown = ForDevice().Value(Interface::kAvatarRoundness)
-			| rpl::map([](int value) { return value != 0; }),
+	Interface::AddLayout(builder, {
+		.bubbleRoundness = [&] {
+			AddRoundness(builder, Interface::kBubbleRoundness,
+				tr::lng_serein_bubble_roundness(),
+				u"serein/interface/bubble-roundness"_q,
+				{ u"bubble"_q, u"roundness"_q });
+		},
+		.avatarRoundness = [&] {
+			AddRoundness(builder, Interface::kAvatarRoundness,
+				tr::lng_serein_avatar_roundness(),
+				u"serein/interface/avatar-roundness"_q,
+				{ u"avatar"_q, u"roundness"_q });
+		},
+		.uniformAvatarShapes = [&] {
+			const auto button = builder.addButton({
+				.id = u"serein/interface/uniform-avatars"_q,
+				.title = tr::lng_serein_uniform_avatar_shapes(),
+				.st = &st::settingsButtonNoIcon,
+				.label = rpl::single(tr::lng_serein_restart_required(tr::now)),
+				.toggled = ForDevice().Value(Interface::kUniformAvatarShapes),
+				.keywords = { u"forum"_q, u"channel"_q, u"avatar"_q },
+				.shown = ForDevice().Value(Interface::kAvatarRoundness)
+					| rpl::map([](int value) { return value != 0; }),
+			});
+			if (button) {
+				button->toggledChanges(
+				) | rpl::on_next([=](bool value) {
+					Expects(ForDevice().Set(Interface::kUniformAvatarShapes, value));
+					ShowRestartPrompt(controller);
+				}, button->lifetime());
+			}
+		},
+		.textMessageWidth = [&] {
+			builder.addButton({
+				.id = u"serein/interface/text-width"_q,
+				.title = tr::lng_serein_text_message_width(),
+				.st = &st::settingsButtonNoIcon,
+				.label = ForDevice().Value(Interface::kTextMessageWidth)
+					| rpl::map([](int value) {
+						return value ? QString::number(value) + u"%"_q
+							: tr::lng_serein_preview_follow(tr::now);
+					}),
+				.onClick = [=] { controller->show(Box(TextWidthBox)); },
+				.keywords = { u"text"_q, u"width"_q },
+			});
+		},
+		.mainMenu = [&] {
+			builder.addButton({
+				.id = u"serein/interface/main-menu"_q,
+				.title = tr::lng_serein_main_menu(),
+				.st = &st::settingsButtonNoIcon,
+				.onClick = [=] { controller->show(Box(Interface::MainMenuBox)); },
+				.keywords = { u"menu"_q, u"order"_q, u"visibility"_q },
+			});
+		},
+		.notificationDelay = [&] {
+			AddDelay(builder, Interface::kNotificationDelay,
+				tr::lng_serein_notification_delay(),
+				u"serein/interface/notification-delay"_q);
+		},
+		.otherDeviceNotificationDelay = [&] {
+			AddDelay(builder, Interface::kOtherDeviceNotificationDelay,
+				tr::lng_serein_other_device_notification_delay(),
+				u"serein/interface/other-device-notification-delay"_q);
+		},
 	});
-	if (button) {
-		button->toggledChanges(
-		) | rpl::on_next([=](bool value) {
-			Expects(ForDevice().Set(Interface::kUniformAvatarShapes, value));
-			ShowRestartPrompt(controller);
-		}, button->lifetime());
-	}
-	builder.addSubsectionTitle({
-		.id = u"serein/interface/message-style"_q,
-		.title = tr::lng_serein_message_style(),
-		.keywords = { u"messages"_q, u"style"_q },
-	});
-	builder.addButton({
-		.id = u"serein/interface/text-width"_q,
-		.title = tr::lng_serein_text_message_width(),
-		.st = &st::settingsButtonNoIcon,
-		.label = ForDevice().Value(Interface::kTextMessageWidth)
-			| rpl::map([](int value) {
-				return value ? QString::number(value) + u"%"_q
-					: tr::lng_serein_preview_follow(tr::now);
-			}),
-		.onClick = [=] { controller->show(Box(TextWidthBox)); },
-		.keywords = { u"text"_q, u"width"_q },
-	});
-	AddToggle(builder, Interface::kWideChannelPosts,
-		tr::lng_serein_wide_channel_posts(),
-		u"serein/interface/wide-channel-posts"_q,
-		{ u"channel"_q, u"width"_q });
-	AddToggle(builder, Interface::kHideBubbleTail,
-		tr::lng_serein_hide_bubble_tail(),
-		u"serein/interface/hide-bubble-tail"_q,
-		{ u"bubble"_q, u"tail"_q });
-	AddToggle(builder, Interface::kThemeReplyColors,
-		tr::lng_serein_theme_reply_colors(),
-		u"serein/interface/theme-reply-colors"_q,
-		{ u"reply"_q, u"quote"_q, u"color"_q });
-	AddToggle(builder, Interface::kHideReplyThumbnail,
-		tr::lng_serein_hide_reply_thumbnail(),
-		u"serein/interface/hide-reply-thumbnail"_q,
-		{ u"reply"_q, u"thumbnail"_q });
-	AddToggle(builder, Interface::kIgnoreChatTheme,
-		tr::lng_serein_ignore_chat_theme(),
-		u"serein/interface/ignore-chat-theme"_q,
-		{ u"chat"_q, u"theme"_q, u"wallpaper"_q });
-	builder.addSubsectionTitle({
-		.id = u"serein/interface/main-menu-heading"_q,
-		.title = tr::lng_serein_main_menu(),
-		.keywords = { u"menu"_q, u"title"_q },
-	});
-	builder.addButton({
-		.id = u"serein/interface/main-menu"_q,
-		.title = tr::lng_serein_main_menu(),
-		.st = &st::settingsButtonNoIcon,
-		.onClick = [=] { controller->show(Box(Interface::MainMenuBox)); },
-		.keywords = { u"menu"_q, u"order"_q, u"visibility"_q },
-	});
-	builder.addSubsectionTitle({
-		.id = u"serein/interface/window-notification"_q,
-		.title = tr::lng_serein_window_notification(),
-		.keywords = { u"window"_q, u"notification"_q },
-	});
-	AddToggle(builder, Interface::kHideAppIconBadge,
-		tr::lng_serein_hide_app_icon_badge(),
-		u"serein/interface/hide-app-icon-badge"_q,
-		{ u"dock"_q, u"icon"_q, u"badge"_q });
-	AddDelay(builder, Interface::kNotificationDelay,
-		tr::lng_serein_notification_delay(),
-		u"serein/interface/notification-delay"_q);
-	AddDelay(builder, Interface::kOtherDeviceNotificationDelay,
-		tr::lng_serein_other_device_notification_delay(),
-		u"serein/interface/other-device-notification-delay"_q);
-	builder.addSubsectionTitle({
-		.id = u"serein/interface/text"_q,
-		.title = tr::lng_serein_ui_text(),
-		.keywords = { u"text"_q, u"punctuation"_q },
-	});
-	AddToggle(builder, Interface::kHalfwidthUiPunctuation,
-		tr::lng_serein_halfwidth_ui_punctuation(),
-		u"serein/interface/halfwidth-ui-punctuation"_q,
-		{ u"text"_q, u"punctuation"_q });
 });
 
 const SectionBuildMethod InterfaceSection::kBuild = kMeta.build;

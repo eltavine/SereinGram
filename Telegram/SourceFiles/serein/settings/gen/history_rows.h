@@ -15,19 +15,19 @@ inline const auto kToggleRows = std::array<ToggleRow, 3>{ {
 		&kHistorySaveDeleted,
 		tr::lng_serein_history_save_deleted,
 		u"serein/history/history-save-deleted"_q,
-		{  },
+		{ u"deleted"_q, u"anti-recall"_q, u"history"_q },
 	},
 	{
 		&kHistorySaveEdits,
 		tr::lng_serein_history_save_edits,
 		u"serein/history/history-save-edits"_q,
-		{  },
+		{ u"edit"_q, u"history"_q },
 	},
 	{
 		&kHistoryIncludeBots,
 		tr::lng_serein_history_include_bots,
 		u"serein/history/history-include-bots"_q,
-		{  },
+		{ u"bots"_q, u"history"_q },
 	},
 } };
 
@@ -44,6 +44,7 @@ inline void AddLayout(
 	AddToggle(builder, kToggleRows[2]);
 	custom.historyRetentionDays();
 	custom.historyMaxRecords();
+	AddNote(builder, tr::lng_serein_history_note);
 }
 
 } // namespace Serein::HistorySettings

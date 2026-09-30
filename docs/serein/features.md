@@ -45,10 +45,10 @@ Nagram 的品牌政策要求分支使用不同品牌并替换 Nagram 名称与�
 | SG-CORE-03 | 存储端口与适配器：设备偏好、账号偏好、历史库 | D | In Progress | P0 |
 | SG-CORE-04 | 上游挂钩门面 `serein/hooks`，上游文件只调用门面 | D | Planned | P0 |
 | SG-CORE-05 | 功能模块注册与生命周期（应用、会话、窗口作用域） | D | Planned | P0 |
-| SG-CORE-06 | 设置页与搜索索引由 schema 元数据生成（开关、选项、数值、文本、子页） | D | In Progress | P0 |
+| SG-CORE-06 | 设置页与搜索索引由 schema 元数据生成（开关、选项、数值、文本、子页）：开关行、小标题、说明、依赖开关与自定义行位置已由 proto 生成 `AddLayout`，界面、聊天、消息、写作、媒体、隐私（含幽灵与历史）六页已迁移；数值与选项控件待生成 | D | In Progress | P0 |
 | SG-CORE-07 | 英文、简体、繁体内置文案与一致性检查 | Ni Na | Implemented | P0 |
 | SG-CORE-08 | 配置管理：已修改项、导出、导入差异预览、诊断信息（J01–J04） | Ni Na | Implemented | P1 |
-| SG-CORE-09 | 守卫：源文件 ≤ 1000 行、模块依赖方向、上游侵入预算、生成代码漂移 | D | In Progress | P0 |
+| SG-CORE-09 | 守卫：源文件 ≤ 1000 行、模块依赖方向、上游侵入预算、生成代码漂移 | D | Implemented | P0 |
 | SG-CORE-10 | 测试：纯逻辑单元测试与 `-testagent` 界面场景 | D | Implemented | P0 |
 | SG-CORE-11 | 更多界面语言的社区翻译平台接入 | Ad Na | Planned | P3 |
 
@@ -77,7 +77,7 @@ Nagram 的品牌政策要求分支使用不同品牌并替换 Nagram 名称与�
 | SG-HIST-01 | 保存已接收的删除消息并在原位显示，附删除标记（防撤回） | Ad Aa Na | In Progress | P1 |
 | SG-HIST-02 | 保存编辑历史，在消息菜单查看各版本 | Ad Aa Na | In Progress | P1 |
 | SG-HIST-03 | 历史库加密存储（账号本地密钥派生），退出账号时按设置清理（存储端口与 Qt SQL 适配器已实现） | D | In Progress | P1 |
-| SG-HIST-04 | 保留期限、容量上限、单对话清理与全部清理 | Na | In Progress | P1 |
+| SG-HIST-04 | 保留期限、容量上限、单对话清理与全部清理（保留天数与条数上限已有设置行） | Na | In Progress | P1 |
 | SG-HIST-05 | 自定义已删除、已编辑标记文字；已删除消息半透明 | Aa Na | In Progress | P2 |
 | SG-HIST-06 | 按对话浏览已删除消息 | Ad Aa | In Progress | P2 |
 | SG-HIST-07 | 是否记录机器人消息；按对话排除 | Na | Planned | P2 |
@@ -263,7 +263,7 @@ SG-HIST-05 的“已编辑”标记文字已由 C09 实现，删除标记随 SG-
 | --- | --- | --- | --- | --- |
 | SG-TG-01 | Telegram 全部功能保留；Serein 功能全部关闭时行为与上游一致 | T | In Progress | P0 |
 | SG-TG-02 | 每个上游版本（beta 与 stable）同步一次，同步后三平台 CI 通过才发布 | T | Planned | P0 |
-| SG-TG-03 | 上游侵入预算：上游文件数、新增行数、挂钩数在 CI 中统计并设上限 | D | Planned | P0 |
+| SG-TG-03 | 上游侵入预算：上游文件数、新增行数、挂钩数在 CI 中统计并设上限 | D | Implemented | P0 |
 
 ## 需求族映射
 

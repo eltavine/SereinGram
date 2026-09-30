@@ -450,6 +450,8 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_history_include_bots" = "Include messages from bots";
 "lng_serein_history_retention_days" = "Keep history for";
 "lng_serein_history_max_records" = "History record limit";
+"lng_serein_history_keep_forever" = "Forever";
+"lng_serein_history_unlimited" = "Unlimited";
 "lng_serein_history_note" = "Deleted and edited messages received by this account are stored encrypted on this device only.";
 "lng_serein_menu_edit_history" = "Edit history";
 "lng_serein_menu_deleted_messages" = "Deleted messages";

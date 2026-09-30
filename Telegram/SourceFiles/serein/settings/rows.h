@@ -24,6 +24,17 @@ struct SectionRow {
 	QStringList keywords;
 };
 
+struct NumberRow {
+	const Option<int> *option = nullptr;
+	tr::phrase<> title;
+	QString id;
+	QStringList keywords;
+	int minimum = 0;
+	int maximum = 0;
+	tr::phrase<> zeroLabel;
+	Fn<QString(int)> format;
+};
+
 class CustomRow final {
 public:
 	template <typename Callback>
@@ -50,6 +61,9 @@ void AddToggles(
 void AddSection(
 	::Settings::Builder::SectionBuilder &builder,
 	const SectionRow &row);
+void AddNumber(
+	::Settings::Builder::SectionBuilder &builder,
+	const NumberRow &row);
 void AddNote(
 	::Settings::Builder::SectionBuilder &builder,
 	tr::phrase<> text);

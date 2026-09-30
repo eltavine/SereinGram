@@ -1,8 +1,9 @@
 #include "serein/settings/privacy.h"
 
-#include "serein/features/ghost/model/policy.h"
-#include "serein/features/history/model/recorder.h"
 #include "serein/privacy/options.h"
+#include "serein/settings/gen/ghost_rows.h"
+#include "serein/settings/gen/history_rows.h"
+#include "serein/settings/gen/privacy_rows.h"
 #include "serein/settings/home.h"
 #include "lang/lang_keys.h"
 #include "main/main_session.h"
@@ -39,49 +40,6 @@ public:
 
 	static const SectionBuildMethod kBuild;
 };
-
-void AddToggle(
-		SectionBuilder &builder,
-		const Option<bool> &option,
-		rpl::producer<QString> title,
-		QString id,
-		QStringList keywords) {
-	const auto button = builder.addButton({
-		.id = std::move(id),
-		.title = std::move(title),
-		.st = &st::settingsButtonNoIcon,
-		.toggled = ForDevice().Value(option),
-		.keywords = std::move(keywords),
-	});
-	if (button) {
-		button->toggledChanges(
-		) | rpl::on_next([option](bool value) {
-			Expects(ForDevice().Set(option, value));
-		}, button->lifetime());
-	}
-}
-
-void AddAccountToggle(
-		SectionBuilder &builder,
-		const Option<bool> &option,
-		rpl::producer<QString> title,
-		QString id,
-		QStringList keywords) {
-	const auto session = builder.session();
-	const auto button = builder.addButton({
-		.id = std::move(id),
-		.title = std::move(title),
-		.st = &st::settingsButtonNoIcon,
-		.toggled = ForAccount(session).Value(option),
-		.keywords = std::move(keywords),
-	});
-	if (button) {
-		button->toggledChanges(
-		) | rpl::on_next([=](bool value) {
-			Expects(ForAccount(session).Set(option, value));
-		}, button->lifetime());
-	}
-}
 
 QString ProfileIdFormatLabel(int format) {
 	return (format == 1)
@@ -127,83 +85,48 @@ const auto kMeta = BuildHelper({
 			session->saveSettingsDelayed();
 		}, button->lifetime());
 	}
-	AddAccountToggle(builder, Ghost::kGhostMode,
-		tr::lng_serein_ghost_mode(),
-		u"serein/privacy/ghost-mode"_q,
-		{ u"ghost"_q, u"online"_q, u"typing"_q });
-	AddAccountToggle(builder, Ghost::kGhostHideReadReceipts,
-		tr::lng_serein_ghost_hide_read_receipts(),
-		u"serein/privacy/ghost-hide-read-receipts"_q,
-		{ u"ghost"_q, u"read"_q, u"receipts"_q });
-	AddAccountToggle(builder, Ghost::kGhostHideOnline,
-		tr::lng_serein_ghost_hide_online(),
-		u"serein/privacy/ghost-hide-online"_q,
-		{ u"ghost"_q, u"online"_q });
-	AddAccountToggle(builder, Ghost::kGhostHideTyping,
-		tr::lng_serein_ghost_hide_typing(),
-		u"serein/privacy/ghost-hide-typing"_q,
-		{ u"ghost"_q, u"typing"_q });
-	AddAccountToggle(builder, Ghost::kGhostHideStoryViews,
-		tr::lng_serein_ghost_hide_story_views(),
-		u"serein/privacy/ghost-hide-story-views"_q,
-		{ u"ghost"_q, u"stories"_q });
-	AddAccountToggle(builder, Ghost::kGhostHideViewIncrements,
-		tr::lng_serein_ghost_hide_view_increments(),
-		u"serein/privacy/ghost-hide-view-increments"_q,
-		{ u"ghost"_q, u"views"_q });
-	AddAccountToggle(builder, Ghost::kGhostMarkReadAfterSending,
-		tr::lng_serein_ghost_mark_read_after_sending(),
-		u"serein/privacy/ghost-mark-read-after-sending"_q,
-		{ u"ghost"_q, u"read"_q, u"send"_q });
-	builder.addDividerText(tr::lng_serein_ghost_note());
-	AddAccountToggle(builder, HistorySettings::kHistorySaveDeleted,
-		tr::lng_serein_history_save_deleted(),
-		u"serein/privacy/history-save-deleted"_q,
-		{ u"deleted"_q, u"anti-recall"_q, u"history"_q });
-	AddAccountToggle(builder, HistorySettings::kHistorySaveEdits,
-		tr::lng_serein_history_save_edits(),
-		u"serein/privacy/history-save-edits"_q,
-		{ u"edit"_q, u"history"_q });
-	AddAccountToggle(builder, HistorySettings::kHistoryIncludeBots,
-		tr::lng_serein_history_include_bots(),
-		u"serein/privacy/history-include-bots"_q,
-		{ u"bots"_q, u"history"_q });
-	builder.addDividerText(tr::lng_serein_history_note());
-	AddToggle(builder, Privacy::kDemoMode,
-		tr::lng_serein_demo_mode(),
-		u"serein/privacy/demo-mode"_q,
-		{ u"presentation"_q, u"capture"_q });
-	builder.addDividerText(tr::lng_serein_demo_mode_note());
-	AddToggle(builder, Privacy::kHideReadTime,
-		tr::lng_serein_hide_read_time(),
-		u"serein/privacy/hide-read-time"_q,
-		{ u"read"_q, u"time"_q });
-	AddToggle(builder, Privacy::kHideSharePhonePrompt,
-		tr::lng_serein_hide_share_phone_prompt(),
-		u"serein/privacy/hide-share-phone-prompt"_q,
-		{ u"share"_q, u"phone"_q });
-	const auto controller = builder.controller();
-	builder.addButton({
-		.id = u"serein/privacy/profile-id-format"_q,
-		.title = tr::lng_serein_profile_id_format(),
-		.st = &st::settingsButtonNoIcon,
-		.label = ForDevice().Value(Privacy::kProfileIdFormat)
-			| rpl::map(ProfileIdFormatLabel),
-		.onClick = [=] { controller->show(Box(ProfileIdFormatBox)); },
-		.keywords = { u"profile"_q, u"ID"_q },
+	Ghost::AddLayout(builder);
+	HistorySettings::AddLayout(builder, {
+		.historyRetentionDays = [&] {
+			AddNumber(builder, {
+				.option = &HistorySettings::kHistoryRetentionDays,
+				.title = tr::lng_serein_history_retention_days,
+				.id = u"serein/history/history-retention-days"_q,
+				.keywords = { u"history"_q, u"retention"_q, u"days"_q },
+				.minimum = 1,
+				.maximum = 3650,
+				.zeroLabel = tr::lng_serein_history_keep_forever,
+				.format = [](int days) {
+					return tr::lng_days(tr::now, lt_count, days);
+				},
+			});
+		},
+		.historyMaxRecords = [&] {
+			AddNumber(builder, {
+				.option = &HistorySettings::kHistoryMaxRecords,
+				.title = tr::lng_serein_history_max_records,
+				.id = u"serein/history/history-max-records"_q,
+				.keywords = { u"history"_q, u"limit"_q, u"records"_q },
+				.minimum = 1,
+				.maximum = 10000000,
+				.zeroLabel = tr::lng_serein_history_unlimited,
+			});
+		},
 	});
-	AddToggle(builder, Privacy::kShowProfileDc,
-		tr::lng_serein_show_profile_dc(),
-		u"serein/privacy/show-profile-dc"_q,
-		{ u"profile"_q, u"DC"_q });
-	AddToggle(builder, Privacy::kHideProfileGifts,
-		tr::lng_serein_hide_profile_gifts(),
-		u"serein/privacy/hide-profile-gifts"_q,
-		{ u"profile"_q, u"gifts"_q });
-	AddToggle(builder, Privacy::kHideCreateTodo,
-		tr::lng_serein_hide_create_todo(),
-		u"serein/privacy/hide-create-todo"_q,
-		{ u"todo"_q, u"list"_q });
+	const auto controller = builder.controller();
+	Privacy::AddLayout(builder, {
+		.profileIdFormat = [&] {
+			builder.addButton({
+				.id = u"serein/privacy/profile-id-format"_q,
+				.title = tr::lng_serein_profile_id_format(),
+				.st = &st::settingsButtonNoIcon,
+				.label = ForDevice().Value(Privacy::kProfileIdFormat)
+					| rpl::map(ProfileIdFormatLabel),
+				.onClick = [=] { controller->show(Box(ProfileIdFormatBox)); },
+				.keywords = { u"profile"_q, u"ID"_q },
+			});
+		},
+	});
 });
 
 const SectionBuildMethod PrivacySection::kBuild = kMeta.build;

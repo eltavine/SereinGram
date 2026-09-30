@@ -60,7 +60,7 @@ inline constexpr auto kGhostUseScheduledMessages = Option<bool>{
 	false,
 	Category::Privacy,
 	"lng_serein_ghost_use_scheduled_messages",
-	0 };
+	static_cast<unsigned>(Flag::Hidden) };
 
 inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kGhostMode));

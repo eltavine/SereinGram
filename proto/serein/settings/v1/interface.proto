@@ -14,6 +14,7 @@ message InterfaceSettings {
 
   optional int32 bubble_roundness = 1 [
     (serein.options.v1.field) = {
+      section: {title: "lng_serein_roundness_and_shapes" id: "roundness" keywords: ["corners", "shapes"]}
       restart: true
     },
     (buf.validate.field).int32 = {gte: 10, lte: 100}
@@ -26,43 +27,55 @@ message InterfaceSettings {
   ];
   optional bool uniform_avatar_shapes = 3 [
     (serein.options.v1.field) = {
+      custom_ui: true
       restart: true
     }
   ];
   optional int32 text_message_width = 4 [
     (serein.options.v1.field) = {
+      section: {title: "lng_serein_message_style" id: "message-style" keywords: ["messages", "style"]}
       refresh: REFRESH_MESSAGE_VIEW
     },
     (buf.validate.field).int32 = {gte: 50, lte: 400}
   ];
   optional bool wide_channel_posts = 5 [
     (serein.options.v1.field) = {
+      keywords: ["channel", "width"]
       refresh: REFRESH_MESSAGE_VIEW
     }
   ];
   optional bool hide_bubble_tail = 6 [
     (serein.options.v1.field) = {
+      keywords: ["bubble", "tail"]
       refresh: REFRESH_MESSAGE_VIEW
     }
   ];
   optional bool theme_reply_colors = 7 [
     (serein.options.v1.field) = {
+      keywords: ["reply", "quote", "color"]
       refresh: REFRESH_MESSAGE_VIEW
     }
   ];
   optional bool hide_reply_thumbnail = 8 [
     (serein.options.v1.field) = {
+      keywords: ["reply", "thumbnail"]
       refresh: REFRESH_MESSAGE_VIEW
     }
   ];
-  optional bool ignore_chat_theme = 9;
+  optional bool ignore_chat_theme = 9 [(serein.options.v1.field) = {
+    keywords: ["chat", "theme", "wallpaper"]
+  }];
   optional bytes main_menu = 10 [
     (serein.options.v1.field) = {
+      section: {title: "lng_serein_main_menu" id: "main-menu-heading" keywords: ["menu", "title"]}
       cpp_name: "kMainMenuConfig"
       validator: "ValidMainMenuBytes"
     }
   ];
-  optional bool hide_app_icon_badge = 11;
+  optional bool hide_app_icon_badge = 11 [(serein.options.v1.field) = {
+    section: {title: "lng_serein_window_notification" id: "window-notification" keywords: ["window", "notification"]}
+    keywords: ["dock", "icon", "badge"]
+  }];
   optional int32 notification_delay = 12 [
     (buf.validate.field).int32 = {in: [0, 500, 1000, 2000, 5000, 10000, 30000, 60000]}
   ];
@@ -71,6 +84,8 @@ message InterfaceSettings {
   ];
   optional bool halfwidth_ui_punctuation = 14 [
     (serein.options.v1.field) = {
+      section: {title: "lng_serein_ui_text" id: "text" keywords: ["text", "punctuation"]}
+      keywords: ["text", "punctuation"]
       restart: true
     }
   ];

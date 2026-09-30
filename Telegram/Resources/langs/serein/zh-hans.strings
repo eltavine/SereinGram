@@ -446,6 +446,8 @@
 "lng_serein_history_include_bots" = "包含机器人的消息";
 "lng_serein_history_retention_days" = "历史保留时长";
 "lng_serein_history_max_records" = "历史记录上限";
+"lng_serein_history_keep_forever" = "永久";
+"lng_serein_history_unlimited" = "不限";
 "lng_serein_history_note" = "此账号收到的已删除和已编辑消息只以加密形式保存在本机。";
 "lng_serein_menu_edit_history" = "编辑历史";
 "lng_serein_menu_deleted_messages" = "已删除的消息";

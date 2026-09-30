@@ -1,21 +1,59 @@
 #include "serein/settings/rows.h"
 
 #include "serein/settings/restart.h"
+#include "ui/layers/generic_box.h"
 #include "ui/widgets/buttons.h"
+#include "ui/widgets/fields/input_field.h"
 #include "window/window_session_controller.h"
+#include "styles/style_layers.h"
 #include "styles/style_settings.h"
+#include "styles/style_widgets.h"
 
 namespace Serein {
 namespace {
 
+template <typename Type>
 [[nodiscard]] Fn<Options&()> StoreFor(
 		::Settings::Builder::SectionBuilder &builder,
-		const Option<bool> &option) {
+		const Option<Type> &option) {
 	if (option.scope == Scope::Account) {
 		const auto session = builder.session();
 		return [=]() -> Options & { return ForAccount(session); };
 	}
 	return []() -> Options & { return ForDevice(); };
+}
+
+void NumberBox(
+		not_null<Ui::GenericBox*> box,
+		NumberRow row,
+		Fn<Options&()> store) {
+	box->setTitle(row.title());
+	const auto current = store().Get(*row.option);
+	const auto field = box->addRow(object_ptr<Ui::InputField>(
+		box,
+		st::defaultInputField,
+		row.zeroLabel(),
+		current ? QString::number(current) : QString()));
+	field->setInputMethodHints(Qt::ImhDigitsOnly);
+	box->setFocusCallback([=] { field->setFocusFast(); });
+	const auto submit = [=] {
+		const auto text = field->getLastText().trimmed();
+		auto valid = false;
+		const auto value = text.isEmpty() ? 0 : text.toInt(&valid);
+		if (!text.isEmpty()
+			&& (!valid || value < row.minimum || value > row.maximum)) {
+			field->showError();
+			return;
+		} else if (!store().Set(*row.option, value)) {
+			field->showError();
+			return;
+		}
+		box->closeBox();
+	};
+	field->submits(
+	) | rpl::on_next([=](auto) { submit(); }, field->lifetime());
+	box->addButton(tr::lng_settings_save(), submit);
+	box->addButton(tr::lng_cancel(), [=] { box->closeBox(); });
 }
 
 } // namespace
@@ -62,6 +100,34 @@ void AddToggles(
 	for (const auto &row : rows) {
 		AddToggle(builder, row);
 	}
+}
+
+void AddNumber(
+		::Settings::Builder::SectionBuilder &builder,
+		const NumberRow &row) {
+	Expects(row.option != nullptr);
+	Expects(row.minimum <= row.maximum);
+
+	const auto store = StoreFor(builder, *row.option);
+	const auto controller = builder.controller();
+	builder.addButton({
+		.id = row.id,
+		.title = row.title(),
+		.st = &st::settingsButtonNoIcon,
+		.label = store().Value(*row.option) | rpl::map([=](int value) {
+			return !value
+				? row.zeroLabel(tr::now)
+				: row.format
+				? row.format(value)
+				: QString::number(value);
+		}),
+		.onClick = [=] {
+			if (controller) {
+				controller->show(Box(NumberBox, row, store));
+			}
+		},
+		.keywords = row.keywords,
+	});
 }
 
 void AddSection(

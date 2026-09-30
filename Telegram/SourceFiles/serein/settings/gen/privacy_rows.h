@@ -15,37 +15,37 @@ inline const auto kToggleRows = std::array<ToggleRow, 6>{ {
 		&kDemoMode,
 		tr::lng_serein_demo_mode,
 		u"serein/privacy/demo-mode"_q,
-		{  },
+		{ u"presentation"_q, u"capture"_q },
 	},
 	{
 		&kHideReadTime,
 		tr::lng_serein_hide_read_time,
 		u"serein/privacy/hide-read-time"_q,
-		{  },
+		{ u"read"_q, u"time"_q },
 	},
 	{
 		&kHideSharePhonePrompt,
 		tr::lng_serein_hide_share_phone_prompt,
 		u"serein/privacy/hide-share-phone-prompt"_q,
-		{  },
+		{ u"share"_q, u"phone"_q },
 	},
 	{
 		&kShowProfileDc,
 		tr::lng_serein_show_profile_dc,
 		u"serein/privacy/show-profile-dc"_q,
-		{  },
+		{ u"profile"_q, u"DC"_q },
 	},
 	{
 		&kHideProfileGifts,
 		tr::lng_serein_hide_profile_gifts,
 		u"serein/privacy/hide-profile-gifts"_q,
-		{  },
+		{ u"profile"_q, u"gifts"_q },
 	},
 	{
 		&kHideCreateTodo,
 		tr::lng_serein_hide_create_todo,
 		u"serein/privacy/hide-create-todo"_q,
-		{  },
+		{ u"todo"_q, u"list"_q },
 	},
 } };
 
@@ -57,6 +57,7 @@ inline void AddLayout(
 		::Settings::Builder::SectionBuilder &builder,
 		const CustomRows &custom) {
 	AddToggle(builder, kToggleRows[0]);
+	AddNote(builder, tr::lng_serein_demo_mode_note);
 	AddToggle(builder, kToggleRows[1]);
 	AddToggle(builder, kToggleRows[2]);
 	custom.profileIdFormat();

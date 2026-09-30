@@ -12,17 +12,26 @@ message HistorySettings {
     category: CATEGORY_PRIVACY
   };
 
-  optional bool history_save_deleted = 1;
-  optional bool history_save_edits = 2;
-  optional bool history_include_bots = 3;
+  optional bool history_save_deleted = 1 [(serein.options.v1.field) = {
+    keywords: ["deleted", "anti-recall", "history"]
+  }];
+  optional bool history_save_edits = 2 [(serein.options.v1.field) = {
+    keywords: ["edit", "history"]
+  }];
+  optional bool history_include_bots = 3 [(serein.options.v1.field) = {
+    keywords: ["bots", "history"]
+  }];
   // Zero keeps records until they are cleared by hand.
   optional int32 history_retention_days = 4 [(buf.validate.field).int32 = {
     gte: 0
     lte: 3650
   }];
   // Zero keeps any number of records.
-  optional int32 history_max_records = 5 [(buf.validate.field).int32 = {
-    gte: 0
-    lte: 10000000
-  }];
+  optional int32 history_max_records = 5 [
+    (serein.options.v1.field) = {note: "lng_serein_history_note"},
+    (buf.validate.field).int32 = {
+      gte: 0
+      lte: 10000000
+    }
+  ];
 }

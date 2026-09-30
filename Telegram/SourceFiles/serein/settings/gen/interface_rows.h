@@ -10,60 +10,55 @@
 
 namespace Serein::Interface {
 
-inline const auto kToggleRows = std::array<ToggleRow, 8>{ {
-	{
-		&kUniformAvatarShapes,
-		tr::lng_serein_uniform_avatar_shapes,
-		u"serein/interface/uniform-avatar-shapes"_q,
-		{  },
-	},
+inline const auto kToggleRows = std::array<ToggleRow, 7>{ {
 	{
 		&kWideChannelPosts,
 		tr::lng_serein_wide_channel_posts,
 		u"serein/interface/wide-channel-posts"_q,
-		{  },
+		{ u"channel"_q, u"width"_q },
 	},
 	{
 		&kHideBubbleTail,
 		tr::lng_serein_hide_bubble_tail,
 		u"serein/interface/hide-bubble-tail"_q,
-		{  },
+		{ u"bubble"_q, u"tail"_q },
 	},
 	{
 		&kThemeReplyColors,
 		tr::lng_serein_theme_reply_colors,
 		u"serein/interface/theme-reply-colors"_q,
-		{  },
+		{ u"reply"_q, u"quote"_q, u"color"_q },
 	},
 	{
 		&kHideReplyThumbnail,
 		tr::lng_serein_hide_reply_thumbnail,
 		u"serein/interface/hide-reply-thumbnail"_q,
-		{  },
+		{ u"reply"_q, u"thumbnail"_q },
 	},
 	{
 		&kIgnoreChatTheme,
 		tr::lng_serein_ignore_chat_theme,
 		u"serein/interface/ignore-chat-theme"_q,
-		{  },
+		{ u"chat"_q, u"theme"_q, u"wallpaper"_q },
 	},
 	{
 		&kHideAppIconBadge,
 		tr::lng_serein_hide_app_icon_badge,
 		u"serein/interface/hide-app-icon-badge"_q,
-		{  },
+		{ u"dock"_q, u"icon"_q, u"badge"_q },
 	},
 	{
 		&kHalfwidthUiPunctuation,
 		tr::lng_serein_halfwidth_ui_punctuation,
 		u"serein/interface/halfwidth-ui-punctuation"_q,
-		{  },
+		{ u"text"_q, u"punctuation"_q },
 	},
 } };
 
 struct CustomRows {
 	CustomRow bubbleRoundness;
 	CustomRow avatarRoundness;
+	CustomRow uniformAvatarShapes;
 	CustomRow textMessageWidth;
 	CustomRow mainMenu;
 	CustomRow notificationDelay;
@@ -73,20 +68,45 @@ struct CustomRows {
 inline void AddLayout(
 		::Settings::Builder::SectionBuilder &builder,
 		const CustomRows &custom) {
+	AddSection(builder, {
+		u"serein/interface/roundness"_q,
+		tr::lng_serein_roundness_and_shapes,
+		{ u"corners"_q, u"shapes"_q },
+	});
 	custom.bubbleRoundness();
 	custom.avatarRoundness();
-	AddToggle(builder, kToggleRows[0]);
+	custom.uniformAvatarShapes();
+	AddSection(builder, {
+		u"serein/interface/message-style"_q,
+		tr::lng_serein_message_style,
+		{ u"messages"_q, u"style"_q },
+	});
 	custom.textMessageWidth();
+	AddToggle(builder, kToggleRows[0]);
 	AddToggle(builder, kToggleRows[1]);
 	AddToggle(builder, kToggleRows[2]);
 	AddToggle(builder, kToggleRows[3]);
 	AddToggle(builder, kToggleRows[4]);
-	AddToggle(builder, kToggleRows[5]);
+	AddSection(builder, {
+		u"serein/interface/main-menu-heading"_q,
+		tr::lng_serein_main_menu,
+		{ u"menu"_q, u"title"_q },
+	});
 	custom.mainMenu();
-	AddToggle(builder, kToggleRows[6]);
+	AddSection(builder, {
+		u"serein/interface/window-notification"_q,
+		tr::lng_serein_window_notification,
+		{ u"window"_q, u"notification"_q },
+	});
+	AddToggle(builder, kToggleRows[5]);
 	custom.notificationDelay();
 	custom.otherDeviceNotificationDelay();
-	AddToggle(builder, kToggleRows[7]);
+	AddSection(builder, {
+		u"serein/interface/text"_q,
+		tr::lng_serein_ui_text,
+		{ u"text"_q, u"punctuation"_q },
+	});
+	AddToggle(builder, kToggleRows[6]);
 }
 
 } // namespace Serein::Interface
