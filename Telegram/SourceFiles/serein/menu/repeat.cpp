@@ -1,6 +1,7 @@
 #include "serein/menu/repeat.h"
 
 #include "serein/hooks/menu/actions.h"
+#include "serein/menu/model.h"
 #include "api/api_common.h"
 #include "api/api_sending.h"
 #include "apiwrap.h"
