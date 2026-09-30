@@ -23,6 +23,7 @@ set(serein_sources
     serein/features/regdate/model/estimate.cpp
     serein/adapters/openssl/aes_gcm_cipher.cpp
     serein/hooks/ghost.cpp
+    serein/features/ghost/story_tip.cpp
     serein/app/ghost_read.cpp
     serein/app/history_entities.cpp
     serein/app/history_expiry.cpp

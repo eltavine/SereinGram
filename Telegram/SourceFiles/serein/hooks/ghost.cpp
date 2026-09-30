@@ -1,6 +1,7 @@
 #include "serein/hooks/ghost.h"
 
 #include "serein/features/ghost/model/policy.h"
+#include "serein/features/ghost/story_tip.h"
 #include "serein/hooks/gen/ghost.h"
 
 namespace Serein::Hooks {
@@ -54,7 +55,11 @@ bool AllowTyping(gsl::not_null<Main::Session*> session) {
 }
 
 bool AllowStoryView(gsl::not_null<Main::Session*> session) {
-	return Allows(session, Serein::Ghost::Activity::StoryView);
+	const auto allowed = Allows(session, Serein::Ghost::Activity::StoryView);
+	if (!allowed) {
+		Serein::Ghost::TipHiddenStoryView(session);
+	}
+	return allowed;
 }
 
 bool AllowViewIncrement(gsl::not_null<Main::Session*> session) {
