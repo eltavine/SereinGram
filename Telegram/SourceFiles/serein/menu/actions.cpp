@@ -56,6 +56,7 @@ void Apply(
 			InsertReadingAction(menu, item, controller);
 			Filters::InsertAuthorAction(menu, item, controller);
 			InsertEditHistoryAction(menu, item, controller);
+			InsertDeletedMessagesAction(menu, item, controller);
 		}
 	}
 	const auto config = ForDevice().Get(kMenuConfig);

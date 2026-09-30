@@ -442,3 +442,4 @@
 "lng_serein_history_max_records" = "历史记录上限";
 "lng_serein_history_note" = "此账号收到的已删除和已编辑消息只以加密形式保存在本机。";
 "lng_serein_menu_edit_history" = "编辑历史";
+"lng_serein_menu_deleted_messages" = "已删除的消息";

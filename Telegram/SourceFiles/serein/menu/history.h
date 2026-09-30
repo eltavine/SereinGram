@@ -17,4 +17,9 @@ void InsertEditHistoryAction(
 	HistoryItem *item,
 	Window::SessionController *controller);
 
+void InsertDeletedMessagesAction(
+	Ui::PopupMenu *menu,
+	HistoryItem *item,
+	Window::SessionController *controller);
+
 } // namespace Serein::Menu

@@ -26,7 +26,7 @@ QJsonObject Parse(const QByteArray &raw) {
 } // namespace
 
 Visibility DefaultVisibility(ActionId id) {
-	if (id == ActionId::EditHistory) {
+	if (id == ActionId::EditHistory || id == ActionId::DeletedMessages) {
 		return Visibility::Show;
 	}
 	return static_cast<int>(id) >= static_cast<int>(ActionId::Repeat)

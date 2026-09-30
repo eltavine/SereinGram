@@ -23,6 +23,8 @@
 namespace Serein::Menu {
 namespace {
 
+constexpr auto kDeletedLimit = 100;
+
 [[nodiscard]] std::vector<History::Record> EditVersions(
 		not_null<HistoryItem*> item) {
 	const auto store = Hooks::HistoryStoreFor(&item->history()->session());
@@ -38,11 +40,39 @@ namespace {
 	return result;
 }
 
+[[nodiscard]] std::vector<History::Record> DeletedMessages(
+		not_null<HistoryItem*> item) {
+	const auto store = Hooks::HistoryStoreFor(&item->history()->session());
+	if (!store) {
+		return {};
+	}
+	return store->deleted({
+		.peerId = qint64(item->history()->peer->id.value),
+		.limit = kDeletedLimit,
+	});
+}
+
+void ShowRecords(
+		not_null<Window::SessionController*> controller,
+		const QString &title,
+		const QString &text) {
+	controller->show(Box([=](not_null<Ui::GenericBox*> box) {
+		box->setTitle(rpl::single(title));
+		const auto label = box->addRow(object_ptr<Ui::FlatLabel>(
+			box, text, st::boxLabel));
+		label->setSelectable(true);
+		box->addButton(tr::lng_close(), [=] { box->closeBox(); });
+	}));
+}
+
 [[nodiscard]] QString Describe(const std::vector<History::Record> &versions) {
 	auto blocks = QStringList();
 	for (const auto &version : versions) {
 		const auto when = base::unixtime::parse(TimeId(version.recordedAt));
-		blocks.push_back(langDateTimeFull(when) + u"\n"_q + version.text);
+		const auto body = version.text.isEmpty()
+			? version.mediaSummary
+			: version.text;
+		blocks.push_back(langDateTimeFull(when) + u"\n"_q + body);
 	}
 	return blocks.join(u"\n\n"_q);
 }
@@ -64,20 +94,43 @@ void InsertEditHistoryAction(
 			if (!current) {
 				return;
 			}
-			const auto text = Describe(EditVersions(current));
-			controller->show(Box([=](not_null<Ui::GenericBox*> box) {
-				box->setTitle(tr::lng_serein_menu_edit_history());
-				const auto label = box->addRow(object_ptr<Ui::FlatLabel>(
-					box, text, st::boxLabel));
-				label->setSelectable(true);
-				box->addButton(tr::lng_close(), [=] { box->closeBox(); });
-			}));
+			ShowRecords(
+				controller,
+				tr::lng_serein_menu_edit_history(tr::now),
+				Describe(EditVersions(current)));
 		}));
 	auto widget = base::make_unique_q<Ui::Menu::Action>(
 		menu->menu(), menu->menu()->st(), action,
 		&st::menuIconInfo, &st::menuIconInfo);
 	Tag(menu->insertAction(DeleteActionIndex(menu), std::move(widget)),
 		ActionId::EditHistory);
+}
+
+void InsertDeletedMessagesAction(
+		Ui::PopupMenu *menu,
+		HistoryItem *item,
+		Window::SessionController *controller) {
+	if (!menu || !item || !controller || DeletedMessages(item).empty()) {
+		return;
+	}
+	const auto itemId = item->fullId();
+	const auto action = Ui::Menu::CreateAction(menu,
+		tr::lng_serein_menu_deleted_messages(tr::now),
+		crl::guard(controller, [=] {
+			const auto current = controller->session().data().message(itemId);
+			if (!current) {
+				return;
+			}
+			ShowRecords(
+				controller,
+				tr::lng_serein_menu_deleted_messages(tr::now),
+				Describe(DeletedMessages(current)));
+		}));
+	auto widget = base::make_unique_q<Ui::Menu::Action>(
+		menu->menu(), menu->menu()->st(), action,
+		&st::menuIconInfo, &st::menuIconInfo);
+	Tag(menu->insertAction(DeleteActionIndex(menu), std::move(widget)),
+		ActionId::DeletedMessages);
 }
 
 } // namespace Serein::Menu

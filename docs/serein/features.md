@@ -79,7 +79,7 @@ Nagram 的品牌政策要求分支使用不同品牌并替换 Nagram 名称与�
 | SG-HIST-03 | 历史库加密存储（账号本地密钥派生），退出账号时按设置清理（存储端口与 Qt SQL 适配器已实现） | D | In Progress | P1 |
 | SG-HIST-04 | 保留期限、容量上限、单对话清理与全部清理 | Na | In Progress | P1 |
 | SG-HIST-05 | 自定义已删除、已编辑标记文字；已删除消息半透明 | Aa Na | In Progress | P2 |
-| SG-HIST-06 | 按对话浏览已删除消息 | Ad Aa | Planned | P2 |
+| SG-HIST-06 | 按对话浏览已删除消息 | Ad Aa | In Progress | P2 |
 | SG-HIST-07 | 是否记录机器人消息；按对话排除 | Na | Planned | P2 |
 | SG-HIST-08 | 已下载媒体不随删除清除，历史中可继续打开 | Ad Aa | Planned | P2 |
 | SG-HIST-09 | 限时图片、视频过期后仍可查看 | Ad Aa | Planned | P2 |
