@@ -1,7 +1,8 @@
-#include "serein/messages/badges.h"
+#include "serein/hooks/messages/badges.h"
 
 #include "serein/core/options.h"
 #include "serein/messages/options.h"
+#include "info/profile/info_profile_badge.h"
 #include "ui/rp_widget.h"
 
 namespace Serein::Messages {
@@ -10,8 +11,8 @@ bool ShowPremiumBadges() {
 	return !ForDevice().Get(kHidePremiumBadges);
 }
 
-rpl::producer<Info::Profile::Badge::Content> VisibleBadgeContent(
-		rpl::producer<Info::Profile::Badge::Content> content) {
+template <typename Content>
+rpl::producer<Content> VisibleBadgeContent(rpl::producer<Content> content) {
 	return rpl::combine(
 		std::move(content),
 		ForDevice().Value(kHidePremiumBadges)
@@ -27,6 +28,9 @@ rpl::producer<Info::Profile::Badge::Content> VisibleBadgeContent(
 		return content;
 	});
 }
+
+template rpl::producer<Info::Profile::Badge::Content> VisibleBadgeContent(
+	rpl::producer<Info::Profile::Badge::Content> content);
 
 void AttachPremiumRefresh(not_null<Ui::RpWidget*> widget) {
 	ForDevice().changes(

@@ -1,4 +1,6 @@
-#include "serein/services/transcription.h"
+#include "serein/hooks/services/transcription.h"
+
+#include "api/api_transcribes.h"
 
 #include "apiwrap.h"
 #include "api/api_transcribes.h"
@@ -212,8 +214,8 @@ bool ExternalTranscriptionSelected(not_null<Main::Session*> session) {
 	return ExternalTranscriptions::For(session).selected();
 }
 
-const Api::Transcribes::Entry *TranscriptionOverride(
-		not_null<HistoryItem*> item) {
+template <typename Entry>
+const Entry *TranscriptionOverride(not_null<HistoryItem*> item) {
 	const auto &external = ExternalTranscriptions::For(
 		&item->history()->session());
 	if (!external.selected()) {
@@ -222,9 +224,12 @@ const Api::Transcribes::Entry *TranscriptionOverride(
 	if (const auto found = external.find(item)) {
 		return found;
 	}
-	static const auto empty = Api::Transcribes::Entry();
+	static const auto empty = Entry();
 	return &empty;
 }
+
+template const Api::Transcribes::Entry *
+TranscriptionOverride<Api::Transcribes::Entry>(not_null<HistoryItem*> item);
 
 void ShowCustomTranscription(
 		std::shared_ptr<Main::SessionShow> show,

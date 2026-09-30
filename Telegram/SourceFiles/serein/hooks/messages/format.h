@@ -1,9 +1,13 @@
 #pragma once
 
-#include "history/view/history_view_bottom_info.h"
-#include "ui/text/text_entity.h"
+#include <QtCore/QDateTime>
+#include <QtCore/QString>
+#include <QtCore/QTime>
+
+#include <gsl/pointers>
 
 class HistoryItem;
+struct TextWithEntities;
 
 namespace HistoryView {
 class Element;
@@ -16,17 +20,15 @@ namespace Serein::Messages {
 [[nodiscard]] QString FormatEditedDate(QDateTime sent, QDateTime edited);
 [[nodiscard]] QString EditedMark();
 [[nodiscard]] QString FormatCounter(int count);
-void ApplyInfoOptions(
-	HistoryView::BottomInfo::Data &data,
-	not_null<HistoryItem*> item);
-void ApplyForwardedDate(
-	HistoryView::BottomInfo::Data &data,
-	not_null<HistoryItem*> item);
+template <typename Data>
+void ApplyInfoOptions(Data &data, gsl::not_null<HistoryItem*> item);
+template <typename Data>
+void ApplyForwardedDate(Data &data, gsl::not_null<HistoryItem*> item);
 [[nodiscard]] TextWithEntities ServiceText(
-	not_null<HistoryView::Element*> view,
+	gsl::not_null<HistoryView::Element*> view,
 	const TextWithEntities &text);
 [[nodiscard]] QString WithMessageId(
 	QString text,
-	not_null<HistoryItem*> item);
+	gsl::not_null<HistoryItem*> item);
 
 } // namespace Serein::Messages

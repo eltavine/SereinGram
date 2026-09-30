@@ -15,7 +15,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "data/data_document.h"
 #include "data/data_session.h"
 #include "main/main_session.h"
-#include "serein/services/transcription.h"
+#include "serein/hooks/services/transcription.h"
 #include "lang/lang_keys.h"
 #include "settings/sections/settings_premium.h"
 #include "ui/chat/chat_style.h"

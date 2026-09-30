@@ -11,7 +11,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "serein/hooks/chats/layout.h"
 #include "serein/hooks/chats/promotions.h"
 #include "serein/hooks/messages/content.h"
-#include "serein/messages/badges.h"
+#include "serein/hooks/messages/badges.h"
 
 #include "dialogs/dialogs_three_state_icon.h"
 #include "dialogs/ui/chat_search_empty.h"

@@ -6,12 +6,12 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/history_view_element.h"
-#include "serein/messages/format.h"
+#include "serein/hooks/messages/format.h"
 #include "serein/hooks/messages/reactions.h"
 #include "serein/hooks/messages/content.h"
 #include "serein/hooks/messages/reading.h"
 #include "serein/hooks/gen/messages.h"
-#include "serein/filters/view.h"
+#include "serein/hooks/filters/view.h"
 
 #include "apiwrap.h"
 #include "api/api_transcribes.h"
@@ -1628,7 +1628,7 @@ void Element::refreshMedia(Element *replacing) {
 	_flags &= ~Flag::HiddenByGroup;
 
 	const auto item = data();
-	if (Serein::Filters::Hidden(item)) {
+	if (Serein::Hooks::Filters::Hidden(item)) {
 		_media = nullptr;
 		return;
 	}
@@ -2196,8 +2196,7 @@ void Element::setTextWithLinks(
 		}
 	} else {
 		const auto item = data();
-		const auto filtered = Serein::Filters::Project(item, text);
-		const auto display = Serein::Filters::DisplayText(filtered);
+		const auto display = Serein::Hooks::Filters::DisplayText(item, text);
 		const auto &options = Ui::ItemTextOptions(item);
 		clearSpecialOnlyEmoji();
 		const auto spacing = Serein::Hooks::Messages::ReadingSpacing();

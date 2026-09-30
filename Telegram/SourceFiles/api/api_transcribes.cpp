@@ -20,7 +20,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "main/main_app_config.h"
 #include "main/main_session.h"
 #include "main/main_session_settings.h"
-#include "serein/services/transcription.h"
+#include "serein/hooks/services/transcription.h"
 #include "spellcheck/spellcheck_types.h"
 
 namespace Api {
@@ -31,7 +31,7 @@ Transcribes::Transcribes(not_null<ApiWrap*> api)
 }
 
 bool Transcribes::isRated(not_null<HistoryItem*> item) const {
-	if (Serein::TranscriptionOverride(item)) {
+	if (Serein::TranscriptionOverride<Entry>(item)) {
 		return true;
 	}
 	const auto fullId = item->fullId();
@@ -44,7 +44,7 @@ bool Transcribes::isRated(not_null<HistoryItem*> item) const {
 }
 
 void Transcribes::rate(not_null<HistoryItem*> item, bool isGood) {
-	if (Serein::TranscriptionOverride(item)) {
+	if (Serein::TranscriptionOverride<Entry>(item)) {
 		return;
 	}
 	const auto fullId = item->fullId();
@@ -144,7 +144,7 @@ void Transcribes::toggleSummary(not_null<HistoryItem*> item) {
 
 const Transcribes::Entry &Transcribes::entry(
 		not_null<HistoryItem*> item) const {
-	if (const auto overridden = Serein::TranscriptionOverride(item)) {
+	if (const auto overridden = Serein::TranscriptionOverride<Entry>(item)) {
 		return *overridden;
 	}
 	static auto empty = Entry();

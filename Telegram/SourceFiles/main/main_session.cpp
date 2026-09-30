@@ -7,7 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "main/main_session.h"
 #include "serein/hooks/display/view_refresher.h"
-#include "serein/messages/badges.h"
+#include "serein/hooks/messages/badges.h"
 
 #include "apiwrap.h"
 #include "api/api_peer_colors.h"

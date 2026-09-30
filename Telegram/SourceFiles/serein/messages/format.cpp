@@ -1,4 +1,4 @@
-#include "serein/messages/format.h"
+#include "serein/hooks/messages/format.h"
 
 #include "serein/core/options.h"
 #include "serein/features/history/deleted_marks.h"
@@ -6,6 +6,7 @@
 #include "serein/hooks/messages/time_format.h"
 #include "history/history_item.h"
 #include "history/history_item_components.h"
+#include "history/view/history_view_bottom_info.h"
 #include "history/view/history_view_element.h"
 #include "ui/text/format_values.h"
 #include "lang/lang_keys.h"
@@ -74,9 +75,8 @@ QString FormatCounter(int count) {
 		: Lang::FormatCountToShort(count).string;
 }
 
-void ApplyInfoOptions(
-		HistoryView::BottomInfo::Data &data,
-		not_null<HistoryItem*> item) {
+template <typename Data>
+void ApplyInfoOptions(Data &data, not_null<HistoryItem*> item) {
 	auto &options = ForDevice();
 	if (options.Get(kHideMessageViews)) {
 		data.views.reset();
@@ -96,9 +96,12 @@ void ApplyInfoOptions(
 	}
 }
 
-void ApplyForwardedDate(
-		HistoryView::BottomInfo::Data &data,
-		not_null<HistoryItem*> item) {
+template void ApplyInfoOptions(
+	HistoryView::BottomInfo::Data &data,
+	not_null<HistoryItem*> item);
+
+template <typename Data>
+void ApplyForwardedDate(Data &data, not_null<HistoryItem*> item) {
 	if (!ForDevice().Get(kShowForwardedMessageDate)
 		|| item->externalReply()) {
 		return;
@@ -110,6 +113,10 @@ void ApplyForwardedDate(
 	data.date = base::unixtime::parse(forwarded->originalDate);
 	data.flags |= HistoryView::BottomInfo::Data::Flag::ForwardedDate;
 }
+
+template void ApplyForwardedDate(
+	HistoryView::BottomInfo::Data &data,
+	not_null<HistoryItem*> item);
 
 TextWithEntities ServiceText(
 		not_null<HistoryView::Element*> view,

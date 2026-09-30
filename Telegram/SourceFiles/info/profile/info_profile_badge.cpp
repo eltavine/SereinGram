@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "info/profile/info_profile_badge.h"
-#include "serein/messages/badges.h"
+#include "serein/hooks/messages/badges.h"
 
 #include "data/data_changes.h"
 #include "data/data_emoji_statuses.h"

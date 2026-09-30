@@ -1,4 +1,6 @@
-#include "serein/filters/view.h"
+#include "serein/hooks/filters/view.h"
+
+#include "serein/filters/model.h"
 
 #include "data/data_peer.h"
 #include "data/data_peer_id.h"
@@ -72,9 +74,9 @@ QString Searchable(not_null<HistoryItem*> item) {
 	return result;
 }
 
-} // namespace
-
-Result Project(HistoryItem *item, const TextWithEntities &source) {
+[[nodiscard]] Result Project(
+		HistoryItem *item,
+		const TextWithEntities &source) {
 	if (!item || item->isService() || item->sereinOriginalShown()) {
 		return { .text = source };
 	}
@@ -136,15 +138,27 @@ Result Project(HistoryItem *item, const TextWithEntities &source) {
 	return result;
 }
 
-bool Hidden(HistoryItem *item) {
-	return item && Project(item,
-		item->translatedTextWithLocalEntities()).hidden;
-}
-
-TextWithEntities DisplayText(const Result &result) {
+[[nodiscard]] TextWithEntities DisplayText(const Result &result) {
 	return result.hidden
 		? TextWithEntities{ tr::lng_serein_filter_hidden(tr::now) }
 		: result.text;
 }
 
+} // namespace
 } // namespace Serein::Filters
+
+namespace Serein::Hooks::Filters {
+
+bool Hidden(HistoryItem *item) {
+	return item && Serein::Filters::Project(item,
+		item->translatedTextWithLocalEntities()).hidden;
+}
+
+TextWithEntities DisplayText(
+		HistoryItem *item,
+		const TextWithEntities &source) {
+	using namespace Serein::Filters;
+	return Serein::Filters::DisplayText(Project(item, source));
+}
+
+} // namespace Serein::Hooks::Filters
