@@ -1,7 +1,6 @@
 #include "serein/chats/quick_actions.h"
 
 #include "serein/chats/options.h"
-#include "data/notify/data_notify_settings.h"
 #include "data/data_peer.h"
 #include "data/data_session.h"
 #include "dialogs/dialogs_key.h"
@@ -38,14 +37,6 @@ void FillQuickActions(
 		controller->showSection(
 			std::make_shared<HistoryView::PinnedMemento>(history));
 	}, &st::menuIconPin);
-	const auto muted = peer->owner().notifySettings().isMuted(history);
-	addAction(muted
-		? tr::lng_serein_quick_unmute(tr::now)
-		: tr::lng_serein_quick_mute(tr::now), [=] {
-		peer->owner().notifySettings().update(history, muted
-			? Data::MuteValue{ .unmute = true }
-			: Data::MuteValue{ .forever = true });
-	}, muted ? &st::menuIconUnmute : &st::menuIconMute);
 }
 
 } // namespace Serein::Chats

@@ -93,7 +93,7 @@ inline const auto kToggleRows = std::array<ToggleRow, 15>{ {
 		&kChatQuickActions,
 		tr::lng_serein_chat_quick_actions,
 		u"serein/chats/chat-quick-actions"_q,
-		{ u"toolbar"_q, u"search"_q, u"media"_q, u"pinned"_q, u"mute"_q },
+		{ u"toolbar"_q, u"search"_q, u"media"_q, u"pinned"_q },
 	},
 	{
 		&kManagementShortcuts,

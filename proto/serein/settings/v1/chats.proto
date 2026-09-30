@@ -116,7 +116,7 @@ message ChatsSettings {
     note: "lng_serein_remember_reading_position_note"
   }];
   optional bool chat_quick_actions = 22 [(serein.options.v1.field) = {
-    keywords: ["toolbar", "search", "media", "pinned", "mute"]
+    keywords: ["toolbar", "search", "media", "pinned"]
     note: "lng_serein_chat_quick_actions_note"
   }];
   optional bool management_shortcuts = 23 [(serein.options.v1.field) = {
