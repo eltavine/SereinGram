@@ -21,7 +21,7 @@
 | SG-PLAT-04 | 三平台 CI：构建、`test_serein`、全部守卫 | D | Planned | P0 |
 | SG-PLAT-05 | 发行版打包：Flatpak 清单、AUR PKGBUILD、`DESKTOP_APP_USE_PACKAGED` 依赖清单 | Ad | Planned | P2 |
 | SG-PLAT-06 | Windows arm64 构建（暂从 CI 矩阵移除：上游 ffmpeg n8.1.3 在 arm64 上生成的 `epel_neon.d` 依赖文件格式错误，导致依赖构建失败） | T | Planned | P2 |
-| SG-PLAT-07 | 独立更新检查（GitHub Releases，默认不自动下载）（界面设置“在 GitHub 上检查更新”默认开启：启动 30 秒后及每 24 小时查询最新正式版，只接受 github.com 的发布页链接，发现新版本时提示链接，不自动下载；官方更新通道在构建中关闭） | D | In Progress | P2 |
+| SG-PLAT-07 | 独立更新检查（GitHub Releases，默认不自动下载）（界面设置“在 GitHub 上检查更新”默认开启：启动 30 秒后及每 24 小时查询最新正式版，只接受 github.com 的发布页链接，发现新版本时提示链接，不自动下载；官方更新通道在构建中关闭；推送 `v*` 标签时三平台工作流把产物上传到草稿预发布 Release，由维护者核对后发布） | D | In Progress | P2 |
 | SG-PLAT-08 | API 凭据构建期注入（Secrets 或本地文件），禁止使用官方客户端凭据 | D | Implemented | P0 |
 
 ## BRAND 品牌与身份
@@ -229,8 +229,8 @@ SG-HIST-05 的“已编辑”标记文字已由 C09 实现，删除标记随 SG-
 
 | ID | 功能 | 来源 | 状态 | 优先级 |
 | --- | --- | --- | --- | --- |
-| SG-NET-01 | 代理备注、测速、排序、清理失效节点、导入导出（在上游代理管理基础上补齐） | Na | Planned | P2 |
-| SG-NET-02 | 代理自动切换与 VPN 感知 | Na | Planned | P3 |
+| SG-NET-01 | 代理备注、测速、排序、清理失效节点、导入导出（上游代理管理已提供从剪贴板批量导入、全部删除、分享整个列表、延迟显示与自动切换；备注、按延迟排序、清理失效节点需要改动上游的私有列表与行控件，待做） | Na | Planned | P2 |
+| SG-NET-02 | 代理自动切换与 VPN 感知（上游代理设置已提供按超时自动切换；VPN 感知待做） | Na | In Progress | P3 |
 | SG-NET-03 | 代理订阅（SIP008、Clash 等），新协议只通过外部代理程序接入 | Na | Planned | P3 |
 | SG-NET-04 | 自定义 DoH 与 IP 策略 | Na | Planned | P3 |
 | SG-NET-05 | 上传、下载性能档位（先做基准测试） | Na | Planned | P3 |
