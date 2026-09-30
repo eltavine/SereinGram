@@ -7,6 +7,8 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "api/api_who_reacted.h"
 #include "serein/hooks/gen/privacy.h"
+#include "serein/hooks/gen/messages.h"
+#include "serein/hooks/messages/time_format.h"
 
 #include "api/api_global_privacy.h"
 #include "history/history_item.h"
@@ -710,23 +712,20 @@ QString FormatReadDate(TimeId date, const QDateTime &now) {
 	const auto parsed = base::unixtime::parse(date);
 	const auto readDate = parsed.date();
 	const auto nowDate = now.date();
+	const auto time = Serein::Messages::FormatTime(
+		parsed.time(),
+		Serein::Hooks::Messages::SecondsInMessages());
 	if (readDate == nowDate) {
-		return tr::lng_mediaview_today(
-			tr::now,
-			lt_time,
-			QLocale().toString(parsed.time(), QLocale::ShortFormat));
+		return tr::lng_mediaview_today(tr::now, lt_time, time);
 	} else if (readDate.addDays(1) == nowDate) {
-		return tr::lng_mediaview_yesterday(
-			tr::now,
-			lt_time,
-			QLocale().toString(parsed.time(), QLocale::ShortFormat));
+		return tr::lng_mediaview_yesterday(tr::now, lt_time, time);
 	}
 	return tr::lng_mediaview_date_time(
 		tr::now,
 		lt_date,
 		langDayOfMonthShort(readDate),
 		lt_time,
-		QLocale().toString(parsed.time(), QLocale::ShortFormat));
+		time);
 }
 
 bool WhoReadExists(not_null<HistoryItem*> item) {

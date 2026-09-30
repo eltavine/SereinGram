@@ -10,7 +10,7 @@
 #include "serein/media/options.h"
 #include "serein/menu/model.h"
 #include "serein/privacy/options.h"
-#include "serein/messages/time_format.h"
+#include "serein/hooks/messages/time_format.h"
 
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>

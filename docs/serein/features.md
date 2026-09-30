@@ -166,7 +166,7 @@ SG-HIST-05 的“已编辑”标记文字已由 C09 实现，删除标记随 SG-
 | SG-MSG-08 | 消息详情：日期、转发来源、贴纸包与表情包作者（消息菜单“消息详情”：消息与对话、发送者 ID（Bot API 格式）、带秒的发送与编辑时间、转发来源与原始时间、浏览数、贴纸包名称与链接；贴纸包作者查询待做） | Ad Na | In Progress | P2 |
 | SG-MSG-09 | 内联按钮回调数据查看与复制（消息菜单“按钮数据”：列出内联按钮的文字与数据，点击复制；不可打印的数据以 base64 显示；默认隐藏，可在菜单设置中开启） | Ad | Implemented | P2 |
 | SG-MSG-10 | 语音与圆形视频拖动进度（先核对上游现状）（由上游提供：语音消息 `VoiceSeekClickHandler` 与圆形视频 `VideoMessageSeek` 均支持拖动进度，核对于 2026-09-30） | Ad | Implemented | P2 |
-| SG-MSG-11 | 反应时间显示秒 | Ad | Planned | P3 |
+| SG-MSG-11 | 反应时间显示秒（反应与已读列表的时间随“消息时间显示秒”选项显示到秒） | Ad | Implemented | P3 |
 | SG-MSG-12 | 注册日期估算（标注估算来源）、波斯日历 | Ni Na | Planned | P3 |
 
 ## COMPOSE 输入与发送

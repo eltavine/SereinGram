@@ -3,7 +3,7 @@
 #include "serein/core/options.h"
 #include "serein/features/history/deleted_marks.h"
 #include "serein/messages/options.h"
-#include "serein/messages/time_format.h"
+#include "serein/hooks/messages/time_format.h"
 #include "history/history_item.h"
 #include "history/history_item_components.h"
 #include "history/view/history_view_element.h"
