@@ -10,11 +10,17 @@
 #include "serein/media/options.h"
 #include "serein/menu/model.h"
 #include "serein/privacy/options.h"
+#include "serein/filters/model.h"
+#include "serein/hooks/services/model.h"
+#include "serein/schema/gen/settings/ghost.h"
+#include "serein/schema/gen/settings/history.h"
 #include "serein/hooks/messages/time_format.h"
 
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
 
+#include <algorithm>
+#include <array>
 #include <iostream>
 #include <map>
 #include <stdexcept>
@@ -352,6 +358,35 @@ void TestOptions() {
 	Require(first.Get(accountOption), "first account value");
 	Require(!second.Get(accountOption), "account values leaked");
 	Require(!options.Set(accountOption, true), "device accepted account option");
+	const auto accountScoped = std::array{
+		Chats::kRecentChats.scope,
+		Chats::kManagedFolderIds.scope,
+		Chats::kStartupFolderId.scope,
+		Filters::kRules.scope,
+		Ghost::kGhostMode.scope,
+		Ghost::kGhostHideReadReceipts.scope,
+		Ghost::kGhostHideStoryViews.scope,
+		Ghost::kGhostHideOnline.scope,
+		Ghost::kGhostHideTyping.scope,
+		Ghost::kGhostUseScheduledMessages.scope,
+		HistorySettings::kHistorySaveDeleted.scope,
+		HistorySettings::kHistoryKeepDeletedInPlace.scope,
+		HistorySettings::kHistoryKeepExpiredMedia.scope,
+		HistorySettings::kHistorySaveEdits.scope,
+		HistorySettings::kHistoryExcludedPeers.scope,
+	};
+	Require(std::ranges::all_of(accountScoped, [](Scope scope) {
+		return scope == Scope::Account;
+	}), "per-account data stored for the whole device");
+	const auto deviceScoped = std::array{
+		Privacy::kDemoMode.scope,
+		Messages::kFadeDeletedMessages.scope,
+		Messages::kShowChannelBadge.scope,
+		kServicesConfig.scope,
+	};
+	Require(std::ranges::all_of(deviceScoped, [](Scope scope) {
+		return scope == Scope::Device;
+	}), "device preference stored per account");
 	std::cout << "PASS: Serein account options" << std::endl;
 
 	auto exchangeRegistry = Registry();
