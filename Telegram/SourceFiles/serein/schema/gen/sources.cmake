@@ -14,10 +14,14 @@ set(serein_generated_sources
 set(serein_generated_hook_sources
     serein/hooks/gen/chats.cpp
     serein/hooks/gen/compose.cpp
+    serein/hooks/gen/filters.cpp
     serein/hooks/gen/ghost.cpp
     serein/hooks/gen/history.cpp
     serein/hooks/gen/interface.cpp
+    serein/hooks/gen/links.cpp
     serein/hooks/gen/media.cpp
+    serein/hooks/gen/menu.cpp
     serein/hooks/gen/messages.cpp
     serein/hooks/gen/privacy.cpp
+    serein/hooks/gen/snapshot.cpp
 )

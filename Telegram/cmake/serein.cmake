@@ -79,6 +79,7 @@ set(serein_sources
     serein/links/model.cpp
     serein/links/open.cpp
     serein/links/settings.cpp
+    serein/snapshot/rules.cpp
     serein/snapshot/snapshot.cpp
     serein/privacy/peer_id.cpp
     serein/privacy/profile.cpp

@@ -2,6 +2,7 @@
 
 #include "serein/core/options.h"
 #include "serein/schema/gen/config/links.h"
+#include "serein/schema/gen/settings/links.h"
 
 #include <QtCore/QJsonObject>
 #include <QtCore/QUrl>
@@ -21,13 +22,5 @@ struct Result {
 	const QString &replacementHost,
 	const QStringList &removeParameters);
 [[nodiscard]] Result Rewrite(const QByteArray &raw, const QString &original);
-
-inline const auto kRules = Option<QByteArray>{
-	"serein.linkRules", Scope::Device, QByteArray(),
-	Category::Rules, "lng_serein_link_rules", 0, Validate };
-
-inline void RegisterOptions(Registry &registry) {
-	Expects(registry.Add(kRules));
-}
 
 } // namespace Serein::Links

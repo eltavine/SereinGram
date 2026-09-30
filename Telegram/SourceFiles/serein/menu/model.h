@@ -1,6 +1,7 @@
 #pragma once
 
 #include "serein/core/options.h"
+#include "serein/schema/gen/settings/menu.h"
 #include "serein/hooks/menu/action_id.h"
 
 #include <array>
@@ -56,19 +57,5 @@ inline constexpr auto kEntries = std::array<Entry, 31>({{
 	ActionId id,
 	Visibility visibility);
 [[nodiscard]] bool Visible(Visibility visibility, bool optionHeld);
-
-inline const auto kMenuConfig = Option<QByteArray>{
-	"serein.messageMenu", Scope::Device, QByteArray(),
-	Category::Menu, "lng_serein_menu", static_cast<unsigned>(Flag::Exportable),
-	ValidateConfig };
-inline constexpr auto kConfirmRepeat = Option<bool>{
-	"serein.confirmRepeat", Scope::Device, false,
-	Category::Menu, "lng_serein_menu_confirm_repeat",
-	static_cast<unsigned>(Flag::Exportable) };
-
-inline void RegisterOptions(Registry &registry) {
-	Expects(registry.Add(kMenuConfig));
-	Expects(registry.Add(kConfirmRepeat));
-}
 
 } // namespace Serein::Menu

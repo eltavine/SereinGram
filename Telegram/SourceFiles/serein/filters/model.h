@@ -5,6 +5,7 @@
 #include "ui/text/text_entity.h"
 #include "serein/core/options.h"
 #include "serein/schema/gen/config/filters.h"
+#include "serein/schema/gen/settings/filters.h"
 
 #include <QtCore/QByteArray>
 #include <QtCore/QJsonObject>
@@ -29,14 +30,5 @@ struct Result {
 	bool blocked,
 	bool outgoing,
 	const QString &searchable = QString());
-
-inline const auto kRules = Option<QByteArray>{
-	"serein.filters", Scope::Account, QByteArray(),
-	Category::Rules, "lng_serein_filter_rules",
-	static_cast<unsigned>(Flag::RefreshMessageView), Validate };
-
-inline void RegisterOptions(Registry &registry) {
-	Expects(registry.Add(kRules));
-}
 
 } // namespace Serein::Filters

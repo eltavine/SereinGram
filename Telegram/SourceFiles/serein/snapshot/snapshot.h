@@ -2,6 +2,7 @@
 
 #include "serein/core/options.h"
 #include "serein/schema/gen/config/snapshot.h"
+#include "serein/schema/gen/settings/snapshot.h"
 #include "data/data_types.h"
 
 #include <QtGui/QImage>
@@ -24,13 +25,5 @@ void InsertAction(
 	Window::SessionController *controller,
 	HistoryItem *item,
 	MessageIdsList selected);
-
-inline const auto kSettings = Option<QByteArray>{
-	"serein.snapshot", Scope::Device, QByteArray(),
-	Category::Menu, "lng_serein_snapshot", 0, Validate };
-
-inline void RegisterOptions(Registry &registry) {
-	Expects(registry.Add(kSettings));
-}
 
 } // namespace Serein::Snapshot

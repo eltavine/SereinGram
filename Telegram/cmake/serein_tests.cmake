@@ -29,6 +29,7 @@ set(serein_test_sources
     serein/messages/chinese.cpp
     serein/privacy/alias_rules.cpp
     serein/media/sticker_catalog_rules.cpp
+    serein/snapshot/rules.cpp
     serein/compose/spacing.cpp
     serein/compose/validators.cpp
     serein/core/exchange.cpp

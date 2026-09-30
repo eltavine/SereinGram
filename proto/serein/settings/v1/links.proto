@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package serein.settings.v1;
+
+import "serein/options/v1/options.proto";
+
+// Link rules; the rules settings page edits them by hand.
+message LinkSettings {
+  option (serein.options.v1.page) = {
+    cpp_namespace: "Links"
+    scope: SCOPE_DEVICE
+    category: CATEGORY_RULES
+  };
+
+  optional bytes link_rules = 1 [(serein.options.v1.field) = {
+    cpp_name: "kRules"
+    title: "lng_serein_link_rules"
+    custom_ui: true
+    validator: "Validate"
+  }];
+}

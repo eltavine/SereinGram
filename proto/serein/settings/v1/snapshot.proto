@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package serein.settings.v1;
+
+import "serein/options/v1/options.proto";
+
+// Message snapshot options; the snapshot box edits them by hand.
+message SnapshotSettings {
+  option (serein.options.v1.page) = {
+    cpp_namespace: "Snapshot"
+    scope: SCOPE_DEVICE
+    category: CATEGORY_MENU
+  };
+
+  optional bytes snapshot = 1 [(serein.options.v1.field) = {
+    cpp_name: "kSettings"
+    title: "lng_serein_snapshot"
+    custom_ui: true
+    validator: "Validate"
+  }];
+}

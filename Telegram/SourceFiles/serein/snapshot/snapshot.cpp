@@ -219,10 +219,6 @@ SnapshotConfig Defaults() {
 	};
 }
 
-bool Validate(const QByteArray &raw) {
-	return raw.isEmpty() || ParseSnapshotConfig(raw).has_value();
-}
-
 std::variant<QImage, QString> Render(
 		not_null<Window::SessionController*> controller,
 		const MessageIdsList &ids,

@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package serein.settings.v1;
+
+import "serein/options/v1/options.proto";
+
+// Message menu options; the menu settings page edits them by hand.
+message MenuSettings {
+  option (serein.options.v1.page) = {
+    cpp_namespace: "Menu"
+    scope: SCOPE_DEVICE
+    category: CATEGORY_MENU
+  };
+
+  optional bytes message_menu = 1 [(serein.options.v1.field) = {
+    cpp_name: "kMenuConfig"
+    title: "lng_serein_menu"
+    custom_ui: true
+    validator: "ValidateConfig"
+  }];
+  optional bool confirm_repeat = 2 [(serein.options.v1.field) = {
+    title: "lng_serein_menu_confirm_repeat"
+    custom_ui: true
+  }];
+}

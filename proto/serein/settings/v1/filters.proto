@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package serein.settings.v1;
+
+import "serein/options/v1/options.proto";
+
+// Message filter rules; the rules settings page edits them by hand.
+message FilterSettings {
+  option (serein.options.v1.page) = {
+    cpp_namespace: "Filters"
+    scope: SCOPE_ACCOUNT
+    category: CATEGORY_RULES
+  };
+
+  optional bytes filters = 1 [(serein.options.v1.field) = {
+    cpp_name: "kRules"
+    title: "lng_serein_filter_rules"
+    custom_ui: true
+    validator: "Validate"
+    refresh: REFRESH_MESSAGE_VIEW
+  }];
+}
