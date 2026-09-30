@@ -67,7 +67,7 @@ Nagram 的品牌政策要求分支使用不同品牌并替换 Nagram 名称与�
 | SG-GHOST-07 | 阅读频道消息时不增加浏览数 | Ad | In Progress | P2 |
 | SG-GHOST-08 | 发送消息或互动后自动标记该对话已读（可选） | Ad Na | In Progress | P2 |
 | SG-GHOST-09 | 幽灵模式下用定时消息发送，避免上线（在 `Api::SendAction` 构造处统一挂钩：未手动定时、非快捷消息、非收藏夹时改为 12 秒后定时发送） | Ad | In Progress | P2 |
-| SG-GHOST-10 | “仅本地已读”与“同步到服务端”两个显式动作：读到此处、全部已读 | Ad Na | Planned | P2 |
+| SG-GHOST-10 | “仅本地已读”与“同步到服务端”两个显式动作：读到此处、全部已读（消息菜单“读到此处”已实现：幽灵模式隐藏已读时，把已读同步到该条为止；“全部已读”待做） | Ad Na | In Progress | P2 |
 | SG-GHOST-11 | 查看动态前提示当前幽灵模式状态 | Na | Planned | P3 |
 
 ## HIST 消息历史与防撤回
@@ -193,7 +193,7 @@ SG-HIST-05 的“已编辑”标记文字已由 C09 实现，删除标记随 SG-
 | SG-MENU-04 | 媒体信息、消息截图、阅读转换切换（E20–E22） | Ad Ni | Implemented | P2 |
 | SG-MENU-05 | 消息截图的简化引用样式 | Ni | Planned | P3 |
 | SG-MENU-06 | 查看编辑历史、查看已删除内容（随 SG-HIST-01／02） | Ad Aa | In Progress | P1 |
-| SG-MENU-07 | 读到此处、复制回调数据、消息详情等 AyuGram 菜单项及其显隐 | Ad | Planned | P2 |
+| SG-MENU-07 | 读到此处、复制回调数据、消息详情等 AyuGram 菜单项及其显隐（“读到此处”已实现，可在菜单设置中隐藏；复制回调数据、消息详情待做） | Ad | In Progress | P2 |
 | SG-MENU-08 | 区间选择、批量取消置顶、快捷评价文本、提及时附带 @用户名 | Na | Planned | P2 |
 
 ## MEDIA 媒体与贴纸

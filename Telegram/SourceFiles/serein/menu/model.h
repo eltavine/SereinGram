@@ -32,6 +32,7 @@ enum class ActionId : int {
 	FilterAuthor = 23,
 	EditHistory = 24,
 	DeletedMessages = 25,
+	ReadUntilHere = 26,
 };
 
 enum class Visibility { Show, Hide, WithOption };
@@ -41,7 +42,7 @@ struct Entry {
 	const char *titleKey;
 };
 
-inline constexpr auto kEntries = std::array<Entry, 25>({{
+inline constexpr auto kEntries = std::array<Entry, 26>({{
 	{ ActionId::Reply, "lng_serein_menu_reply" },
 	{ ActionId::Edit, "lng_serein_menu_edit" },
 	{ ActionId::Copy, "lng_serein_menu_copy" },
@@ -67,6 +68,7 @@ inline constexpr auto kEntries = std::array<Entry, 25>({{
 	{ ActionId::FilterAuthor, "lng_serein_filter_author_hide" },
 	{ ActionId::EditHistory, "lng_serein_menu_edit_history" },
 	{ ActionId::DeletedMessages, "lng_serein_menu_deleted_messages" },
+	{ ActionId::ReadUntilHere, "lng_serein_menu_read_until_here" },
 }});
 
 [[nodiscard]] Visibility DefaultVisibility(ActionId id);

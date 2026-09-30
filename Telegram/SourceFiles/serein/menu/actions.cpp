@@ -3,6 +3,7 @@
 #include "serein/menu/batch.h"
 #include "serein/menu/media.h"
 #include "serein/menu/reading.h"
+#include "serein/menu/ghost_read.h"
 #include "serein/menu/history.h"
 #include "serein/filters/menu.h"
 #include "serein/snapshot/snapshot.h"
@@ -57,6 +58,7 @@ void Apply(
 			Filters::InsertAuthorAction(menu, item, controller);
 			InsertEditHistoryAction(menu, item, controller);
 			InsertDeletedMessagesAction(menu, item, controller);
+			InsertReadUntilHereAction(menu, item, controller);
 		}
 	}
 	const auto config = ForDevice().Get(kMenuConfig);
