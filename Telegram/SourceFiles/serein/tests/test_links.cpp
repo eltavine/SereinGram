@@ -19,22 +19,27 @@ void Require(bool value, const char *message) {
 
 void TestLinks() {
 	using namespace Serein::Links;
-	const auto newRule = NewRule(u"example.com"_q,
-		u"mirror.example"_q, { u"utm_*"_q });
-	Require(!newRule.value(u"enabled"_q).toBool(),
-		"new link rule is enabled by default");
-	auto config = Defaults();
-	config.insert(u"rules"_q, QJsonArray{ newRule });
-	auto raw = QJsonDocument(config).toJson(QJsonDocument::Compact);
-	Require(Validate(raw), "valid link rule rejected");
+	auto newRule = NewRule();
+	newRule.host = u"example.com"_q;
+	newRule.replacementHost = u"mirror.example"_q;
+	newRule.removeParameters = { u"utm_*"_q };
+	Require(!newRule.enabled && !newRule.id.isEmpty() && newRule != NewRule(),
+		"new link rule is enabled by default or shares an id");
+	auto rules = LinkRules{ .rules = { newRule } };
+	auto raw = WriteRules(rules);
+	Require(Validate(raw) && ReadRules(raw) == rules, "valid link rule rejected");
+	Require(WriteRules(LinkRules()).isEmpty()
+		&& ReadRules(QByteArray()) == LinkRules()
+		&& !ReadRules("{"),
+		"default or malformed link rules mishandled");
 	const auto original = u"http://example.com/p?utm_source=x&keep=y#f"_q;
 	Require(!Rewrite(raw, original).changed,
 		"disabled new rule changed link");
-	auto enabled = newRule;
-	enabled.insert(u"enabled"_q, true);
-	config.insert(u"rules"_q, QJsonArray{ enabled });
-	raw = QJsonDocument(config).toJson(QJsonDocument::Compact);
+	rules.rules[0].enabled = true;
+	raw = WriteRules(rules);
 	const auto changed = Rewrite(raw, original);
+	Require(Rewrite(rules, original).url == changed.url,
+		"typed and stored rules rewrite differently");
 	Require(changed.error.isEmpty() && changed.changed
 		&& changed.url.toString(QUrl::FullyEncoded)
 			== u"https://mirror.example/p?keep=y#f"_q,
@@ -44,6 +49,8 @@ void TestLinks() {
 	Require(!Rewrite(raw, u"http://name:password@example.com/p"_q).error.isEmpty(),
 		"credential-bearing URL was rewritten");
 
+	const auto config = QJsonDocument::fromJson(raw).object();
+	const auto enabled = config.value(u"rules"_q).toArray().at(0).toObject();
 	const auto accepts = [&](QJsonObject object) {
 		return Validate(QJsonDocument(object).toJson(QJsonDocument::Compact));
 	};
@@ -84,7 +91,10 @@ void TestLinks() {
 	Require(!accepts(withRules({ enabled, enabled })), "duplicate rule ids accepted");
 	auto many = QJsonArray();
 	for (auto i = 0; i != 33; ++i) {
-		many.push_back(NewRule(u"example.com"_q, u"mirror.example"_q, {}));
+		auto rule = NewRule();
+		rule.host = u"example.com"_q;
+		rule.replacementHost = u"mirror.example"_q;
+		many.push_back(Write(rule));
 	}
 	Require(!accepts(withRules(many)), "more than 32 rules accepted");
 	Require(Validate(QByteArray()), "empty configuration rejected");

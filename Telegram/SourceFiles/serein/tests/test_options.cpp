@@ -210,14 +210,17 @@ void TestOptions() {
 	Require(interface.HasFlag(Interface::kHideReplyThumbnail.key,
 		Flag::RefreshMessageView), "reply thumbnail refresh flag");
 	Require(Interface::ValidMainMenuBytes({}), "default menu config");
-	Require(Interface::ValidMainMenu(Interface::MainMenuDefaults()),
+	Require(Interface::ValidMainMenuBytes(
+			Interface::SerializeMainMenuConfig(Interface::MainMenuDefaults()))
+		&& Interface::MainMenuDefaults().seasonalDecorations,
 		"default menu config invalid");
 	Require(!Interface::ValidMainMenuBytes(R"({"version":1,"order":[],"hidden":["settings"],"title":"","seasonalDecorations":true})"),
 		"settings cannot be hidden");
 	Require(!Interface::ValidMainMenuBytes(R"({"version":1,"order":["calls","calls"],"hidden":[],"title":"","seasonalDecorations":true})"),
 		"duplicate menu action accepted");
 	const auto menu = [](const QString &changes) {
-		auto value = Interface::MainMenuDefaults();
+		auto value = QJsonDocument::fromJson(Interface::SerializeMainMenuConfig(
+			Interface::MainMenuDefaults())).object();
 		const auto patch = QJsonDocument::fromJson(changes.toUtf8()).object();
 		for (auto i = patch.begin(); i != patch.end(); ++i) {
 			if (i.value().isNull()) {

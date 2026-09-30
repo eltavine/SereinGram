@@ -13,9 +13,6 @@
 #include "ui/widgets/popup_menu.h"
 #include "ui/wrap/vertical_layout.h"
 
-#include <QtCore/QJsonArray>
-#include <QtCore/QJsonDocument>
-#include <QtCore/QUuid>
 #include <optional>
 
 #include "styles/style_layers.h"
@@ -24,37 +21,27 @@
 namespace Serein::Links {
 namespace {
 
-std::optional<QJsonObject> Current() {
-	const auto raw = ForDevice().Get(kRules);
-	return Validate(raw)
-		? std::make_optional(raw.isEmpty()
-			? Defaults() : QJsonDocument::fromJson(raw).object())
-		: std::nullopt;
+std::optional<LinkRules> Current() {
+	return ReadRules(ForDevice().Get(kRules));
 }
-
-bool Valid(const QJsonObject &config) {
-	return Validate(QJsonDocument(config).toJson(QJsonDocument::Compact));
-}
-
 
 bool Save(
 		not_null<Ui::GenericBox*> box,
-		const QJsonObject &before,
-		const QJsonObject &after) {
+		const LinkRules &before,
+		const LinkRules &after) {
+	const auto raw = WriteRules(after);
 	if (Current() != before) {
 		box->showToast(tr::lng_serein_config_changed_error(tr::now));
 		return false;
-	} else if (!Valid(after)) {
+	} else if (!Validate(raw)) {
 		box->showToast(tr::lng_serein_link_invalid(tr::now));
 		return false;
 	}
-	Expects(ForDevice().Set(kRules,
-		after == Defaults() ? QByteArray()
-			: QJsonDocument(after).toJson(QJsonDocument::Compact)));
+	Expects(ForDevice().Set(kRules, raw));
 	return true;
 }
 
-void PreviewBox(not_null<Ui::GenericBox*> box, QJsonObject config) {
+void PreviewBox(not_null<Ui::GenericBox*> box, LinkRules config) {
 	box->setTitle(tr::lng_serein_link_preview());
 
 	const auto field = box->addRow(object_ptr<Ui::InputField>(
@@ -65,9 +52,7 @@ void PreviewBox(not_null<Ui::GenericBox*> box, QJsonObject config) {
 		box, tr::lng_serein_link_preview_about(), st::boxLabel));
 	result->setSelectable(true);
 	box->addButton(tr::lng_serein_link_preview(), [=] {
-		const auto rewritten = Rewrite(
-			QJsonDocument(config).toJson(QJsonDocument::Compact),
-			field->getLastText());
+		const auto rewritten = Rewrite(config, field->getLastText());
 		result->setText(rewritten.error.isEmpty()
 			? rewritten.url.toString(QUrl::FullyEncoded)
 			: rewritten.error);
@@ -77,28 +62,22 @@ void PreviewBox(not_null<Ui::GenericBox*> box, QJsonObject config) {
 
 void RuleBox(
 		not_null<Ui::GenericBox*> box,
-		QJsonObject config,
+		LinkRules config,
 		int index) {
 	box->setTitle(tr::lng_serein_link_rule());
 
-	const auto rules = config.value(u"rules"_q).toArray();
-	const auto rule = index < rules.size() ? rules[index].toObject() : QJsonObject{
-		{ u"id"_q, QUuid::createUuid().toString(QUuid::WithoutBraces) },
-		{ u"host"_q, QString() },
-		{ u"replacementHost"_q, QString() },
-		{ u"removeParameters"_q, QJsonArray() },
-		{ u"enabled"_q, false },
-	};
+	const auto existing = (index < int(config.rules.size()));
+	const auto rule = existing ? config.rules[index] : NewRule();
 	box->addRow(object_ptr<Ui::FlatLabel>(box, tr::lng_serein_link_rule_about(), st::boxLabel));
 	const auto host = box->addRow(object_ptr<Ui::InputField>(
 		box, st::defaultInputField, Ui::InputField::Mode::SingleLine,
-		tr::lng_serein_link_host(), rule.value(u"host"_q).toString()));
+		tr::lng_serein_link_host(), rule.host));
 	const auto replacement = box->addRow(object_ptr<Ui::InputField>(
 		box, st::defaultInputField, Ui::InputField::Mode::SingleLine,
-		tr::lng_serein_link_replacement(), rule.value(u"replacementHost"_q).toString()));
+		tr::lng_serein_link_replacement(), rule.replacementHost));
 	auto names = QStringList();
-	for (const auto &name : rule.value(u"removeParameters"_q).toArray()) {
-		names.push_back(name.toString());
+	for (const auto &name : rule.removeParameters) {
+		names.push_back(name);
 	}
 	const auto parameters = box->addRow(object_ptr<Ui::InputField>(
 		box, st::defaultInputField, Ui::InputField::Mode::MultiLine,
@@ -107,25 +86,24 @@ void RuleBox(
 	replacement->setMaxLength(253);
 	parameters->setMaxLength(2200);
 	const auto enabled = box->addRow(object_ptr<Ui::Checkbox>(
-		box, tr::lng_serein_link_enabled(tr::now), rule.value(u"enabled"_q).toBool()));
+		box, tr::lng_serein_link_enabled(tr::now), rule.enabled));
 	const auto updated = [=] {
 		auto changed = rule;
-		changed.insert(u"host"_q, host->getLastText().trimmed().toLower());
-		changed.insert(u"replacementHost"_q, replacement->getLastText().trimmed().toLower());
-		changed.insert(u"enabled"_q, enabled->checked());
-		auto names = QJsonArray();
-		for (const auto &part : parameters->getLastText().split('\n', Qt::SkipEmptyParts)) {
-			names.push_back(part.trimmed());
+		changed.host = host->getLastText().trimmed().toLower();
+		changed.replacementHost = replacement->getLastText().trimmed().toLower();
+		changed.enabled = enabled->checked();
+		changed.removeParameters.clear();
+		for (const auto &part : parameters->getLastText().split('\n')) {
+			if (const auto name = part.trimmed(); !name.isEmpty()) {
+				changed.removeParameters.push_back(name);
+			}
 		}
-		changed.insert(u"removeParameters"_q, names);
 		auto result = config;
-		auto rules = config.value(u"rules"_q).toArray();
-		if (index < rules.size()) {
-			rules[index] = changed;
+		if (existing) {
+			result.rules[index] = changed;
 		} else {
-			rules.push_back(changed);
+			result.rules.push_back(changed);
 		}
-		result.insert(u"rules"_q, rules);
 		return result;
 	};
 	box->addButton(tr::lng_settings_save(), [=] {
@@ -134,16 +112,17 @@ void RuleBox(
 		}
 	});
 	box->addButton(tr::lng_serein_link_preview(), [=] {
-		auto sample = updated();
-		if (!Valid(sample)) {
+		const auto sample = updated();
+		if (!Validate(WriteRules(sample))) {
 			box->showToast(tr::lng_serein_link_invalid(tr::now));
 			return;
 		}
-		auto rules = sample.value(u"rules"_q).toArray();
-		auto rule = rules[index].toObject();
-		rule.insert(u"enabled"_q, true);
-		sample.insert(u"rules"_q, QJsonArray{ rule });
-		box->getDelegate()->show(Box(PreviewBox, sample), Ui::LayerOption::KeepOther);
+		const auto position = existing ? index : int(sample.rules.size()) - 1;
+		auto single = sample.rules[position];
+		single.enabled = true;
+		box->getDelegate()->show(
+			Box(PreviewBox, LinkRules{ .rules = { single } }),
+			Ui::LayerOption::KeepOther);
 	});
 	box->addButton(tr::lng_cancel(), [=] { box->closeBox(); });
 }
@@ -163,18 +142,18 @@ void SettingsBox(not_null<Ui::GenericBox*> box) {
 			return;
 		}
 		const auto confirm = rows->add(object_ptr<Ui::Checkbox>(
-			rows, tr::lng_serein_link_confirm_all(tr::now), config->value(u"confirmAll"_q).toBool()));
+			rows, tr::lng_serein_link_confirm_all(tr::now), config->confirmAll));
 		confirm->checkedChanges() | rpl::on_next([=](bool value) {
 			auto updated = *config;
-			updated.insert(u"confirmAll"_q, value);
+			updated.confirmAll = value;
 			Save(box, *config, updated);
 		}, confirm->lifetime());
-		const auto rules = config->value(u"rules"_q).toArray();
-		for (auto index = 0; index < rules.size(); ++index) {
-			const auto rule = rules[index].toObject();
+		const auto count = int(config->rules.size());
+		for (auto index = 0; index != count; ++index) {
+			const auto &rule = config->rules[index];
 			const auto button = rows->add(object_ptr<Ui::SettingsButton>(
-				rows, rpl::single(rule.value(u"host"_q).toString()
-					+ (rule.value(u"enabled"_q).toBool() ? QString() : u" · "_q + tr::lng_serein_config_off(tr::now))),
+				rows, rpl::single(rule.host
+					+ (rule.enabled ? QString() : u" · "_q + tr::lng_serein_config_off(tr::now))),
 				st::settingsButtonNoIcon));
 			button->setClickedCallback([=] {
 				const auto menu = Ui::CreateChild<Ui::PopupMenu>(box);
@@ -182,23 +161,18 @@ void SettingsBox(not_null<Ui::GenericBox*> box) {
 					box->getDelegate()->show(Box(RuleBox, *config, index), Ui::LayerOption::KeepOther);
 				});
 				for (const auto delta : { -1, 1 }) {
-					if (index + delta < 0 || index + delta >= rules.size()) {
+					if (index + delta < 0 || index + delta >= count) {
 						continue;
 					}
 					menu->addAction(delta < 0 ? tr::lng_link_move_up(tr::now) : tr::lng_link_move_down(tr::now), [=] {
-						auto ordered = rules;
-						const auto entry = ordered.takeAt(index);
-						ordered.insert(index + delta, entry);
 						auto updated = *config;
-						updated.insert(u"rules"_q, ordered);
+						std::swap(updated.rules[index], updated.rules[index + delta]);
 						Save(box, *config, updated);
 					});
 				}
 				menu->addAction(tr::lng_box_delete(tr::now), [=] {
-					auto changed = rules;
-					changed.removeAt(index);
 					auto updated = *config;
-					updated.insert(u"rules"_q, changed);
+					updated.rules.erase(updated.rules.begin() + index);
 					Save(box, *config, updated);
 				});
 				menu->popup(QCursor::pos());
@@ -210,7 +184,7 @@ void SettingsBox(not_null<Ui::GenericBox*> box) {
 	}, box->lifetime());
 	box->addButton(tr::lng_serein_link_add(), [=] {
 		if (const auto config = Current()) {
-			box->getDelegate()->show(Box(RuleBox, *config, int(config->value(u"rules"_q).toArray().size())), Ui::LayerOption::KeepOther);
+			box->getDelegate()->show(Box(RuleBox, *config, int(config->rules.size())), Ui::LayerOption::KeepOther);
 		}
 	});
 	box->addButton(tr::lng_serein_link_preview(), [=] {

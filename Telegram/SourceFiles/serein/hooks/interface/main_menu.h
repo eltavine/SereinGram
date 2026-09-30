@@ -5,7 +5,6 @@
 
 #include <rpl/producer.h>
 #include <QtCore/QByteArray>
-#include <QtCore/QJsonObject>
 #include <gsl/pointers>
 
 #include <optional>
@@ -33,11 +32,10 @@ inline constexpr auto kMainMenuIds = std::array{
 };
 
 [[nodiscard]] QString MainMenuActionTitle(const QString &id);
-[[nodiscard]] QJsonObject MainMenuDefaults();
-[[nodiscard]] bool ValidMainMenu(const QJsonObject &value);
+[[nodiscard]] MainMenuConfig MainMenuDefaults();
 [[nodiscard]] bool ValidMainMenuBytes(const QByteArray &value);
-[[nodiscard]] std::optional<QJsonObject> MainMenu();
-void SetMainMenu(const QJsonObject &value);
+[[nodiscard]] std::optional<MainMenuConfig> MainMenu();
+void SetMainMenu(const MainMenuConfig &value);
 [[nodiscard]] QString MainMenuTitle();
 [[nodiscard]] bool MainMenuSeasonal();
 [[nodiscard]] bool MainMenuCustomOrder();

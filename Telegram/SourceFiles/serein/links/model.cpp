@@ -1,7 +1,6 @@
 #include "serein/links/model.h"
 #include "base/basic_types.h"
 
-#include <QtCore/QJsonDocument>
 #include <QtCore/QSet>
 #include <QtCore/QUuid>
 
@@ -33,33 +32,37 @@ bool ValidLinkRules(const LinkRules &value) {
 	return true;
 }
 
-QJsonObject Defaults() {
-	return QJsonDocument::fromJson(SerializeLinkRules(LinkRules())).object();
-}
-
 bool Validate(const QByteArray &raw) {
 	return raw.isEmpty() || ParseLinkRules(raw).has_value();
 }
 
-QJsonObject NewRule(
-		const QString &host,
-		const QString &replacementHost,
-		const QStringList &removeParameters) {
+std::optional<LinkRules> ReadRules(const QByteArray &raw) {
+	return raw.isEmpty() ? std::make_optional(LinkRules()) : ParseLinkRules(raw);
+}
+
+QByteArray WriteRules(const LinkRules &rules) {
+	return (rules == LinkRules()) ? QByteArray() : SerializeLinkRules(rules);
+}
+
+LinkRule NewRule() {
 	auto rule = LinkRule();
 	rule.id = QUuid::createUuid().toString(QUuid::WithoutBraces);
-	rule.host = host;
-	rule.replacementHost = replacementHost;
-	rule.removeParameters = { removeParameters.begin(), removeParameters.end() };
-	return Write(rule).toObject();
+	return rule;
 }
 
 Result Rewrite(const QByteArray &raw, const QString &original) {
+	if (const auto rules = ReadRules(raw)) {
+		return Rewrite(*rules, original);
+	}
 	auto result = Result();
-	const auto config = raw.isEmpty()
-		? std::make_optional(LinkRules())
-		: ParseLinkRules(raw);
-	if (!config || original.size() > 16384) {
-		result.error = u"invalid link rule configuration"_q;
+	result.error = u"invalid link rule configuration"_q;
+	return result;
+}
+
+Result Rewrite(const LinkRules &rules, const QString &original) {
+	auto result = Result();
+	if (original.size() > 16384) {
+		result.error = u"invalid external URL"_q;
 		return result;
 	}
 	result.url = QUrl(original, QUrl::StrictMode);
@@ -71,7 +74,7 @@ Result Rewrite(const QByteArray &raw, const QString &original) {
 	}
 	const auto originalUrl = result.url;
 	const auto host = QString::fromLatin1(QUrl::toAce(result.url.host())).toLower();
-	for (const auto &rule : config->rules) {
+	for (const auto &rule : rules.rules) {
 		if (!rule.enabled || host != rule.host) {
 			continue;
 		} else if (!result.url.userInfo().isEmpty()) {

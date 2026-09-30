@@ -13,8 +13,6 @@
 
 #include "styles/style_layers.h"
 
-#include <QtCore/QJsonDocument>
-
 namespace Serein::Links {
 
 bool HandleExternalLink(const QString &url, const QVariant &context) {
@@ -24,10 +22,9 @@ bool HandleExternalLink(const QString &url, const QVariant &context) {
 	}
 	const auto raw = ForDevice().Get(kRules);
 	const auto result = Rewrite(raw, url);
-	const auto config = raw.isEmpty()
-		? Defaults() : QJsonDocument::fromJson(raw).object();
+	const auto rules = ReadRules(raw);
 	if (result.error.isEmpty() && !result.changed
-		&& !config.value(u"confirmAll"_q).toBool()) {
+		&& !(rules && rules->confirmAll)) {
 		return false;
 	}
 	const auto click = context.value<ClickHandlerContext>();

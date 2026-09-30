@@ -1,21 +1,14 @@
 #include "serein/hooks/interface/main_menu.h"
 #include "base/basic_types.h"
 
-#include <QtCore/QJsonArray>
-#include <QtCore/QJsonDocument>
-
 #include <algorithm>
 
 namespace Serein::Interface {
 
-QJsonObject MainMenuDefaults() {
-	return {
-		{ u"version"_q, 1 },
-		{ u"order"_q, QJsonArray() },
-		{ u"hidden"_q, QJsonArray() },
-		{ u"title"_q, QString() },
-		{ u"seasonalDecorations"_q, true },
-	};
+MainMenuConfig MainMenuDefaults() {
+	auto result = MainMenuConfig();
+	result.seasonalDecorations = true;
+	return result;
 }
 
 bool ValidMainMenuTitle(const MainMenuConfig &value) {
@@ -27,11 +20,6 @@ bool ValidMainMenuTitle(const MainMenuConfig &value) {
 				|| ch.category() == QChar::Separator_Line
 				|| ch.category() == QChar::Separator_Paragraph;
 		});
-}
-
-bool ValidMainMenu(const QJsonObject &value) {
-	return ValidMainMenuBytes(
-		QJsonDocument(value).toJson(QJsonDocument::Compact));
 }
 
 bool ValidMainMenuBytes(const QByteArray &value) {

@@ -11,8 +11,6 @@
 #include "ui/wrap/slide_wrap.h"
 #include "ui/wrap/vertical_layout.h"
 
-#include <QtCore/QJsonArray>
-#include <QtCore/QJsonDocument>
 #include <QtCore/QMimeData>
 #include <QtGui/QDrag>
 #include <QtGui/QDragEnterEvent>
@@ -98,57 +96,55 @@ QString MainMenuActionTitle(const QString &id) {
 	return tr::lng_serein_main_menu_action_night_mode(tr::now);
 }
 
-std::optional<QJsonObject> MainMenu() {
+std::optional<MainMenuConfig> MainMenu() {
 	const auto bytes = ForDevice().Get(kMainMenuConfig);
 	if (bytes.isEmpty()) {
 		return MainMenuDefaults();
 	}
-	const auto document = QJsonDocument::fromJson(bytes);
-	if (!document.isObject() || !ValidMainMenu(document.object())) {
+	auto result = ParseMainMenuConfig(bytes);
+	if (!result) {
 		LOG(("Serein Error: Invalid mainMenu configuration; native menu retained."));
-		return std::nullopt;
 	}
-	return document.object();
+	return result;
 }
 
-void SetMainMenu(const QJsonObject &value) {
-	Expects(ValidMainMenu(value));
-	Expects(ForDevice().Set(kMainMenuConfig, value == MainMenuDefaults()
+void SetMainMenu(const MainMenuConfig &value) {
+	const auto bytes = (value == MainMenuDefaults())
 		? QByteArray()
-		: QJsonDocument(value).toJson(QJsonDocument::Compact)));
+		: SerializeMainMenuConfig(value);
+	Expects(ValidMainMenuBytes(bytes));
+	Expects(ForDevice().Set(kMainMenuConfig, bytes));
 }
 
 QString MainMenuTitle() {
 	const auto value = MainMenu();
-	return value ? value->value(u"title"_q).toString() : QString();
+	return value ? value->title : QString();
 }
 
 bool MainMenuSeasonal() {
 	const auto value = MainMenu();
-	return !value || value->value(u"seasonalDecorations"_q).toBool();
+	return !value || value->seasonalDecorations;
 }
 
 bool MainMenuCustomOrder() {
 	const auto value = MainMenu();
-	return value && (!value->value(u"order"_q).toArray().isEmpty()
-		|| !value->value(u"hidden"_q).toArray().isEmpty());
+	return value && (!value->order.empty() || !value->hidden.empty());
 }
 
 not_null<Ui::VerticalLayout*> AddMainMenuGroup(
 		not_null<Ui::VerticalLayout*> menu,
 		const QString &id) {
-	const auto value = MainMenu();
-	const auto config = value.value_or(MainMenuDefaults());
+	const auto config = MainMenu().value_or(MainMenuDefaults());
 	const auto group = menu->add(object_ptr<Ui::SlideWrap<Ui::VerticalLayout>>(
 		menu,
 		object_ptr<Ui::VerticalLayout>(menu)));
 	group->setProperty("sereinMainMenuAction", id);
 	group->toggle(
-		!config.value(u"hidden"_q).toArray().contains(id),
+		ranges::find(config.hidden, id) == config.hidden.end(),
 		anim::type::instant);
-	const auto order = config.value(u"order"_q).toArray();
+	const auto &order = config.order;
 	const auto rank = [&](const QString &key) {
-		return int(ranges::find(order, QJsonValue(key)) - order.begin());
+		return int(ranges::find(order, key) - order.begin());
 	};
 	for (auto i = 0; i + 1 < menu->count(); ++i) {
 		const auto other = menu->widgetAt(i)->property(
@@ -178,49 +174,49 @@ void MainMenuBox(not_null<Ui::GenericBox*> box) {
 		st::defaultInputField,
 		Ui::InputField::Mode::SingleLine,
 		tr::lng_serein_main_menu_title(),
-		current->value(u"title"_q).toString()));
+		current->title));
 	title->setMaxLength(96);
 	const auto seasonal = box->addRow(object_ptr<Ui::Checkbox>(
 		box,
 		tr::lng_serein_main_menu_seasonal(tr::now),
-		current->value(u"seasonalDecorations"_q).toBool()));
+		current->seasonalDecorations));
 	struct State {
-		QJsonArray order;
-		QJsonArray hidden;
+		std::vector<QString> order;
+		std::vector<QString> hidden;
 		Fn<void()> refresh;
 	};
 	const auto state = box->lifetime().make_state<State>();
-	state->order = current->value(u"order"_q).toArray();
-	state->hidden = current->value(u"hidden"_q).toArray();
+	state->order = current->order;
+	state->hidden = current->hidden;
+	const auto contains = [](const std::vector<QString> &list, const QString &id) {
+		return ranges::find(list, id) != list.end();
+	};
 	for (const auto id : kMainMenuIds) {
 		const auto text = QString::fromLatin1(id);
-		if (!state->order.contains(text)) {
+		if (!contains(state->order, text)) {
 			state->order.push_back(text);
 		}
 	}
 	const auto rows = box->addRow(object_ptr<Ui::VerticalLayout>(box));
 	state->refresh = [=] {
 		rows->clear();
-		for (auto index = 0; index != state->order.size(); ++index) {
-			const auto id = state->order[index].toString();
-			const auto hidden = state->hidden.contains(id);
+		for (auto index = 0; index != int(state->order.size()); ++index) {
+			const auto id = state->order[index];
+			const auto hidden = contains(state->hidden, id);
 			const auto row = rows->add(object_ptr<MenuOrderRow>(
 				rows,
 				id,
 				rpl::single(MainMenuActionTitle(id)),
 				[=](QString from, QString to) {
-					const auto fromIt = std::find(
-						state->order.begin(), state->order.end(), QJsonValue(from));
-					const auto toIt = std::find(
-						state->order.begin(), state->order.end(), QJsonValue(to));
+					const auto fromIt = ranges::find(state->order, from);
+					const auto toIt = ranges::find(state->order, to);
 					if (fromIt == state->order.end()
 						|| toIt == state->order.end()) {
 						return;
 					}
-					const auto fromIndex = int(fromIt - state->order.begin());
 					const auto toIndex = int(toIt - state->order.begin());
-					state->order.removeAt(fromIndex);
-					state->order.insert(toIndex, from);
+					state->order.erase(fromIt);
+					state->order.insert(state->order.begin() + toIndex, from);
 					InvokeQueued(box, state->refresh);
 				}));
 			if (id != u"settings"_q) {
@@ -228,12 +224,11 @@ void MainMenuBox(not_null<Ui::GenericBox*> box) {
 				row->toggledChanges(
 				) | rpl::on_next([=](bool shown) {
 					if (shown) {
-						const auto found = std::find(state->hidden.begin(),
-							state->hidden.end(), QJsonValue(id));
+						const auto found = ranges::find(state->hidden, id);
 						if (found != state->hidden.end()) {
-							state->hidden.removeAt(int(found - state->hidden.begin()));
+							state->hidden.erase(found);
 						}
-					} else if (!state->hidden.contains(id)) {
+					} else if (!contains(state->hidden, id)) {
 						state->hidden.push_back(id);
 					}
 				}, row->lifetime());
@@ -246,16 +241,17 @@ void MainMenuBox(not_null<Ui::GenericBox*> box) {
 			return;
 		}
 		auto result = *current;
-		result.insert(u"title"_q, title->getLastText().trimmed());
-		result.insert(u"seasonalDecorations"_q, seasonal->checked());
-		auto natural = QJsonArray();
+		result.title = title->getLastText().trimmed();
+		result.seasonalDecorations = seasonal->checked();
+		auto natural = std::vector<QString>();
 		for (const auto id : kMainMenuIds) {
-			natural.push_back(QLatin1String(id));
+			natural.push_back(QString::fromLatin1(id));
 		}
-		result.insert(u"order"_q, state->order == natural
-			? QJsonArray() : state->order);
-		result.insert(u"hidden"_q, state->hidden);
-		if (!ValidMainMenu(result)) {
+		result.order = (state->order == natural)
+			? std::vector<QString>()
+			: state->order;
+		result.hidden = state->hidden;
+		if (!ValidMainMenuBytes(SerializeMainMenuConfig(result))) {
 			box->showToast(tr::lng_serein_main_menu_invalid(tr::now));
 			return;
 		}
