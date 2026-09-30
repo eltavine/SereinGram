@@ -1,6 +1,7 @@
 #pragma once
 
 #include "serein/core/options.h"
+#include "serein/schema/gen/config/services.h"
 #include "serein/schema/gen/settings/services.h"
 
 #include <QtCore/QJsonObject>
@@ -14,6 +15,8 @@ namespace Serein {
 
 using ServiceSettings::kPreferSystemAi;
 using ServiceSettings::kServicesConfig;
+using ServicesConfig = ServicesSchema::ServicesConfig;
+using ServiceInstance = ServicesSchema::ServiceInstance;
 
 enum class ServiceKind {
 	Translation,
@@ -40,12 +43,17 @@ struct ServiceDefinition {
 [[nodiscard]] QJsonObject ServicesDefaults();
 [[nodiscard]] QJsonObject UpgradeServices(QJsonObject value);
 [[nodiscard]] std::optional<ServiceDefinition> ParseService(const QJsonObject &value);
+[[nodiscard]] std::optional<ServiceDefinition> ParseService(
+	const ServiceInstance &value);
 [[nodiscard]] QJsonObject SerializeService(const ServiceDefinition &value);
+[[nodiscard]] ServiceInstance ServiceToInstance(const ServiceDefinition &value);
 [[nodiscard]] bool ValidServices(const QJsonObject &value);
-[[nodiscard]] std::optional<QJsonObject> Services();
-[[nodiscard]] bool SetServices(const QJsonObject &value);
+[[nodiscard]] std::optional<ServicesConfig> ReadServices(const QByteArray &raw);
+[[nodiscard]] QByteArray WriteServices(const ServicesConfig &value);
+[[nodiscard]] std::optional<ServicesConfig> Services();
+[[nodiscard]] bool SetServices(const ServicesConfig &value);
 [[nodiscard]] std::optional<ServiceDefinition> FindService(
-	const QJsonObject &settings,
+	const ServicesConfig &settings,
 	const QString &id);
 [[nodiscard]] bool IsLanguageModelProtocol(const QString &protocol);
 [[nodiscard]] bool IsKeylessProtocol(const QString &protocol);

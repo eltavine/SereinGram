@@ -270,7 +270,7 @@ std::unique_ptr<Ui::TranslateProvider> CreateServiceTranslateProvider(
 		Fn<void(QString)> error) {
 	return std::make_unique<ExternalTranslateProvider>(
 		service.kind == ServiceKind::Translation
-			&& ParseService(SerializeService(service))
+			&& ParseService(ServiceToInstance(service))
 			? std::optional(service) : std::nullopt,
 		std::move(error));
 }
@@ -280,7 +280,7 @@ std::unique_ptr<Ui::TranslateProvider> CreateInteractiveTranslateProvider(
 		Fn<void(QString)> error) {
 	const auto settings = Services();
 	if (settings) {
-		const auto id = settings->value(u"translation"_q).toString();
+		const auto &id = settings->translation;
 		if (id.isEmpty()) {
 			return Ui::CreateTranslateProvider(session);
 		} else if (id == u"telegram"_q) {

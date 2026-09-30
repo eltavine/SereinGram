@@ -149,8 +149,8 @@ QJsonObject UpgradeServices(QJsonObject value) {
 	return value;
 }
 
-QJsonObject SerializeService(const ServiceDefinition &value) {
-	auto instance = ServicesSchema::ServiceInstance();
+ServiceInstance ServiceToInstance(const ServiceDefinition &value) {
+	auto instance = ServiceInstance();
 	instance.id = value.id;
 	instance.name = value.name;
 	instance.kind = (value.kind == ServiceKind::Translation)
@@ -167,36 +167,63 @@ QJsonObject SerializeService(const ServiceDefinition &value) {
 	instance.language = value.language;
 	instance.temperature = value.temperature;
 	instance.region = value.region;
-	return ServicesSchema::Write(instance).toObject();
+	return instance;
+}
+
+QJsonObject SerializeService(const ServiceDefinition &value) {
+	return ServicesSchema::Write(ServiceToInstance(value)).toObject();
+}
+
+std::optional<ServiceDefinition> ParseService(const ServiceInstance &value) {
+	auto error = Codec::Error();
+	if (!ServicesSchema::Validate(value, error, QString())) {
+		return std::nullopt;
+	}
+	return Definition(value);
 }
 
 std::optional<ServiceDefinition> ParseService(const QJsonObject &value) {
 	auto error = Codec::Error();
-	auto instance = ServicesSchema::ServiceInstance();
-	if (!ServicesSchema::Read(QJsonValue(value), instance, error, QString())
-		|| !ServicesSchema::Validate(instance, error, QString())) {
+	auto instance = ServiceInstance();
+	if (!ServicesSchema::Read(QJsonValue(value), instance, error, QString())) {
 		return std::nullopt;
 	}
-	return Definition(instance);
+	return ParseService(instance);
+}
+
+std::optional<ServicesConfig> ReadServices(const QByteArray &raw) {
+	if (raw.isEmpty()) {
+		return ServicesConfig();
+	}
+	const auto document = QJsonDocument::fromJson(raw);
+	if (!document.isObject()) {
+		return std::nullopt;
+	}
+	return ServicesSchema::ParseServicesConfig(QJsonDocument(
+		UpgradeServices(document.object())).toJson(QJsonDocument::Compact));
+}
+
+QByteArray WriteServices(const ServicesConfig &value) {
+	return (value == ServicesConfig())
+		? QByteArray()
+		: ServicesSchema::SerializeServicesConfig(value);
 }
 
 bool ValidServices(const QJsonObject &value) {
-	return ServicesSchema::ParseServicesConfig(QJsonDocument(
-		UpgradeServices(value)).toJson(QJsonDocument::Compact)).has_value();
+	return ReadServices(
+		QJsonDocument(value).toJson(QJsonDocument::Compact)).has_value();
 }
 
 bool ServiceSettings::ValidServicesBytes(const QByteArray &raw) {
-	if (raw.isEmpty()) {
-		return true;
-	}
-	const auto document = QJsonDocument::fromJson(raw);
-	return document.isObject() && ValidServices(document.object());
+	return ReadServices(raw).has_value();
 }
 
-std::optional<ServiceDefinition> FindService(const QJsonObject &settings, const QString &id) {
-	for (const auto &entry : settings.value(u"instances"_q).toArray()) {
-		if (entry.toObject().value(u"id"_q) == id) {
-			return ParseService(entry.toObject());
+std::optional<ServiceDefinition> FindService(
+		const ServicesConfig &settings,
+		const QString &id) {
+	for (const auto &instance : settings.instances) {
+		if (instance.id == id) {
+			return ParseService(instance);
 		}
 	}
 	return std::nullopt;

@@ -40,7 +40,7 @@ constexpr auto kMaximumEntries = 128;
 	if (!config) {
 		return false;
 	}
-	const auto id = config->value(u"transcription"_q).toString();
+	const auto &id = config->transcription;
 	return !id.isEmpty() && id != u"telegram"_q;
 }
 
@@ -241,7 +241,7 @@ void ShowCustomTranscription(
 	}
 	const auto config = Services();
 	const auto service = config
-		? FindService(*config, config->value(u"transcription"_q).toString())
+		? FindService(*config, config->transcription)
 		: std::nullopt;
 	const auto document = item->media() ? item->media()->document() : nullptr;
 	if (!service || service->kind != ServiceKind::Transcription || !document) {

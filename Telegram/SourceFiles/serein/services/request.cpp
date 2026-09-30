@@ -69,7 +69,7 @@ std::optional<QNetworkRequest> ServiceRequest::prepare(
 		const ServiceDefinition &service,
 		Fn<void(ServiceResult)> &done) {
 	cancel();
-	if (!ParseService(SerializeService(service))) {
+	if (!ParseService(ServiceToInstance(service))) {
 		done({ .error = ServiceError::Configuration });
 		return std::nullopt;
 	}

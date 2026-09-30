@@ -1,30 +1,23 @@
 #include "serein/hooks/services/model.h"
 
-#include <QtCore/QJsonDocument>
-
 namespace Serein {
 
-std::optional<QJsonObject> Services() {
-	const auto bytes = ForDevice().Get(kServicesConfig);
+std::optional<ServicesConfig> Services() {
 	if (ForDevice().invalidKeys().contains(kServicesConfig.key)) {
 		LOG(("Serein Error: Invalid services configuration; external services disabled."));
 		return std::nullopt;
 	}
-	if (bytes.isEmpty()) {
-		return ServicesDefaults();
-	}
-	const auto document = QJsonDocument::fromJson(bytes);
-	if (!document.isObject() || !ValidServices(document.object())) {
+	auto result = ReadServices(ForDevice().Get(kServicesConfig));
+	if (!result) {
 		LOG(("Serein Error: Invalid services configuration; external services disabled."));
-		return std::nullopt;
 	}
-	return UpgradeServices(document.object());
+	return result;
 }
 
-bool SetServices(const QJsonObject &value) {
-	return ValidServices(value) && ForDevice().Set(kServicesConfig,
-		value == ServicesDefaults() ? QByteArray()
-			: QJsonDocument(value).toJson(QJsonDocument::Compact));
+bool SetServices(const ServicesConfig &value) {
+	const auto raw = WriteServices(value);
+	return ServiceSettings::ValidServicesBytes(raw)
+		&& ForDevice().Set(kServicesConfig, raw);
 }
 
 } // namespace Serein

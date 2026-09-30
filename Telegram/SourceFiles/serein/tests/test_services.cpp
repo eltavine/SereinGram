@@ -117,6 +117,32 @@ void TestServices() {
 	auto unversioned = legacy;
 	unversioned.insert(u"version"_q, 3);
 	Require(!ValidServices(unversioned), "future services config accepted");
+
+	auto valid = ServicesDefaults();
+	valid.insert(u"instances"_q, QJsonArray{ serialized });
+	valid.insert(u"translation"_q, service.id);
+	const auto typed = ReadServices(QJsonDocument(valid).toJson());
+	Require(typed
+		&& typed->translation == service.id
+		&& typed->instances.size() == 1
+		&& typed->instances[0] == ServiceToInstance(service),
+		"typed services config not read");
+	Require(ReadServices(WriteServices(*typed)) == typed
+		&& WriteServices(ServicesConfig()).isEmpty()
+		&& ReadServices(QByteArray()) == ServicesConfig()
+		&& !ReadServices("{broken"),
+		"typed services config not written back");
+	const auto found = FindService(*typed, service.id);
+	Require(found
+		&& found->name == service.name
+		&& ParseService(ServiceToInstance(*found))
+		&& !FindService(*typed, u"missing"_q),
+		"typed service lookup failed");
+	const auto typedLegacy = ReadServices(QJsonDocument(legacy).toJson());
+	Require(typedLegacy
+		&& typedLegacy->instances.size() == 1
+		&& typedLegacy->instances[0].region.isEmpty(),
+		"version 1 services config not read as typed");
 	std::cout << "PASS: Serein service config and credential binding" << std::endl;
 }
 

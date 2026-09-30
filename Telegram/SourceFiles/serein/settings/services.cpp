@@ -24,6 +24,7 @@
 
 #include <QtCore/QJsonArray>
 #include <QtCore/QJsonDocument>
+#include <QtCore/QJsonObject>
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
 #include <QtCore/QUuid>
@@ -60,7 +61,7 @@ public:
 	static const SectionBuildMethod kBuild;
 };
 
-bool Current(not_null<Ui::GenericBox*> box, const QJsonObject &expected) {
+bool Current(not_null<Ui::GenericBox*> box, const ServicesConfig &expected) {
 	if (Services() == expected) {
 		return true;
 	}
@@ -68,11 +69,11 @@ bool Current(not_null<Ui::GenericBox*> box, const QJsonObject &expected) {
 	return false;
 }
 
-QString TranslationSelectionName(const std::optional<QJsonObject> &config) {
+QString TranslationSelectionName(const std::optional<ServicesConfig> &config) {
 	if (!config) {
 		return tr::lng_serein_service_invalid(tr::now);
 	}
-	const auto id = config->value(u"translation"_q).toString();
+	const auto &id = config->translation;
 	if (id.isEmpty()) {
 		return tr::lng_serein_inherit(tr::now);
 	} else if (id == u"telegram"_q) {
@@ -100,15 +101,15 @@ void TranslationSourceBox(not_null<Ui::GenericBox*> box) {
 		u"Telegram"_q,
 		tr::lng_serein_service_system(tr::now),
 	};
-	for (const auto &value : current->value(u"instances"_q).toArray()) {
-		const auto service = ParseService(value.toObject());
+	for (const auto &instance : current->instances) {
+		const auto service = ParseService(instance);
 		if (service && service->kind == ServiceKind::Translation) {
 			ids.push_back(service->id);
 			titles.push_back(service->name);
 		}
 	}
 	const auto selected = std::max<qsizetype>(0, ids.indexOf(
-		current->value(u"translation"_q).toString()));
+		current->translation));
 	const auto group = std::make_shared<Ui::RadiobuttonGroup>(selected);
 	for (auto index = 0; index != ids.size(); ++index) {
 		const auto row = box->addRow(object_ptr<Ui::Radiobutton>(
@@ -127,7 +128,7 @@ void TranslationSourceBox(not_null<Ui::GenericBox*> box) {
 			return;
 		}
 		auto updated = *current;
-		updated.insert(u"translation"_q, ids[value]);
+		updated.translation = ids[value];
 		if (!SetServices(updated)) {
 			box->showToast(tr::lng_serein_service_invalid(tr::now));
 			return;
@@ -137,11 +138,12 @@ void TranslationSourceBox(not_null<Ui::GenericBox*> box) {
 	});
 }
 
-QString TranscriptionSelectionName(const std::optional<QJsonObject> &config) {
+QString TranscriptionSelectionName(
+		const std::optional<ServicesConfig> &config) {
 	if (!config) {
 		return tr::lng_serein_service_invalid(tr::now);
 	}
-	const auto id = config->value(u"transcription"_q).toString();
+	const auto &id = config->transcription;
 	if (id.isEmpty() || id == u"telegram"_q) {
 		return u"Telegram"_q;
 	}
@@ -159,15 +161,15 @@ void TranscriptionSourceBox(not_null<Ui::GenericBox*> box) {
 	}
 	auto ids = QStringList{ QString() };
 	auto titles = QStringList{ u"Telegram"_q };
-	for (const auto &value : current->value(u"instances"_q).toArray()) {
-		const auto service = ParseService(value.toObject());
+	for (const auto &instance : current->instances) {
+		const auto service = ParseService(instance);
 		if (service && service->kind == ServiceKind::Transcription) {
 			ids.push_back(service->id);
 			titles.push_back(service->name);
 		}
 	}
-	const auto selectedId = current->value(u"transcription"_q).toString();
-	const auto selected = std::max<qsizetype>(0, ids.indexOf(selectedId));
+	const auto selected = std::max<qsizetype>(0, ids.indexOf(
+		current->transcription));
 	const auto group = std::make_shared<Ui::RadiobuttonGroup>(selected);
 	for (auto index = 0; index != ids.size(); ++index) {
 		box->addRow(object_ptr<Ui::Radiobutton>(
@@ -179,7 +181,7 @@ void TranscriptionSourceBox(not_null<Ui::GenericBox*> box) {
 			return;
 		}
 		auto updated = *current;
-		updated.insert(u"transcription"_q, ids[value]);
+		updated.transcription = ids[value];
 		if (!SetServices(updated)) {
 			box->showToast(tr::lng_serein_service_invalid(tr::now));
 			return;
@@ -189,9 +191,9 @@ void TranscriptionSourceBox(not_null<Ui::GenericBox*> box) {
 	});
 }
 
-bool CredentialUsed(const QJsonObject &config, const QString &account) {
-	for (const auto &value : config.value(u"instances"_q).toArray()) {
-		const auto service = ParseService(value.toObject());
+bool CredentialUsed(const ServicesConfig &config, const QString &account) {
+	for (const auto &instance : config.instances) {
+		const auto service = ParseService(instance);
 		if (service && CredentialAccount(*service) == account) {
 			return true;
 		}
@@ -354,9 +356,9 @@ void ServiceTestBox(
 
 void ServiceBox(
 		not_null<Ui::GenericBox*> box,
-		QJsonObject current,
+		ServicesConfig current,
 		ServiceDefinition original,
-		Fn<void(QJsonObject)> saved) {
+		Fn<void(ServicesConfig)> saved) {
 	box->setTitle(tr::lng_serein_service_edit());
 
 	const auto add = [&](rpl::producer<QString> title,
@@ -429,25 +431,22 @@ void ServiceBox(
 				return;
 			}
 		}
-		const auto value = SerializeService(service);
+		const auto value = ServiceToInstance(service);
 		if (!ParseService(value)) {
 			box->showToast(tr::lng_serein_service_invalid(tr::now));
 			return;
 		}
 		auto updated = current;
-		auto instances = updated.value(u"instances"_q).toArray();
-		auto found = false;
-		for (auto i = 0; i != instances.size(); ++i) {
-			if (instances[i].toObject().value(u"id"_q) == service.id) {
-				instances[i] = value;
-				found = true;
-				break;
-			}
+		const auto i = ranges::find(
+			updated.instances,
+			service.id,
+			&ServiceInstance::id);
+		const auto found = (i != updated.instances.end());
+		if (found) {
+			*i = value;
+		} else {
+			updated.instances.push_back(value);
 		}
-		if (!found) {
-			instances.push_back(value);
-		}
-		updated.insert(u"instances"_q, instances);
 		auto secret = key ? key->getLastText().toUtf8() : QByteArray();
 		if (service.useKey) {
 			const auto account = CredentialAccount(service);
@@ -496,16 +495,17 @@ void ServiceBox(
 						return;
 					}
 					auto updated = current;
-					auto instances = QJsonArray();
-					for (const auto &value : current.value(u"instances"_q).toArray()) {
-						if (value.toObject().value(u"id"_q) != original.id) {
-							instances.push_back(value);
-						}
-					}
-					updated.insert(u"instances"_q, instances);
-					for (const auto &key : { u"translation"_q, u"transcription"_q }) {
-						if (updated.value(key) == original.id) {
-							updated.insert(key, QString());
+					updated.instances.erase(
+						ranges::remove(
+							updated.instances,
+							original.id,
+							&ServiceInstance::id),
+						end(updated.instances));
+					for (const auto selected : {
+							&updated.translation,
+							&updated.transcription }) {
+						if (*selected == original.id) {
+							selected->clear();
 						}
 					}
 					const auto account = CredentialAccount(original);
@@ -530,16 +530,17 @@ void ServiceBox(
 	box->addButton(tr::lng_cancel(), [=] { box->closeBox(); });
 }
 
-void ServicesBox(not_null<Ui::GenericBox*> box, QJsonObject initial) {
+void ServicesBox(not_null<Ui::GenericBox*> box, ServicesConfig initial) {
 	box->setTitle(tr::lng_serein_services());
 
 	box->addRow(object_ptr<Ui::FlatLabel>(box, tr::lng_serein_services_about(), st::boxLabel));
-	const auto state = box->lifetime().make_state<rpl::variable<QJsonObject>>(initial);
+	const auto state = box->lifetime().make_state<
+		rpl::variable<ServicesConfig>>(initial);
 	const auto rows = box->addRow(object_ptr<Ui::VerticalLayout>(box));
-	const auto changed = crl::guard(box, [=](QJsonObject value) {
+	const auto changed = crl::guard(box, [=](ServicesConfig value) {
 		crl::on_main(box, [=] { *state = value; });
 	});
-	state->value() | rpl::on_next([=](const QJsonObject &current) {
+	state->value() | rpl::on_next([=](const ServicesConfig &current) {
 		rows->clear();
 		const auto add = [&](QString title, Fn<void()> click) {
 			const auto row = rows->add(object_ptr<Ui::SettingsButton>(
@@ -547,8 +548,8 @@ void ServicesBox(not_null<Ui::GenericBox*> box, QJsonObject initial) {
 			row->setClickedCallback(std::move(click));
 			return row;
 		};
-		for (const auto &value : current.value(u"instances"_q).toArray()) {
-			const auto service = ParseService(value.toObject());
+		for (const auto &instance : current.instances) {
+			const auto service = ParseService(instance);
 			if (service) {
 				add(service->name, [=] {
 					box->uiShow()->showBox(Box(ServiceBox, current, *service, changed));
