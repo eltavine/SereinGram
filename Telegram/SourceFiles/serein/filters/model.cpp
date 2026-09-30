@@ -12,7 +12,6 @@
 namespace Serein::Filters {
 namespace {
 
-constexpr auto kMaxRules = 32;
 constexpr auto kMaxText = 16384;
 constexpr auto kMaxMatches = 256;
 constexpr auto kMaxWorkMs = 20;

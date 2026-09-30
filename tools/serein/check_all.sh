@@ -11,6 +11,15 @@ if [ ! -f "$build/CMakeCache.txt" ]; then
 fi
 cmake --build "$build"
 "$build/test_serein"
+warnings="${SEREIN_WARNINGS_BUILD:-out/serein-core-warnings}"
+if [ ! -f "$warnings/CMakeCache.txt" ]; then
+	cmake -S tools/serein/core_tests -B "$warnings" -G Ninja \
+		-DCMAKE_CXX_FLAGS="-Wall -Wextra -Wno-unused-parameter -Wno-switch -Wno-missing-field-initializers -Wno-sign-compare -Wno-deprecated -Wno-deprecated-this-capture -Wrange-loop-construct"
+fi
+if cmake --build "$warnings" 2>&1 | grep -E 'SourceFiles/serein/.*warning:'; then
+	echo "Serein code has warnings that fail the Linux build." >&2
+	exit 1
+fi
 (cd proto && buf lint)
 bash tools/serein/proto_breaking.sh "$baseline"
 uv run --quiet tools/serein/codegen/generate.py --check

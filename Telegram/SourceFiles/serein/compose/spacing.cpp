@@ -21,7 +21,7 @@ SpacingResult InsertChineseLatinSpacing(
 		const QString &text,
 		const std::vector<int> &protectedBoundaries) {
 	const auto length = int(text.size());
-	Expects(protectedBoundaries.size() == length + 1);
+	Expects(int(protectedBoundaries.size()) == length + 1);
 	auto result = SpacingResult{
 		.text = QString(),
 		.before = std::vector<int>(length + 1),
