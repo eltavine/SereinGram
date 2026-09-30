@@ -15,8 +15,7 @@
 
 #include "styles/style_menu_icons.h"
 
-#include <QtCore/QJsonArray>
-#include <QtCore/QJsonDocument>
+#include <algorithm>
 
 namespace Serein::Filters {
 
@@ -29,35 +28,36 @@ void InsertAuthorAction(
 	}
 	const auto session = &controller->session();
 	const auto author = QString::number(SerializePeerId(item->from()->id));
-	const auto raw = ForAccount(session).Get(kRules);
-	if (!Validate(raw)) {
+	const auto read = [=]() -> std::optional<FilterRules> {
+		const auto raw = ForAccount(session).Get(kRules);
+		return raw.isEmpty() ? FilterRules() : ParseFilterRules(raw);
+	};
+	const auto config = read();
+	if (!config) {
 		return;
 	}
-	const auto config = raw.isEmpty()
-		? Defaults() : QJsonDocument::fromJson(raw).object();
-	const auto hidden = config.value(u"hiddenAuthors"_q).toArray().contains(author);
+	const auto &authors = config->hiddenAuthors;
+	const auto hidden = std::find(authors.begin(), authors.end(), author)
+		!= authors.end();
 	const auto title = hidden
 		? tr::lng_serein_filter_author_show(tr::now)
 		: tr::lng_serein_filter_author_hide(tr::now);
 	const auto action = Ui::Menu::CreateAction(menu, title,
 		crl::guard(controller, [=] {
-			const auto current = ForAccount(session).Get(kRules);
-			if (!Validate(current)) {
+			auto updated = read();
+			if (!updated) {
 				controller->showToast(tr::lng_serein_filter_invalid(tr::now));
 				return;
 			}
-			auto updated = current.isEmpty()
-				? Defaults() : QJsonDocument::fromJson(current).object();
-			auto authors = updated.value(u"hiddenAuthors"_q).toArray();
-			if (const auto index = authors.toVariantList().indexOf(author); index >= 0) {
-				authors.removeAt(index);
+			auto &list = updated->hiddenAuthors;
+			if (const auto i = std::find(list.begin(), list.end(), author)
+				; i != list.end()) {
+				list.erase(i);
 			} else {
-				authors.push_back(author);
-				updated.insert(u"enabled"_q, true);
+				list.push_back(author);
+				updated->enabled = true;
 			}
-			updated.insert(u"hiddenAuthors"_q, authors);
-			const auto bytes = QJsonDocument(updated).toJson(QJsonDocument::Compact);
-			if (!ForAccount(session).Set(kRules, bytes)) {
+			if (!ForAccount(session).Set(kRules, SerializeFilterRules(*updated))) {
 				controller->showToast(tr::lng_serein_filter_invalid(tr::now));
 				return;
 			}
