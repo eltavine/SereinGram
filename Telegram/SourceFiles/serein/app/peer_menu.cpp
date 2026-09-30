@@ -1,5 +1,6 @@
 #include "serein/hooks/peer_menu.h"
 
+#include "serein/features/history/viewer.h"
 #include "serein/hooks/privacy/alias.h"
 #include "data/data_forum_topic.h"
 #include "data/data_peer.h"
@@ -29,6 +30,12 @@ void FillHistoryMenu(
 				Window::SectionShow::Way::Forward);
 		}
 	}, &st::menuIconShowInChat);
+	if (!topic
+		&& HistoryFeature::HasDeletedMessages(&controller->session(), peer)) {
+		addAction(tr::lng_serein_menu_deleted_messages(tr::now), [=] {
+			HistoryFeature::ShowDeletedMessages(controller, peer);
+		}, &st::menuIconInfo);
+	}
 }
 
 void FillProfileMenu(

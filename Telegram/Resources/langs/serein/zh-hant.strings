@@ -470,6 +470,14 @@
 "lng_serein_history_note" = "此帳號收到的已刪除和已編輯訊息只以加密形式儲存在本機。";
 "lng_serein_menu_edit_history" = "編輯歷史";
 "lng_serein_menu_deleted_messages" = "已刪除的訊息";
+"lng_serein_history_empty" = "此對話沒有儲存的已刪除訊息。";
+"lng_serein_history_clear" = "清除";
+"lng_serein_history_clear_chat" = "清除此對話";
+"lng_serein_history_clear_chat_sure" = "要從本裝置刪除此對話儲存的全部已刪除訊息與編輯歷史嗎？";
+"lng_serein_history_clear_all" = "清除已儲存的訊息歷史";
+"lng_serein_history_clear_all_sure" = "要從本裝置刪除此帳號儲存的全部已刪除訊息與編輯歷史嗎？";
+"lng_serein_history_cleared" = "已清除儲存的歷史";
+"lng_serein_history_clear_failed" = "無法清除儲存的歷史";
 "lng_serein_menu_read_until_here" = "讀到此處";
 "lng_serein_menu_history_exclude" = "不記錄此對話的歷史";
 "lng_serein_menu_history_include" = "恢復記錄此對話的歷史";

@@ -474,6 +474,14 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_history_note" = "Deleted and edited messages received by this account are stored encrypted on this device only.";
 "lng_serein_menu_edit_history" = "Edit history";
 "lng_serein_menu_deleted_messages" = "Deleted messages";
+"lng_serein_history_empty" = "No deleted messages are saved for this chat.";
+"lng_serein_history_clear" = "Clear";
+"lng_serein_history_clear_chat" = "Clear this chat";
+"lng_serein_history_clear_chat_sure" = "Delete all saved deleted messages and edit history for this chat from this device?";
+"lng_serein_history_clear_all" = "Clear saved message history";
+"lng_serein_history_clear_all_sure" = "Delete all saved deleted messages and edit history for this account from this device?";
+"lng_serein_history_cleared" = "Saved history cleared";
+"lng_serein_history_clear_failed" = "Could not clear the saved history";
 "lng_serein_menu_read_until_here" = "Read until here";
 "lng_serein_menu_history_exclude" = "Don't save this chat's history";
 "lng_serein_menu_history_include" = "Save this chat's history again";

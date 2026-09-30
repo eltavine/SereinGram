@@ -1,6 +1,7 @@
 #include "serein/menu/history.h"
 
 #include "serein/features/history/model/recorder.h"
+#include "serein/features/history/viewer.h"
 #include "serein/hooks/history.h"
 #include "serein/hooks/menu/actions.h"
 #include "serein/ports/history_store.h"
@@ -24,8 +25,6 @@
 namespace Serein::Menu {
 namespace {
 
-constexpr auto kDeletedLimit = 100;
-
 [[nodiscard]] std::vector<History::Record> EditVersions(
 		not_null<HistoryItem*> item) {
 	const auto store = Hooks::HistoryStoreFor(&item->history()->session());
@@ -39,18 +38,6 @@ constexpr auto kDeletedLimit = 100;
 		return record.kind != History::RecordKind::Edited;
 	});
 	return result;
-}
-
-[[nodiscard]] std::vector<History::Record> DeletedMessages(
-		not_null<HistoryItem*> item) {
-	const auto store = Hooks::HistoryStoreFor(&item->history()->session());
-	if (!store) {
-		return {};
-	}
-	return store->deleted({
-		.peerId = qint64(item->history()->peer->id.value),
-		.limit = kDeletedLimit,
-	});
 }
 
 void ShowRecords(
@@ -111,21 +98,17 @@ void InsertDeletedMessagesAction(
 		Ui::PopupMenu *menu,
 		HistoryItem *item,
 		Window::SessionController *controller) {
-	if (!menu || !item || !controller || DeletedMessages(item).empty()) {
+	if (!menu || !item || !controller) {
 		return;
 	}
-	const auto itemId = item->fullId();
+	const auto peer = item->history()->peer;
+	if (!HistoryFeature::HasDeletedMessages(&controller->session(), peer)) {
+		return;
+	}
 	const auto action = Ui::Menu::CreateAction(menu,
 		tr::lng_serein_menu_deleted_messages(tr::now),
 		crl::guard(controller, [=] {
-			const auto current = controller->session().data().message(itemId);
-			if (!current) {
-				return;
-			}
-			ShowRecords(
-				controller,
-				tr::lng_serein_menu_deleted_messages(tr::now),
-				Describe(DeletedMessages(current)));
+			HistoryFeature::ShowDeletedMessages(controller, peer);
 		}));
 	auto widget = base::make_unique_q<Ui::Menu::Action>(
 		menu->menu(), menu->menu()->st(), action,

@@ -25,6 +25,7 @@ set(serein_sources
     serein/app/send_options.cpp
     serein/app/shortcuts.cpp
     serein/app/sticker_set_menu.cpp
+    serein/features/history/viewer.cpp
     serein/app/tray_menu.cpp
     serein/app/updates.cpp
     serein/app/ghost_menu.cpp

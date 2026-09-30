@@ -43,7 +43,7 @@ Nagram 的品牌政策要求分支使用不同品牌并替换 Nagram 名称与�
 | SG-CORE-01 | proto3 schema 作为设置、结构化配置、导出包与历史记录的唯一声明来源；Buf lint 与 breaking 检查（6 个设置页、103 个选项已迁移） | D | In Progress | P0 |
 | SG-CORE-02 | 代码生成器：注册表元数据、C++ 值类型、JSON 编解码、校验（均已生成；既有结构化配置已迁移 6 个：链接规则、快捷回复、消息过滤、主菜单、消息菜单、翻译与转写服务；支持字符串键的 map 字段、double 与可空字段） | D | In Progress | P0 |
 | SG-CORE-03 | 存储端口与适配器：设备偏好、账号偏好、历史库 | D | In Progress | P0 |
-| SG-CORE-04 | 上游挂钩门面 `serein/hooks`，上游文件只调用门面（设置选项的门面由 proto 生成到 `serein/hooks/gen`，面向上游的薄接口头文件已移入 `serein/hooks/<领域>/`，并可脱离应用代码单独通过语法检查；直接包含内部头文件的上游文件已从 87 降到 0，并由预算守卫锁定；依赖上游嵌套类型的门面声明为函数模板，在实现文件中对该类型显式实例化，门面本身不包含应用代码） | D | Done | P0 |
+| SG-CORE-04 | 上游挂钩门面 `serein/hooks`，上游文件只调用门面（设置选项的门面由 proto 生成到 `serein/hooks/gen`，面向上游的薄接口头文件已移入 `serein/hooks/<领域>/`，并可脱离应用代码单独通过语法检查；直接包含内部头文件的上游文件已从 87 降到 0，并由预算守卫锁定；依赖上游嵌套类型的门面声明为函数模板，在实现文件中对该类型显式实例化，门面本身不包含应用代码） | D | Implemented | P0 |
 | SG-CORE-05 | 功能模块注册与生命周期（应用、会话、窗口作用域）：应用与会话作用域已由 `serein/app/modules.cpp` 模块表统一分发（对话排序已从上游窗口构造函数移到会话作用域），窗口作用域待做 | D | In Progress | P0 |
 | SG-CORE-06 | 设置页与搜索索引由 schema 元数据生成（开关、选项、数值、文本、子页）：开关行、小标题、说明、依赖开关与自定义行位置已由 proto 生成 `AddLayout`，界面、聊天、消息、写作、媒体、隐私（含幽灵与历史）六页已迁移；数值输入行（范围取自 gte/lte 规则，0 的文字与复数格式由 `number` 选项声明）已生成；单选行（按序语言键或 `in` 规则加后缀）已生成 | D | In Progress | P0 |
 | SG-CORE-07 | 英文、简体、繁体内置文案与一致性检查 | Ni Na | Implemented | P0 |
@@ -76,10 +76,10 @@ Nagram 的品牌政策要求分支使用不同品牌并替换 Nagram 名称与�
 | --- | --- | --- | --- | --- |
 | SG-HIST-01 | 保存已接收的删除消息并在原位显示，附删除标记（防撤回）：本次会话内原位保留与底部“已删除”标记已实现（默认关闭）；重启后从历史库回填原位待做 | Ad Aa Na | In Progress | P1 |
 | SG-HIST-02 | 保存编辑历史，在消息菜单查看各版本 | Ad Aa Na | In Progress | P1 |
-| SG-HIST-03 | 历史库加密存储（账号本地密钥派生），退出账号时清理（AES-256-GCM 密钥由账号本地密钥派生；退出账号后同一账号槽位的本地密钥会保留，因此在会话结束且不是退出应用时删除历史库及其日志文件） | D | Done | P1 |
-| SG-HIST-04 | 保留期限、容量上限、单对话清理与全部清理（保留天数与条数上限已有设置行） | Na | In Progress | P1 |
+| SG-HIST-03 | 历史库加密存储（账号本地密钥派生），退出账号时清理（AES-256-GCM 密钥由账号本地密钥派生；退出账号后同一账号槽位的本地密钥会保留，因此在会话结束且不是退出应用时删除历史库及其日志文件） | D | Implemented | P1 |
+| SG-HIST-04 | 保留期限、容量上限、单对话清理与全部清理（保留天数与条数上限有设置行，会话启动时清理；“已删除消息”窗口可清除单个对话的记录，隐私页“清除已保存的消息历史”清除整个账号，两者都需确认） | Na | Implemented | P1 |
 | SG-HIST-05 | 自定义已删除、已编辑标记文字；已删除消息半透明 | Aa Na | In Progress | P2 |
-| SG-HIST-06 | 按对话浏览已删除消息 | Ad Aa | In Progress | P2 |
+| SG-HIST-06 | 按对话浏览已删除消息（对话菜单与消息菜单的“已删除消息”列出该对话最近 100 条，含发送者与发送时间；以聊天气泡形式展示与媒体预览待做） | Ad Aa | In Progress | P2 |
 | SG-HIST-07 | 是否记录机器人消息；按对话排除（“记录机器人消息”为隐私页开关；消息菜单“不记录此对话的历史”按账号维护排除列表，列表格式由 `config/v1/history_exclusions.proto` 声明） | Na | Implemented | P2 |
 | SG-HIST-08 | 已下载媒体不随删除清除，历史中可继续打开 | Ad Aa | Planned | P2 |
 | SG-HIST-09 | 限时图片、视频过期后仍可查看 | Ad Aa | Planned | P2 |
@@ -107,13 +107,13 @@ SG-HIST-05 的“已编辑”标记文字已由 C09 实现，删除标记随 SG-
 | ID | 功能 | 来源 | 状态 | 优先级 |
 | --- | --- | --- | --- | --- |
 | SG-PRIV-01 | 主播模式：截屏录屏排除窗口，遮盖会话列表、标题与通知（G02） | Ad Ni | Implemented | P1 |
-| SG-PRIV-02 | 主播模式快捷键与菜单、托盘入口（主菜单开关与托盘菜单“开启/关闭演示模式”已接入，托盘项由 `serein/app/tray_menu.cpp` 提供；快捷键命令 `serein_toggle_presentation_mode` 与 `serein_toggle_ghost_mode` 默认不绑定按键，可在 `shortcuts-custom.json` 中绑定，切换后提示当前状态） | Ad | Done | P1 |
+| SG-PRIV-02 | 主播模式快捷键与菜单、托盘入口（主菜单开关与托盘菜单“开启/关闭演示模式”已接入，托盘项由 `serein/app/tray_menu.cpp` 提供；快捷键命令 `serein_toggle_presentation_mode` 与 `serein_toggle_ghost_mode` 默认不绑定按键，可在 `shortcuts-custom.json` 中绑定，切换后提示当前状态） | Ad | Implemented | P1 |
 | SG-PRIV-03 | 遮盖本机手机号（G01） | Ni Na | Implemented | P1 |
 | SG-PRIV-04 | 本地备注名称 | Ni | Implemented | P2 |
 | SG-PRIV-05 | 默认隐藏赞助消息与代理赞助频道（B10、B11） | Ad Ni | Implemented | P1 |
 | SG-PRIV-06 | 隐藏已读时间提示与分享手机号提示（G03、G04） | Ni | Implemented | P2 |
 | SG-PRIV-07 | 本地 Premium 外观，仅本地显示，不伪造服务端权益 | Ad Aa | Planned | P3 |
-| SG-PRIV-08 | 受保护内容的本地复制与保存（复制文字、保存媒体与截图已放开，转发仍由服务端拒绝；受保护的动态可截图，并与普通动态一样可由 Premium 用户保存，不绕过 Premium 限制） | Ad Na | Done | P2 |
+| SG-PRIV-08 | 受保护内容的本地复制与保存（复制文字、保存媒体与截图已放开，转发仍由服务端拒绝；受保护的动态可截图，并与普通动态一样可由 Premium 用户保存，不绕过 Premium 限制） | Ad Na | Implemented | P2 |
 | SG-PRIV-09 | 设置锁与本地账号隐藏 | Ni | Planned | P3 |
 | SG-PRIV-10 | 检测到录屏软件时自动开启主播模式 | Ad | Planned | P3 |
 
@@ -163,7 +163,7 @@ SG-HIST-05 的“已编辑”标记文字已由 C09 实现，删除标记随 SG-
 | SG-MSG-05 | 直接显示剧透、快速转发按钮、推荐频道、会员标识、收藏夹标签栏、对方输入状态（C19–C24） | Ad Ni | Implemented | P1 |
 | SG-MSG-06 | 阅读时中西文加空格与简繁转换（C25、C26） | Na | Implemented | P2 |
 | SG-MSG-07 | 资料页 ID、数据中心、隐藏礼物、隐藏待办入口（G05–G08） | Ad Ni Na | Implemented | P1 |
-| SG-MSG-08 | 消息详情：日期、转发来源、贴纸包与表情包作者（消息菜单“消息详情”：消息与对话、发送者 ID（Bot API 格式）、带秒的发送与编辑时间、转发来源与原始时间、浏览数、贴纸包名称与链接、贴纸包作者） | Ad Na | Done | P2 |
+| SG-MSG-08 | 消息详情：日期、转发来源、贴纸包与表情包作者（消息菜单“消息详情”：消息与对话、发送者 ID（Bot API 格式）、带秒的发送与编辑时间、转发来源与原始时间、浏览数、贴纸包名称与链接、贴纸包作者） | Ad Na | Implemented | P2 |
 | SG-MSG-09 | 内联按钮回调数据查看与复制（消息菜单“按钮数据”：列出内联按钮的文字与数据，点击复制；不可打印的数据以 base64 显示；默认隐藏，可在菜单设置中开启） | Ad | Implemented | P2 |
 | SG-MSG-10 | 语音与圆形视频拖动进度（先核对上游现状）（由上游提供：语音消息 `VoiceSeekClickHandler` 与圆形视频 `VideoMessageSeek` 均支持拖动进度，核对于 2026-09-30） | Ad | Implemented | P2 |
 | SG-MSG-11 | 反应时间显示秒（反应与已读列表的时间随“消息时间显示秒”选项显示到秒） | Ad | Implemented | P3 |
