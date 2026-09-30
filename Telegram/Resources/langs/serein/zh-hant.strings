@@ -219,6 +219,9 @@
 "lng_serein_seconds_suffix" = " 秒";
 "lng_serein_ui_text" = "介面文字";
 "lng_serein_halfwidth_ui_punctuation" = "介面文字使用半形標點";
+"lng_serein_accounts" = "帳號";
+"lng_serein_more_accounts" = "允許登入最多 20 個帳號";
+"lng_serein_more_accounts_note" = "超出官方上限的帳號只儲存在本機。官方用戶端最多只能開啟其中 6 個。";
 "lng_serein_startup_folder" = "啟動時開啟的資料夾";
 "lng_serein_startup_folder_last" = "上次開啟的資料夾";
 "lng_serein_startup_folder_specific" = "指定資料夾";

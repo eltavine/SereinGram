@@ -89,4 +89,9 @@ message InterfaceSettings {
       restart: true
     }
   ];
+  optional bool more_accounts = 15 [(serein.options.v1.field) = {
+    section: {title: "lng_serein_accounts" id: "accounts" keywords: ["accounts"]}
+    keywords: ["accounts", "limit", "multiple"]
+    note: "lng_serein_more_accounts_note"
+  }];
 }

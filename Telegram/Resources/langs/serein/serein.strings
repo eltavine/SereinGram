@@ -223,6 +223,9 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_seconds_suffix" = " s";
 "lng_serein_ui_text" = "Interface text";
 "lng_serein_halfwidth_ui_punctuation" = "Use halfwidth punctuation in interface text";
+"lng_serein_accounts" = "Accounts";
+"lng_serein_more_accounts" = "Allow up to 20 accounts";
+"lng_serein_more_accounts_note" = "Accounts beyond the official limit stay on this device. The official app opens at most 6 of them.";
 "lng_serein_startup_folder" = "Folder to open at startup";
 "lng_serein_startup_folder_last" = "Last opened folder";
 "lng_serein_startup_folder_specific" = "Specific folder";

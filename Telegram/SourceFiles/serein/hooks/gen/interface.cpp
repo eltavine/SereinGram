@@ -118,4 +118,12 @@ rpl::producer<bool> HalfwidthUiPunctuationValue() {
 	return ForDevice().Value(Serein::Interface::kHalfwidthUiPunctuation);
 }
 
+bool MoreAccounts() {
+	return ForDevice().Get(Serein::Interface::kMoreAccounts);
+}
+
+rpl::producer<bool> MoreAccountsValue() {
+	return ForDevice().Value(Serein::Interface::kMoreAccounts);
+}
+
 } // namespace Serein::Hooks::Interface

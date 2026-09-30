@@ -34,5 +34,7 @@ namespace Serein::Hooks::Interface {
 [[nodiscard]] rpl::producer<int> OtherDeviceNotificationDelayValue();
 [[nodiscard]] bool HalfwidthUiPunctuation();
 [[nodiscard]] rpl::producer<bool> HalfwidthUiPunctuationValue();
+[[nodiscard]] bool MoreAccounts();
+[[nodiscard]] rpl::producer<bool> MoreAccountsValue();
 
 } // namespace Serein::Hooks::Interface

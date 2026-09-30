@@ -7,6 +7,8 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "main/main_domain.h"
 
+#include "serein/hooks/accounts.h"
+#include "serein/hooks/gen/interface.h"
 #include "core/application.h"
 #include "core/core_settings.h"
 #include "core/shortcuts.h"
@@ -269,7 +271,7 @@ void Domain::scheduleUpdateUnreadBadge() {
 
 not_null<Main::Account*> Domain::add(MTP::Environment environment) {
 	Expects(started());
-	Expects(_accounts.size() < kPremiumMaxAccounts);
+	Expects(_accounts.size() < Serein::Hooks::kMaxLocalAccounts);
 
 	static const auto cloneConfig = [](const MTP::Config &config) {
 		return std::make_unique<MTP::Config>(config);
@@ -516,6 +518,9 @@ void Domain::scheduleWriteAccounts() {
 }
 
 int Domain::maxAccounts() const {
+	if (Serein::Hooks::Interface::MoreAccounts()) {
+		return Serein::Hooks::kMaxLocalAccounts;
+	}
 	const auto premiumCount = ranges::count_if(accounts(), [](
 			const Main::Domain::AccountWithIndex &d) {
 		return d.account->sessionExists()

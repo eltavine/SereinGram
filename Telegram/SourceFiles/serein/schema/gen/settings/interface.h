@@ -126,6 +126,13 @@ inline constexpr auto kHalfwidthUiPunctuation = Option<bool>{
 	Category::Interface,
 	"lng_serein_halfwidth_ui_punctuation",
 	static_cast<unsigned>(Flag::RequiresRestart) };
+inline constexpr auto kMoreAccounts = Option<bool>{
+	"serein.moreAccounts",
+	Scope::Device,
+	false,
+	Category::Interface,
+	"lng_serein_more_accounts",
+	0 };
 
 inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kBubbleRoundness));
@@ -142,6 +149,7 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kNotificationDelay));
 	Expects(registry.Add(kOtherDeviceNotificationDelay));
 	Expects(registry.Add(kHalfwidthUiPunctuation));
+	Expects(registry.Add(kMoreAccounts));
 }
 
 } // namespace Serein::Interface

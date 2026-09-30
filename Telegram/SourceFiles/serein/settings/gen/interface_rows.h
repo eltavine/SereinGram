@@ -10,7 +10,7 @@
 
 namespace Serein::Interface {
 
-inline const auto kToggleRows = std::array<ToggleRow, 7>{ {
+inline const auto kToggleRows = std::array<ToggleRow, 8>{ {
 	{
 		&kWideChannelPosts,
 		tr::lng_serein_wide_channel_posts,
@@ -52,6 +52,12 @@ inline const auto kToggleRows = std::array<ToggleRow, 7>{ {
 		tr::lng_serein_halfwidth_ui_punctuation,
 		u"serein/interface/halfwidth-ui-punctuation"_q,
 		{ u"text"_q, u"punctuation"_q },
+	},
+	{
+		&kMoreAccounts,
+		tr::lng_serein_more_accounts,
+		u"serein/interface/more-accounts"_q,
+		{ u"accounts"_q, u"limit"_q, u"multiple"_q },
 	},
 } };
 
@@ -107,6 +113,13 @@ inline void AddLayout(
 		{ u"text"_q, u"punctuation"_q },
 	});
 	AddToggle(builder, kToggleRows[6]);
+	AddSection(builder, {
+		u"serein/interface/accounts"_q,
+		tr::lng_serein_accounts,
+		{ u"accounts"_q },
+	});
+	AddToggle(builder, kToggleRows[7]);
+	AddNote(builder, tr::lng_serein_more_accounts_note);
 }
 
 } // namespace Serein::Interface
