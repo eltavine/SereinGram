@@ -14,6 +14,7 @@ void TestFilters();
 void TestLinks();
 void TestCodec();
 void TestGhost();
+void TestCipher();
 void TestHistoryStore();
 void TestHistoryRecorder();
 
@@ -98,6 +99,7 @@ int main() {
 		TestLinks();
 		TestCodec();
 		TestGhost();
+		TestCipher();
 #ifdef SEREIN_HAVE_QT_SQL
 		auto argc = 1;
 		char name[] = "test_serein";

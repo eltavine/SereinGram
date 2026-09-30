@@ -43,6 +43,10 @@ on:
       - 'Telegram/configure.bat'
       - 'Telegram/Telegram.plist'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
 
   linux:

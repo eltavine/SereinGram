@@ -33,9 +33,9 @@ class Recorder final {
 public:
 	Recorder(Ports::HistoryStore &store, std::function<qint64()> now);
 
-	[[nodiscard]] bool recordDeleted(const Policy &policy, const Snapshot &snapshot);
-	[[nodiscard]] bool recordEdit(const Policy &policy, const Snapshot &before);
-	[[nodiscard]] bool prune(const Policy &policy);
+	bool recordDeleted(const Policy &policy, const Snapshot &snapshot);
+	bool recordEdit(const Policy &policy, const Snapshot &before);
+	bool prune(const Policy &policy);
 
 private:
 	[[nodiscard]] bool record(History::RecordKind kind, const Snapshot &snapshot);

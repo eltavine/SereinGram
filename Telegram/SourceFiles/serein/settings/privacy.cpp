@@ -1,6 +1,7 @@
 #include "serein/settings/privacy.h"
 
 #include "serein/features/ghost/model/policy.h"
+#include "serein/features/history/model/recorder.h"
 #include "serein/privacy/options.h"
 #include "serein/settings/home.h"
 #include "lang/lang_keys.h"
@@ -139,6 +140,19 @@ const auto kMeta = BuildHelper({
 		u"serein/privacy/ghost-hide-typing"_q,
 		{ u"ghost"_q, u"typing"_q });
 	builder.addDividerText(tr::lng_serein_ghost_note());
+	AddAccountToggle(builder, HistorySettings::kHistorySaveDeleted,
+		tr::lng_serein_history_save_deleted(),
+		u"serein/privacy/history-save-deleted"_q,
+		{ u"deleted"_q, u"anti-recall"_q, u"history"_q });
+	AddAccountToggle(builder, HistorySettings::kHistorySaveEdits,
+		tr::lng_serein_history_save_edits(),
+		u"serein/privacy/history-save-edits"_q,
+		{ u"edit"_q, u"history"_q });
+	AddAccountToggle(builder, HistorySettings::kHistoryIncludeBots,
+		tr::lng_serein_history_include_bots(),
+		u"serein/privacy/history-include-bots"_q,
+		{ u"bots"_q, u"history"_q });
+	builder.addDividerText(tr::lng_serein_history_note());
 	AddToggle(builder, Privacy::kDemoMode,
 		tr::lng_serein_demo_mode(),
 		u"serein/privacy/demo-mode"_q,

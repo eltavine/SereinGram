@@ -80,6 +80,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "payments/payments_non_panel_process.h" // ProcessNonPanelPaymentFormFactory.
 #include "platform/platform_notifications_manager.h"
 #include "spellcheck/spellcheck_highlight_syntax.h"
+#include "serein/hooks/history.h"
 #include "styles/style_dialogs.h"
 
 namespace {
@@ -2347,6 +2348,7 @@ void HistoryItem::clearMainView() {
 }
 
 void HistoryItem::applyEdition(HistoryMessageEdition &&edition) {
+	Serein::Hooks::OnBeforeEdition(this, edition.textWithEntities);
 	history()->session().ephemeralMessages().revertAnchored(this);
 
 	int keyboardTop = -1;

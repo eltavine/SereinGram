@@ -439,3 +439,9 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_ghost_mark_read_after_sending" = "Mark the chat read after sending";
 "lng_serein_ghost_use_scheduled_messages" = "Send through scheduled messages";
 "lng_serein_ghost_note" = "Applies to the current account only. Other devices and actions such as sending messages can still reveal your activity.";
+"lng_serein_history_save_deleted" = "Keep deleted messages";
+"lng_serein_history_save_edits" = "Keep edit history";
+"lng_serein_history_include_bots" = "Include messages from bots";
+"lng_serein_history_retention_days" = "Keep history for";
+"lng_serein_history_max_records" = "History record limit";
+"lng_serein_history_note" = "Deleted and edited messages received by this account are stored encrypted on this device only.";

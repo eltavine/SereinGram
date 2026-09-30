@@ -13,6 +13,7 @@ set(serein_sources
     serein/schema/codec.cpp
     serein/features/ghost/model/policy.cpp
     serein/features/history/model/recorder.cpp
+    serein/adapters/openssl/aes_gcm_cipher.cpp
     serein/hooks/ghost.cpp
     serein/display/view_refresher.cpp
     serein/interface/main_menu.cpp
@@ -77,6 +78,22 @@ list(APPEND serein_sources ${serein_generated_sources})
 
 if (serein_sources)
     nice_target_sources(Telegram ${src_loc} PRIVATE ${serein_sources})
+endif()
+
+find_package(Qt6 QUIET COMPONENTS Sql)
+if (TARGET Qt6::Sql)
+    message(STATUS "Serein: Qt Sql found, message history enabled.")
+    nice_target_sources(Telegram ${src_loc} PRIVATE
+        serein/adapters/qtsql/history_store.cpp
+        serein/app/history_hooks.cpp
+    )
+    target_link_libraries(Telegram PRIVATE Qt6::Sql)
+    if (TARGET Qt6::QSQLiteDriverPlugin)
+        qt_import_plugins(Telegram INCLUDE Qt6::QSQLiteDriverPlugin)
+    endif()
+else()
+    message(STATUS "Serein: Qt Sql not found, message history disabled.")
+    nice_target_sources(Telegram ${src_loc} PRIVATE serein/app/history_hooks_disabled.cpp)
 endif()
 
 if (APPLE AND NOT DESKTOP_APP_DISABLE_SWIFT6)
@@ -150,6 +167,7 @@ if (DESKTOP_APP_TEST_APPS)
     target_link_libraries(test_serein PRIVATE
         desktop-app::lib_base
         desktop-app::lib_crl
+        desktop-app::external_openssl
         desktop-app::external_qt
     )
 

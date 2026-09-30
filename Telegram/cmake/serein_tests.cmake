@@ -9,6 +9,8 @@ set(serein_test_sources
     serein/tests/test_links.cpp
     serein/tests/test_codec.cpp
     serein/tests/test_ghost.cpp
+    serein/tests/test_cipher.cpp
+    serein/adapters/openssl/aes_gcm_cipher.cpp
     serein/features/ghost/model/policy.cpp
     serein/features/history/model/recorder.cpp
     serein/schema/codec.cpp

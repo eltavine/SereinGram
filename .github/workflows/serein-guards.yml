@@ -103,6 +103,9 @@ jobs:
             Telegram/lib_base Telegram/lib_crl Telegram/lib_rpl Telegram/lib_ui \
             Telegram/ThirdParty/GSL Telegram/ThirdParty/range-v3 Telegram/ThirdParty/expected
 
+      - name: Install OpenSSL headers.
+        run: sudo apt-get update && sudo apt-get install -y libssl-dev
+
       - name: Set up Qt.
         uses: jurplel/install-qt-action@v4
         with:

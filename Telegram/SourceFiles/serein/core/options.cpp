@@ -13,6 +13,7 @@
 #include "serein/links/model.h"
 #include "serein/snapshot/snapshot.h"
 #include "serein/features/ghost/model/policy.h"
+#include "serein/features/history/model/recorder.h"
 
 #include "core/application.h"
 #include "core/core_settings.h"
@@ -108,6 +109,7 @@ const Registry &RegisteredOptions() {
 		Snapshot::RegisterOptions(result);
 		RegisterServiceOptions(result);
 		Ghost::RegisterOptions(result);
+		HistorySettings::RegisterOptions(result);
 		return result;
 	}();
 	return registry;

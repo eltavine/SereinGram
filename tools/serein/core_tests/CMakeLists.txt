@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Qt6 6.5 REQUIRED COMPONENTS Core Sql)
+find_package(OpenSSL 3 REQUIRED)
 
 get_filename_component(repo_loc "${CMAKE_CURRENT_SOURCE_DIR}/../../.." ABSOLUTE)
 set(src_loc ${repo_loc}/Telegram/SourceFiles)
@@ -27,7 +28,7 @@ target_include_directories(test_serein PRIVATE
     ${lib_loc}/ThirdParty/expected/include
 )
 
-target_link_libraries(test_serein PRIVATE Qt6::Core Qt6::Sql)
+target_link_libraries(test_serein PRIVATE Qt6::Core Qt6::Sql OpenSSL::Crypto)
 
 target_compile_definitions(test_serein PRIVATE
     SEREIN_LANG_SOURCE_DIR="${lib_loc}/Resources/langs"

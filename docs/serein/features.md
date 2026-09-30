@@ -74,10 +74,10 @@ Nagram 的品牌政策要求分支使用不同品牌并替换 Nagram 名称与�
 
 | ID | 功能 | 来源 | 状态 | 优先级 |
 | --- | --- | --- | --- | --- |
-| SG-HIST-01 | 保存已接收的删除消息并在原位显示，附删除标记（防撤回） | Ad Aa Na | Planned | P1 |
-| SG-HIST-02 | 保存编辑历史，在消息菜单查看各版本 | Ad Aa Na | Planned | P1 |
+| SG-HIST-01 | 保存已接收的删除消息并在原位显示，附删除标记（防撤回） | Ad Aa Na | In Progress | P1 |
+| SG-HIST-02 | 保存编辑历史，在消息菜单查看各版本 | Ad Aa Na | In Progress | P1 |
 | SG-HIST-03 | 历史库加密存储（账号本地密钥派生），退出账号时按设置清理（存储端口与 Qt SQL 适配器已实现） | D | In Progress | P1 |
-| SG-HIST-04 | 保留期限、容量上限、单对话清理与全部清理 | Na | Planned | P1 |
+| SG-HIST-04 | 保留期限、容量上限、单对话清理与全部清理 | Na | In Progress | P1 |
 | SG-HIST-05 | 自定义已删除、已编辑标记文字；已删除消息半透明 | Aa Na | In Progress | P2 |
 | SG-HIST-06 | 按对话浏览已删除消息 | Ad Aa | Planned | P2 |
 | SG-HIST-07 | 是否记录机器人消息；按对话排除 | Na | Planned | P2 |
@@ -86,6 +86,8 @@ Nagram 的品牌政策要求分支使用不同品牌并替换 Nagram 名称与�
 | SG-HIST-10 | 保留被移出或封禁的群组、频道的本地记录 | Aa | Planned | P3 |
 
 SG-HIST-05 的“已编辑”标记文字已由 C09 实现，删除标记随 SG-HIST-01 落地。
+
+当前进度：服务器删除与编辑前的快照经 `serein/hooks/history.h` 写入加密的 SQLite 历史库（记录器、Qt SQL 存储、AES-256-GCM 加密均有测试）；设置页可开启保存。原位显示、按对话浏览与菜单查看版本待做。
 
 ## FILTER 过滤与规则
 

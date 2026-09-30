@@ -92,6 +92,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "base/call_delayed.h"
 #include "base/random.h"
 #include "spellcheck/spellcheck_highlight_syntax.h"
+#include "serein/hooks/history.h"
 
 namespace Data {
 namespace {
@@ -3361,6 +3362,7 @@ void Session::processMessagesDeleted(
 		}
 	}
 	if (!toDestroy.empty()) {
+		Serein::Hooks::OnServerDeleted(toDestroy);
 		notifyItemsAboutToBeDestroyed(toDestroy);
 		for (const auto &item : toDestroy) {
 			item->destroy();
@@ -3384,6 +3386,7 @@ void Session::processNonChannelMessagesDeleted(const QVector<MTPint> &data) {
 		}
 	}
 	if (!toDestroy.empty()) {
+		Serein::Hooks::OnServerDeleted(toDestroy);
 		notifyItemsAboutToBeDestroyed(toDestroy);
 		for (const auto &item : toDestroy) {
 			item->destroy();
