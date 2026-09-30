@@ -156,6 +156,11 @@ jobs:
           key: ${{ runner.OS }}-${{ matrix.arch }}-${{ matrix.qt || 'qt' }}-${{ env.CACHE_KEY }}
           restore-keys: ${{ runner.OS }}-${{ matrix.arch }}-${{ matrix.qt || 'qt' }}-
 
+      # Remove once upstream prepare.py stops requesting mingw-w64-x86_64-diffutils.
+      - name: Replace the removed MSYS2 diffutils package.
+        shell: bash
+        run: sed -i 's/mingw-w64-x86_64-diffutils/diffutils/' "$TBUILD/$REPO_NAME/$PREPARE_PATH"
+
       - name: Libraries.
         run: |
           %TBUILD%\%REPO_NAME%\Telegram\build\prepare\win.bat skip-release silent ${{ matrix.qt }}
