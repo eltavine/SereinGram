@@ -84,8 +84,6 @@ jobs:
             'C:\Program Files\dotnet',
             'C:\hostedtoolcache\windows\CodeQL',
             'C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk',
-            'C:\Program Files\PostgreSQL',
-            'C:\Program Files\MySQL',
             'C:\ghcup'
           )
           foreach ($path in $unused) {
