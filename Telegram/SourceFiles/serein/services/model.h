@@ -6,6 +6,8 @@
 #include <QtCore/QUrl>
 
 #include <optional>
+#include <utility>
+#include <vector>
 
 namespace Serein {
 
@@ -53,6 +55,13 @@ struct ServiceDefinition {
 [[nodiscard]] std::optional<ServiceDefinition> FindService(
 	const QJsonObject &settings,
 	const QString &id);
+[[nodiscard]] bool IsLanguageModelProtocol(const QString &protocol);
+[[nodiscard]] bool IsKeylessProtocol(const QString &protocol);
+[[nodiscard]] std::vector<std::pair<QByteArray, QByteArray>> ServiceHeaders(
+	const ServiceDefinition &service);
+[[nodiscard]] std::pair<QByteArray, QByteArray> ServiceAuthorization(
+	const ServiceDefinition &service,
+	const QByteArray &secret);
 [[nodiscard]] QString CredentialAccount(const ServiceDefinition &service);
 [[nodiscard]] QUrl ServiceEndpoint(const ServiceDefinition &service);
 

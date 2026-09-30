@@ -244,6 +244,10 @@
 "lng_serein_config_changed_error" = "編輯期間設定發生了變化。請重新開啟服務後再試。";
 "lng_serein_service_add_deepl" = "新增 DeepL 翻譯";
 "lng_serein_service_add_google" = "新增 Google 翻譯";
+"lng_serein_service_add_gemini" = "新增 Google Gemini";
+"lng_serein_service_add_anthropic" = "新增 Anthropic Claude";
+"lng_serein_service_add_deeplx" = "新增 DeepLX（自架）";
+"lng_serein_service_add_yandex" = "新增 Yandex 翻譯";
 "lng_serein_service_add_openai" = "新增 OpenAI 相容翻譯";
 "lng_serein_service_add_transcription" = "新增 OpenAI 相容轉寫";
 "lng_serein_service_audio_filter" = "音訊 (*.flac *.mp3 *.mp4 *.mpeg *.mpga *.m4a *.ogg *.wav *.webm)";

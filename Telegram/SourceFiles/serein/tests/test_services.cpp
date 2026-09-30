@@ -4,6 +4,7 @@
 
 #include <QtCore/QJsonArray>
 #include <QtCore/QJsonDocument>
+#include <QtCore/QRegularExpression>
 
 #include <iostream>
 #include <stdexcept>
@@ -136,5 +137,102 @@ void TestTranslationProtocols() {
 		1);
 	Require(deeplParsed && deeplParsed->front() == u"b"_q,
 		"deepl response not parsed");
+
+	auto yandex = google;
+	yandex.protocol = u"yandex"_q;
+	yandex.baseUrl = QUrl(u"https://translate.yandex.net/api/v1/tr.json/"_q);
+	yandex.endpoint = u"translate"_q;
+	Require(ParseService(SerializeService(yandex)).has_value(),
+		"yandex service rejected");
+	const auto yandexCall = BuildTranslationCall(
+		yandex,
+		{ u"a b"_q, u"C+"_q },
+		u"zh"_q);
+	Require(yandexCall.form == QByteArray("lang=zh&text=a%20b&text=C%2B"),
+		"wrong yandex form body");
+	static const auto yandexId = QRegularExpression(u"\\A[0-9a-f]{32}-0-0\\z"_q);
+	Require(yandexId.match(yandexCall.query.queryItemValue(u"id"_q)).hasMatch()
+		&& yandexCall.query.queryItemValue(u"srv"_q) == u"android"_q,
+		"wrong yandex query");
+	const auto yandexParsed = ParseTranslationResponse(
+		yandex,
+		R"({"code": 200, "lang": "en-zh", "text": ["x", "y"]})",
+		2);
+	Require(yandexParsed && yandexParsed->back() == u"y"_q,
+		"yandex response not parsed");
+	Require(!ParseTranslationResponse(
+		yandex,
+		R"({"code": 403, "text": ["x", "y"]})",
+		2), "failed yandex response accepted");
+
+	auto deeplx = chat;
+	deeplx.protocol = u"deeplx"_q;
+	deeplx.model = QString();
+	deeplx.baseUrl = QUrl(u"http://127.0.0.1:1188/"_q);
+	deeplx.endpoint = u"translate"_q;
+	deeplx.useKey = false;
+	Require(ParseService(SerializeService(deeplx)).has_value(),
+		"deeplx service rejected");
+	Require(TranslationBatchLimit(deeplx) == 1, "deeplx batches texts");
+	const auto deeplxCall = BuildTranslationCall(deeplx, { u"a"_q }, u"zh"_q);
+	Require(deeplxCall.json.value(u"text"_q) == u"a"_q
+		&& deeplxCall.json.value(u"target_lang"_q) == u"ZH"_q,
+		"wrong deeplx body");
+	const auto deeplxParsed = ParseTranslationResponse(
+		deeplx,
+		R"({"code": 200, "data": "b"})",
+		1);
+	Require(deeplxParsed && deeplxParsed->front() == u"b"_q,
+		"deeplx response not parsed");
+	changed = deeplx;
+	changed.model = u"stub"_q;
+	Require(!ParseService(SerializeService(changed)), "deeplx model accepted");
+
+	auto anthropic = chat;
+	anthropic.protocol = u"anthropic"_q;
+	anthropic.endpoint = u"messages"_q;
+	anthropic.systemPrompt = u"You translate."_q;
+	anthropic.temperature = 0.5;
+	Require(ParseService(SerializeService(anthropic)).has_value(),
+		"anthropic service rejected");
+	changed = anthropic;
+	changed.temperature = 1.5;
+	Require(!ParseService(SerializeService(changed)),
+		"anthropic temperature above 1 accepted");
+	const auto anthropicCall = BuildTranslationCall(
+		anthropic,
+		{ u"a"_q },
+		u"de"_q);
+	Require(anthropicCall.json.value(u"max_tokens"_q).toInt() > 0
+		&& anthropicCall.json.value(u"system"_q) == u"You translate."_q
+		&& anthropicCall.json.value(u"messages"_q).toArray().size() == 1,
+		"wrong anthropic body");
+	const auto anthropicReply = QByteArray(R"({
+		"content": [{ "type": "text", "text": "[\"b\"]" }],
+		"stop_reason": "end_turn"
+	})");
+	const auto anthropicParsed = ParseTranslationResponse(
+		anthropic,
+		anthropicReply,
+		1);
+	Require(anthropicParsed && anthropicParsed->front() == u"b"_q,
+		"anthropic response not parsed");
+	auto truncated = anthropicReply;
+	truncated.replace("end_turn", "max_tokens");
+	Require(!ParseTranslationResponse(anthropic, truncated, 1),
+		"truncated anthropic response accepted");
+
+	const auto headers = ServiceHeaders(anthropic);
+	Require(headers.size() == 1 && headers.front().first == "anthropic-version",
+		"missing anthropic version header");
+	Require(ServiceHeaders(chat).empty(), "unexpected chat headers");
+	Require(ServiceAuthorization(anthropic, "k").first == "x-api-key",
+		"wrong anthropic auth header");
+	Require(ServiceAuthorization(deepl, "k").second == "DeepL-Auth-Key k",
+		"wrong deepl auth header");
+	Require(ServiceAuthorization(chat, "k").second == "Bearer k",
+		"wrong bearer auth header");
+	Require(IsKeylessProtocol(u"yandex"_q) && !IsKeylessProtocol(u"deeplx"_q),
+		"wrong keyless protocols");
 	std::cout << "PASS: Serein translation protocols" << std::endl;
 }

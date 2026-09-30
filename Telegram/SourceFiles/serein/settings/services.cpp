@@ -235,7 +235,7 @@ void ServiceTestBox(
 	const auto status = [=](ServiceResult response) {
 		result->setText(ServiceErrorText(response.error, response.status));
 	};
-	if (service.protocol == u"openai"_q) {
+	if (IsLanguageModelProtocol(service.protocol)) {
 		box->addButton(tr::lng_serein_service_models(), [=] {
 			stop();
 			result->setText(tr::lng_serein_service_testing(tr::now));
@@ -372,7 +372,7 @@ void ServiceBox(
 	const auto name = add(tr::lng_serein_service_name(), original.name);
 	const auto url = add(tr::lng_serein_service_url(), original.baseUrl.toString());
 	const auto endpoint = add(tr::lng_serein_service_endpoint(), original.endpoint);
-	const auto openai = original.protocol == u"openai"_q;
+	const auto openai = IsLanguageModelProtocol(original.protocol);
 	const auto translation = original.kind == ServiceKind::Translation;
 	const auto model = openai ? add(tr::lng_serein_service_model(), original.model) : nullptr;
 	const auto system = openai && translation
@@ -381,7 +381,7 @@ void ServiceBox(
 	const auto language = !translation ? add(tr::lng_serein_service_language(), original.language) : nullptr;
 	const auto temperature = openai ? add(tr::lng_serein_service_temperature(),
 		original.temperature ? QString::number(*original.temperature) : QString()) : nullptr;
-	const auto keyed = (original.protocol != u"google"_q);
+	const auto keyed = !IsKeylessProtocol(original.protocol);
 	const auto enabled = box->lifetime().make_state<bool>(
 		keyed && original.useKey);
 	auto key = (Ui::PasswordInput*)nullptr;
@@ -551,22 +551,36 @@ void ServicesBox(not_null<Ui::GenericBox*> box, QJsonObject initial) {
 		}
 		struct Preset {
 			tr::phrase<> title;
-			ServiceKind kind = ServiceKind::Translation;
 			QString protocol;
 			QString baseUrl;
 			QString endpoint;
+			QString model;
+			ServiceKind kind = ServiceKind::Translation;
 			bool useKey = true;
 		};
 		const auto presets = std::array{
-			Preset{ tr::lng_serein_service_add_openai, ServiceKind::Translation,
-				u"openai"_q, u"https://api.openai.com/v1/"_q, u"chat/completions"_q },
-			Preset{ tr::lng_serein_service_add_deepl, ServiceKind::Translation,
-				u"deepl"_q, u"https://api.deepl.com/v2/"_q, u"translate"_q },
-			Preset{ tr::lng_serein_service_add_google, ServiceKind::Translation,
-				u"google"_q, u"https://translate.googleapis.com/"_q,
-				u"translate_a/single"_q, false },
-			Preset{ tr::lng_serein_service_add_transcription, ServiceKind::Transcription,
-				u"openai"_q, u"https://api.openai.com/v1/"_q, u"audio/transcriptions"_q },
+			Preset{ tr::lng_serein_service_add_openai, u"openai"_q,
+				u"https://api.openai.com/v1/"_q, u"chat/completions"_q },
+			Preset{ tr::lng_serein_service_add_gemini, u"openai"_q,
+				u"https://generativelanguage.googleapis.com/v1beta/openai/"_q,
+				u"chat/completions"_q, u"gemini-2.5-flash"_q },
+			Preset{ tr::lng_serein_service_add_anthropic, u"anthropic"_q,
+				u"https://api.anthropic.com/v1/"_q, u"messages"_q,
+				u"claude-sonnet-4-5"_q },
+			Preset{ tr::lng_serein_service_add_deepl, u"deepl"_q,
+				u"https://api.deepl.com/v2/"_q, u"translate"_q },
+			Preset{ tr::lng_serein_service_add_deeplx, u"deeplx"_q,
+				u"http://127.0.0.1:1188/"_q, u"translate"_q, QString(),
+				ServiceKind::Translation, false },
+			Preset{ tr::lng_serein_service_add_google, u"google"_q,
+				u"https://translate.googleapis.com/"_q, u"translate_a/single"_q,
+				QString(), ServiceKind::Translation, false },
+			Preset{ tr::lng_serein_service_add_yandex, u"yandex"_q,
+				u"https://translate.yandex.net/api/v1/tr.json/"_q, u"translate"_q,
+				QString(), ServiceKind::Translation, false },
+			Preset{ tr::lng_serein_service_add_transcription, u"openai"_q,
+				u"https://api.openai.com/v1/"_q, u"audio/transcriptions"_q,
+				QString(), ServiceKind::Transcription },
 		};
 		for (const auto &preset : presets) {
 			add(preset.title(tr::now), [=] {
@@ -576,6 +590,7 @@ void ServicesBox(not_null<Ui::GenericBox*> box, QJsonObject initial) {
 					.protocol = preset.protocol,
 					.baseUrl = QUrl(preset.baseUrl),
 					.endpoint = preset.endpoint,
+					.model = preset.model,
 					.credentialRef = QUuid::createUuid().toString(QUuid::WithoutBraces),
 					.useKey = preset.useKey,
 				};

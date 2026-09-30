@@ -244,6 +244,10 @@
 "lng_serein_config_changed_error" = "编辑期间设置发生了变化。请重新打开服务后再试。";
 "lng_serein_service_add_deepl" = "添加 DeepL 翻译";
 "lng_serein_service_add_google" = "添加 Google 翻译";
+"lng_serein_service_add_gemini" = "添加 Google Gemini";
+"lng_serein_service_add_anthropic" = "添加 Anthropic Claude";
+"lng_serein_service_add_deeplx" = "添加 DeepLX（自建）";
+"lng_serein_service_add_yandex" = "添加 Yandex 翻译";
 "lng_serein_service_add_openai" = "添加 OpenAI 兼容翻译";
 "lng_serein_service_add_transcription" = "添加 OpenAI 兼容转写";
 "lng_serein_service_audio_filter" = "音频 (*.flac *.mp3 *.mp4 *.mpeg *.mpga *.m4a *.ogg *.wav *.webm)";

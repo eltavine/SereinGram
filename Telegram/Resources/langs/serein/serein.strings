@@ -248,6 +248,10 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_config_changed_error" = "Settings changed while this editor was open. Reopen the service and try again.";
 "lng_serein_service_add_deepl" = "Add DeepL translation";
 "lng_serein_service_add_google" = "Add Google Translate";
+"lng_serein_service_add_gemini" = "Add Google Gemini";
+"lng_serein_service_add_anthropic" = "Add Anthropic Claude";
+"lng_serein_service_add_deeplx" = "Add DeepLX (self-hosted)";
+"lng_serein_service_add_yandex" = "Add Yandex Translate";
 "lng_serein_service_add_openai" = "Add OpenAI-compatible translation";
 "lng_serein_service_add_transcription" = "Add OpenAI-compatible transcription";
 "lng_serein_service_audio_filter" = "Audio (*.flac *.mp3 *.mp4 *.mpeg *.mpga *.m4a *.ogg *.wav *.webm)";

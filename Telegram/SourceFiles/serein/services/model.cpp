@@ -27,7 +27,42 @@ bool ValidText(const QJsonValue &value, int maximum, bool multiline = false) {
 		&& (multiline || (!text.contains('\n') && !text.contains('\r')));
 }
 
+bool KnownProtocol(const QString &protocol) {
+	static const auto known = QStringList{
+		u"openai"_q, u"anthropic"_q, u"deepl"_q,
+		u"deeplx"_q, u"google"_q, u"yandex"_q,
+	};
+	return known.contains(protocol);
+}
+
 } // namespace
+
+bool IsLanguageModelProtocol(const QString &protocol) {
+	return (protocol == u"openai"_q) || (protocol == u"anthropic"_q);
+}
+
+bool IsKeylessProtocol(const QString &protocol) {
+	return (protocol == u"google"_q) || (protocol == u"yandex"_q);
+}
+
+std::vector<std::pair<QByteArray, QByteArray>> ServiceHeaders(
+		const ServiceDefinition &service) {
+	if (service.protocol == u"anthropic"_q) {
+		return { { "anthropic-version", "2023-06-01" } };
+	}
+	return {};
+}
+
+std::pair<QByteArray, QByteArray> ServiceAuthorization(
+		const ServiceDefinition &service,
+		const QByteArray &secret) {
+	if (service.protocol == u"anthropic"_q) {
+		return { "x-api-key", secret };
+	} else if (service.protocol == u"deepl"_q) {
+		return { "Authorization", "DeepL-Auth-Key " + secret };
+	}
+	return { "Authorization", "Bearer " + secret };
+}
 
 QJsonObject ServicesDefaults() {
 	return {
@@ -86,14 +121,15 @@ std::optional<ServiceDefinition> ParseService(const QJsonObject &value) {
 	const auto kind = value.value(u"kind"_q).toString();
 	const auto protocol = value.value(u"protocol"_q).toString();
 	if ((kind != u"translation"_q && kind != u"transcription"_q)
-		|| (protocol != u"openai"_q && protocol != u"deepl"_q && protocol != u"google"_q)
+		|| !KnownProtocol(protocol)
 		|| (kind == u"transcription"_q && protocol != u"openai"_q)
-		|| (protocol == u"google"_q && value.value(u"useKey"_q).toBool())
+		|| (IsKeylessProtocol(protocol) && value.value(u"useKey"_q).toBool())
 		|| value.value(u"name"_q).toString().trimmed().isEmpty()
-		|| (protocol == u"openai"_q && value.value(u"model"_q).toString().trimmed().isEmpty())) {
+		|| (IsLanguageModelProtocol(protocol)
+			&& value.value(u"model"_q).toString().trimmed().isEmpty())) {
 		return std::nullopt;
 	}
-	if (((protocol == u"deepl"_q || protocol == u"google"_q)
+	if ((!IsLanguageModelProtocol(protocol)
 		&& (!value.value(u"model"_q).toString().isEmpty()
 			|| !value.value(u"systemPrompt"_q).toString().isEmpty()
 			|| !value.value(u"prompt"_q).toString().isEmpty()
@@ -128,7 +164,8 @@ std::optional<ServiceDefinition> ParseService(const QJsonObject &value) {
 			|| temperature.toDouble() < 0 || temperature.toDouble() > 2) {
 			return std::nullopt;
 		}
-		if (kind == u"transcription"_q && temperature.toDouble() > 1) {
+		if ((kind == u"transcription"_q || protocol == u"anthropic"_q)
+			&& temperature.toDouble() > 1) {
 			return std::nullopt;
 		}
 	}

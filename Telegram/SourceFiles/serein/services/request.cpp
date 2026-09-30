@@ -77,15 +77,18 @@ std::optional<QNetworkRequest> ServiceRequest::prepare(
 	request.setAttribute(QNetworkRequest::RedirectPolicyAttribute,
 		QNetworkRequest::ManualRedirectPolicy);
 	request.setTransferTimeout(kRequestTimeout);
+	for (const auto &[name, value] : ServiceHeaders(service)) {
+		request.setRawHeader(name, value);
+	}
 	if (service.useKey) {
 		auto credential = ReadCredential(CredentialAccount(service));
 		if (credential.error != CredentialError::None || credential.secret.isEmpty()) {
 			done({ .error = ServiceError::Credential });
 			return std::nullopt;
 		}
-		request.setRawHeader("Authorization",
-			(service.protocol == u"deepl"_q ? "DeepL-Auth-Key " : "Bearer ")
-			+ credential.secret);
+		auto [name, value] = ServiceAuthorization(service, credential.secret);
+		request.setRawHeader(name, value);
+		value.fill('\0');
 		credential.secret.fill('\0');
 	}
 	return request;
@@ -137,7 +140,7 @@ void ServiceRequest::translate(
 void ServiceRequest::models(
 		const ServiceDefinition &service,
 		Fn<void(ServiceResult)> done) {
-	if (service.protocol != u"openai"_q) {
+	if (!IsLanguageModelProtocol(service.protocol)) {
 		cancel();
 		done({ .error = ServiceError::Configuration });
 		return;
