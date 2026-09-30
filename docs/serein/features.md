@@ -145,7 +145,7 @@ SG-HIST-05 的“已编辑”标记文字已由 C09 实现，删除标记随 SG-
 | SG-CHATS-04 | 隐藏 Premium 推广与生日提示（B12、B13） | Ni | Implemented | P2 |
 | SG-CHATS-05 | 滚动到底不切换频道或话题（B14、B15） | Ni | Implemented | P2 |
 | SG-CHATS-06 | 文件夹属性“仅显示我管理的群组和频道” | Ni | Implemented | P2 |
-| SG-CHATS-07 | 一键已读全部对话或当前文件夹 | Ad Na | Planned | P2 |
+| SG-CHATS-07 | 一键已读全部对话或当前文件夹（由上游提供：对话列表与文件夹菜单的“标记为已读”“全部对话标记为已读”，`menu/menu_mark_as_read.cpp`，核对于 2026-09-30） | Ad Na | Implemented | P2 |
 | SG-CHATS-08 | 跳到对话开头 | Ad Ni | Planned | P2 |
 | SG-CHATS-09 | 最近会话列表 | Ni | Planned | P2 |
 | SG-CHATS-10 | 聊天顶部工具栏：搜索、媒体、置顶、跳到开头、静音、清缓存 | Ni | Planned | P2 |
@@ -165,7 +165,7 @@ SG-HIST-05 的“已编辑”标记文字已由 C09 实现，删除标记随 SG-
 | SG-MSG-07 | 资料页 ID、数据中心、隐藏礼物、隐藏待办入口（G05–G08） | Ad Ni Na | Implemented | P1 |
 | SG-MSG-08 | 消息详情：日期、转发来源、贴纸包与表情包作者 | Ad Na | Planned | P2 |
 | SG-MSG-09 | 内联按钮回调数据查看与复制 | Ad | Planned | P2 |
-| SG-MSG-10 | 语音与圆形视频拖动进度（先核对上游现状） | Ad | Planned | P2 |
+| SG-MSG-10 | 语音与圆形视频拖动进度（先核对上游现状）（由上游提供：语音消息 `VoiceSeekClickHandler` 与圆形视频 `VideoMessageSeek` 均支持拖动进度，核对于 2026-09-30） | Ad | Implemented | P2 |
 | SG-MSG-11 | 反应时间显示秒 | Ad | Planned | P3 |
 | SG-MSG-12 | 注册日期估算（标注估算来源）、波斯日历 | Ni Na | Planned | P3 |
 
@@ -205,7 +205,7 @@ SG-HIST-05 的“已编辑”标记文字已由 C09 实现，删除标记随 SG-
 | SG-MEDIA-03 | 以文件发送的 MP4 保留视频预览（F11） | Ni | Implemented | P2 |
 | SG-MEDIA-04 | 贴纸包列表导出与导入（F12、F13） | Na | Implemented | P2 |
 | SG-MEDIA-05 | 查询贴纸包、表情包作者并打开资料 | Ad | Planned | P2 |
-| SG-MEDIA-06 | 下载时保留原始文件名（先核对上游现状） | Na | Planned | P2 |
+| SG-MEDIA-06 | 下载时保留原始文件名（先核对上游现状）（由上游提供：`DocumentFileNameForSave` 默认使用原始文件名，核对于 2026-09-30） | Na | Implemented | P2 |
 | SG-MEDIA-07 | 不经贴纸包收藏单个贴纸、收藏去重 | Na | Planned | P3 |
 | SG-MEDIA-08 | 通话与录音降噪、语音增强 | Na | Planned | P3 |
 | SG-MEDIA-09 | 自定义表情资源包 | Na | Planned | P3 |
