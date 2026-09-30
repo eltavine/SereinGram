@@ -80,7 +80,7 @@ Nagram 的品牌政策要求分支使用不同品牌并替换 Nagram 名称与�
 | SG-HIST-06 | 按对话浏览已删除消息 | Ad Aa | Planned | P2 |
 | SG-HIST-07 | 是否记录机器人消息；按对话排除 | Na | Planned | P2 |
 | SG-HIST-08 | 已下载媒体不随删除清除，历史中可继续打开 | Ad Aa | Planned | P2 |
-| SG-HIST-09 | 限时图片、视频过期后仍可查看（服务条款风险，条件纳入） | Ad Aa | Planned | P3 |
+| SG-HIST-09 | 限时图片、视频过期后仍可查看 | Ad Aa | Planned | P2 |
 | SG-HIST-10 | 保留被移出或封禁的群组、频道的本地记录 | Aa | Planned | P3 |
 
 SG-HIST-05 的“已编辑”标记文字已由 C09 实现，删除标记随 SG-HIST-01 落地。
@@ -109,7 +109,7 @@ SG-HIST-05 的“已编辑”标记文字已由 C09 实现，删除标记随 SG-
 | SG-PRIV-05 | 默认隐藏赞助消息与代理赞助频道（B10、B11） | Ad Ni | Implemented | P1 |
 | SG-PRIV-06 | 隐藏已读时间提示与分享手机号提示（G03、G04） | Ni | Implemented | P2 |
 | SG-PRIV-07 | 本地 Premium 外观，仅本地显示，不伪造服务端权益 | Ad Aa | Planned | P3 |
-| SG-PRIV-08 | 受保护内容的本地复制与保存（服务条款风险，条件纳入） | Ad Na | Planned | P3 |
+| SG-PRIV-08 | 受保护内容的本地复制与保存 | Ad Na | Planned | P2 |
 | SG-PRIV-09 | 设置锁与本地账号隐藏 | Ni | Planned | P3 |
 | SG-PRIV-10 | 检测到录屏软件时自动开启主播模式 | Ad | Planned | P3 |
 

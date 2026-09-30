@@ -166,14 +166,17 @@ Phase 1（P1）：GHOST、HIST、SG-FILTER-03 之前的过滤项补验、SG-PRIV
 
 Phase 2 与 Phase 3：按功能矩阵的 P2、P3；P3 每项先写 ADR 再实施。
 
-## 9. 待定项
+## 9. 维护者决定（2026-09-30）
 
-| 事项 | 建议 | 决定人 |
-| --- | --- | --- |
-| 应用 ID | `io.github.eltavine.SereinGram`（Flatpak 规范可用的反向域名） | 维护者 |
-| 图标 | 需要自有图标；在提供前使用临时占位图标，不得沿用 Nagram 或 Telegram 图标 | 维护者 |
-| 发布用 API 凭据 | 维护者在 my.telegram.org 申请，放入仓库 Secrets | 维护者 |
-| 推送与 CI | 三平台构建需要推送到 GitHub 触发工作流 | 维护者 |
-| 服务条款风险功能 | SG-HIST-09、SG-PRIV-07、SG-PRIV-08 是否纳入 | 维护者 |
+| 事项 | 决定 |
+| --- | --- |
+| 应用 ID | `io.github.eltavine.SereinGram` |
+| 图标 | 先使用自有的临时占位图标，之后替换为正式图标；不沿用 Nagram 或 Telegram 图标 |
+| 推送与 CI | 允许推送到 `main` 触发三平台工作流 |
+| 服务条款风险功能 | SG-HIST-09、SG-PRIV-07、SG-PRIV-08 正常纳入 |
+| proto3 方案 | 按 ADR-0002：proto3 + Buf + 自有生成器，不引入 protobuf 运行时 |
+| 本机工具链 | 允许用 Homebrew 安装 qtbase，用于本机编译不依赖上游的核心逻辑测试 |
+
+仍待提供：发布用 API 凭据（维护者在 my.telegram.org 申请，放入仓库 Secrets；未配置时 CI 使用上游公开测试凭据）。
 
 本机没有 Xcode 与 `../Libraries`，暂时无法本地构建；在准备好本地工具链（`docs/building-mac.md`）之前，编译验证依赖 CI。
