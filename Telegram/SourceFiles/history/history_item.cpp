@@ -2912,6 +2912,8 @@ void HistoryItem::clearMediaAsExpired() {
 	const auto media = this->media();
 	if (!media || !media->ttlSeconds()) {
 		return;
+	} else if (Serein::Hooks::KeepExpiredMedia(this)) {
+		return;
 	}
 	unarmMediaDestroy();
 	auto &owner = _history->owner();

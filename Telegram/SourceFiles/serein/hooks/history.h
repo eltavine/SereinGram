@@ -23,6 +23,9 @@ namespace Serein::Hooks {
 void OnBeforeEdition(
 	gsl::not_null<HistoryItem*> item,
 	const TextWithEntities &updated);
+[[nodiscard]] std::vector<gsl::not_null<HistoryItem*>> OnExpiredMessages(
+	std::vector<gsl::not_null<HistoryItem*>> items);
+[[nodiscard]] bool KeepExpiredMedia(gsl::not_null<const HistoryItem*> item);
 
 [[nodiscard]] Ports::HistoryStore *HistoryStoreFor(
 	gsl::not_null<Main::Session*> session);

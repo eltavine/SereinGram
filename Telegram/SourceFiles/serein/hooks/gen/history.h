@@ -15,6 +15,8 @@ namespace Serein::Hooks::HistorySettings {
 [[nodiscard]] rpl::producer<bool> HistorySaveDeletedValue(gsl::not_null<Main::Session*> session);
 [[nodiscard]] bool HistoryKeepDeletedInPlace(gsl::not_null<Main::Session*> session);
 [[nodiscard]] rpl::producer<bool> HistoryKeepDeletedInPlaceValue(gsl::not_null<Main::Session*> session);
+[[nodiscard]] bool HistoryKeepExpiredMedia(gsl::not_null<Main::Session*> session);
+[[nodiscard]] rpl::producer<bool> HistoryKeepExpiredMediaValue(gsl::not_null<Main::Session*> session);
 [[nodiscard]] bool HistorySaveEdits(gsl::not_null<Main::Session*> session);
 [[nodiscard]] rpl::producer<bool> HistorySaveEditsValue(gsl::not_null<Main::Session*> session);
 [[nodiscard]] bool HistoryIncludeBots(gsl::not_null<Main::Session*> session);

@@ -18,6 +18,9 @@ message HistorySettings {
   optional bool history_keep_deleted_in_place = 6 [(serein.options.v1.field) = {
     keywords: ["deleted", "anti-recall", "in chat"]
   }];
+  optional bool history_keep_expired_media = 8 [(serein.options.v1.field) = {
+    keywords: ["self-destruct", "view once", "expired", "media"]
+  }];
   optional bool history_save_edits = 2 [(serein.options.v1.field) = {
     keywords: ["edit", "history"]
   }];

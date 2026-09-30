@@ -3226,6 +3226,7 @@ void Session::checkTTLs() {
 		}
 		expired.insert(expired.end(), items.begin(), items.end());
 	}
+	expired = Serein::Hooks::OnExpiredMessages(std::move(expired));
 	if (!expired.empty()) {
 		notifyItemsAboutToBeDestroyed(expired);
 		for (const auto &item : expired) {

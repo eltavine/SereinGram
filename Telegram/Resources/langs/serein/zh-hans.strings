@@ -464,6 +464,7 @@
 "lng_serein_ghost_note" = "只对当前账号生效。其他设备以及发送消息等操作仍可能暴露你的活动。";
 "lng_serein_history_save_deleted" = "保留已删除的消息";
 "lng_serein_history_keep_deleted_in_place" = "在聊天中保留已删除消息";
+"lng_serein_history_keep_expired_media" = "保留已过期的限时媒体";
 "lng_serein_deleted_mark" = "已删除";
 "lng_serein_history_save_edits" = "保留编辑历史";
 "lng_serein_history_include_bots" = "包含机器人的消息";

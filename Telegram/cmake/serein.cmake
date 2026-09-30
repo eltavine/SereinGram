@@ -19,6 +19,7 @@ set(serein_sources
     serein/adapters/openssl/aes_gcm_cipher.cpp
     serein/hooks/ghost.cpp
     serein/app/ghost_read.cpp
+    serein/app/history_expiry.cpp
     serein/app/history_fade.cpp
     serein/app/lifecycle.cpp
     serein/app/modules.cpp

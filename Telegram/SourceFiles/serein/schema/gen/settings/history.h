@@ -21,6 +21,13 @@ inline constexpr auto kHistoryKeepDeletedInPlace = Option<bool>{
 	Category::Privacy,
 	"lng_serein_history_keep_deleted_in_place",
 	0 };
+inline constexpr auto kHistoryKeepExpiredMedia = Option<bool>{
+	"serein.historyKeepExpiredMedia",
+	Scope::Account,
+	false,
+	Category::Privacy,
+	"lng_serein_history_keep_expired_media",
+	0 };
 inline constexpr auto kHistorySaveEdits = Option<bool>{
 	"serein.historySaveEdits",
 	Scope::Account,
@@ -69,6 +76,7 @@ inline const auto kHistoryExcludedPeers = Option<QByteArray>{
 inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kHistorySaveDeleted));
 	Expects(registry.Add(kHistoryKeepDeletedInPlace));
+	Expects(registry.Add(kHistoryKeepExpiredMedia));
 	Expects(registry.Add(kHistorySaveEdits));
 	Expects(registry.Add(kHistoryIncludeBots));
 	Expects(registry.Add(kHistoryRetentionDays));

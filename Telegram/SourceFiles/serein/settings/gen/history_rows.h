@@ -10,7 +10,7 @@
 
 namespace Serein::HistorySettings {
 
-inline const auto kToggleRows = std::array<ToggleRow, 4>{ {
+inline const auto kToggleRows = std::array<ToggleRow, 5>{ {
 	{
 		&kHistorySaveDeleted,
 		tr::lng_serein_history_save_deleted,
@@ -22,6 +22,12 @@ inline const auto kToggleRows = std::array<ToggleRow, 4>{ {
 		tr::lng_serein_history_keep_deleted_in_place,
 		u"serein/history/history-keep-deleted-in-place"_q,
 		{ u"deleted"_q, u"anti-recall"_q, u"in chat"_q },
+	},
+	{
+		&kHistoryKeepExpiredMedia,
+		tr::lng_serein_history_keep_expired_media,
+		u"serein/history/history-keep-expired-media"_q,
+		{ u"self-destruct"_q, u"view once"_q, u"expired"_q, u"media"_q },
 	},
 	{
 		&kHistorySaveEdits,
@@ -43,6 +49,7 @@ inline void AddLayout(
 	AddToggle(builder, kToggleRows[1]);
 	AddToggle(builder, kToggleRows[2]);
 	AddToggle(builder, kToggleRows[3]);
+	AddToggle(builder, kToggleRows[4]);
 	AddNumber(builder, {
 		.option = &kHistoryRetentionDays,
 		.title = tr::lng_serein_history_retention_days,
