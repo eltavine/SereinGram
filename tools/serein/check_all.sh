@@ -26,6 +26,7 @@ uv run --quiet tools/serein/codegen/generate.py --check
 uv run --quiet --with jinja2==3.1.6 python -m unittest discover -s tools/serein/tests
 python3 tools/serein/check_file_size.py
 python3 tools/serein/check_boundaries.py
+python3 tools/serein/check_hook_namespaces.py
 python3 tools/serein/upstream_budget.py
 python3 tools/serein/check_features.py
 echo "All local SereinGram checks passed."

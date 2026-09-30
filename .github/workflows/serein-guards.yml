@@ -40,6 +40,9 @@ jobs:
       - name: Feature matrix uses defined statuses.
         run: python3 tools/serein/check_features.py
 
+      - name: Hook code does not reach shadowed page namespaces.
+        run: python3 tools/serein/check_hook_namespaces.py
+
       - name: Fetch comparison baselines.
         env:
           SCHEMA_BASELINE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}

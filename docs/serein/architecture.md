@@ -161,6 +161,7 @@ message MessagesSettings {
 | 自有源文件 ≤ 1000 行 | `tools/serein/check_file_size.py` + `serein-guards.yml` | 已实施 |
 | 模块依赖方向 | `tools/serein/check_boundaries.py` 按 `policy/boundaries.json` 检查每个 `#include`：`schema`、`ports`、`adapters` 严格执行；旧功能目录暂归宽松的 `serein/` 兜底规则，迁移一个收紧一个 | 已实施 |
 | 功能矩阵格式 | `tools/serein/check_features.py`：`features.md` 每行的 ID 唯一且形如 `SG-<族>-<两位序号>`，状态只能是 Planned、In Progress、Implemented、Verified，优先级 P0–P3，来源只用约定缩写 | 已实施 |
+| 门面命名空间遮蔽 | `tools/serein/check_hook_namespaces.py`：生成的门面命名空间 `Serein::Hooks::<页>` 会遮蔽同名的 `Serein::<页>`；位于 `Serein::Hooks` 内、且包含了该门面的代码，只能用 `<页>::` 访问门面里声明的函数，其余名字必须写成 `Serein::<页>::` | 已实施 |
 | 上游侵入预算 | `tools/serein/upstream_budget.py`，与 `policy/upstream.json` 记录的上游基线比较；预算默认只降不升；新功能需要新挂钩时，在同一提交中上调并在提交说明中写明增量与理由；同时统计上游文件直接包含非门面头文件的数量（已锁定为 0） | 已实施 |
 | schema 兼容 | `buf lint`；`tools/serein/proto_breaking.sh` 与推送前的提交或 PR 目标分支比较（`FILE` 级） | 已实施 |
 | 生成代码漂移 | `uv run tools/serein/codegen/generate.py --check` | 已实施 |
