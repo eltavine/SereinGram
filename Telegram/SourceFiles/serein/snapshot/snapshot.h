@@ -1,9 +1,9 @@
 #pragma once
 
 #include "serein/core/options.h"
+#include "serein/schema/gen/config/snapshot.h"
 #include "data/data_types.h"
 
-#include <QtCore/QJsonObject>
 #include <QtGui/QImage>
 
 class HistoryItem;
@@ -12,13 +12,12 @@ namespace Window { class SessionController; }
 
 namespace Serein::Snapshot {
 
-[[nodiscard]] QJsonObject Defaults();
-[[nodiscard]] bool Valid(const QJsonObject &value);
+[[nodiscard]] SnapshotConfig Defaults();
 [[nodiscard]] bool Validate(const QByteArray &raw);
 [[nodiscard]] std::variant<QImage, QString> Render(
 	not_null<Window::SessionController*> controller,
 	const MessageIdsList &ids,
-	const QJsonObject &options,
+	const SnapshotConfig &options,
 	bool revealSpoilers);
 void InsertAction(
 	Ui::PopupMenu *menu,

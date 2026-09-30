@@ -11,6 +11,7 @@ set(serein_test_sources
     serein/tests/test_chinese.cpp
     serein/tests/test_aliases.cpp
     serein/tests/test_sticker_catalog.cpp
+    serein/tests/test_snapshot_config.cpp
     serein/tests/test_filters.cpp
     serein/tests/test_links.cpp
     serein/tests/test_codec.cpp

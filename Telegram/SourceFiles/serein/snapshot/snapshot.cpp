@@ -25,7 +25,6 @@
 #include "window/section_widget.h"
 #include "window/window_session_controller.h"
 
-#include <QtCore/QJsonDocument>
 #include <QtCore/QSaveFile>
 #include <QtGui/QClipboard>
 #include <QtWidgets/QApplication>
@@ -90,14 +89,16 @@ void SnapshotBox(
 	box->setTitle(tr::lng_serein_snapshot());
 
 	const auto bytes = ForDevice().Get(kSettings);
-	const auto options = box->lifetime().make_state<QJsonObject>(bytes.isEmpty()
-		? Defaults() : QJsonDocument::fromJson(bytes).object());
-	if (!Valid(*options)) {
+	const auto parsed = bytes.isEmpty()
+		? std::make_optional(Defaults())
+		: ParseSnapshotConfig(bytes);
+	if (!parsed) {
 		box->addRow(object_ptr<Ui::FlatLabel>(box,
 			tr::lng_serein_snapshot_unavailable(), st::boxLabel));
 		box->addButton(tr::lng_close(), [=] { box->closeBox(); });
 		return;
 	}
+	const auto options = box->lifetime().make_state<SnapshotConfig>(*parsed);
 	const auto reveal = box->lifetime().make_state<bool>(false);
 	const auto image = box->lifetime().make_state<QImage>();
 	const auto label = box->addRow(object_ptr<Ui::FlatLabel>(
@@ -131,20 +132,20 @@ void SnapshotBox(
 		resizePreview();
 		preview->update();
 	};
-	for (const auto &[key, title] : std::array{
-		std::pair(u"background"_q, tr::lng_serein_snapshot_background(tr::now)),
-		std::pair(u"date"_q, tr::lng_serein_snapshot_date(tr::now)),
-		std::pair(u"headers"_q, tr::lng_serein_snapshot_headers(tr::now)),
-		std::pair(u"reactions"_q, tr::lng_serein_snapshot_reactions(tr::now)),
-		std::pair(u"builtinTheme"_q, tr::lng_serein_snapshot_builtin(tr::now)),
+	for (const auto &[member, title] : std::array{
+		std::pair(&SnapshotConfig::background, tr::lng_serein_snapshot_background(tr::now)),
+		std::pair(&SnapshotConfig::date, tr::lng_serein_snapshot_date(tr::now)),
+		std::pair(&SnapshotConfig::headers, tr::lng_serein_snapshot_headers(tr::now)),
+		std::pair(&SnapshotConfig::reactions, tr::lng_serein_snapshot_reactions(tr::now)),
+		std::pair(&SnapshotConfig::builtinTheme, tr::lng_serein_snapshot_builtin(tr::now)),
 	}) {
 		const auto toggle = box->addRow(object_ptr<Ui::Checkbox>(
-			box, title, options->value(key).toBool()));
+			box, title, (*options).*member));
 		toggle->checkedChanges() | rpl::on_next([=](bool value) {
-			options->insert(key, value);
-			Expects(ForDevice().Set(kSettings, *options == Defaults()
+			(*options).*member = value;
+			Expects(ForDevice().Set(kSettings, (*options == Defaults())
 				? QByteArray()
-				: QJsonDocument(*options).toJson(QJsonDocument::Compact)));
+				: SerializeSnapshotConfig(*options)));
 			render();
 		}, toggle->lifetime());
 	}
@@ -208,57 +209,38 @@ void SnapshotBox(
 
 } // namespace
 
-QJsonObject Defaults() {
+SnapshotConfig Defaults() {
 	return {
-		{ u"version"_q, 1 },
-		{ u"background"_q, true },
-		{ u"date"_q, true },
-		{ u"headers"_q, true },
-		{ u"reactions"_q, true },
-		{ u"builtinTheme"_q, false },
+		.background = true,
+		.date = true,
+		.headers = true,
+		.reactions = true,
+		.builtinTheme = false,
 	};
 }
 
-bool Valid(const QJsonObject &value) {
-	if (value.keys() != Defaults().keys() || value.value(u"version"_q) != 1) {
-		return false;
-	}
-	for (auto i = value.begin(); i != value.end(); ++i) {
-		if (i.key() != u"version"_q && !i.value().isBool()) {
-			return false;
-		}
-	}
-	return true;
-}
-
 bool Validate(const QByteArray &raw) {
-	if (raw.isEmpty()) {
-		return true;
-	}
-	auto error = QJsonParseError();
-	const auto document = QJsonDocument::fromJson(raw, &error);
-	return error.error == QJsonParseError::NoError
-		&& document.isObject() && Valid(document.object());
+	return raw.isEmpty() || ParseSnapshotConfig(raw).has_value();
 }
 
 std::variant<QImage, QString> Render(
 		not_null<Window::SessionController*> controller,
 		const MessageIdsList &ids,
-		const QJsonObject &options,
+		const SnapshotConfig &options,
 		bool revealSpoilers) {
-	if (!Valid(options) || !AllAvailable(controller, ids)) {
+	if (!AllAvailable(controller, ids)) {
 		return tr::lng_serein_snapshot_unavailable(tr::now);
 	} else if (ids.size() > kMaximumMessages) {
 		return tr::lng_serein_snapshot_limit(tr::now);
 	}
 	auto delegate = SnapshotDelegate(controller,
-		options.value(u"reactions"_q).toBool(), revealSpoilers);
+		options.reactions, revealSpoilers);
 	auto palette = style::palette();
 	palette.finalize();
 	auto snapshotStyle = Ui::ChatStyle(controller->session().colorIndicesValue());
 	auto builtinTheme = Ui::ChatTheme();
 	builtinTheme.setBackground({ .colorForFill = palette.windowBg()->c });
-	const auto builtin = options.value(u"builtinTheme"_q).toBool();
+	const auto builtin = options.builtinTheme;
 	snapshotStyle.applyCustomPalette(builtin ? &palette : controller->chatStyle().get());
 	const auto chatStyle = &snapshotStyle;
 	const auto theme = builtin ? &builtinTheme : controller->currentChatTheme().get();
@@ -267,8 +249,8 @@ std::variant<QImage, QString> Render(
 	auto height = padding;
 	auto views = std::vector<std::unique_ptr<HistoryView::Element>>();
 	auto seen = base::flat_set<FullMsgId>();
-	const auto date = options.value(u"date"_q).toBool();
-	const auto headers = options.value(u"headers"_q).toBool();
+	const auto date = options.date;
+	const auto headers = options.headers;
 	for (const auto id : ids) {
 		if (seen.contains(id)) {
 			continue;
@@ -304,7 +286,7 @@ std::variant<QImage, QString> Render(
 	result.setDevicePixelRatio(ratio);
 	result.fill(Qt::transparent);
 	auto p = Painter(&result);
-	if (options.value(u"background"_q).toBool()) {
+	if (options.background) {
 		Window::SectionWidget::PaintBackground(p, theme,
 			QSize(width, height), QRect(0, 0, width, height), true);
 	}

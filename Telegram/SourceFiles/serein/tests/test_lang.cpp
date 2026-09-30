@@ -17,6 +17,7 @@ void TestRecentChats();
 void TestChinese();
 void TestAliases();
 void TestStickerCatalog();
+void TestSnapshotConfig();
 void TestFilters();
 void TestLinks();
 void TestCodec();
@@ -109,6 +110,7 @@ int main() {
 		TestChinese();
 		TestAliases();
 		TestStickerCatalog();
+		TestSnapshotConfig();
 		TestFilters();
 		TestLinks();
 		TestCodec();
