@@ -444,6 +444,7 @@
 "lng_serein_ghost_hide_typing" = "不发送输入状态";
 "lng_serein_ghost_hide_view_increments" = "不增加频道浏览数";
 "lng_serein_ghost_mark_read_after_sending" = "发送消息后把对话标记为已读";
+"lng_serein_ghost_explicit_read_receipts" = "手动标记已读时发送已读回执";
 "lng_serein_ghost_use_scheduled_messages" = "通过定时消息发送";
 "lng_serein_ghost_note" = "只对当前账号生效。其他设备以及发送消息等操作仍可能暴露你的活动。";
 "lng_serein_history_save_deleted" = "保留已删除的消息";

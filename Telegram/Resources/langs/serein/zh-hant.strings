@@ -444,6 +444,7 @@
 "lng_serein_ghost_hide_typing" = "不傳送輸入狀態";
 "lng_serein_ghost_hide_view_increments" = "不增加頻道瀏覽數";
 "lng_serein_ghost_mark_read_after_sending" = "傳送訊息後將對話標記為已讀";
+"lng_serein_ghost_explicit_read_receipts" = "手動標記已讀時傳送已讀回條";
 "lng_serein_ghost_use_scheduled_messages" = "透過排程訊息傳送";
 "lng_serein_ghost_note" = "只對目前帳號生效。其他裝置以及傳送訊息等操作仍可能暴露你的活動。";
 "lng_serein_history_save_deleted" = "保留已刪除的訊息";

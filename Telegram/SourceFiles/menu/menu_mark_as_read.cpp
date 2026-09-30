@@ -7,6 +7,8 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "menu/menu_mark_as_read.h"
 
+#include "serein/hooks/ghost.h"
+
 #include "core/application.h"
 #include "core/core_settings.h"
 #include "data/data_folder.h"
@@ -91,6 +93,7 @@ bool IsUnreadThread(not_null<Data::Thread*> thread) {
 void MarkAsReadThread(
 		not_null<Data::Thread*> thread,
 		MarkAsReadMuted muted) {
+	const auto receipts = Serein::Hooks::ExplicitReadReceipts(&thread->session());
 	const auto readHistory = [&](not_null<History*> history) {
 		history->owner().histories().readInbox(history);
 	};

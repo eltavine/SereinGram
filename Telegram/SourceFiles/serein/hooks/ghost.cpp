@@ -1,6 +1,7 @@
 #include "serein/hooks/ghost.h"
 
 #include "serein/features/ghost/model/policy.h"
+#include "serein/hooks/gen/ghost.h"
 
 namespace Serein::Hooks {
 namespace {
@@ -25,6 +26,20 @@ ForcedReadReceipt::ForcedReadReceipt() {
 
 ForcedReadReceipt::~ForcedReadReceipt() {
 	--ForcedReadReceipts;
+}
+
+ExplicitReadReceipts::ExplicitReadReceipts(
+	gsl::not_null<Main::Session*> session)
+: _forced(Ghost::GhostExplicitReadReceipts(session)) {
+	if (_forced) {
+		++ForcedReadReceipts;
+	}
+}
+
+ExplicitReadReceipts::~ExplicitReadReceipts() {
+	if (_forced) {
+		--ForcedReadReceipts;
+	}
 }
 
 bool AllowReadReceipt(gsl::not_null<Main::Session*> session) {

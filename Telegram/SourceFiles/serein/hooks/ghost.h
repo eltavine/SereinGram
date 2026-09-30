@@ -36,6 +36,19 @@ public:
 	ForcedReadReceipt &operator=(const ForcedReadReceipt &) = delete;
 };
 
+class ExplicitReadReceipts final {
+public:
+	explicit ExplicitReadReceipts(gsl::not_null<Main::Session*> session);
+	~ExplicitReadReceipts();
+
+	ExplicitReadReceipts(const ExplicitReadReceipts &) = delete;
+	ExplicitReadReceipts &operator=(const ExplicitReadReceipts &) = delete;
+
+private:
+	bool _forced = false;
+
+};
+
 void OnSendingMessage(gsl::not_null<History*> history);
 void ApplyGhostSchedule(
 	gsl::not_null<History*> history,

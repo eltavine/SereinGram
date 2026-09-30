@@ -24,6 +24,8 @@ namespace Serein::Hooks::Ghost {
 [[nodiscard]] rpl::producer<bool> GhostHideViewIncrementsValue(gsl::not_null<Main::Session*> session);
 [[nodiscard]] bool GhostMarkReadAfterSending(gsl::not_null<Main::Session*> session);
 [[nodiscard]] rpl::producer<bool> GhostMarkReadAfterSendingValue(gsl::not_null<Main::Session*> session);
+[[nodiscard]] bool GhostExplicitReadReceipts(gsl::not_null<Main::Session*> session);
+[[nodiscard]] rpl::producer<bool> GhostExplicitReadReceiptsValue(gsl::not_null<Main::Session*> session);
 [[nodiscard]] bool GhostUseScheduledMessages(gsl::not_null<Main::Session*> session);
 [[nodiscard]] rpl::producer<bool> GhostUseScheduledMessagesValue(gsl::not_null<Main::Session*> session);
 

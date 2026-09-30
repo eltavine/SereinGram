@@ -62,6 +62,14 @@ rpl::producer<bool> GhostMarkReadAfterSendingValue(gsl::not_null<Main::Session*>
 	return ForAccount(session).Value(Serein::Ghost::kGhostMarkReadAfterSending);
 }
 
+bool GhostExplicitReadReceipts(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Get(Serein::Ghost::kGhostExplicitReadReceipts);
+}
+
+rpl::producer<bool> GhostExplicitReadReceiptsValue(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Value(Serein::Ghost::kGhostExplicitReadReceipts);
+}
+
 bool GhostUseScheduledMessages(gsl::not_null<Main::Session*> session) {
 	return ForAccount(session).Get(Serein::Ghost::kGhostUseScheduledMessages);
 }
