@@ -37,20 +37,33 @@ inline const auto kToggleRows = std::array<ToggleRow, 4>{ {
 	},
 } };
 
-struct CustomRows {
-	CustomRow historyRetentionDays;
-	CustomRow historyMaxRecords;
-};
-
 inline void AddLayout(
-		::Settings::Builder::SectionBuilder &builder,
-		const CustomRows &custom) {
+		::Settings::Builder::SectionBuilder &builder) {
 	AddToggle(builder, kToggleRows[0]);
 	AddToggle(builder, kToggleRows[1]);
 	AddToggle(builder, kToggleRows[2]);
 	AddToggle(builder, kToggleRows[3]);
-	custom.historyRetentionDays();
-	custom.historyMaxRecords();
+	AddNumber(builder, {
+		.option = &kHistoryRetentionDays,
+		.title = tr::lng_serein_history_retention_days,
+		.id = u"serein/history/history-retention-days"_q,
+		.keywords = { u"history"_q, u"retention"_q, u"days"_q },
+		.minimum = 1,
+		.maximum = 3650,
+		.zeroLabel = tr::lng_serein_history_keep_forever,
+		.format = [](int value) {
+			return tr::lng_days(tr::now, lt_count, value);
+		},
+	});
+	AddNumber(builder, {
+		.option = &kHistoryMaxRecords,
+		.title = tr::lng_serein_history_max_records,
+		.id = u"serein/history/history-max-records"_q,
+		.keywords = { u"history"_q, u"limit"_q, u"records"_q },
+		.minimum = 1,
+		.maximum = 10000000,
+		.zeroLabel = tr::lng_serein_history_unlimited,
+	});
 	AddNote(builder, tr::lng_serein_history_note);
 }
 

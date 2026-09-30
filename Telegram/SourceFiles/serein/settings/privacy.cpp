@@ -86,33 +86,7 @@ const auto kMeta = BuildHelper({
 		}, button->lifetime());
 	}
 	Ghost::AddLayout(builder);
-	HistorySettings::AddLayout(builder, {
-		.historyRetentionDays = [&] {
-			AddNumber(builder, {
-				.option = &HistorySettings::kHistoryRetentionDays,
-				.title = tr::lng_serein_history_retention_days,
-				.id = u"serein/history/history-retention-days"_q,
-				.keywords = { u"history"_q, u"retention"_q, u"days"_q },
-				.minimum = 1,
-				.maximum = 3650,
-				.zeroLabel = tr::lng_serein_history_keep_forever,
-				.format = [](int days) {
-					return tr::lng_days(tr::now, lt_count, days);
-				},
-			});
-		},
-		.historyMaxRecords = [&] {
-			AddNumber(builder, {
-				.option = &HistorySettings::kHistoryMaxRecords,
-				.title = tr::lng_serein_history_max_records,
-				.id = u"serein/history/history-max-records"_q,
-				.keywords = { u"history"_q, u"limit"_q, u"records"_q },
-				.minimum = 1,
-				.maximum = 10000000,
-				.zeroLabel = tr::lng_serein_history_unlimited,
-			});
-		},
-	});
+	HistorySettings::AddLayout(builder);
 	const auto controller = builder.controller();
 	Privacy::AddLayout(builder, {
 		.profileIdFormat = [&] {

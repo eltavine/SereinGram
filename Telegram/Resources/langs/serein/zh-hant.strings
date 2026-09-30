@@ -83,7 +83,6 @@
 "lng_serein_sticker_scale" = "貼圖大小";
 "lng_serein_hide_sticker_time" = "隱藏貼圖時間";
 "lng_serein_recent_sticker_limit" = "最近使用貼圖顯示數量";
-"lng_serein_recent_sticker_hint" = "輸入 1–200，留空則跟隨 Telegram";
 "lng_serein_hide_group_stickers" = "隱藏群組貼圖";
 "lng_serein_hide_recommended_stickers" = "隱藏推薦貼圖";
 "lng_serein_hide_recommended_emoji" = "隱藏推薦表情";

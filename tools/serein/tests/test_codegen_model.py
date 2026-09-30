@@ -151,6 +151,34 @@ class ModelTest(unittest.TestCase):
         self.assertEqual(page.customs, ["previewLines"])
         self.assertEqual(page.rows_header, "messages_rows.h")
 
+    def test_number_inputs_use_rules_and_labels(self):
+        page = model.build_pages(image(field("keep_days", "keepDays", "TYPE_INT32", {
+            model.FIELD_EXTENSION: {"number": {
+                "zeroLabel": "lng_forever", "countFormat": "lng_days"}},
+            model.RULES_EXTENSION: {"int32": {"gte": 0, "lte": 365}},
+        })))[0]
+        self.assertEqual(page.customs, [])
+        item = page.layout[0]
+        self.assertEqual((item.kind, item.cpp_name, item.minimum, item.maximum),
+                         ("number", "kKeepDays", 1, 365))
+        self.assertEqual((item.zero_label, item.count_format), ("lng_forever", "lng_days"))
+        self.assertEqual(item.id, "serein/messages/keep-days")
+
+    def test_number_inputs_are_validated(self):
+        cases = {
+            "int32": ({"zeroLabel": "lng_z"}, {"int32": {"gte": 0}}, "gte and lte"),
+            "label": ({}, {"int32": {"gte": 0, "lte": 5}}, "zero_label"),
+        }
+        for name, (number, rules, message) in cases.items():
+            with self.subTest(name), self.assertRaisesRegex(model.SchemaError, message):
+                model.build_pages(image(field("keep_days", "keepDays", "TYPE_INT32", {
+                    model.FIELD_EXTENSION: {"number": number},
+                    model.RULES_EXTENSION: rules,
+                })))
+        with self.assertRaisesRegex(model.SchemaError, "int32 option"):
+            model.build_pages(image(field("flag", "flag", options={
+                model.FIELD_EXTENSION: {"number": {"zeroLabel": "lng_z"}}})))
+
     def test_page_without_visible_options_has_no_rows_header(self):
         page = model.build_pages(image(field("secret_flag", "secretFlag", options={
             model.FIELD_EXTENSION: {"hidden": True}})))[0]
@@ -227,6 +255,19 @@ class RenderTest(unittest.TestCase):
         self.assertIn("\treturn ForAccount(session).Value(Serein::Messages::kLines);", source)
         sources = output["schema/gen/sources.cmake"]
         self.assertIn("set(serein_generated_hook_sources\n    serein/hooks/gen/messages.cpp\n)", sources)
+
+    def test_renders_number_inputs(self):
+        import generate
+        output = generate.render(image(field("keep_days", "keepDays", "TYPE_INT32", {
+            model.FIELD_EXTENSION: {"number": {
+                "zeroLabel": "lng_forever", "countFormat": "lng_days"}},
+            model.RULES_EXTENSION: {"int32": {"gte": 0, "lte": 365}},
+        })), known_strings={"lng_serein_keep_days", "lng_forever", "lng_days"})
+        rows = output["settings/gen/messages_rows.h"]
+        self.assertIn("\tAddNumber(builder, {\n\t\t.option = &kKeepDays,", rows)
+        self.assertIn("\t\t.maximum = 365,", rows)
+        self.assertIn("return tr::lng_days(tr::now, lt_count, value);", rows)
+        self.assertNotIn("CustomRows", rows)
 
     def test_renders_custom_rows(self):
         import generate

@@ -87,7 +87,6 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_sticker_scale" = "Sticker size";
 "lng_serein_hide_sticker_time" = "Hide sticker time";
 "lng_serein_recent_sticker_limit" = "Recent stickers shown";
-"lng_serein_recent_sticker_hint" = "Enter 1–200, or leave empty to follow Telegram";
 "lng_serein_hide_group_stickers" = "Hide group stickers";
 "lng_serein_hide_recommended_stickers" = "Hide recommended stickers";
 "lng_serein_hide_recommended_emoji" = "Hide recommended emoji";

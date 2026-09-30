@@ -66,6 +66,15 @@ message FieldOptions {
   string note = 14;
   // Name of a boolean field on the same page that disables this toggle.
   string disabled_by = 15;
+  // Generates a number input row for an int32 option with gte and lte rules.
+  NumberInput number = 16;
+}
+
+message NumberInput {
+  // Lang key shown for zero, which the input writes when it is left empty.
+  string zero_label = 1;
+  // Lang key of a {count} plural used for every other value.
+  string count_format = 2;
 }
 
 message Section {

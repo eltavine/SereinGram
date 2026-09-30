@@ -69,7 +69,6 @@ inline const auto kToggleRows = std::array<ToggleRow, 9>{ {
 
 struct CustomRows {
 	CustomRow stickerScale;
-	CustomRow recentStickerLimit;
 };
 
 inline void AddLayout(
@@ -77,7 +76,15 @@ inline void AddLayout(
 		const CustomRows &custom) {
 	custom.stickerScale();
 	AddToggle(builder, kToggleRows[0]);
-	custom.recentStickerLimit();
+	AddNumber(builder, {
+		.option = &kRecentStickerLimit,
+		.title = tr::lng_serein_recent_sticker_limit,
+		.id = u"serein/media/recent-sticker-limit"_q,
+		.keywords = { u"recent"_q, u"sticker"_q, u"limit"_q },
+		.minimum = 1,
+		.maximum = 200,
+		.zeroLabel = tr::lng_serein_preview_follow,
+	});
 	AddToggle(builder, kToggleRows[1]);
 	AddToggle(builder, kToggleRows[2]);
 	AddToggle(builder, kToggleRows[3]);

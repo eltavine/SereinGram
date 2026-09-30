@@ -55,33 +55,6 @@ void StickerScaleBox(not_null<Ui::GenericBox*> box) {
 	});
 }
 
-void RecentLimitBox(not_null<Ui::GenericBox*> box) {
-	box->setTitle(tr::lng_serein_recent_sticker_limit());
-	const auto current = ForDevice().Get(Media::kRecentStickerLimit);
-	const auto field = box->addRow(object_ptr<Ui::InputField>(
-		box,
-		st::defaultInputField,
-		tr::lng_serein_recent_sticker_hint(),
-		current ? QString::number(current) : QString()));
-	field->setInputMethodHints(Qt::ImhDigitsOnly);
-	box->setFocusCallback([=] { field->setFocusFast(); });
-	const auto submit = [=] {
-		const auto text = field->getLastText().trimmed();
-		auto valid = false;
-		const auto value = text.isEmpty() ? 0 : text.toInt(&valid);
-		if (!text.isEmpty() && (!valid || value < 1 || value > 200)) {
-			field->showError();
-			return;
-		}
-		Expects(ForDevice().Set(Media::kRecentStickerLimit, value));
-		box->closeBox();
-	};
-	field->submits(
-	) | rpl::on_next([=](auto) { submit(); }, field->lifetime());
-	box->addButton(tr::lng_settings_save(), submit);
-	box->addButton(tr::lng_cancel(), [=] { box->closeBox(); });
-}
-
 const auto kMeta = BuildHelper({
 	.id = MediaSection::Id(),
 	.parentId = HomeId(),
@@ -101,20 +74,6 @@ const auto kMeta = BuildHelper({
 					}),
 				.onClick = [=] { controller->show(Box(StickerScaleBox)); },
 				.keywords = { u"sticker"_q, u"size"_q },
-			});
-		},
-		.recentStickerLimit = [&] {
-			builder.addButton({
-				.id = u"serein/media/recent-sticker-limit"_q,
-				.title = tr::lng_serein_recent_sticker_limit(),
-				.st = &st::settingsButtonNoIcon,
-				.label = ForDevice().Value(Media::kRecentStickerLimit)
-					| rpl::map([](int value) {
-						return value ? QString::number(value)
-							: tr::lng_serein_preview_follow(tr::now);
-					}),
-				.onClick = [=] { controller->show(Box(RecentLimitBox)); },
-				.keywords = { u"recent"_q, u"sticker"_q, u"limit"_q },
 			});
 		},
 	});

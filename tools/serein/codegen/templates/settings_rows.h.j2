@@ -50,6 +50,21 @@ inline void AddLayout(
 	});
 {% elif item.kind == "toggle" %}
 	AddToggle(builder, kToggleRows[{{ item.index }}]);
+{% elif item.kind == "number" %}
+	AddNumber(builder, {
+		.option = &{{ item.cpp_name }},
+		.title = tr::{{ item.title }},
+		.id = u"{{ item.id }}"_q,
+		.keywords = { {{ item.keywords }} },
+		.minimum = {{ item.minimum }},
+		.maximum = {{ item.maximum }},
+		.zeroLabel = tr::{{ item.zero_label }},
+{% if item.count_format %}
+		.format = [](int value) {
+			return tr::{{ item.count_format }}(tr::now, lt_count, value);
+		},
+{% endif %}
+	});
 {% elif item.kind == "custom" %}
 	custom.{{ item.member }}();
 {% else %}

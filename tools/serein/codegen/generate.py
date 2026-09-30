@@ -53,7 +53,7 @@ def string_keys():
     for path in STRINGS:
         for line in path.read_text(encoding="utf-8").splitlines():
             if line.startswith('"lng_'):
-                keys.add(line[1:line.index('"', 1)])
+                keys.add(line[1:line.index('"', 1)].split("#")[0])
     return keys
 
 

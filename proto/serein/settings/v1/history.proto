@@ -25,13 +25,23 @@ message HistorySettings {
     keywords: ["bots", "history"]
   }];
   // Zero keeps records until they are cleared by hand.
-  optional int32 history_retention_days = 4 [(buf.validate.field).int32 = {
-    gte: 0
-    lte: 3650
-  }];
+  optional int32 history_retention_days = 4 [
+    (serein.options.v1.field) = {
+      keywords: ["history", "retention", "days"]
+      number: {zero_label: "lng_serein_history_keep_forever" count_format: "lng_days"}
+    },
+    (buf.validate.field).int32 = {
+      gte: 0
+      lte: 3650
+    }
+  ];
   // Zero keeps any number of records.
   optional int32 history_max_records = 5 [
-    (serein.options.v1.field) = {note: "lng_serein_history_note"},
+    (serein.options.v1.field) = {
+      keywords: ["history", "limit", "records"]
+      number: {zero_label: "lng_serein_history_unlimited"}
+      note: "lng_serein_history_note"
+    },
     (buf.validate.field).int32 = {
       gte: 0
       lte: 10000000

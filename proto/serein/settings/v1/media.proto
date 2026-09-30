@@ -26,6 +26,10 @@ message MediaSettings {
     }
   ];
   optional int32 recent_sticker_limit = 3 [
+    (serein.options.v1.field) = {
+      keywords: ["recent", "sticker", "limit"]
+      number: {zero_label: "lng_serein_preview_follow"}
+    },
     (buf.validate.field).int32 = {gte: 0, lte: 200}
   ];
   optional bool hide_group_stickers = 4 [(serein.options.v1.field) = {

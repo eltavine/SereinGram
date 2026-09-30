@@ -112,6 +112,11 @@ class LayoutItem:
     id: str = ""
     title: str = ""
     keywords: str = ""
+    cpp_name: str = ""
+    minimum: int = 0
+    maximum: int = 0
+    zero_label: str = ""
+    count_format: str = ""
 
 
 @dataclass
@@ -312,7 +317,9 @@ def build_layout(message, options, stem, where):
                 "section", id=f"serein/{stem}/{section['id']}",
                 title=section["title"],
                 keywords=cpp_keywords(section.get("keywords", []))))
-        if option.toggle:
+        if "number" in custom and not option.custom_ui:
+            layout.append(number_item(item, option, custom["number"], stem, place))
+        elif option.toggle:
             disabled_by = custom.get("disabledBy", "")
             if disabled_by:
                 source = by_name.get(disabled_by)
@@ -353,17 +360,40 @@ def build_pages(image):
         raise SchemaError(f"duplicate storage keys: {duplicates}")
     ids = [row.id for page in pages for row in page.rows]
     ids += [item.id for page in pages for item in page.layout
-            if item.kind == "section"]
+            if item.kind in ("section", "number")]
     duplicates = sorted({id for id in ids if ids.count(id) > 1})
     if duplicates:
         raise SchemaError(f"duplicate settings row ids: {duplicates}")
     return pages
 
 
+def number_item(item, option, number, stem, place):
+    if option.ctype != "int":
+        raise SchemaError(f"{place}: number inputs need an int32 option")
+    rules = item.get("options", {}).get(RULES_EXTENSION, {}).get("int32", {})
+    if "gte" not in rules or "lte" not in rules:
+        raise SchemaError(f"{place}: number inputs need gte and lte rules")
+    if not number.get("zeroLabel"):
+        raise SchemaError(f"{place}: number inputs need a zero_label")
+    return LayoutItem(
+        "number",
+        id=f"serein/{stem}/{option.name.replace('_', '-')}",
+        title=option.title,
+        keywords=cpp_keywords(option.keywords),
+        cpp_name=option.cpp_name,
+        minimum=max(1, int(rules["gte"])),
+        maximum=int(rules["lte"]),
+        zero_label=number["zeroLabel"],
+        count_format=number.get("countFormat", ""),
+    )
+
+
 def check_titles(pages, known):
     titles = {row.title for page in pages for row in page.rows}
     titles |= {item.title for page in pages for item in page.layout
-               if item.kind in ("section", "note")}
+               if item.kind in ("section", "note", "number")}
+    titles |= {label for page in pages for item in page.layout
+               for label in (item.zero_label, item.count_format) if label}
     missing = sorted(title for title in titles if title not in known)
     if missing:
         raise SchemaError(f"settings rows use unknown strings: {missing}")
