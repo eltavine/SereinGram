@@ -1,7 +1,9 @@
 #pragma once
 
+#include <QtCore/QByteArray>
 #include <gsl/pointers>
 
+#include <optional>
 #include <vector>
 
 class History;
@@ -39,6 +41,9 @@ void PruneHistory(gsl::not_null<Main::Session*> session);
 [[nodiscard]] bool ClearHistory(
 	gsl::not_null<Main::Session*> session,
 	long long peerId);
+[[nodiscard]] std::optional<QByteArray> CachedMediaBytes(
+	gsl::not_null<Main::Session*> session,
+	const Serein::History::Record &record);
 [[nodiscard]] bool OpenCachedMedia(
 	gsl::not_null<Main::Session*> session,
 	const Serein::History::Record &record);

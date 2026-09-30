@@ -31,7 +31,7 @@
 
 #include "styles/style_chat.h"
 #include "styles/style_layers.h"
-#include "styles/style_serein_snapshot.h"
+#include "styles/style_serein.h"
 #include "ui/widgets/menu/menu_action.h"
 #include "ui/widgets/menu/menu.h"
 #include "styles/style_menu_icons.h"

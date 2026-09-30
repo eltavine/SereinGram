@@ -6,3 +6,5 @@ sereinSnapshotHeaderHeight: 40px;
 sereinSnapshotAvatarSize: 32px;
 sereinSnapshotPreviewHeight: 200px;
 sereinSnapshotPreviewMinimum: 80px;
+
+sereinHistoryPreviewSize: size(240px, 180px);

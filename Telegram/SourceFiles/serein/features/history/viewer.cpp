@@ -12,11 +12,15 @@
 #include "ui/layers/generic_box.h"
 #include "ui/widgets/buttons.h"
 #include "ui/widgets/labels.h"
+#include "ui/wrap/padding_wrap.h"
+#include "ui/painter.h"
 #include "window/window_session_controller.h"
 #include "styles/style_boxes.h"
 #include "styles/style_layers.h"
+#include "styles/style_serein.h"
 
 #include <QtCore/QFileInfo>
+#include <QtGui/QImage>
 
 namespace Serein::HistoryFeature {
 namespace {
@@ -55,6 +59,48 @@ constexpr auto kDeletedLimit = 100;
 	return header + u"\n"_q + body;
 }
 
+[[nodiscard]] QImage CachedPreview(
+		not_null<Main::Session*> session,
+		const History::Record &record) {
+	const auto suffix = QFileInfo(record.cachedMediaName).suffix().toLower();
+	if (suffix != u"jpg"_q
+		&& suffix != u"jpeg"_q
+		&& suffix != u"png"_q
+		&& suffix != u"webp"_q) {
+		return QImage();
+	}
+	const auto bytes = Hooks::CachedMediaBytes(session, record);
+	return bytes ? QImage::fromData(*bytes) : QImage();
+}
+
+void AddPreview(
+		not_null<Ui::GenericBox*> box,
+		const QImage &image,
+		Fn<void()> open) {
+	const auto ratio = style::DevicePixelRatio();
+	const auto limit = st::sereinHistoryPreviewSize;
+	auto size = image.size();
+	if (size.width() > limit.width() || size.height() > limit.height()) {
+		size = size.scaled(limit, Qt::KeepAspectRatio);
+	}
+	size = QSize(std::max(size.width(), 1), std::max(size.height(), 1));
+	auto scaled = image.scaled(
+		size * ratio,
+		Qt::IgnoreAspectRatio,
+		Qt::SmoothTransformation);
+	scaled.setDevicePixelRatio(ratio);
+	const auto preview = QPixmap::fromImage(std::move(scaled));
+	const auto row = box->addRow(
+		object_ptr<Ui::FixedHeightWidget>(box, size.height()));
+	row->paintRequest() | rpl::on_next([=] {
+		auto p = QPainter(row);
+		p.drawPixmap(0, 0, preview);
+	}, row->lifetime());
+	const auto button = Ui::CreateChild<Ui::AbstractButton>(row);
+	button->setGeometry(QRect(QPoint(), size));
+	button->setClickedCallback(std::move(open));
+}
+
 } // namespace
 
 bool HasDeletedMessages(
@@ -89,15 +135,20 @@ void ShowDeletedMessages(
 					tr::lng_serein_history_open_file(tr::now)));
 				open->setClickedCallback([=] { File::Launch(path); });
 			} else if (!record.cachedMediaName.isEmpty()) {
-				const auto open = box->addRow(object_ptr<Ui::LinkButton>(
-					box,
-					tr::lng_serein_history_open_media(tr::now)));
-				open->setClickedCallback([=] {
+				const auto openMedia = [=] {
 					if (!Hooks::OpenCachedMedia(session, record)) {
 						box->uiShow()->showToast(
 							tr::lng_serein_history_media_missing(tr::now));
 					}
-				});
+				};
+				const auto preview = CachedPreview(session, record);
+				if (!preview.isNull()) {
+					AddPreview(box, preview, openMedia);
+				}
+				const auto open = box->addRow(object_ptr<Ui::LinkButton>(
+					box,
+					tr::lng_serein_history_open_media(tr::now)));
+				open->setClickedCallback(openMedia);
 			}
 		}
 		if (!records.empty()) {

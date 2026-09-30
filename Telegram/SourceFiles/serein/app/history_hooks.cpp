@@ -280,20 +280,29 @@ bool ClearHistory(gsl::not_null<Main::Session*> session, long long peerId) {
 	return cleared;
 }
 
-bool OpenCachedMedia(
+std::optional<QByteArray> CachedMediaBytes(
 		gsl::not_null<Main::Session*> session,
 		const Serein::History::Record &record) {
 	const auto backend = BackendFor(session, false);
-	const auto name = SafeName(record.cachedMediaName);
-	if (!backend || name.isEmpty()) {
-		return false;
+	if (!backend || record.cachedMediaName.isEmpty()) {
+		return std::nullopt;
 	}
-	const auto bytes = HistoryFeature::ReadCachedMedia(
+	return HistoryFeature::ReadCachedMedia(
 		*backend->cipher,
 		HistoryFeature::CachedMediaPath(
 			MediaDirectory(session),
 			record.peerId,
 			record.messageId));
+}
+
+bool OpenCachedMedia(
+		gsl::not_null<Main::Session*> session,
+		const Serein::History::Record &record) {
+	const auto name = SafeName(record.cachedMediaName);
+	if (name.isEmpty()) {
+		return false;
+	}
+	const auto bytes = CachedMediaBytes(session, record);
 	const auto folder = QDir::temp().filePath(u"SereinGram"_q);
 	const auto path = QDir(folder).filePath(name);
 	auto file = QFile(path);
