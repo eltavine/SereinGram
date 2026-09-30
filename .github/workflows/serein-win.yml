@@ -253,6 +253,14 @@ jobs:
         shell: bash
         run: find $LibrariesPath '(' '(' ! '(' -name '*.lib' -o -name '*.a' -o -name '*.exe' -o -name '*.h' -o -name '*.hpp' -o -name '*.inc' -o -name '*.cmake' -o -name '*.pc' -o -path '*/include/*' -o -path '*/objects-*' -o -path '*/cache_keys/*' -o -path '*/patches/*' -o -path '*/nv-codec-headers/*' ')' -type f ')' -o -empty ')' -delete
 
+      # cmake_helpers' Qt package still names zlib zlibstatic, the build makes libzs.
+      - name: Provide the zlib names that the Qt package expects.
+        shell: cmd
+        run: |
+          if exist "%LibrariesPath%\zlib\Debug\libzsd.lib" copy /Y "%LibrariesPath%\zlib\Debug\libzsd.lib" "%LibrariesPath%\zlib\Debug\zlibstaticd.lib"
+          if exist "%LibrariesPath%\zlib\Release\libzs.lib" copy /Y "%LibrariesPath%\zlib\Release\libzs.lib" "%LibrariesPath%\zlib\Release\zlibstatic.lib"
+          exit /b 0
+
       - name: Serein build.
         if: env.ONLY_CACHE == 'false'
         env:
