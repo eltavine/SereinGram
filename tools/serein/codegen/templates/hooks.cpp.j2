@@ -1,0 +1,21 @@
+// Generated from {{ page.source }} by tools/serein/codegen; do not edit.
+#include "serein/hooks/gen/{{ page.stem }}.h"
+
+#include "serein/core/options.h"
+#include "serein/schema/gen/{{ page.header }}"
+
+namespace Serein::Hooks::{{ page.namespace }} {
+{% for option in page.options %}
+{% set session = "gsl::not_null<Main::Session*> session" if option.account else "" %}
+{% set store = "ForAccount(session)" if option.account else "ForDevice()" %}
+
+{{ option.ctype }} {{ option.accessor }}({{ session }}) {
+	return {{ store }}.Get(Serein::{{ page.namespace }}::{{ option.cpp_name }});
+}
+
+rpl::producer<{{ option.ctype }}> {{ option.accessor }}Value({{ session }}) {
+	return {{ store }}.Value(Serein::{{ page.namespace }}::{{ option.cpp_name }});
+}
+{% endfor %}
+
+} // namespace Serein::Hooks::{{ page.namespace }}

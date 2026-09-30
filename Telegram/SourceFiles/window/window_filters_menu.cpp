@@ -7,7 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "window/window_filters_menu.h"
 #include "serein/chats/managed_folders.h"
-#include "serein/chats/options.h"
+#include "serein/hooks/gen/chats.h"
 #include "serein/core/options.h"
 
 #include "menu/menu_mark_as_read.h"
@@ -161,7 +161,7 @@ void FiltersMenu::setup() {
 	rpl::combine(
 		rpl::single(rpl::empty) | rpl::then(filters->changed()),
 		std::move(premium),
-		Serein::ForDevice().Value(Serein::Chats::kHideAllChatsFolder)
+		Serein::Hooks::Chats::HideAllChatsFolderValue()
 	) | rpl::on_next([=] {
 		refresh();
 	}, _outer.lifetime());
@@ -618,8 +618,7 @@ base::unique_qptr<Ui::SideBarButton> FiltersMenu::prepareButton(
 		rpl::combine(
 			Data::UnreadStateValue(&_session->session(), id),
 			Data::IncludeMutedCounterFoldersValue(),
-			Serein::ForDevice().Value(
-				Serein::Chats::kHideFolderUnreadCounters)
+			Serein::Hooks::Chats::HideFolderUnreadCountersValue()
 		) | rpl::on_next([=](
 				const Dialogs::UnreadState &state,
 				bool includeMuted,

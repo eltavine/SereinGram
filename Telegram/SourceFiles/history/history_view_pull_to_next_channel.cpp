@@ -28,7 +28,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "lang/lang_keys.h"
 #include "main/main_session.h"
 #include "menu/menu_mark_as_read.h"
-#include "serein/chats/options.h"
+#include "serein/hooks/gen/chats.h"
 #include "storage/storage_shared_media.h"
 #include "support/support_preload.h"
 #include "ui/chat/chat_style.h"
@@ -785,8 +785,8 @@ PullToNextChannel::PullToNextChannel(
 		handleOverscroll(position, movement);
 	}, _lifetime);
 	rpl::combine(
-		Serein::ForDevice().Value(Serein::Chats::kDisableScrollToNextChannel),
-		Serein::ForDevice().Value(Serein::Chats::kDisableScrollToNextTopic)
+		Serein::Hooks::Chats::DisableScrollToNextChannelValue(),
+		Serein::Hooks::Chats::DisableScrollToNextTopicValue()
 	) | rpl::skip(1) | rpl::on_next([=](bool, bool) {
 		reset(anim::type::instant);
 		updatePullCurve();
@@ -840,8 +840,7 @@ bool PullToNextChannel::active() const {
 	case Mode::History: {
 		const auto history = _history.get();
 		return Core::App().settings().pullToNextChannel()
-			&& !Serein::ForDevice().Get(
-				Serein::Chats::kDisableScrollToNextChannel)
+			&& !Serein::Hooks::Chats::DisableScrollToNextChannel()
 			&& history
 			&& history->peer->isBroadcast()
 			&& atBottom()
@@ -850,8 +849,7 @@ bool PullToNextChannel::active() const {
 	}
 	case Mode::Topic:
 		return Core::App().settings().pullToNextChannel()
-			&& !Serein::ForDevice().Get(
-				Serein::Chats::kDisableScrollToNextTopic)
+			&& !Serein::Hooks::Chats::DisableScrollToNextTopic()
 			&& _topic
 			&& atBottom();
 	case Mode::None:
@@ -1084,8 +1082,7 @@ void PullToNextChannel::jumpWhenReady(
 		|| _mode != Mode::History
 		|| !next
 		|| _next.get() != next
-		|| Serein::ForDevice().Get(
-			Serein::Chats::kDisableScrollToNextChannel)) {
+		|| Serein::Hooks::Chats::DisableScrollToNextChannel()) {
 		reset(anim::type::instant);
 		return;
 	}

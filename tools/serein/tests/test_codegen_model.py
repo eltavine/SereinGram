@@ -208,6 +208,26 @@ class RenderTest(unittest.TestCase):
         self.assertIn("\t\t::Settings::Builder::SectionBuilder &builder) {", rows)
         self.assertNotIn("CustomRows", rows)
 
+    def test_renders_hook_facade(self):
+        import generate
+        output = generate.render(image(
+            field("seconds_in_messages", "secondsInMessages"),
+            field("preview_lines", "previewLines", "TYPE_INT32", {
+                model.FIELD_EXTENSION: {"cppName": "kLines", "scope": "SCOPE_ACCOUNT"}}),
+        ), known_strings={"lng_serein_seconds_in_messages"})
+        header = output["hooks/gen/messages.h"]
+        self.assertIn("namespace Serein::Hooks::Messages {", header)
+        self.assertIn("[[nodiscard]] bool SecondsInMessages();", header)
+        self.assertIn("[[nodiscard]] rpl::producer<bool> SecondsInMessagesValue();", header)
+        self.assertIn("[[nodiscard]] int Lines(gsl::not_null<Main::Session*> session);", header)
+        self.assertIn("class Session;", header)
+        self.assertNotIn("serein/core", header)
+        source = output["hooks/gen/messages.cpp"]
+        self.assertIn("\treturn ForDevice().Get(Serein::Messages::kSecondsInMessages);", source)
+        self.assertIn("\treturn ForAccount(session).Value(Serein::Messages::kLines);", source)
+        sources = output["schema/gen/sources.cmake"]
+        self.assertIn("set(serein_generated_hook_sources\n    serein/hooks/gen/messages.cpp\n)", sources)
+
     def test_renders_custom_rows(self):
         import generate
         output = generate.render(

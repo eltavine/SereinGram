@@ -60,6 +60,15 @@ class Option:
                 and "Hidden" not in self.flags)
 
     @property
+    def accessor(self):
+        name = self.cpp_name
+        return name[1:] if name[:1] == "k" and name[1:2].isupper() else name
+
+    @property
+    def account(self):
+        return self.scope == "Account"
+
+    @property
     def constexpr(self):
         return self.ctype in ("bool", "int")
 
@@ -117,6 +126,15 @@ class Page:
     rows: list = field(default_factory=list)
     layout: list = field(default_factory=list)
     customs: list = field(default_factory=list)
+    stem: str = ""
+
+    @property
+    def hook_types(self):
+        return {option.ctype for option in self.options}
+
+    @property
+    def has_account(self):
+        return any(option.account for option in self.options)
 
 
 def camel_upper(name):
@@ -270,6 +288,7 @@ def build_page(source, message):
         needs_codec=any("Codec::" in line
                         for option in options for line in option.validator),
         rows_header=f"{stem}_rows.h" if layout else "",
+        stem=stem,
         rows=rows,
         layout=layout,
         customs=customs,

@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "chat_helpers/stickers_list_widget.h"
-#include "serein/media/options.h"
+#include "serein/hooks/gen/media.h"
 
 #include "base/options.h"
 #include "base/timer_rpl.h"
@@ -300,12 +300,9 @@ StickersListWidget::StickersListWidget(
 		}, lifetime());
 	}
 	rpl::merge(
-		Serein::ForDevice().Value(Serein::Media::kRecentStickerLimit
-		) | rpl::skip(1) | rpl::to_empty,
-		Serein::ForDevice().Value(Serein::Media::kHideGroupStickers
-		) | rpl::skip(1) | rpl::to_empty,
-		Serein::ForDevice().Value(Serein::Media::kHideRecommendedStickers
-		) | rpl::skip(1) | rpl::to_empty
+		Serein::Hooks::Media::RecentStickerLimitValue() | rpl::skip(1) | rpl::to_empty,
+		Serein::Hooks::Media::HideGroupStickersValue() | rpl::skip(1) | rpl::to_empty,
+		Serein::Hooks::Media::HideRecommendedStickersValue() | rpl::skip(1) | rpl::to_empty
 	) | rpl::on_next([=] {
 		refreshStickers();
 	}, lifetime());
@@ -370,8 +367,7 @@ object_ptr<TabbedSelector::InnerFooter> StickersListWidget::createFooter() {
 	) | rpl::on_next([=] {
 		const auto onlyFeatured = !_isMasks
 			&& _mySets.empty()
-			&& !Serein::ForDevice().Get(
-				Serein::Media::kHideRecommendedStickers);
+			&& !Serein::Hooks::Media::HideRecommendedStickers();
 		_show->showBox(Box<StickersBox>(
 			_show,
 			(onlyFeatured
@@ -3135,7 +3131,7 @@ void StickersListWidget::refreshMySets() {
 
 	refreshFavedStickers();
 	refreshRecentStickers(false);
-	if (!Serein::ForDevice().Get(Serein::Media::kHideGroupStickers)) {
+	if (!Serein::Hooks::Media::HideGroupStickers()) {
 		refreshMegagroupStickers(GroupStickersPlace::Visible);
 	}
 
@@ -3143,7 +3139,7 @@ void StickersListWidget::refreshMySets() {
 		const auto externalLayout = false;
 		appendSet(_mySets, setId, externalLayout, AppendSkip::Archived);
 	}
-	if (!Serein::ForDevice().Get(Serein::Media::kHideGroupStickers)) {
+	if (!Serein::Hooks::Media::HideGroupStickers()) {
 		refreshMegagroupStickers(GroupStickersPlace::Hidden);
 	}
 
@@ -3151,7 +3147,7 @@ void StickersListWidget::refreshMySets() {
 }
 
 void StickersListWidget::refreshFeaturedSets() {
-	if (Serein::ForDevice().Get(Serein::Media::kHideRecommendedStickers)) {
+	if (Serein::Hooks::Media::HideRecommendedStickers()) {
 		_officialSets.clear();
 		_featuredSetsCount = 0;
 		if (_section == Section::Featured) {
@@ -3375,8 +3371,7 @@ auto StickersListWidget::collectRecentStickers() -> std::vector<Sticker> {
 	result.reserve(cloudCount + recent.size() + customCount);
 	_custom.reserve(cloudCount + recent.size() + customCount);
 
-	const auto configured = Serein::ForDevice().Get(
-		Serein::Media::kRecentStickerLimit);
+	const auto configured = Serein::Hooks::Media::RecentStickerLimit();
 	auto add = [&](not_null<DocumentData*> document, bool custom) {
 		if (result.size() >= (configured ? configured : kRecentDisplayLimit)
 			&& (configured || !OptionUnlimitedRecentStickers.value())) {
@@ -3834,8 +3829,7 @@ void StickersListWidget::showStickerSet(uint64 setId) {
 	}
 
 	if (setId == Data::Stickers::FeaturedSetId) {
-		if (Serein::ForDevice().Get(
-				Serein::Media::kHideRecommendedStickers)) {
+		if (Serein::Hooks::Media::HideRecommendedStickers()) {
 			return;
 		}
 		if (_section != Section::Featured) {

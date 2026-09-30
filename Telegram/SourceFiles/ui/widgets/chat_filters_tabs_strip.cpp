@@ -7,7 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "ui/widgets/chat_filters_tabs_strip.h"
 #include "serein/chats/managed_folders.h"
-#include "serein/chats/options.h"
+#include "serein/hooks/gen/chats.h"
 #include "serein/core/options.h"
 
 #include "api/api_chat_filters_remove_manager.h"
@@ -237,8 +237,7 @@ not_null<Ui::RpWidget*> AddChatFiltersTabsStrip(
 			rpl::combine(
 				Data::UnreadStateValue(session, list[i].id()),
 				rpl::duplicate(includeMuted),
-				Serein::ForDevice().Value(
-					Serein::Chats::kHideFolderUnreadCounters)
+				Serein::Hooks::Chats::HideFolderUnreadCountersValue()
 			) | rpl::on_next([=](
 					const Dialogs::UnreadState &state,
 					bool includeMuted,
@@ -523,7 +522,7 @@ not_null<Ui::RpWidget*> AddChatFiltersTabsStrip(
 	rpl::combine(
 		session->data().chatsFilters().changed(),
 		Data::AmPremiumValue(session) | rpl::to_empty,
-		Serein::ForDevice().Value(Serein::Chats::kHideAllChatsFolder)
+		Serein::Hooks::Chats::HideAllChatsFolderValue()
 			| rpl::to_empty
 	) | rpl::on_next(rebuild, wrap->lifetime());
 	Core::App().settings().chatFiltersTabsModeValue(

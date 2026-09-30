@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "info/profile/info_profile_shared_media_classic.h"
-#include "serein/privacy/options.h"
+#include "serein/hooks/gen/privacy.h"
 
 #include "core/ui_integration.h"
 #include "data/components/recent_shared_media_gifts.h"
@@ -206,7 +206,7 @@ namespace {
 		rpl::combine(
 			rpl::duplicate(forked),
 			state->textRefreshed.events_starting_with({}),
-			Serein::ForDevice().Value(Serein::Privacy::kHideProfileGifts)
+			Serein::Hooks::Privacy::HideProfileGiftsValue()
 		) | rpl::map([=](int count, auto, bool hidden) {
 			return count > 0 && state->giftsLoaded && !hidden;
 		}));

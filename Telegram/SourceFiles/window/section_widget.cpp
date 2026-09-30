@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "window/section_widget.h"
-#include "serein/interface/options.h"
+#include "serein/hooks/gen/interface.h"
 
 #include "mainwidget.h"
 #include "mainwindow.h"
@@ -579,7 +579,7 @@ auto ChatThemeValueFromPeer(
 	return rpl::combine(
 		std::move(cloud),
 		controller->peerThemeOverrideValue(),
-		Serein::ForDevice().Value(Serein::Interface::kIgnoreChatTheme)
+		Serein::Hooks::Interface::IgnoreChatThemeValue()
 	) | rpl::map([=](
 			std::shared_ptr<Ui::ChatTheme> &&cloud,
 			PeerThemeOverride &&overriden,

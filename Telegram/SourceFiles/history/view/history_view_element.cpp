@@ -10,7 +10,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "serein/messages/reactions.h"
 #include "serein/messages/content.h"
 #include "serein/messages/reading.h"
-#include "serein/messages/options.h"
+#include "serein/hooks/gen/messages.h"
 #include "serein/filters/view.h"
 
 #include "apiwrap.h"
@@ -2200,10 +2200,8 @@ void Element::setTextWithLinks(
 		const auto display = Serein::Filters::DisplayText(filtered);
 		const auto &options = Ui::ItemTextOptions(item);
 		clearSpecialOnlyEmoji();
-		const auto spacing = Serein::ForDevice().Get(
-			Serein::Messages::kReadingSpacing);
-		const auto chinese = Serein::ForDevice().Get(
-			Serein::Messages::kReadingChinese);
+		const auto spacing = Serein::Hooks::Messages::ReadingSpacing();
+		const auto chinese = Serein::Hooks::Messages::ReadingChinese();
 		if (!item->sereinOriginalShown() && (spacing || chinese)) {
 			if (!_sereinReading) {
 				_sereinReading = std::make_unique<Serein::Messages::ReadingCache>();

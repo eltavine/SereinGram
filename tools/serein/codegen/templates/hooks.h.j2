@@ -1,0 +1,29 @@
+// Generated from {{ page.source }} by tools/serein/codegen; do not edit.
+#pragma once
+
+{% if "QByteArray" in page.hook_types %}
+#include <QtCore/QByteArray>
+{% endif %}
+{% if "QString" in page.hook_types %}
+#include <QtCore/QString>
+{% endif %}
+{% if page.has_account %}
+#include <gsl/pointers>
+{% endif %}
+#include <rpl/producer.h>
+{% if page.has_account %}
+
+namespace Main {
+class Session;
+} // namespace Main
+{% endif %}
+
+namespace Serein::Hooks::{{ page.namespace }} {
+
+{% for option in page.options %}
+{% set session = "gsl::not_null<Main::Session*> session" if option.account else "" %}
+[[nodiscard]] {{ option.ctype }} {{ option.accessor }}({{ session }});
+[[nodiscard]] rpl::producer<{{ option.ctype }}> {{ option.accessor }}Value({{ session }});
+{% endfor %}
+
+} // namespace Serein::Hooks::{{ page.namespace }}

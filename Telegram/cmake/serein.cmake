@@ -80,7 +80,10 @@ set(serein_sources
 )
 
 include(${CMAKE_CURRENT_LIST_DIR}/../SourceFiles/serein/schema/gen/sources.cmake)
-list(APPEND serein_sources ${serein_generated_sources})
+list(APPEND serein_sources
+    ${serein_generated_sources}
+    ${serein_generated_hook_sources}
+)
 
 if (serein_sources)
     nice_target_sources(Telegram ${src_loc} PRIVATE ${serein_sources})

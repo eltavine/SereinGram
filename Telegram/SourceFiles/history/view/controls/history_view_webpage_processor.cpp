@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/controls/history_view_webpage_processor.h"
-#include "serein/compose/options.h"
+#include "serein/hooks/gen/compose.h"
 
 #include "base/unixtime.h"
 #include "data/data_chat_participant_status.h"
@@ -220,8 +220,7 @@ WebpageProcessor::WebpageProcessor(
 		_parsedLinks = std::move(parsed);
 		checkPreview();
 	}, _lifetime);
-	Serein::ForDevice().Value(Serein::Compose::kDisableLinkPreview
-	) | rpl::skip(1) | rpl::on_next([=] {
+	Serein::Hooks::Compose::DisableLinkPreviewValue() | rpl::skip(1) | rpl::on_next([=] {
 		checkNow(true);
 	}, _lifetime);
 
@@ -369,7 +368,7 @@ void WebpageProcessor::checkPreview() {
 		return;
 	} else if (_draft.manual) {
 		return;
-	} else if (Serein::ForDevice().Get(Serein::Compose::kDisableLinkPreview)) {
+	} else if (Serein::Hooks::Compose::DisableLinkPreview()) {
 		apply({ .removed = true });
 		_draft.removed = false;
 		return;

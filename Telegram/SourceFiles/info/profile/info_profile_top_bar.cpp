@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "info/profile/info_profile_top_bar.h"
-#include "serein/privacy/options.h"
+#include "serein/hooks/gen/privacy.h"
 
 #include "api/api_peer_colors.h"
 #include "api/api_peer_photo.h"
@@ -529,15 +529,12 @@ TopBar::TopBar(
 				_peer,
 				Data::PeerUpdate::Flag::FullInfo
 					| Data::PeerUpdate::Flag::ChannelAmIn) | rpl::to_empty,
-			Serein::ForDevice().Value(
-				Serein::Privacy::kHideProfileGifts) | rpl::to_empty
+			Serein::Hooks::Privacy::HideProfileGiftsValue() | rpl::to_empty
 		) | rpl::on_next([=] {
 			setupActions(controller);
 		}, lifetime());
 	}
-	Serein::ForDevice().Value(
-		Serein::Privacy::kHideProfileGifts
-	) | rpl::on_next([=](bool hidden) {
+	Serein::Hooks::Privacy::HideProfileGiftsValue() | rpl::on_next([=](bool hidden) {
 		for (auto &gift : _pinnedToTopGifts) {
 			gift.button->setVisible(!hidden);
 		}
@@ -1211,8 +1208,7 @@ void TopBar::setupActions(not_null<Window::SessionController*> controller) {
 			&& (channel->isForbidden()
 				|| !channel->stargiftsAvailable()
 				|| channel->amCreator())) {
-		} else if (!Serein::ForDevice().Get(
-			Serein::Privacy::kHideProfileGifts)) {
+		} else if (!Serein::Hooks::Privacy::HideProfileGifts()) {
 			const auto giftButton = Ui::CreateChild<TopBarActionButton>(
 				this,
 				tr::lng_profile_action_short_gift(tr::now),
@@ -3532,8 +3528,7 @@ void TopBar::setupNewGifts(
 
 			return base;
 		}());
-		entry.button->setVisible(!Serein::ForDevice().Get(
-			Serein::Privacy::kHideProfileGifts));
+		entry.button->setVisible(!Serein::Hooks::Privacy::HideProfileGifts());
 
 		entry.button->setClickedCallback([=, giftData = gift, peer = _peer] {
 			::Settings::ShowSavedStarGiftBox(controller, peer, giftData);
@@ -3667,7 +3662,7 @@ void TopBar::paintPinnedToTopGifts(
 		const QRect &userpicRect) {
 	if (_pinnedToTopGifts.empty()
 		|| _source == Source::Preview
-		|| Serein::ForDevice().Get(Serein::Privacy::kHideProfileGifts)) {
+		|| Serein::Hooks::Privacy::HideProfileGifts()) {
 		return;
 	}
 

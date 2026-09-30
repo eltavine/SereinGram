@@ -36,7 +36,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "history/history_item_helpers.h" // GetErrorForSending.
 #include "history/history_view_pull_to_next_channel.h"
 #include "serein/compose/confirm.h"
-#include "serein/compose/options.h"
+#include "serein/hooks/gen/compose.h"
 #include "history/history_item_reply_markup.h"
 #include "history/history_view_pull_to_next_channel.h"
 #include "iv/iv_rich_message_serializer.h"
@@ -5402,7 +5402,7 @@ void ChatWidget::sendBotCommand(
 		return;
 	}
 	if (!request.replyTo
-		&& Serein::ForDevice().Get(Serein::Compose::kBotCommandsToDraft)) {
+		&& Serein::Hooks::Compose::BotCommandsToDraft()) {
 		const auto canSendTexts = (mode() == Mode::History)
 			? Data::CanSend(_peer, ChatRestriction::SendOther)
 			: _bottom->canSendTexts();

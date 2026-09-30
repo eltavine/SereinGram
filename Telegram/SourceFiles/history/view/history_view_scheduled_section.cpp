@@ -18,7 +18,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "history/history_item_helpers.h" // GetErrorForSending.
 #include "history/history_view_swipe_back_session.h"
 #include "menu/menu_send.h" // SendMenu::Type.
-#include "serein/compose/options.h"
+#include "serein/hooks/gen/compose.h"
 #include "ui/widgets/buttons.h"
 #include "ui/widgets/tooltip.h"
 #include "ui/widgets/elastic_scroll.h"
@@ -1609,7 +1609,7 @@ Window::SectionActionResult ScheduledWidget::sendBotCommand(
 void ScheduledWidget::listSendBotCommand(
 		const QString &command,
 		const FullMsgId &context) {
-	if (Serein::ForDevice().Get(Serein::Compose::kBotCommandsToDraft)) {
+	if (Serein::Hooks::Compose::BotCommandsToDraft()) {
 		_composeControls->insertTextToField(Bot::WrapCommandInChat(
 			_history->peer, command, context) + ' ');
 		return;

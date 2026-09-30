@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/history_view_about_view.h"
-#include "serein/media/options.h"
+#include "serein/hooks/gen/media.h"
 
 #include "api/api_peer_colors.h"
 #include "api/api_premium.h"
@@ -303,8 +303,7 @@ auto GenerateChatIntro(
 				.link = std::make_shared<LambdaClickHandler>(send),
 			};
 		};
-		if (!Serein::ForDevice().Get(
-				Serein::Media::kHideGreetingSticker)) {
+		if (!Serein::Hooks::Media::HideGreetingSticker()) {
 			push(std::make_unique<StickerInBubblePart>(
 				parent,
 				replacing,
@@ -692,8 +691,7 @@ AboutView::AboutView(
 	not_null<ElementDelegate*> delegate)
 : _history(history)
 , _delegate(delegate) {
-	Serein::ForDevice().Value(Serein::Media::kHideGreetingSticker
-	) | rpl::skip(1) | rpl::on_next([=] {
+	Serein::Hooks::Media::HideGreetingStickerValue() | rpl::skip(1) | rpl::on_next([=] {
 		_destroyRequests.fire({});
 	}, lifetime());
 }

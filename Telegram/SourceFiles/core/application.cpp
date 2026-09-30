@@ -9,7 +9,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "serein/interface/roundness.h"
 #include "serein/interface/text.h"
 #include "serein/core/options.h"
-#include "serein/privacy/options.h"
+#include "serein/hooks/gen/privacy.h"
 
 #include "data/data_abstract_structure.h"
 #include "data/data_channel.h"
@@ -191,8 +191,8 @@ Application::Application()
 
 	_platformIntegration->init();
 	_screenshotProtection->addContentReason(
-		Serein::ForDevice().Value(Serein::Privacy::kDemoMode), _lifetime);
-	Serein::ForDevice().Value(Serein::Privacy::kDemoMode)
+		Serein::Hooks::Privacy::DemoModeValue(), _lifetime);
+	Serein::Hooks::Privacy::DemoModeValue()
 		| rpl::on_next([=](bool) {
 			updateWindowTitles();
 			for (const auto widget : QApplication::allWidgets()) {

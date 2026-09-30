@@ -26,6 +26,7 @@ PROTO = ROOT / "proto"
 OUTPUT = ROOT / "Telegram/SourceFiles/serein"
 SCHEMA = "schema/gen"
 ROWS = "settings/gen"
+HOOKS = "hooks/gen"
 SOURCES = f"{SCHEMA}/sources.cmake"
 STRINGS = (
     ROOT / "Telegram/Resources/langs/lang.strings",
@@ -39,6 +40,12 @@ def build_image():
         subprocess.run(["buf", "build", str(PROTO), "-o", str(image)],
                        check=True, cwd=ROOT)
         return json.loads(image.read_text(encoding="utf-8"))
+
+
+def cmake_list(name, sources):
+    return (f"set({name}\n"
+            + "".join(f"    {source}\n" for source in sorted(sources))
+            + ")\n")
 
 
 def string_keys():
@@ -66,23 +73,28 @@ def render(image, known_strings=None):
     check_titles(pages, string_keys() if known_strings is None else known_strings)
     outputs = {f"{SCHEMA}/{page.header}": settings.render(page=page)
                for page in pages}
+    hook_header = environment.get_template("hooks.h.j2")
+    hook_source = environment.get_template("hooks.cpp.j2")
+    sources = []
+    hooks = []
     for page in pages:
         if page.layout:
             outputs[f"{ROWS}/{page.rows_header}"] = rows.render(page=page)
-    sources = []
+        outputs[f"{HOOKS}/{page.stem}.h"] = hook_header.render(page=page)
+        outputs[f"{HOOKS}/{page.stem}.cpp"] = hook_source.render(page=page)
+        hooks.append(f"serein/{HOOKS}/{page.stem}.cpp")
     for file in build_files(image):
         outputs[f"{SCHEMA}/{file.header}"] = header.render(file=file)
         outputs[f"{SCHEMA}/{file.implementation}"] = implementation.render(file=file)
         sources.append(f"serein/{SCHEMA}/{file.implementation}")
-    outputs[SOURCES] = ("set(serein_generated_sources\n"
-                        + "".join(f"    {source}\n" for source in sorted(sources))
-                        + ")\n")
+    outputs[SOURCES] = (cmake_list("serein_generated_sources", sources)
+                        + cmake_list("serein_generated_hook_sources", hooks))
     return outputs
 
 
 def existing_files():
     return {path.relative_to(OUTPUT).as_posix()
-            for folder in (SCHEMA, ROWS) if (OUTPUT / folder).exists()
+            for folder in (SCHEMA, ROWS, HOOKS) if (OUTPUT / folder).exists()
             for path in (OUTPUT / folder).rglob("*") if path.is_file()}
 
 

@@ -6,8 +6,8 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "window/main_window.h"
-#include "serein/interface/options.h"
-#include "serein/privacy/options.h"
+#include "serein/hooks/gen/interface.h"
+#include "serein/hooks/gen/privacy.h"
 
 #include "api/api_updates.h"
 #include "storage/localstorage.h"
@@ -425,10 +425,8 @@ MainWindow::MainWindow(not_null<Controller*> controller)
 		unreadCounterChangedHook();
 		Core::App().tray().updateIconCounters();
 	}, lifetime());
-	Serein::ForDevice().changes(
-	) | rpl::filter([](auto key) {
-		return key == Serein::Interface::kHideAppIconBadge.key;
-	}) | rpl::on_next([=] {
+	Serein::Hooks::Interface::HideAppIconBadgeValue(
+	) | rpl::skip(1) | rpl::on_next([=] {
 		unreadCounterChangedHook();
 	}, lifetime());
 
@@ -898,7 +896,7 @@ void MainWindow::updateTitle() {
 	}
 
 	const auto suffix = nativeTitleSuffix();
-	if (Serein::Privacy::DemoMode()) {
+	if (Serein::Hooks::Privacy::DemoMode()) {
 		setTitle(u"SereinGram"_q + suffix);
 		return;
 	}

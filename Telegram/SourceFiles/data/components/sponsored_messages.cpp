@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "data/components/sponsored_messages.h"
-#include "serein/chats/options.h"
+#include "serein/hooks/gen/chats.h"
 #include "serein/chats/promotions.h"
 
 #include "api/api_text_entities.h"
@@ -65,8 +65,7 @@ SponsoredMessages::SponsoredMessages(not_null<Main::Session*> session)
 			clear();
 		}
 	}, _lifetime);
-	Serein::ForDevice().Value(Serein::Chats::kHideSponsoredMessages
-	) | rpl::skip(1) | rpl::on_next([=](bool hidden) {
+	Serein::Hooks::Chats::HideSponsoredMessagesValue() | rpl::skip(1) | rpl::on_next([=](bool hidden) {
 		if (hidden) {
 			for (const auto &entry : _data) {
 				clearItems(entry.first);

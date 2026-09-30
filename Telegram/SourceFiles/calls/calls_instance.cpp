@@ -18,7 +18,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "mtproto/mtproto_dh_utils.h"
 #include "core/application.h"
 #include "core/core_settings.h"
-#include "serein/compose/options.h"
+#include "serein/hooks/gen/compose.h"
 #include "main/session/session_show.h"
 #include "main/main_app_config.h"
 #include "main/main_session.h"
@@ -218,7 +218,7 @@ void Instance::startOutgoingCall(
 		return;
 	}
 	if (!args.isConfirmed
-		&& Serein::ForDevice().Get(Serein::Compose::kConfirmPrivateCall)) {
+		&& Serein::Hooks::Compose::ConfirmPrivateCall()) {
 		Ui::show(Ui::MakeConfirmBox({
 			.text = tr::lng_serein_confirm_start_call(),
 			.confirmed = crl::guard(this, [=](Fn<void()> close) {

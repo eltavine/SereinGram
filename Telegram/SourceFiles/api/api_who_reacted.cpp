@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "api/api_who_reacted.h"
-#include "serein/privacy/options.h"
+#include "serein/hooks/gen/privacy.h"
 
 #include "api/api_global_privacy.h"
 #include "history/history_item.h"
@@ -561,7 +561,7 @@ void RegenerateParticipants(not_null<State*> state, int small, int large) {
 		const auto peer = userpic.peer;
 		const auto date = userpic.date;
 		const auto dateText = (userpic.dateReacted
-			|| !Serein::ForDevice().Get(Serein::Privacy::kHideReadTime))
+			|| !Serein::Hooks::Privacy::HideReadTime())
 			? FormatReadDate(date, currentDate) : QString();
 		const auto id = peer->id.value;
 		const auto self = peer->isSelf();

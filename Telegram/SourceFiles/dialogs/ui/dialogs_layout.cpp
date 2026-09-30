@@ -7,7 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "dialogs/ui/dialogs_layout.h"
 #include "serein/chats/layout.h"
-#include "serein/privacy/options.h"
+#include "serein/hooks/gen/privacy.h"
 
 #include "base/options.h"
 #include "base/unixtime.h"
@@ -487,7 +487,7 @@ void PaintRow(
 		p.translate(swipeMirrored ? swipeTranslation : -swipeTranslation, 0);
 	}
 	p.fillRect(geometry, bg);
-	if (Serein::Privacy::DemoMode()) {
+	if (Serein::Hooks::Privacy::DemoMode()) {
 		p.setFont(st::semiboldFont);
 		p.setPen(st::dialogsNameFg);
 		p.drawTextLeft(

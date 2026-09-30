@@ -7,7 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "window/notifications_manager.h"
 #include "serein/interface/notifications.h"
-#include "serein/privacy/options.h"
+#include "serein/hooks/gen/privacy.h"
 
 #include "base/options.h"
 #include "base/platform/base_platform_info.h"
@@ -1557,7 +1557,7 @@ void NativeManager::doShowNotification(NotificationFields &&fields) {
 			: Data::ItemNotificationType::Reaction)
 		: Data::ItemNotificationType::Message;
 	auto options = getNotificationOptions(fields.item, type);
-	const auto demo = Serein::Privacy::DemoMode();
+	const auto demo = Serein::Hooks::Privacy::DemoMode();
 	if (demo) {
 		options.hideNameAndPhoto = true;
 		options.hideMessageText = true;

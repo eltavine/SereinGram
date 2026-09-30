@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "window/window_peer_menu.h"
-#include "serein/privacy/options.h"
+#include "serein/hooks/gen/privacy.h"
 #include "serein/privacy/alias.h"
 
 #include "base/call_delayed.h"
@@ -1447,8 +1447,7 @@ void Filler::addCreatePoll() {
 }
 
 void Filler::addCreateTodoList() {
-	if (skipCreateActions() || Serein::ForDevice().Get(
-		Serein::Privacy::kHideCreateTodo)) {
+	if (skipCreateActions() || Serein::Hooks::Privacy::HideCreateTodo()) {
 		return;
 	}
 	const auto can = _topic

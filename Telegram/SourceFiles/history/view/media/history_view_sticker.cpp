@@ -7,7 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/media/history_view_sticker.h"
 #include "serein/messages/effects.h"
-#include "serein/media/options.h"
+#include "serein/hooks/gen/media.h"
 
 #include "base/options.h"
 #include "boxes/sticker_set_box.h"
@@ -217,7 +217,7 @@ bool Sticker::readyToDrawAnimationFrame() {
 
 QSize Sticker::Size() {
 	const auto base = UnscaledStickerSize();
-	const auto scale = Serein::ForDevice().Get(Serein::Media::kStickerScale);
+	const auto scale = Serein::Hooks::Media::StickerScale();
 	return { base.width() * scale / 100, base.height() * scale / 100 };
 }
 

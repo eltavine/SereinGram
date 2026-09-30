@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "storage/localimageloader.h"
-#include "serein/media/options.h"
+#include "serein/hooks/gen/media.h"
 
 #include "api/api_text_entities.h"
 #include "api/api_sending.h"
@@ -1058,7 +1058,7 @@ void FileLoadTask::process(ProcessArgs &&args) {
 					video->duration);
 			}
 			fileVideoPreview = _forceFile
-				&& Serein::ForDevice().Get(Serein::Media::kMp4FilePreview)
+				&& Serein::Hooks::Media::Mp4FilePreview()
 				&& (filemime == u"video/mp4"_q)
 				&& coverWidth > 0 && coverHeight > 0 && realSeconds > 0;
 			if (!_forceFile || fileVideoPreview) {

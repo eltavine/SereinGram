@@ -5,3 +5,13 @@ set(serein_generated_sources
     serein/schema/gen/config/quick_replies.cpp
     serein/schema/gen/history/record.cpp
 )
+set(serein_generated_hook_sources
+    serein/hooks/gen/chats.cpp
+    serein/hooks/gen/compose.cpp
+    serein/hooks/gen/ghost.cpp
+    serein/hooks/gen/history.cpp
+    serein/hooks/gen/interface.cpp
+    serein/hooks/gen/media.cpp
+    serein/hooks/gen/messages.cpp
+    serein/hooks/gen/privacy.cpp
+)

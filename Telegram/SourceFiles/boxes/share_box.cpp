@@ -34,7 +34,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "history/history_item.h"
 #include "history/history_item_helpers.h"
 #include "history/view/controls/history_view_forward_panel.h"
-#include "serein/compose/options.h"
+#include "serein/hooks/gen/compose.h"
 #include "history/view/history_view_element.h"
 #include "history/view/history_view_context_menu.h" // CopyPostLink.
 #include "settings/sections/settings_premium.h"
@@ -1890,8 +1890,7 @@ ShareBox::SubmitCallback ShareBox::DefaultForwardCallback(
 				message.action.clearDraft = false;
 				api.sendMessage(std::move(message));
 			};
-			const auto forwardFirst = Serein::ForDevice().Get(
-				Serein::Compose::kForwardBeforeComment);
+			const auto forwardFirst = Serein::Hooks::Compose::ForwardBeforeComment();
 			if (!forwardFirst) {
 				sendComment();
 			}

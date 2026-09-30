@@ -81,7 +81,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "history/history_item_components.h"
 #include "history/history_item_helpers.h"
 #include "history/view/controls/history_view_forward_panel.h"
-#include "serein/compose/options.h"
+#include "serein/hooks/gen/compose.h"
 #include "serein/compose/text.h"
 #include "iv/editor/iv_editor_session.h"
 #include "iv/iv_rich_message_serializer.h"
@@ -4560,8 +4560,7 @@ void ApiWrap::sendRichMessage(
 	const auto submittedSummary = item->originalText();
 
 	StripEphemeralReply(_session, action.replyTo);
-	const auto forwardFirst = Serein::ForDevice().Get(
-		Serein::Compose::kForwardBeforeComment);
+	const auto forwardFirst = Serein::Hooks::Compose::ForwardBeforeComment();
 	if (forwardFirst) {
 		finishForwarding(action);
 	}
@@ -4775,8 +4774,7 @@ void ApiWrap::sendMessage(
 	if (Api::SendDice(message)) {
 		return;
 	}
-	const auto forwardFirst = Serein::ForDevice().Get(
-		Serein::Compose::kForwardBeforeComment);
+	const auto forwardFirst = Serein::Hooks::Compose::ForwardBeforeComment();
 	if (forwardFirst) {
 		finishForwarding(action);
 	}
@@ -4833,8 +4831,7 @@ void ApiWrap::sendMessage(
 			mediaFlags |= MTPmessages_SendMedia::Flag::f_reply_to;
 		}
 		const auto ignoreWebPage = message.webPage.removed
-			|| (Serein::ForDevice().Get(
-				Serein::Compose::kDisableLinkPreview) && !message.webPage.manual)
+			|| (Serein::Hooks::Compose::DisableLinkPreview() && !message.webPage.manual)
 			|| (exactWebPage && !isLast);
 		const auto manualWebPage = exactWebPage
 			&& !ignoreWebPage

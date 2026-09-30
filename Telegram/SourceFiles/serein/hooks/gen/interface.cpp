@@ -1,0 +1,121 @@
+// Generated from proto/serein/settings/v1/interface.proto by tools/serein/codegen; do not edit.
+#include "serein/hooks/gen/interface.h"
+
+#include "serein/core/options.h"
+#include "serein/schema/gen/settings/interface.h"
+
+namespace Serein::Hooks::Interface {
+
+int BubbleRoundness() {
+	return ForDevice().Get(Serein::Interface::kBubbleRoundness);
+}
+
+rpl::producer<int> BubbleRoundnessValue() {
+	return ForDevice().Value(Serein::Interface::kBubbleRoundness);
+}
+
+int AvatarRoundness() {
+	return ForDevice().Get(Serein::Interface::kAvatarRoundness);
+}
+
+rpl::producer<int> AvatarRoundnessValue() {
+	return ForDevice().Value(Serein::Interface::kAvatarRoundness);
+}
+
+bool UniformAvatarShapes() {
+	return ForDevice().Get(Serein::Interface::kUniformAvatarShapes);
+}
+
+rpl::producer<bool> UniformAvatarShapesValue() {
+	return ForDevice().Value(Serein::Interface::kUniformAvatarShapes);
+}
+
+int TextMessageWidth() {
+	return ForDevice().Get(Serein::Interface::kTextMessageWidth);
+}
+
+rpl::producer<int> TextMessageWidthValue() {
+	return ForDevice().Value(Serein::Interface::kTextMessageWidth);
+}
+
+bool WideChannelPosts() {
+	return ForDevice().Get(Serein::Interface::kWideChannelPosts);
+}
+
+rpl::producer<bool> WideChannelPostsValue() {
+	return ForDevice().Value(Serein::Interface::kWideChannelPosts);
+}
+
+bool HideBubbleTail() {
+	return ForDevice().Get(Serein::Interface::kHideBubbleTail);
+}
+
+rpl::producer<bool> HideBubbleTailValue() {
+	return ForDevice().Value(Serein::Interface::kHideBubbleTail);
+}
+
+bool ThemeReplyColors() {
+	return ForDevice().Get(Serein::Interface::kThemeReplyColors);
+}
+
+rpl::producer<bool> ThemeReplyColorsValue() {
+	return ForDevice().Value(Serein::Interface::kThemeReplyColors);
+}
+
+bool HideReplyThumbnail() {
+	return ForDevice().Get(Serein::Interface::kHideReplyThumbnail);
+}
+
+rpl::producer<bool> HideReplyThumbnailValue() {
+	return ForDevice().Value(Serein::Interface::kHideReplyThumbnail);
+}
+
+bool IgnoreChatTheme() {
+	return ForDevice().Get(Serein::Interface::kIgnoreChatTheme);
+}
+
+rpl::producer<bool> IgnoreChatThemeValue() {
+	return ForDevice().Value(Serein::Interface::kIgnoreChatTheme);
+}
+
+QByteArray MainMenuConfig() {
+	return ForDevice().Get(Serein::Interface::kMainMenuConfig);
+}
+
+rpl::producer<QByteArray> MainMenuConfigValue() {
+	return ForDevice().Value(Serein::Interface::kMainMenuConfig);
+}
+
+bool HideAppIconBadge() {
+	return ForDevice().Get(Serein::Interface::kHideAppIconBadge);
+}
+
+rpl::producer<bool> HideAppIconBadgeValue() {
+	return ForDevice().Value(Serein::Interface::kHideAppIconBadge);
+}
+
+int NotificationDelay() {
+	return ForDevice().Get(Serein::Interface::kNotificationDelay);
+}
+
+rpl::producer<int> NotificationDelayValue() {
+	return ForDevice().Value(Serein::Interface::kNotificationDelay);
+}
+
+int OtherDeviceNotificationDelay() {
+	return ForDevice().Get(Serein::Interface::kOtherDeviceNotificationDelay);
+}
+
+rpl::producer<int> OtherDeviceNotificationDelayValue() {
+	return ForDevice().Value(Serein::Interface::kOtherDeviceNotificationDelay);
+}
+
+bool HalfwidthUiPunctuation() {
+	return ForDevice().Get(Serein::Interface::kHalfwidthUiPunctuation);
+}
+
+rpl::producer<bool> HalfwidthUiPunctuationValue() {
+	return ForDevice().Value(Serein::Interface::kHalfwidthUiPunctuation);
+}
+
+} // namespace Serein::Hooks::Interface

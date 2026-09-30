@@ -13,7 +13,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "dialogs/ui/chat_search_in.h"
 #include "dialogs/ui/dialogs_stories_content.h"
 #include "serein/chats/layout.h"
-#include "serein/chats/options.h"
+#include "serein/hooks/gen/chats.h"
 #include "serein/core/options.h"
 #include "dialogs/ui/dialogs_stories_list.h"
 #include "dialogs/ui/dialogs_suggestions.h"
@@ -1707,8 +1707,7 @@ void Widget::setupMainMenuToggle() {
 }
 
 void Widget::setupStories() {
-	Serein::ForDevice().Value(Serein::Chats::kHideStories
-	) | rpl::skip(1) | rpl::on_next([=] {
+	Serein::Hooks::Chats::HideStoriesValue() | rpl::skip(1) | rpl::on_next([=] {
 		updateStoriesVisibility();
 	}, _stories->lifetime());
 	_stories->verticalScrollEvents(

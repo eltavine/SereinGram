@@ -7,7 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "chat_helpers/message_field.h"
 
-#include "serein/compose/options.h"
+#include "serein/hooks/gen/compose.h"
 #include "serein/compose/text.h"
 #include "serein/services/draft_translation.h"
 
@@ -580,7 +580,7 @@ auto InitMessageFieldHandlers(MessageFieldHandlersArgs &&args)
 		Core::App().settings().replaceEmojiValue(),
 		Core::App().settings().systemTextReplaceValue());
 	field->setMarkdownReplacesEnabled(
-		Serein::ForDevice().Value(Serein::Compose::kDisableAutoMarkdown)
+		Serein::Hooks::Compose::DisableAutoMarkdownValue()
 		| rpl::map([
 			tags = std::move(args.allowMarkdownTags),
 			typed = args.allowTypedMarkdown,

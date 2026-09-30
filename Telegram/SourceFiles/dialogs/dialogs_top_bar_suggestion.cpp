@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "dialogs/dialogs_top_bar_suggestion.h"
-#include "serein/chats/options.h"
+#include "serein/hooks/gen/chats.h"
 #include "serein/chats/promotions.h"
 #include "serein/core/options.h"
 
@@ -240,11 +240,9 @@ rpl::producer<Ui::SlideWrap<Ui::RpWidget>*> TopBarSuggestionValue(
 		}, lifetime);
 
 		rpl::merge(
-			Serein::ForDevice().Value(
-				Serein::Chats::kHidePremiumPromotions)
+			Serein::Hooks::Chats::HidePremiumPromotionsValue()
 				| rpl::skip(1) | rpl::to_empty,
-			Serein::ForDevice().Value(
-				Serein::Chats::kHideBirthdaySuggestions)
+			Serein::Hooks::Chats::HideBirthdaySuggestionsValue()
 				| rpl::skip(1) | rpl::to_empty,
 			session->promoSuggestions().value(),
 			session->api().authorizations().unreviewedChanges(),

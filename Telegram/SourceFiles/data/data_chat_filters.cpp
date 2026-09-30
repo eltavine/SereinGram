@@ -7,7 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "data/data_chat_filters.h"
 #include "serein/chats/managed_folders.h"
-#include "serein/chats/options.h"
+#include "serein/hooks/gen/chats.h"
 #include "serein/core/options.h"
 #include "data/data_premium_limits.h"
 
@@ -907,7 +907,7 @@ const std::vector<ChatFilter> &ChatFilters::list() const {
 }
 
 bool ChatFilters::allChatsHidden() const {
-	if (!Serein::ForDevice().Get(Serein::Chats::kHideAllChatsFolder)) {
+	if (!Serein::Hooks::Chats::HideAllChatsFolder()) {
 		return false;
 	}
 	const auto limit = 1 + PremiumLimits(&_owner->session())

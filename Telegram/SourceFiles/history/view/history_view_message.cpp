@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/history_view_message.h"
-#include "serein/interface/options.h"
+#include "serein/hooks/gen/interface.h"
 #include "serein/messages/reactions.h"
 #include "serein/messages/content.h"
 
@@ -6535,8 +6535,7 @@ Ui::BubbleRounding Message::countMessageRounding() const {
 	const auto media = smallBottom ? nullptr : this->media();
 	const auto item = data();
 	const auto keyboard = item->inlineReplyKeyboard();
-	const auto skipTail = Serein::ForDevice().Get(
-		Serein::Interface::kHideBubbleTail) || smallBottom
+	const auto skipTail = Serein::Hooks::Interface::HideBubbleTail() || smallBottom
 		|| (media && media->skipBubbleTail())
 		|| (keyboard != nullptr)
 		|| item->isFakeAboutView()
@@ -6619,12 +6618,10 @@ int Message::resizeContentGetHeight(int newWidth) {
 		}
 	}
 	accumulate_min(contentWidth, maxWidth());
-	const auto textWidthPercent = Serein::ForDevice().Get(
-		Serein::Interface::kTextMessageWidth);
+	const auto textWidthPercent = Serein::Hooks::Interface::TextMessageWidth();
 	const auto wide = UnlimitedMessageWidth.value()
 		|| (item->history()->peer->isBroadcast()
-			&& Serein::ForDevice().Get(
-				Serein::Interface::kWideChannelPosts));
+			&& Serein::Hooks::Interface::WideChannelPosts());
 	_bubbleWidthLimit = (textWidthPercent && !mediaDisplayed)
 		? std::max(st::msgMinWidth,
 			st::msgMaxWidth * textWidthPercent / 100)

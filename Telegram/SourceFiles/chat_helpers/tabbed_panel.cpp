@@ -13,7 +13,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "chat_helpers/tabbed_selector.h"
 #include "window/window_session_controller.h"
 #include "main/main_session.h"
-#include "serein/compose/options.h"
+#include "serein/hooks/gen/compose.h"
 #include "data/data_session.h"
 #include "data/stickers/data_stickers.h"
 #include "core/application.h"
@@ -490,7 +490,7 @@ void TabbedPanel::showStarted() {
 
 bool TabbedPanel::eventFilter(QObject *obj, QEvent *e) {
 	if (TabbedPanelShowOnClick.value()
-		|| Serein::ForDevice().Get(Serein::Compose::kDisableEmojiHover)) {
+		|| Serein::Hooks::Compose::DisableEmojiHover()) {
 		return false;
 	} else if (e->type() == QEvent::Enter) {
 		otherEnter();

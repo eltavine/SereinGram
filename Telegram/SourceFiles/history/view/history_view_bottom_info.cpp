@@ -7,7 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/history_view_bottom_info.h"
 #include "serein/messages/format.h"
-#include "serein/media/options.h"
+#include "serein/hooks/gen/media.h"
 
 #include "ui/chat/message_bubble.h"
 #include "ui/chat/chat_style.h"
@@ -726,7 +726,7 @@ BottomInfo::Data BottomInfoDataFromMessage(not_null<Message*> message) {
 	if (const auto media = item->media()) {
 		if (const auto document = media->document(); document
 			&& document->sticker()
-			&& Serein::ForDevice().Get(Serein::Media::kHideStickerTime)) {
+			&& Serein::Hooks::Media::HideStickerTime()) {
 			result.flags |= Flag::HideDate;
 		}
 		if (const auto outcome = media->diceGameOutcome()) {

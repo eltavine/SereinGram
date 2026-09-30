@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "media/view/media_view_overlay_widget.h"
-#include "serein/media/options.h"
+#include "serein/hooks/gen/media.h"
 
 #include "apiwrap.h"
 #include "api/api_attached_stickers.h"
@@ -1488,7 +1488,7 @@ bool OverlayWidget::streamingRequiresControls() const {
 		&& _document
 		&& (!_document->isAnimation()
 			|| _document->isVideoMessage()
-			|| Serein::ForDevice().Get(Serein::Media::kGifPlaybackControls));
+			|| Serein::Hooks::Media::GifPlaybackControls());
 }
 
 QImage OverlayWidget::videoFrame() const {

@@ -8,7 +8,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "history/view/media/history_view_gif.h"
 
 #include "apiwrap.h"
-#include "serein/media/options.h"
+#include "serein/hooks/gen/media.h"
 #include "api/api_transcribes.h"
 #include "lang/lang_keys.h"
 #include "mainwindow.h"
@@ -587,7 +587,7 @@ bool Gif::underCursor(bool fullFeatured) const {
 }
 
 bool Gif::autoplayEnabled() const {
-	if (Serein::ForDevice().Get(Serein::Media::kDisableVideoAutoplay)
+	if (Serein::Hooks::Media::DisableVideoAutoplay()
 		&& (_data->isVideoFile() || _data->isVideoMessage())) {
 		return false;
 	}

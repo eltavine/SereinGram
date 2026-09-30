@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/history_view_contact_status.h"
-#include "serein/privacy/options.h"
+#include "serein/hooks/gen/privacy.h"
 
 #include "lang/lang_keys.h"
 #include "ui/controls/userpic_button.h"
@@ -860,7 +860,7 @@ void ContactStatus::setupState(not_null<PeerData*> peer, bool showInForum) {
 		((channel && !showInForum)
 			? Data::PeerFlagValue(channel, ChannelData::Flag::Forum)
 			: (rpl::single(false) | rpl::type_erased)),
-		Serein::ForDevice().Value(Serein::Privacy::kHideSharePhonePrompt)
+		Serein::Hooks::Privacy::HideSharePhonePromptValue()
 	) | rpl::on_next([=](
 			State state,
 			TextWithEntities status,

@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/controls/history_view_voice_record_bar.h"
-#include "serein/compose/options.h"
+#include "serein/hooks/gen/compose.h"
 
 #include "api/api_send_progress.h"
 #include "base/event_filter.h"
@@ -2811,10 +2811,9 @@ void VoiceRecordBar::recordUpdated(quint16 level, int samples) {
 void VoiceRecordBar::stop(bool send) {
 	if (isHidden() && !send) {
 		return;
-	} else if (send && (_pauseInsteadSend || Serein::ForDevice().Get(
-			_recordingVideo
-				? Serein::Compose::kPreviewRoundVideo
-				: Serein::Compose::kPreviewVoice))) {
+	} else if (send && (_pauseInsteadSend || (_recordingVideo
+			? Serein::Hooks::Compose::PreviewRoundVideo()
+			: Serein::Hooks::Compose::PreviewVoice()))) {
 		_fullRecord = true;
 		stopRecording(StopType::Listen);
 		_lockShowing = false;

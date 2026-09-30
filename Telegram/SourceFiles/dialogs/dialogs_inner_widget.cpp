@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "dialogs/dialogs_inner_widget.h"
-#include "serein/privacy/options.h"
+#include "serein/hooks/gen/privacy.h"
 #include "serein/chats/list_refresher.h"
 #include "serein/chats/layout.h"
 #include "serein/chats/promotions.h"
@@ -1866,7 +1866,7 @@ void InnerWidget::paintPeerSearchResult(
 			: context.selected
 			? st::dialogsBgOver
 			: currentBg()));
-	if (Serein::Privacy::DemoMode()) {
+	if (Serein::Hooks::Privacy::DemoMode()) {
 		p.setFont(st::semiboldFont);
 		p.setPen(st::dialogsNameFg);
 		p.drawTextLeft(context.st->nameLeft, context.st->nameTop,
