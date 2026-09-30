@@ -61,4 +61,32 @@ inline const auto kToggleRows = std::array<ToggleRow, 8>{ {
 	},
 } };
 
+struct CustomRows {
+	CustomRow bubbleRoundness;
+	CustomRow avatarRoundness;
+	CustomRow textMessageWidth;
+	CustomRow mainMenu;
+	CustomRow notificationDelay;
+	CustomRow otherDeviceNotificationDelay;
+};
+
+inline void AddLayout(
+		::Settings::Builder::SectionBuilder &builder,
+		const CustomRows &custom) {
+	custom.bubbleRoundness();
+	custom.avatarRoundness();
+	AddToggle(builder, kToggleRows[0]);
+	custom.textMessageWidth();
+	AddToggle(builder, kToggleRows[1]);
+	AddToggle(builder, kToggleRows[2]);
+	AddToggle(builder, kToggleRows[3]);
+	AddToggle(builder, kToggleRows[4]);
+	AddToggle(builder, kToggleRows[5]);
+	custom.mainMenu();
+	AddToggle(builder, kToggleRows[6]);
+	custom.notificationDelay();
+	custom.otherDeviceNotificationDelay();
+	AddToggle(builder, kToggleRows[7]);
+}
+
 } // namespace Serein::Interface

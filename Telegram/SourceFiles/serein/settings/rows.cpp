@@ -6,6 +6,19 @@
 #include "styles/style_settings.h"
 
 namespace Serein {
+namespace {
+
+[[nodiscard]] Fn<Options&()> StoreFor(
+		::Settings::Builder::SectionBuilder &builder,
+		const Option<bool> &option) {
+	if (option.scope == Scope::Account) {
+		const auto session = builder.session();
+		return [=]() -> Options & { return ForAccount(session); };
+	}
+	return []() -> Options & { return ForDevice(); };
+}
+
+} // namespace
 
 void AddToggle(
 		::Settings::Builder::SectionBuilder &builder,
@@ -13,28 +26,32 @@ void AddToggle(
 	Expects(row.option != nullptr);
 
 	const auto option = *row.option;
-	const auto session = (option.scope == Scope::Account)
-		? builder.session().get()
-		: nullptr;
-	const auto options = [=]() -> Options & {
-		return session ? ForAccount(session) : ForDevice();
-	};
+	const auto store = StoreFor(builder, option);
 	const auto controller = builder.controller();
 	const auto button = builder.addButton({
 		.id = row.id,
 		.title = row.title(),
 		.st = &st::settingsButtonNoIcon,
-		.toggled = options().Value(option),
+		.toggled = store().Value(option),
 		.keywords = row.keywords,
 	});
-	if (button) {
-		button->toggledChanges(
-		) | rpl::on_next([=](bool value) {
-			Expects(options().Set(option, value));
-			if (controller
-				&& (option.flags & static_cast<unsigned>(Flag::RequiresRestart))) {
-				ShowRestartPrompt(controller);
-			}
+	if (!button) {
+		return;
+	}
+	button->toggledChanges(
+	) | rpl::on_next([=](bool value) {
+		Expects(store().Set(option, value));
+		if (controller
+			&& (option.flags & static_cast<unsigned>(Flag::RequiresRestart))) {
+			ShowRestartPrompt(controller);
+		}
+	}, button->lifetime());
+	if (const auto source = row.disabledBy) {
+		StoreFor(builder, *source)().Value(
+			*source
+		) | rpl::on_next([=](bool disabled) {
+			button->setDisabled(disabled);
+			button->setEnabled(!disabled);
 		}, button->lifetime());
 	}
 }
@@ -45,6 +62,22 @@ void AddToggles(
 	for (const auto &row : rows) {
 		AddToggle(builder, row);
 	}
+}
+
+void AddSection(
+		::Settings::Builder::SectionBuilder &builder,
+		const SectionRow &row) {
+	builder.addSubsectionTitle({
+		.id = row.id,
+		.title = row.title(),
+		.keywords = row.keywords,
+	});
+}
+
+void AddNote(
+		::Settings::Builder::SectionBuilder &builder,
+		tr::phrase<> text) {
+	builder.addDividerText(text());
 }
 
 } // namespace Serein

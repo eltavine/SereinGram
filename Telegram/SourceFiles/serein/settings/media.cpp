@@ -89,30 +89,35 @@ const auto kMeta = BuildHelper({
 	.icon = &st::menuIconChatBubble,
 }, [](SectionBuilder &builder) {
 	const auto controller = builder.controller();
-	builder.addButton({
-		.id = u"serein/media/sticker-scale"_q,
-		.title = tr::lng_serein_sticker_scale(),
-		.st = &st::settingsButtonNoIcon,
-		.label = ForDevice().Value(Media::kStickerScale)
-			| rpl::map([](int value) {
-				return QString::number(value) + '%';
-			}),
-		.onClick = [=] { controller->show(Box(StickerScaleBox)); },
-		.keywords = { u"sticker"_q, u"size"_q },
+	Media::AddLayout(builder, {
+		.stickerScale = [&] {
+			builder.addButton({
+				.id = u"serein/media/sticker-scale"_q,
+				.title = tr::lng_serein_sticker_scale(),
+				.st = &st::settingsButtonNoIcon,
+				.label = ForDevice().Value(Media::kStickerScale)
+					| rpl::map([](int value) {
+						return QString::number(value) + '%';
+					}),
+				.onClick = [=] { controller->show(Box(StickerScaleBox)); },
+				.keywords = { u"sticker"_q, u"size"_q },
+			});
+		},
+		.recentStickerLimit = [&] {
+			builder.addButton({
+				.id = u"serein/media/recent-sticker-limit"_q,
+				.title = tr::lng_serein_recent_sticker_limit(),
+				.st = &st::settingsButtonNoIcon,
+				.label = ForDevice().Value(Media::kRecentStickerLimit)
+					| rpl::map([](int value) {
+						return value ? QString::number(value)
+							: tr::lng_serein_preview_follow(tr::now);
+					}),
+				.onClick = [=] { controller->show(Box(RecentLimitBox)); },
+				.keywords = { u"recent"_q, u"sticker"_q, u"limit"_q },
+			});
+		},
 	});
-	builder.addButton({
-		.id = u"serein/media/recent-sticker-limit"_q,
-		.title = tr::lng_serein_recent_sticker_limit(),
-		.st = &st::settingsButtonNoIcon,
-		.label = ForDevice().Value(Media::kRecentStickerLimit)
-			| rpl::map([](int value) {
-				return value ? QString::number(value)
-					: tr::lng_serein_preview_follow(tr::now);
-			}),
-		.onClick = [=] { controller->show(Box(RecentLimitBox)); },
-		.keywords = { u"recent"_q, u"sticker"_q, u"limit"_q },
-	});
-	AddToggles(builder, Media::kToggleRows);
 	builder.addButton({
 		.id = u"serein/media/sticker-catalog"_q,
 		.title = tr::lng_serein_catalog_title(),

@@ -67,4 +67,25 @@ inline const auto kToggleRows = std::array<ToggleRow, 9>{ {
 	},
 } };
 
+struct CustomRows {
+	CustomRow stickerScale;
+	CustomRow recentStickerLimit;
+};
+
+inline void AddLayout(
+		::Settings::Builder::SectionBuilder &builder,
+		const CustomRows &custom) {
+	custom.stickerScale();
+	AddToggle(builder, kToggleRows[0]);
+	custom.recentStickerLimit();
+	AddToggle(builder, kToggleRows[1]);
+	AddToggle(builder, kToggleRows[2]);
+	AddToggle(builder, kToggleRows[3]);
+	AddToggle(builder, kToggleRows[4]);
+	AddToggle(builder, kToggleRows[5]);
+	AddToggle(builder, kToggleRows[6]);
+	AddToggle(builder, kToggleRows[7]);
+	AddToggle(builder, kToggleRows[8]);
+}
+
 } // namespace Serein::Media

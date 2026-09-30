@@ -10,6 +10,7 @@
 
 namespace Serein::{{ page.namespace }} {
 
+{% if page.rows %}
 inline const auto kToggleRows = std::array<ToggleRow, {{ page.rows | length }}>{ {
 {% for row in page.rows %}
 	{
@@ -17,8 +18,44 @@ inline const auto kToggleRows = std::array<ToggleRow, {{ page.rows | length }}>{
 		tr::{{ row.title }},
 		u"{{ row.id }}"_q,
 		{ {{ row.keywords }} },
+{% if row.disabled_by %}
+		&{{ row.disabled_by }},
+{% endif %}
 	},
 {% endfor %}
 } };
+{% endif %}
+{% if page.customs %}
+
+struct CustomRows {
+{% for member in page.customs %}
+	CustomRow {{ member }};
+{% endfor %}
+};
+{% endif %}
+
+inline void AddLayout(
+{% if page.customs %}
+		::Settings::Builder::SectionBuilder &builder,
+		const CustomRows &custom) {
+{% else %}
+		::Settings::Builder::SectionBuilder &builder) {
+{% endif %}
+{% for item in page.layout %}
+{% if item.kind == "section" %}
+	AddSection(builder, {
+		u"{{ item.id }}"_q,
+		tr::{{ item.title }},
+		{ {{ item.keywords }} },
+	});
+{% elif item.kind == "toggle" %}
+	AddToggle(builder, kToggleRows[{{ item.index }}]);
+{% elif item.kind == "custom" %}
+	custom.{{ item.member }}();
+{% else %}
+	AddNote(builder, tr::{{ item.title }});
+{% endif %}
+{% endfor %}
+}
 
 } // namespace Serein::{{ page.namespace }}

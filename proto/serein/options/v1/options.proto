@@ -47,6 +47,7 @@ message FieldOptions {
   Scope scope = 3;
   repeated Refresh refresh = 4;
   bool restart = 5;
+  // Internal state: no settings row and never exported.
   bool hidden = 6;
   // Predicate implemented in C++ for rules protovalidate cannot express.
   string validator = 7;
@@ -59,6 +60,20 @@ message FieldOptions {
   repeated string keywords = 11;
   // The page draws this option itself instead of a generated row.
   bool custom_ui = 12;
+  // Subsection title shown before this option.
+  Section section = 13;
+  // Lang key of the explanation shown below this option.
+  string note = 14;
+  // Name of a boolean field on the same page that disables this toggle.
+  string disabled_by = 15;
+}
+
+message Section {
+  // Lang key of the title.
+  string title = 1;
+  // Search id suffix below serein/<page>/.
+  string id = 2;
+  repeated string keywords = 3;
 }
 
 // A file annotated with file options gets C++ types and JSON codecs.

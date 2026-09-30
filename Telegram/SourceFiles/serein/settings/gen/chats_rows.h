@@ -85,4 +85,36 @@ inline const auto kToggleRows = std::array<ToggleRow, 12>{ {
 	},
 } };
 
+struct CustomRows {
+	CustomRow chatPreviewLines;
+	CustomRow startupFolderMode;
+	CustomRow startupFolderId;
+	CustomRow lastOpenedFolderId;
+	CustomRow chatSort;
+	CustomRow managedFolderIds;
+};
+
+inline void AddLayout(
+		::Settings::Builder::SectionBuilder &builder,
+		const CustomRows &custom) {
+	AddToggle(builder, kToggleRows[0]);
+	custom.chatPreviewLines();
+	AddToggle(builder, kToggleRows[1]);
+	AddToggle(builder, kToggleRows[2]);
+	AddToggle(builder, kToggleRows[3]);
+	AddToggle(builder, kToggleRows[4]);
+	AddToggle(builder, kToggleRows[5]);
+	custom.startupFolderMode();
+	custom.startupFolderId();
+	custom.lastOpenedFolderId();
+	custom.chatSort();
+	custom.managedFolderIds();
+	AddToggle(builder, kToggleRows[6]);
+	AddToggle(builder, kToggleRows[7]);
+	AddToggle(builder, kToggleRows[8]);
+	AddToggle(builder, kToggleRows[9]);
+	AddToggle(builder, kToggleRows[10]);
+	AddToggle(builder, kToggleRows[11]);
+}
+
 } // namespace Serein::Chats

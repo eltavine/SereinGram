@@ -49,4 +49,20 @@ inline const auto kToggleRows = std::array<ToggleRow, 6>{ {
 	},
 } };
 
+struct CustomRows {
+	CustomRow profileIdFormat;
+};
+
+inline void AddLayout(
+		::Settings::Builder::SectionBuilder &builder,
+		const CustomRows &custom) {
+	AddToggle(builder, kToggleRows[0]);
+	AddToggle(builder, kToggleRows[1]);
+	AddToggle(builder, kToggleRows[2]);
+	custom.profileIdFormat();
+	AddToggle(builder, kToggleRows[3]);
+	AddToggle(builder, kToggleRows[4]);
+	AddToggle(builder, kToggleRows[5]);
+}
+
 } // namespace Serein::Privacy

@@ -61,4 +61,16 @@ inline const auto kToggleRows = std::array<ToggleRow, 8>{ {
 	},
 } };
 
+inline void AddLayout(
+		::Settings::Builder::SectionBuilder &builder) {
+	AddToggle(builder, kToggleRows[0]);
+	AddToggle(builder, kToggleRows[1]);
+	AddToggle(builder, kToggleRows[2]);
+	AddToggle(builder, kToggleRows[3]);
+	AddToggle(builder, kToggleRows[4]);
+	AddToggle(builder, kToggleRows[5]);
+	AddToggle(builder, kToggleRows[6]);
+	AddToggle(builder, kToggleRows[7]);
+}
+
 } // namespace Serein::Ghost

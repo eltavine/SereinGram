@@ -67,7 +67,7 @@ def render(image, known_strings=None):
     outputs = {f"{SCHEMA}/{page.header}": settings.render(page=page)
                for page in pages}
     for page in pages:
-        if page.rows:
+        if page.layout:
             outputs[f"{ROWS}/{page.rows_header}"] = rows.render(page=page)
     sources = []
     for file in build_files(image):

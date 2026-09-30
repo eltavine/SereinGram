@@ -14,41 +14,51 @@ message MessagesSettings {
 
   optional bool seconds_in_messages = 1 [
     (serein.options.v1.field) = {
+      section: {title: "lng_serein_time_and_info" id: "time" keywords: ["time", "info"]}
+      keywords: ["seconds", "timestamp"]
       refresh: REFRESH_MESSAGE_VIEW
     }
   ];
   optional bool show_forwarded_message_date = 2 [
     (serein.options.v1.field) = {
+      keywords: ["forwarded", "original time"]
       refresh: REFRESH_MESSAGE_VIEW
     }
   ];
   optional bool show_service_time = 3 [
     (serein.options.v1.field) = {
+      keywords: ["service", "time"]
       refresh: REFRESH_MESSAGE_VIEW
     }
   ];
   optional bool show_message_id = 4 [
     (serein.options.v1.field) = {
+      keywords: ["message ID", "tooltip"]
       refresh: REFRESH_MESSAGE_VIEW
     }
   ];
   optional bool exact_message_counters = 5 [
     (serein.options.v1.field) = {
+      section: {title: "lng_serein_marks_and_counts" id: "marks" keywords: ["labels", "counts"]}
+      keywords: ["exact", "views", "replies"]
       refresh: REFRESH_MESSAGE_VIEW
     }
   ];
   optional bool hide_message_views = 6 [
     (serein.options.v1.field) = {
+      keywords: ["hide", "views"]
       refresh: REFRESH_MESSAGE_VIEW
     }
   ];
   optional bool hide_channel_signature = 7 [
     (serein.options.v1.field) = {
+      keywords: ["channel", "signature"]
       refresh: REFRESH_MESSAGE_VIEW
     }
   ];
   optional bool hide_edited_badge = 8 [
     (serein.options.v1.field) = {
+      keywords: ["edited", "badge"]
       refresh: REFRESH_MESSAGE_VIEW
     }
   ];
@@ -59,58 +69,90 @@ message MessagesSettings {
   ];
   optional bool hide_reactions = 10 [
     (serein.options.v1.field) = {
+      section: {title: "lng_serein_reactions" id: "reactions" keywords: ["reactions"]}
+      keywords: ["hide", "reactions"]
       refresh: REFRESH_MESSAGE_VIEW
     }
   ];
   optional bool hide_private_reactions = 11 [
     (serein.options.v1.field) = {
+      keywords: ["private", "chat reactions"]
+      disabled_by: "hide_reactions"
       refresh: REFRESH_MESSAGE_VIEW
     }
   ];
   optional bool hide_group_reactions = 12 [
     (serein.options.v1.field) = {
+      keywords: ["group", "chat reactions"]
+      disabled_by: "hide_reactions"
       refresh: REFRESH_MESSAGE_VIEW
     }
   ];
   optional bool hide_channel_reactions = 13 [
     (serein.options.v1.field) = {
+      keywords: ["channel", "chat reactions"]
+      disabled_by: "hide_reactions"
       refresh: REFRESH_MESSAGE_VIEW
     }
   ];
-  optional bool hide_reaction_menu = 14;
-  optional bool hide_reaction_menu_when_selecting = 15;
-  optional bool disable_premium_sticker_effects = 16;
-  optional bool disable_emoji_interactions = 17;
-  optional bool disable_message_effects = 18;
+  optional bool hide_reaction_menu = 14 [(serein.options.v1.field) = {
+    keywords: ["context menu", "reaction panel"]
+  }];
+  optional bool hide_reaction_menu_when_selecting = 15 [(serein.options.v1.field) = {
+    keywords: ["selection", "reaction panel"]
+  }];
+  optional bool disable_premium_sticker_effects = 16 [(serein.options.v1.field) = {
+    section: {title: "lng_serein_effects" id: "effects" keywords: ["effects", "animation"]}
+    keywords: ["Premium", "sticker effects"]
+  }];
+  optional bool disable_emoji_interactions = 17 [(serein.options.v1.field) = {
+    keywords: ["emoji", "interactions"]
+  }];
+  optional bool disable_message_effects = 18 [(serein.options.v1.field) = {
+    keywords: ["message effects"]
+  }];
   optional bool reveal_spoilers = 19 [
     (serein.options.v1.field) = {
+      section: {title: "lng_serein_content_display" id: "content" keywords: ["content", "display"]}
+      keywords: ["reveal", "spoilers"]
+      note: "lng_serein_reveal_spoilers_note"
       refresh: REFRESH_MESSAGE_VIEW
     }
   ];
   optional bool hide_quick_share = 20 [
     (serein.options.v1.field) = {
+      keywords: ["quick forward", "share"]
       refresh: REFRESH_MESSAGE_VIEW
     }
   ];
   optional bool hide_recommended_channels = 21 [
     (serein.options.v1.field) = {
+      keywords: ["recommended", "channels"]
       refresh: REFRESH_MESSAGE_VIEW
     }
   ];
   optional bool hide_premium_badges = 22 [
     (serein.options.v1.field) = {
+      keywords: ["Premium", "emoji status"]
       refresh: REFRESH_MESSAGE_VIEW
     }
   ];
-  optional bool hide_saved_tags = 23;
-  optional bool hide_private_chat_activities = 24;
+  optional bool hide_saved_tags = 23 [(serein.options.v1.field) = {
+    keywords: ["saved messages", "tags"]
+  }];
+  optional bool hide_private_chat_activities = 24 [(serein.options.v1.field) = {
+    keywords: ["typing", "recording", "private chat"]
+    note: "lng_serein_private_activities_note"
+  }];
   optional bool reading_spacing = 25 [
     (serein.options.v1.field) = {
+      keywords: ["reading", "spacing"]
       refresh: REFRESH_MESSAGE_VIEW
     }
   ];
   optional int32 reading_chinese = 26 [
     (serein.options.v1.field) = {
+      note: "lng_serein_reading_chinese_note"
       refresh: REFRESH_MESSAGE_VIEW
     },
     (buf.validate.field).int32 = {gte: 0, lte: 2}

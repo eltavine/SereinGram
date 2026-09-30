@@ -92,6 +92,17 @@ class Row:
     title: str
     id: str
     keywords: str
+    disabled_by: str = ""
+
+
+@dataclass
+class LayoutItem:
+    kind: str
+    index: int = 0
+    member: str = ""
+    id: str = ""
+    title: str = ""
+    keywords: str = ""
 
 
 @dataclass
@@ -104,10 +115,21 @@ class Page:
     needs_codec: bool
     rows_header: str = ""
     rows: list = field(default_factory=list)
+    layout: list = field(default_factory=list)
+    customs: list = field(default_factory=list)
 
 
 def camel_upper(name):
     return "".join(part[:1].upper() + part[1:] for part in name.split("_"))
+
+
+def camel_lower(name):
+    upper = camel_upper(name)
+    return upper[:1].lower() + upper[1:]
+
+
+def cpp_keywords(words):
+    return ", ".join(f"u{cpp_string(word)}_q" for word in words)
 
 
 def cpp_string(value):
@@ -238,12 +260,7 @@ def build_page(source, message):
         if validator and (validator, option.ctype) not in custom:
             custom.append((validator, option.ctype))
     stem = source.rsplit("/", 1)[-1].removesuffix(".proto")
-    rows = [Row(
-        cpp_name=option.cpp_name,
-        title=option.title,
-        id=f"serein/{stem}/{option.name.replace('_', '-')}",
-        keywords=", ".join(f"u{cpp_string(word)}_q" for word in option.keywords),
-    ) for option in options if option.toggle]
+    rows, layout, customs = build_layout(message, options, stem, where)
     return Page(
         source=f"proto/{source}",
         namespace=page["cppNamespace"],
@@ -252,9 +269,54 @@ def build_page(source, message):
         custom_validators=custom,
         needs_codec=any("Codec::" in line
                         for option in options for line in option.validator),
-        rows_header=f"{stem}_rows.h" if rows else "",
+        rows_header=f"{stem}_rows.h" if layout else "",
         rows=rows,
+        layout=layout,
+        customs=customs,
     )
+
+
+def build_layout(message, options, stem, where):
+    by_name = {option.name: option for option in options}
+    rows, layout, customs = [], [], []
+    for item, option in zip(message.get("field", []), options):
+        if "Hidden" in option.flags:
+            continue
+        custom = item.get("options", {}).get(FIELD_EXTENSION, {})
+        place = f"{where}.{item['name']}"
+        section = custom.get("section")
+        if section:
+            for required in ("title", "id"):
+                if not section.get(required):
+                    raise SchemaError(f"{place}: section '{required}' is required")
+            layout.append(LayoutItem(
+                "section", id=f"serein/{stem}/{section['id']}",
+                title=section["title"],
+                keywords=cpp_keywords(section.get("keywords", []))))
+        if option.toggle:
+            disabled_by = custom.get("disabledBy", "")
+            if disabled_by:
+                source = by_name.get(disabled_by)
+                if not source or not source.toggle or source is option:
+                    raise SchemaError(
+                        f"{place}: disabled_by '{disabled_by}' is not a visible "
+                        "boolean option of this page")
+                disabled_by = source.cpp_name
+            layout.append(LayoutItem("toggle", index=len(rows)))
+            rows.append(Row(
+                cpp_name=option.cpp_name,
+                title=option.title,
+                id=f"serein/{stem}/{option.name.replace('_', '-')}",
+                keywords=cpp_keywords(option.keywords),
+                disabled_by=disabled_by,
+            ))
+        else:
+            member = camel_lower(option.name)
+            customs.append(member)
+            layout.append(LayoutItem("custom", member=member))
+        if custom.get("note"):
+            layout.append(LayoutItem("note", title=custom["note"]))
+    return rows, layout, customs
 
 
 def build_pages(image):
@@ -271,6 +333,8 @@ def build_pages(image):
     if duplicates:
         raise SchemaError(f"duplicate storage keys: {duplicates}")
     ids = [row.id for page in pages for row in page.rows]
+    ids += [item.id for page in pages for item in page.layout
+            if item.kind == "section"]
     duplicates = sorted({id for id in ids if ids.count(id) > 1})
     if duplicates:
         raise SchemaError(f"duplicate settings row ids: {duplicates}")
@@ -278,7 +342,9 @@ def build_pages(image):
 
 
 def check_titles(pages, known):
-    missing = sorted({row.title for page in pages for row in page.rows
-                      if row.title not in known})
+    titles = {row.title for page in pages for row in page.rows}
+    titles |= {item.title for page in pages for item in page.layout
+               if item.kind in ("section", "note")}
+    missing = sorted(title for title in titles if title not in known)
     if missing:
         raise SchemaError(f"settings rows use unknown strings: {missing}")

@@ -157,4 +157,42 @@ inline const auto kToggleRows = std::array<ToggleRow, 24>{ {
 	},
 } };
 
+struct CustomRows {
+	CustomRow inputPlaceholderMode;
+	CustomRow defaultCodeLanguage;
+	CustomRow quickReplies;
+};
+
+inline void AddLayout(
+		::Settings::Builder::SectionBuilder &builder,
+		const CustomRows &custom) {
+	AddToggle(builder, kToggleRows[0]);
+	AddToggle(builder, kToggleRows[1]);
+	AddToggle(builder, kToggleRows[2]);
+	AddToggle(builder, kToggleRows[3]);
+	AddToggle(builder, kToggleRows[4]);
+	AddToggle(builder, kToggleRows[5]);
+	AddToggle(builder, kToggleRows[6]);
+	AddToggle(builder, kToggleRows[7]);
+	AddToggle(builder, kToggleRows[8]);
+	AddToggle(builder, kToggleRows[9]);
+	AddToggle(builder, kToggleRows[10]);
+	AddToggle(builder, kToggleRows[11]);
+	AddToggle(builder, kToggleRows[12]);
+	AddToggle(builder, kToggleRows[13]);
+	custom.inputPlaceholderMode();
+	AddToggle(builder, kToggleRows[14]);
+	AddToggle(builder, kToggleRows[15]);
+	AddToggle(builder, kToggleRows[16]);
+	AddToggle(builder, kToggleRows[17]);
+	custom.defaultCodeLanguage();
+	custom.quickReplies();
+	AddToggle(builder, kToggleRows[18]);
+	AddToggle(builder, kToggleRows[19]);
+	AddToggle(builder, kToggleRows[20]);
+	AddToggle(builder, kToggleRows[21]);
+	AddToggle(builder, kToggleRows[22]);
+	AddToggle(builder, kToggleRows[23]);
+}
+
 } // namespace Serein::Compose

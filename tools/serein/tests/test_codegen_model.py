@@ -133,9 +133,43 @@ class ModelTest(unittest.TestCase):
         self.assertEqual(row.id, "serein/messages/show-seconds")
         self.assertEqual(row.keywords, 'u"time"_q, u"GIF \\"x\\""_q')
 
-    def test_page_without_toggles_has_no_rows_header(self):
-        page = model.build_pages(image(field("preview_lines", "previewLines", "TYPE_INT32")))[0]
-        self.assertEqual((page.rows_header, page.rows), ("", []))
+    def test_layout_places_sections_customs_and_notes(self):
+        page = model.build_pages(image(
+            field("hide_all", "hideAll", options={model.FIELD_EXTENSION: {
+                "section": {"title": "lng_s", "id": "group", "keywords": ["k"]}}}),
+            field("hide_some", "hideSome", options={model.FIELD_EXTENSION: {
+                "disabledBy": "hide_all", "note": "lng_n"}}),
+            field("preview_lines", "previewLines", "TYPE_INT32"),
+            field("secret_flag", "secretFlag", options={
+                model.FIELD_EXTENSION: {"hidden": True}}),
+        ))[0]
+        self.assertEqual([item.kind for item in page.layout],
+                         ["section", "toggle", "toggle", "note", "custom"])
+        self.assertEqual(page.layout[0].id, "serein/messages/group")
+        self.assertEqual(page.layout[0].keywords, 'u"k"_q')
+        self.assertEqual(page.rows[1].disabled_by, "kHideAll")
+        self.assertEqual(page.customs, ["previewLines"])
+        self.assertEqual(page.rows_header, "messages_rows.h")
+
+    def test_page_without_visible_options_has_no_rows_header(self):
+        page = model.build_pages(image(field("secret_flag", "secretFlag", options={
+            model.FIELD_EXTENSION: {"hidden": True}})))[0]
+        self.assertEqual((page.rows_header, page.layout), ("", []))
+
+    def test_disabled_by_must_name_a_visible_toggle(self):
+        for target in ("missing", "preview_lines", "hide_some"):
+            with self.subTest(target=target), self.assertRaisesRegex(
+                    model.SchemaError, "disabled_by"):
+                model.build_pages(image(
+                    field("preview_lines", "previewLines", "TYPE_INT32"),
+                    field("hide_some", "hideSome", options={model.FIELD_EXTENSION: {
+                        "disabledBy": target}}),
+                ))
+
+    def test_section_needs_title_and_id(self):
+        with self.assertRaisesRegex(model.SchemaError, "section 'id' is required"):
+            model.build_pages(image(field("hide_all", "hideAll", options={
+                model.FIELD_EXTENSION: {"section": {"title": "lng_s"}}})))
 
     def test_rejects_duplicate_row_ids(self):
         first = image(field("show_seconds", "showSeconds"))
@@ -145,10 +179,13 @@ class ModelTest(unittest.TestCase):
             model.build_pages(first)
 
     def test_unknown_titles_fail(self):
-        pages = model.build_pages(image(field("show_seconds", "showSeconds")))
-        model.check_titles(pages, {"lng_serein_show_seconds"})
+        pages = model.build_pages(image(field("show_seconds", "showSeconds", options={
+            model.FIELD_EXTENSION: {"note": "lng_note"}})))
+        model.check_titles(pages, {"lng_serein_show_seconds", "lng_note"})
         with self.assertRaisesRegex(model.SchemaError, "lng_serein_show_seconds"):
-            model.check_titles(pages, set())
+            model.check_titles(pages, {"lng_note"})
+        with self.assertRaisesRegex(model.SchemaError, "lng_note"):
+            model.check_titles(pages, {"lng_serein_show_seconds"})
 
 
 @unittest.skipUnless(importlib.util.find_spec("jinja2"), "jinja2 is not installed")
@@ -167,6 +204,19 @@ class RenderTest(unittest.TestCase):
         self.assertIn("std::array<ToggleRow, 1>", rows)
         self.assertIn("\t\t&kSecondsInMessages,\n\t\ttr::lng_serein_seconds_in_messages,", rows)
         self.assertIn('u"serein/messages/seconds-in-messages"_q', rows)
+        self.assertIn("\tAddToggle(builder, kToggleRows[0]);", rows)
+        self.assertIn("\t\t::Settings::Builder::SectionBuilder &builder) {", rows)
+        self.assertNotIn("CustomRows", rows)
+
+    def test_renders_custom_rows(self):
+        import generate
+        output = generate.render(
+            image(field("preview_lines", "previewLines", "TYPE_INT32")),
+            known_strings=set())
+        rows = output["settings/gen/messages_rows.h"]
+        self.assertNotIn("kToggleRows", rows)
+        self.assertIn("struct CustomRows {\n\tCustomRow previewLines;\n};", rows)
+        self.assertIn("\t\tconst CustomRows &custom) {\n\tcustom.previewLines();", rows)
 
 
 if __name__ == "__main__":

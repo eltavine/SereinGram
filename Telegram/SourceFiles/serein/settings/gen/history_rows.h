@@ -31,4 +31,19 @@ inline const auto kToggleRows = std::array<ToggleRow, 3>{ {
 	},
 } };
 
+struct CustomRows {
+	CustomRow historyRetentionDays;
+	CustomRow historyMaxRecords;
+};
+
+inline void AddLayout(
+		::Settings::Builder::SectionBuilder &builder,
+		const CustomRows &custom) {
+	AddToggle(builder, kToggleRows[0]);
+	AddToggle(builder, kToggleRows[1]);
+	AddToggle(builder, kToggleRows[2]);
+	custom.historyRetentionDays();
+	custom.historyMaxRecords();
+}
+
 } // namespace Serein::HistorySettings
