@@ -32,5 +32,6 @@ namespace Serein::Hooks {
 void BindGhostToggle(
 	gsl::not_null<Ui::SettingsButton*> button,
 	gsl::not_null<Main::Session*> session);
+void BindStreamerToggle(gsl::not_null<Ui::SettingsButton*> button);
 
 } // namespace Serein::Hooks

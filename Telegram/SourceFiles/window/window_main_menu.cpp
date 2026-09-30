@@ -767,8 +767,12 @@ void MainMenu::setupMenu() {
 
 	Serein::Hooks::BindGhostToggle(addAction(
 		tr::lng_serein_ghost_mode(),
-		{ &st::menuIconLock }
+		{ &st::menuIconStealth }
 	), &controller->session());
+	Serein::Hooks::BindStreamerToggle(addAction(
+		tr::lng_serein_demo_mode(),
+		{ &st::menuIconVideoChat }
+	));
 
 	_nightThemeToggle = addAction(
 		tr::lng_menu_night_mode(),

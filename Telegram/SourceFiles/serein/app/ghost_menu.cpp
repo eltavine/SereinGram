@@ -1,6 +1,7 @@
 #include "serein/hooks/ghost.h"
 
 #include "serein/features/ghost/model/policy.h"
+#include "serein/privacy/options.h"
 #include "ui/widgets/buttons.h"
 
 namespace Serein::Hooks {
@@ -14,6 +15,16 @@ void BindGhostToggle(
 		return enabled != ForAccount(session).Get(Ghost::kGhostMode);
 	}) | rpl::on_next([=](bool enabled) {
 		Expects(ForAccount(session).Set(Ghost::kGhostMode, enabled));
+	}, button->lifetime());
+}
+
+void BindStreamerToggle(gsl::not_null<Ui::SettingsButton*> button) {
+	button->toggleOn(ForDevice().Value(Privacy::kDemoMode));
+	button->toggledChanges(
+	) | rpl::filter([=](bool enabled) {
+		return enabled != ForDevice().Get(Privacy::kDemoMode);
+	}) | rpl::on_next([=](bool enabled) {
+		Expects(ForDevice().Set(Privacy::kDemoMode, enabled));
 	}, button->lifetime());
 }
 
