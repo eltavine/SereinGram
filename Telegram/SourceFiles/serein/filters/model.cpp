@@ -192,6 +192,10 @@ bool Validate(const QByteArray &raw) {
 	return ReadRules(raw).has_value();
 }
 
+bool ValidRuleList(const QByteArray &raw) {
+	return raw.isEmpty() || ReadRuleList(raw).has_value();
+}
+
 Result Apply(
 		const QByteArray &raw,
 		const TextWithEntities &source,
@@ -199,7 +203,8 @@ Result Apply(
 		const QString &peer,
 		bool blocked,
 		bool outgoing,
-		const QString &searchable) {
+		const QString &searchable,
+		const std::vector<FilterRule> &shared) {
 	auto result = Result{ .text = source };
 	if (raw.isEmpty()) {
 		return result;
@@ -234,7 +239,14 @@ Result Apply(
 		result.error = u"filter Zalgo edit failed"_q;
 		return { .text = source, .error = result.error };
 	}
-	for (const auto &rule : config->rules) {
+	auto rules = std::vector<const FilterRule*>();
+	for (const auto list : { &config->rules, &shared }) {
+		for (const auto &rule : *list) {
+			rules.push_back(&rule);
+		}
+	}
+	for (const auto pointer : rules) {
+		const auto &rule = *pointer;
 		if (!rule.enabled
 			|| (!rule.peers.empty() && !contains(rule.peers, peer))) {
 			continue;

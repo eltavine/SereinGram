@@ -399,6 +399,13 @@
 "lng_serein_system_ai_generate" = "生成 / 重试";
 "lng_serein_system_ai_timeout" = "系统模型在两分钟内未完成，已取消本次请求。请缩短文本后重试。";
 "lng_serein_filter_rules" = "消息过滤";
+"lng_serein_filter_subscription" = "规则订阅";
+"lng_serein_filter_subscription_about" = "填写一个 HTTPS 地址，内容为“导出”所复制格式的规则列表。SereinGram 每天下载一次，在过滤开启时于你自己的规则之后应用。订阅的规则无法在此编辑；清空地址即移除这些规则。";
+"lng_serein_filter_subscription_update" = "立即更新";
+"lng_serein_filter_subscription_done" = "已订阅规则：{amount}。";
+"lng_serein_filter_subscription_failed" = "无法下载规则订阅。";
+"lng_serein_filter_subscription_invalid" = "订阅内容不是有效的规则列表。";
+"lng_serein_filter_subscription_missing" = "请先填写 HTTPS 地址。";
 "lng_serein_filter_hidden_authors" = "隐藏的作者";
 "lng_serein_filter_excluded_chats" = "排除的对话";
 "lng_serein_filter_add_id" = "添加对话方 ID";

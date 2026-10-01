@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package serein.settings.v1;
 
+import "buf/validate/validate.proto";
 import "serein/options/v1/options.proto";
 
 // Message filter rules; the rules settings page edits them by hand.
@@ -17,6 +18,21 @@ message FilterSettings {
     title: "lng_serein_filter_rules"
     custom_ui: true
     validator: "Validate"
+    refresh: REFRESH_MESSAGE_VIEW
+  }];
+  optional string rule_subscription = 2 [
+    (serein.options.v1.field) = {
+      title: "lng_serein_filter_subscription"
+      scope: SCOPE_DEVICE
+      custom_ui: true
+    },
+    (buf.validate.field).string = {max_len: 2048, pattern: "^(https://[^\\s]+)?$"}
+  ];
+  optional bytes subscribed_rules = 3 [(serein.options.v1.field) = {
+    title: "lng_serein_filter_subscription"
+    scope: SCOPE_DEVICE
+    hidden: true
+    validator: "ValidRuleList"
     refresh: REFRESH_MESSAGE_VIEW
   }];
 }

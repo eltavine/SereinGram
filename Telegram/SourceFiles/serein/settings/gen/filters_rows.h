@@ -13,12 +13,14 @@ namespace Serein::Filters {
 
 struct CustomRows {
 	CustomRow filters;
+	CustomRow ruleSubscription;
 };
 
 inline void AddLayout(
 		::Settings::Builder::SectionBuilder &builder,
 		const CustomRows &custom) {
 	custom.filters();
+	custom.ruleSubscription();
 }
 
 } // namespace Serein::Filters

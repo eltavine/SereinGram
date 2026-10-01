@@ -100,7 +100,7 @@ SG-HIST-05 的“已编辑”标记文字已由 C09 实现，删除标记随 SG-
 | SG-FILTER-05 | Zalgo 字符过滤 | Ni | Implemented | P2 |
 | SG-FILTER-06 | 消息菜单“隐藏此人的消息”（E23） | Ni | Implemented | P2 |
 | SG-FILTER-07 | 链接规则：URL 修正、参数清理、打开前确认（I02） | Ni | Implemented | P2 |
-| SG-FILTER-08 | 全局、账号、对话、话题四级规则继承与远程规则源 | Ni | Planned | P3 |
+| SG-FILTER-08 | 全局、账号、对话、话题四级规则继承与远程规则源（远程规则源已实现：过滤设置“规则订阅”填写 HTTPS 地址，内容为“导出”格式的规则列表，每天下载一次并可立即更新，校验通过后保存在设备上供所有账号使用，在过滤开启时于本地规则之后应用，清空地址即移除；账号级规则与按对话限定已由 SG-FILTER-04 提供，全局与话题两级待做） | Ni | In Progress | P3 |
 
 ## PRIV 隐私与本地能力
 

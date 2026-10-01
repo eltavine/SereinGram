@@ -93,9 +93,39 @@ void TestFilterScopes() {
 	Require(!ReadRuleList("{\"version\":1}"), "rule list without rules accepted");
 }
 
+void TestSharedRules() {
+	using namespace Serein::Filters;
+	const auto shared = std::vector<FilterRule>{ FilterRule{
+		.id = u"00000000-0000-0000-0000-000000000002"_q,
+		.title = u"shared"_q,
+		.pattern = u"spam"_q,
+		.replacement = u"ham"_q,
+		.enabled = true,
+		.action = u"replace"_q,
+	} };
+	Require(ValidRuleList(WriteRuleList(shared))
+		&& ValidRuleList({})
+		&& !ValidRuleList("{"), "wrong rule list validation");
+	auto enabled = LegacyDefaults();
+	enabled.insert(u"enabled"_q, true);
+	const auto on = QJsonDocument(enabled).toJson(QJsonDocument::Compact);
+	const auto off = QJsonDocument(LegacyDefaults()).toJson(
+		QJsonDocument::Compact);
+	const auto text = TextWithEntities{ u"spam"_q };
+	const auto apply = [&](const QByteArray &raw) {
+		return Apply(raw, text, {}, u"7"_q, false, false, {}, shared)
+			.text.text;
+	};
+	Require(apply(on) == u"ham"_q, "shared rule skipped");
+	Require(apply(off) == u"spam"_q, "shared rule ran with filtering off");
+	Require(apply(Config(Rule(u"spam"_q, u"replace"_q))) == u"bar"_q,
+		"shared rules ran before local ones");
+}
+
 void TestFilters() {
 	using namespace Serein::Filters;
 	TestFilterScopes();
+	TestSharedRules();
 	Require(Validate({}), "empty filter config rejected");
 	const auto replace = Config(Rule(u"foo"_q, u"replace"_q));
 	Require(Validate(replace), "valid filter config rejected");

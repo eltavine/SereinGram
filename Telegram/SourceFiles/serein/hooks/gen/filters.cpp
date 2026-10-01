@@ -14,4 +14,20 @@ rpl::producer<QByteArray> RulesValue(gsl::not_null<Main::Session*> session) {
 	return ForAccount(session).Value(Serein::Filters::kRules);
 }
 
+QString RuleSubscription() {
+	return ForDevice().Get(Serein::Filters::kRuleSubscription);
+}
+
+rpl::producer<QString> RuleSubscriptionValue() {
+	return ForDevice().Value(Serein::Filters::kRuleSubscription);
+}
+
+QByteArray SubscribedRules() {
+	return ForDevice().Get(Serein::Filters::kSubscribedRules);
+}
+
+rpl::producer<QByteArray> SubscribedRulesValue() {
+	return ForDevice().Value(Serein::Filters::kSubscribedRules);
+}
+
 } // namespace Serein::Hooks::Filters

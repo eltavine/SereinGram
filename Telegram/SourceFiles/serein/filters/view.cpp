@@ -24,6 +24,7 @@ namespace {
 struct Cached {
 	FullMsgId id;
 	QByteArray config;
+	QByteArray shared;
 	TextWithEntities source;
 	QString searchable;
 	QString author;
@@ -36,6 +37,17 @@ struct Cached {
 QCache<quintptr, Cached> &Results() {
 	static auto result = QCache<quintptr, Cached>(4096);
 	return result;
+}
+
+[[nodiscard]] const std::vector<FilterRule> &SharedRules(
+		const QByteArray &raw) {
+	static auto cachedRaw = QByteArray();
+	static auto cachedRules = std::vector<FilterRule>();
+	if (raw != cachedRaw) {
+		cachedRaw = raw;
+		cachedRules = ReadRuleList(raw).value_or(std::vector<FilterRule>());
+	}
+	return cachedRules;
 }
 
 QString Searchable(not_null<HistoryItem*> item) {
@@ -84,6 +96,7 @@ QString Searchable(not_null<HistoryItem*> item) {
 		return { .text = source };
 	}
 	const auto config = ReadRules(raw);
+	const auto shared = ForDevice().Get(kSubscribedRules);
 	const auto forwarded = item->Get<HistoryMessageForwarded>();
 	const auto sources = std::array<PeerData*, 3>{
 		item->from().get(),
@@ -113,6 +126,7 @@ QString Searchable(not_null<HistoryItem*> item) {
 	if (const auto cached = Results().object(key);
 		cached && cached->id == item->fullId()
 		&& cached->config == raw
+		&& cached->shared == shared
 		&& cached->source.text == source.text
 		&& cached->source.entities == source.entities
 		&& cached->searchable == searchable
@@ -121,10 +135,11 @@ QString Searchable(not_null<HistoryItem*> item) {
 		return cached->result;
 	}
 	const auto result = Apply(raw, source, author,
-		peerId, blocked, item->out(), searchable);
+		peerId, blocked, item->out(), searchable, SharedRules(shared));
 	Results().insert(key, new Cached{
 		.id = item->fullId(),
 		.config = raw,
+		.shared = shared,
 		.source = source,
 		.searchable = searchable,
 		.author = author,

@@ -1,5 +1,6 @@
 #include "serein/filters/settings.h"
 #include "serein/filters/model.h"
+#include "serein/filters/subscription.h"
 
 #include "lang/lang_keys.h"
 #include "main/main_session.h"
@@ -94,7 +95,9 @@ void PreviewBox(not_null<Ui::GenericBox*> box, FilterRules config) {
 		const auto text = TextWithEntities{ input->getLastText() };
 		const auto value = Apply(
 			SerializeFilterRules(active),
-			text, QString(), QString(), false, false, text.text);
+			text, QString(), QString(), false, false, text.text,
+			ReadRuleList(ForDevice().Get(kSubscribedRules)).value_or(
+				std::vector<FilterRule>()));
 		result->setText(!value.error.isEmpty() ? value.error
 			: value.hidden ? tr::lng_serein_filter_hidden(tr::now)
 			: value.text.text);
@@ -271,6 +274,42 @@ void PeerListBox(
 	box->addButton(tr::lng_close(), [=] { box->closeBox(); });
 }
 
+void SubscriptionBox(not_null<Ui::GenericBox*> box) {
+	box->setTitle(tr::lng_serein_filter_subscription());
+	box->addRow(object_ptr<Ui::FlatLabel>(
+		box,
+		tr::lng_serein_filter_subscription_about(),
+		st::boxLabel));
+	const auto field = box->addRow(object_ptr<Ui::InputField>(
+		box,
+		st::defaultInputField,
+		rpl::single(u"https://"_q),
+		ForDevice().Get(kRuleSubscription)));
+	field->setMaxLength(2048);
+	box->setFocusCallback([=] { field->setFocusFast(); });
+	const auto save = [=] {
+		const auto url = field->getLastText().trimmed();
+		if (!ForDevice().Set(kRuleSubscription, url)) {
+			field->showError();
+			return false;
+		} else if (url.isEmpty()) {
+			Expects(ForDevice().Set(kSubscribedRules, QByteArray()));
+		}
+		return true;
+	};
+	box->addButton(tr::lng_serein_filter_subscription_update(), [=] {
+		if (save() && !field->getLastText().trimmed().isEmpty()) {
+			UpdateRuleSubscription(box->uiShow());
+		}
+	});
+	box->addButton(tr::lng_settings_save(), [=] {
+		if (save()) {
+			box->closeBox();
+		}
+	});
+	box->addButton(tr::lng_cancel(), [=] { box->closeBox(); });
+}
+
 void ImportRules(
 		not_null<Ui::GenericBox*> box,
 		not_null<Main::Session*> session,
@@ -394,6 +433,14 @@ void FiltersBox(
 		});
 		add(tr::lng_serein_filter_import(tr::now), [=] {
 			ImportRules(box, session, current, changed);
+		});
+		const auto subscribed = ReadRuleList(
+			ForDevice().Get(kSubscribedRules));
+		add(tr::lng_serein_filter_subscription(tr::now)
+			+ ((subscribed && !subscribed->empty())
+				? u" ("_q + QString::number(subscribed->size()) + ')'
+				: QString()), [=] {
+			box->uiShow()->showBox(Box(SubscriptionBox));
 		});
 	}, box->lifetime());
 	box->addButton(tr::lng_close(), [=] { box->closeBox(); });

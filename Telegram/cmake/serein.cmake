@@ -97,6 +97,7 @@ set(serein_sources
     serein/filters/model.cpp
     serein/filters/view.cpp
     serein/filters/settings.cpp
+    serein/filters/subscription.cpp
     serein/filters/menu.cpp
     serein/links/model.cpp
     serein/links/open.cpp

@@ -403,6 +403,13 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_system_ai_generate" = "Generate / Retry";
 "lng_serein_system_ai_timeout" = "The system model timed out after two minutes. Cancelled this request; try again with less text.";
 "lng_serein_filter_rules" = "Message filters";
+"lng_serein_filter_subscription" = "Rule subscription";
+"lng_serein_filter_subscription_about" = "An HTTPS address of a rule list in the format that Export copies. SereinGram downloads it once a day and applies its rules after your own while filtering is on. Subscribed rules cannot be edited here; clearing the address removes them.";
+"lng_serein_filter_subscription_update" = "Update now";
+"lng_serein_filter_subscription_done" = "Subscribed rules: {amount}.";
+"lng_serein_filter_subscription_failed" = "Could not download the rule subscription.";
+"lng_serein_filter_subscription_invalid" = "The subscription is not a valid rule list.";
+"lng_serein_filter_subscription_missing" = "Enter an HTTPS address first.";
 "lng_serein_filter_hidden_authors" = "Hidden authors";
 "lng_serein_filter_excluded_chats" = "Excluded chats";
 "lng_serein_filter_add_id" = "Add peer ID";

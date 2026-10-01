@@ -26,6 +26,7 @@ struct Result {
 	const QByteArray &raw);
 [[nodiscard]] QByteArray WriteRuleList(std::vector<FilterRule> rules);
 [[nodiscard]] bool Validate(const QByteArray &raw);
+[[nodiscard]] bool ValidRuleList(const QByteArray &raw);
 [[nodiscard]] Result Apply(
 	const QByteArray &raw,
 	const TextWithEntities &source,
@@ -33,6 +34,7 @@ struct Result {
 	const QString &peer,
 	bool blocked,
 	bool outgoing,
-	const QString &searchable = QString());
+	const QString &searchable = QString(),
+	const std::vector<FilterRule> &shared = {});
 
 } // namespace Serein::Filters

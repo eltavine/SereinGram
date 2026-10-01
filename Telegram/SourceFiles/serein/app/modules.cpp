@@ -2,6 +2,7 @@
 
 #include "serein/app/auto_demo.h"
 #include "serein/app/updates.h"
+#include "serein/filters/subscription.h"
 
 #include "serein/app/reading_positions.h"
 #include "serein/app/recent_chats.h"
@@ -30,6 +31,7 @@ constexpr auto kModules = std::array{
 	Module{ "app.shortcuts", StartShortcuts },
 	Module{ "privacy.auto_demo", StartAutoDemoMode },
 	Module{ "network.vpn_proxy", Network::StartVpnProxyPause },
+	Module{ "filters.subscription", Filters::StartRuleSubscription },
 	Module{ "chats.recent", nullptr, nullptr, TrackRecentChats },
 	Module{ "chats.reading_position", nullptr, nullptr, TrackReadingPositions },
 };
