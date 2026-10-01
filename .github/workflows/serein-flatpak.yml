@@ -63,4 +63,6 @@ jobs:
         with:
           bundle: SereinGram.flatpak
           manifest-path: packaging/flatpak/io.github.eltavine.SereinGram.yml
-          cache-key: flatpak-builder-${{ github.sha }}
+          # WHY: the builder state is several gigabytes, and the repository
+          # cache quota would evict the platform workflows' dependency caches.
+          cache: false

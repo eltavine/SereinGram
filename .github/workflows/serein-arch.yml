@@ -29,29 +29,17 @@ jobs:
     timeout-minutes: 330
     container: archlinux:base-devel
 
-    env:
-      CCACHE_DIR: ${{ github.workspace }}/.ccache
-      CCACHE_MAXSIZE: 3G
-      CCACHE_SLOPPINESS: pch_defines,time_macros
-
     steps:
       - name: Install the build tools.
         run: |
           pacman -Sy --noconfirm archlinux-keyring
-          pacman -Su --noconfirm --needed git ccache
+          pacman -Su --noconfirm --needed git
 
       - name: Clone.
         uses: actions/checkout@v7
         with:
           path: SereinGram
           fetch-depth: 0
-
-      - name: Restore the compiler cache.
-        uses: actions/cache/restore@v6
-        with:
-          path: ${{ env.CCACHE_DIR }}
-          key: arch-ccache-${{ github.run_id }}
-          restore-keys: arch-ccache-
 
       - name: Build the package.
         env:
@@ -64,31 +52,20 @@ jobs:
           fi
           useradd --create-home builder
           echo 'builder ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/builder
-          mkdir -p "$CCACHE_DIR"
-          chown -R builder SereinGram "$CCACHE_DIR"
+          chown -R builder SereinGram
 
           config=/etc/makepkg.ci.conf
           cp /etc/makepkg.conf "$config"
           cat >> "$config" <<'EOF'
-          BUILDENV=(!distcc color ccache check !sign)
           OPTIONS=(strip docs !libtool !staticlibs emptydirs zipman purge !debug !lto)
-          CXXFLAGS+=" -fpch-preprocess"
           EOF
 
           cd SereinGram/packaging/arch
           sed -i "s|git+https://github.com/eltavine/SereinGram.git#branch=develop|git+file://$GITHUB_WORKSPACE/SereinGram#commit=$GITHUB_SHA|" PKGBUILD
           grep -q "#commit=$GITHUB_SHA" PKGBUILD
           sudo -u builder \
-            --preserve-env=SEREIN_API_ID,SEREIN_API_HASH,SEREIN_API_TEST,CCACHE_DIR,CCACHE_MAXSIZE,CCACHE_SLOPPINESS \
+            --preserve-env=SEREIN_API_ID,SEREIN_API_HASH,SEREIN_API_TEST \
             makepkg --config "$config" --syncdeps --noconfirm
-          sudo -u builder --preserve-env=CCACHE_DIR ccache --show-stats
-
-      - name: Save the compiler cache.
-        if: always()
-        uses: actions/cache/save@v6
-        with:
-          path: ${{ env.CCACHE_DIR }}
-          key: arch-ccache-${{ github.run_id }}
 
       - name: Install and check the package.
         run: |

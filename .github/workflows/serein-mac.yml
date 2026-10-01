@@ -85,7 +85,7 @@ jobs:
 
           sudo sed -i '' '/CMAKE_${lang}_FLAGS_DEBUG_INIT/s/ -g//' /opt/homebrew/share/cmake/Modules/Compiler/GNU.cmake
 
-      # prepare.py keys every stage on the compiler and SDK, so a runner
+      # WHY: prepare.py keys every stage on the compiler and SDK, so a runner
       # image with another Xcode must miss the exact cache key and save anew.
       - name: Toolchain fingerprint.
         run: |
