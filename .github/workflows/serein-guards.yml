@@ -43,6 +43,9 @@ jobs:
       - name: Hook code does not reach shadowed page namespaces.
         run: python3 tools/serein/check_hook_namespaces.py
 
+      - name: Every Serein source is registered in CMake.
+        run: python3 tools/serein/check_sources.py
+
       - name: Fetch the libraries Serein includes from.
         run: |
           git submodule update --init --depth 1 Telegram/ThirdParty/OpenCC \
