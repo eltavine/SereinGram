@@ -4,7 +4,10 @@
 #include "lang/translate_mtproto_provider.h"
 #include "lang/translate_provider.h"
 #include "lang/lang_keys.h"
+#include "serein/core/options.h"
+#include "serein/schema/gen/settings/services.h"
 #include "serein/services/request.h"
+#include "serein/services/translation_context.h"
 #include "serein/services/translation_protocol.h"
 #include "base/flat_map.h"
 #include "base/flat_set.h"
@@ -36,10 +39,12 @@ bool Protected(EntityType type) {
 class ExternalTranslateProvider final : public Ui::TranslateProvider {
 public:
 	ExternalTranslateProvider(
+		Main::Session *session,
 		std::optional<ServiceDefinition> service,
 		Fn<void(QString)> error,
 		QString unavailable = QString())
-	: _service(std::move(service))
+	: _session(session)
+	, _service(std::move(service))
 	, _error(std::move(error))
 	, _unavailable(std::move(unavailable)) {
 	}
@@ -62,6 +67,11 @@ public:
 			fail(ServiceError::Response, 0, std::move(done));
 			return;
 		}
+		_context = (_session
+			&& SupportsTranslationContext(*_service)
+			&& ForDevice().Get(ServiceSettings::kTranslationContext))
+			? TranslationContext(_session, request.peerId, request.msgId)
+			: QStringList();
 		_plan = std::move(*plan);
 		_translated.clear();
 		_to = to.twoLetterCode();
@@ -95,7 +105,8 @@ private:
 		const auto call = BuildTranslationCall(
 			*_service,
 			_plan.texts.mid(offset, amount),
-			_to);
+			_to,
+			_context);
 		_request.translate(*_service, call, [=](ServiceResult response) {
 			if (response.error != ServiceError::None) {
 				fail(response.error, response.status, std::move(_done));
@@ -114,6 +125,7 @@ private:
 		});
 	}
 
+	Main::Session *_session = nullptr;
 	std::optional<ServiceDefinition> _service;
 	Fn<void(QString)> _error;
 	QString _unavailable;
@@ -121,6 +133,7 @@ private:
 	ServiceRequest _request;
 	TranslationPlan _plan;
 	QStringList _translated;
+	QStringList _context;
 	QString _to;
 
 };
@@ -269,6 +282,7 @@ std::unique_ptr<Ui::TranslateProvider> CreateServiceTranslateProvider(
 		const ServiceDefinition &service,
 		Fn<void(QString)> error) {
 	return std::make_unique<ExternalTranslateProvider>(
+		nullptr,
 		service.kind == ServiceKind::Translation
 			&& ParseService(ServiceToInstance(service))
 			? std::optional(service) : std::nullopt,
@@ -290,13 +304,14 @@ std::unique_ptr<Ui::TranslateProvider> CreateInteractiveTranslateProvider(
 				return Platform::CreateTranslateProvider();
 			}
 			return std::make_unique<ExternalTranslateProvider>(
-					std::nullopt, std::move(error),
+					session, std::nullopt, std::move(error),
 					tr::lng_serein_system_translation_unavailable(tr::now));
 		}
 		return std::make_unique<ExternalTranslateProvider>(
-			FindService(*settings, id), std::move(error));
+			session, FindService(*settings, id), std::move(error));
 	}
-	return std::make_unique<ExternalTranslateProvider>(std::nullopt, std::move(error));
+	return std::make_unique<ExternalTranslateProvider>(
+		session, std::nullopt, std::move(error));
 }
 
 } // namespace Serein

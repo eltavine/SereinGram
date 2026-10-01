@@ -715,6 +715,22 @@ const auto kMeta = BuildHelper({
 		.keywords = { u"SereinGram"_q, u"LLM"_q, u"API"_q },
 	});
 	builder.addDividerText(tr::lng_serein_services_about());
+	const auto contextButton = builder.addButton({
+		.id = u"serein/services/translation-context"_q,
+		.title = tr::lng_serein_translation_context(),
+		.st = &st::settingsButtonNoIcon,
+		.toggled = ForDevice().Value(ServiceSettings::kTranslationContext),
+		.keywords = { u"LLM"_q, u"context"_q, u"translate"_q },
+	});
+	if (contextButton) {
+		contextButton->toggledChanges(
+		) | rpl::on_next([](bool value) {
+			Expects(ForDevice().Set(
+				ServiceSettings::kTranslationContext,
+				value));
+		}, contextButton->lifetime());
+	}
+	builder.addDividerText(tr::lng_serein_translation_context_about());
 	builder.addButton({
 		.id = u"serein/services/proxy-subscription"_q,
 		.title = tr::lng_serein_proxy_subscription(),

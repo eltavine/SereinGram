@@ -11,6 +11,8 @@ namespace Serein::Hooks::ServiceSettings {
 [[nodiscard]] rpl::producer<QByteArray> ServicesConfigValue();
 [[nodiscard]] bool PreferSystemAi();
 [[nodiscard]] rpl::producer<bool> PreferSystemAiValue();
+[[nodiscard]] bool TranslationContext();
+[[nodiscard]] rpl::producer<bool> TranslationContextValue();
 [[nodiscard]] QString ProxySubscription();
 [[nodiscard]] rpl::producer<QString> ProxySubscriptionValue();
 [[nodiscard]] bool PauseProxyOnVpn();

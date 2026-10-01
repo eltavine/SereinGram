@@ -17,10 +17,13 @@ struct TranslationCall {
 };
 
 [[nodiscard]] int TranslationBatchLimit(const ServiceDefinition &service);
+[[nodiscard]] bool SupportsTranslationContext(
+	const ServiceDefinition &service);
 [[nodiscard]] TranslationCall BuildTranslationCall(
 	const ServiceDefinition &service,
 	const QStringList &texts,
-	const QString &to);
+	const QString &to,
+	const QStringList &context = {});
 [[nodiscard]] std::optional<QStringList> ParseTranslationResponse(
 	const ServiceDefinition &service,
 	const QByteArray &body,

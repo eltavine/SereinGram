@@ -22,6 +22,14 @@ rpl::producer<bool> PreferSystemAiValue() {
 	return ForDevice().Value(Serein::ServiceSettings::kPreferSystemAi);
 }
 
+bool TranslationContext() {
+	return ForDevice().Get(Serein::ServiceSettings::kTranslationContext);
+}
+
+rpl::producer<bool> TranslationContextValue() {
+	return ForDevice().Value(Serein::ServiceSettings::kTranslationContext);
+}
+
 QString ProxySubscription() {
 	return ForDevice().Get(Serein::ServiceSettings::kProxySubscription);
 }

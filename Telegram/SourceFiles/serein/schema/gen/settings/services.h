@@ -23,6 +23,13 @@ inline constexpr auto kPreferSystemAi = Option<bool>{
 	Category::Services,
 	"lng_serein_system_ai",
 	static_cast<unsigned>(Flag::RefreshComposeButtons) };
+inline constexpr auto kTranslationContext = Option<bool>{
+	"serein.translationContext",
+	Scope::Device,
+	false,
+	Category::Services,
+	"lng_serein_translation_context",
+	0 };
 inline const auto kProxySubscription = Option<QString>{
 	"serein.proxySubscription",
 	Scope::Device,
@@ -52,6 +59,7 @@ inline constexpr auto kProxyPausedByVpn = Option<bool>{
 inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kServicesConfig));
 	Expects(registry.Add(kPreferSystemAi));
+	Expects(registry.Add(kTranslationContext));
 	Expects(registry.Add(kProxySubscription));
 	Expects(registry.Add(kPauseProxyOnVpn));
 	Expects(registry.Add(kProxyPausedByVpn));

@@ -123,6 +123,7 @@ set(serein_sources
     serein/services/store.cpp
     serein/services/request.cpp
     serein/services/translation.cpp
+    serein/services/translation_context.cpp
     serein/services/draft_translation.cpp
     serein/services/credentials_local.cpp
     serein/services/summary.cpp

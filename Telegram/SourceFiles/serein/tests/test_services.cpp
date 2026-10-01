@@ -201,6 +201,27 @@ void TestTranslationProtocols() {
 	const auto batch = BuildTranslationCall(chat, { u"a"_q, u"b"_q }, u"de"_q);
 	Require(!batch.form && batch.json.object().value(u"model"_q) == u"stub"_q,
 		"wrong chat body");
+	auto modelless = chat;
+	modelless.model.clear();
+	Require(SupportsTranslationContext(chat)
+		&& !SupportsTranslationContext(modelless)
+		&& !SupportsTranslationContext(google), "wrong context support");
+	const auto prompt = [](const TranslationCall &call) {
+		return call.json.object().value(u"messages"_q).toArray().last()
+			.toObject().value(u"content"_q).toString();
+	};
+	const auto context = QStringList{ u"Ann: see you"_q };
+	const auto contextual = prompt(
+		BuildTranslationCall(chat, { u"a"_q }, u"de"_q, context));
+	const auto plain = prompt(BuildTranslationCall(chat, { u"a"_q }, u"de"_q));
+	Require(contextual.indexOf(u"[\"Ann: see you\"]"_q) >= 0
+		&& contextual.indexOf(u"[\"Ann: see you\"]"_q)
+			< contextual.indexOf(u"[\"a\"]"_q)
+		&& !plain.contains(u"Ann"_q)
+		&& !plain.contains(u"context only"_q), "wrong context prompt");
+	Require(BuildTranslationCall(google, { u"a"_q }, u"de"_q, context).form
+		== BuildTranslationCall(google, { u"a"_q }, u"de"_q).form,
+		"context sent to a service without a model");
 	const auto reply = QByteArray(R"({"choices": [{
 		"finish_reason": "stop",
 		"message": { "content": "[\"x\", \"y\"]" }
