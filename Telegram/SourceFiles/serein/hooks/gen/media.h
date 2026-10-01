@@ -30,6 +30,8 @@ namespace Serein::Hooks::Media {
 [[nodiscard]] rpl::producer<bool> DisableVideoAutoplayValue();
 [[nodiscard]] bool GifPlaybackControls();
 [[nodiscard]] rpl::producer<bool> GifPlaybackControlsValue();
+[[nodiscard]] bool ForceClickPreview();
+[[nodiscard]] rpl::producer<bool> ForceClickPreviewValue();
 [[nodiscard]] bool Mp4FilePreview();
 [[nodiscard]] rpl::producer<bool> Mp4FilePreviewValue();
 [[nodiscard]] bool DenoiseVoiceMessages();

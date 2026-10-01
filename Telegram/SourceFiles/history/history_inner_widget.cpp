@@ -7,6 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/history_inner_widget.h"
 #include "serein/hooks/messages/reactions.h"
+#include "serein/hooks/media/force_preview.h"
 #include "serein/hooks/gen/privacy.h"
 #include "serein/hooks/menu/actions.h"
 #include "serein/hooks/menu/selection.h"
@@ -549,6 +550,7 @@ HistoryInner::HistoryInner(
 
 	setupSharingDisallowed();
 	setupSwipeReplyAndBack();
+	Serein::Hooks::Media::InstallForcePreview(this, controller);
 }
 
 void HistoryInner::reactionChosen(const ChosenReaction &reaction) {

@@ -10,7 +10,7 @@
 
 namespace Serein::Media {
 
-inline const auto kToggleRows = std::array<ToggleRow, 11>{ {
+inline const auto kToggleRows = std::array<ToggleRow, 12>{ {
 	{
 		&kHideStickerTime,
 		tr::lng_serein_hide_sticker_time,
@@ -66,6 +66,12 @@ inline const auto kToggleRows = std::array<ToggleRow, 11>{ {
 		{ u"GIF"_q, u"playback"_q, u"controls"_q },
 	},
 	{
+		&kForceClickPreview,
+		tr::lng_serein_force_click_preview,
+		u"serein/media/force-click-preview"_q,
+		{ u"Force Click"_q, u"Force Touch"_q, u"trackpad"_q, u"preview"_q, u"haptic"_q },
+	},
+	{
 		&kMp4FilePreview,
 		tr::lng_serein_mp4_file_preview,
 		u"serein/media/mp4-file-preview"_q,
@@ -116,7 +122,9 @@ inline void AddLayout(
 	AddToggle(builder, kToggleRows[7]);
 	AddToggle(builder, kToggleRows[8]);
 	AddToggle(builder, kToggleRows[9]);
+	AddNote(builder, tr::lng_serein_force_click_preview_note);
 	AddToggle(builder, kToggleRows[10]);
+	AddToggle(builder, kToggleRows[11]);
 	AddNote(builder, tr::lng_serein_denoise_voice_messages_note);
 }
 

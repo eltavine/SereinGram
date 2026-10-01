@@ -73,6 +73,10 @@ message MediaSettings {
   optional bool gif_playback_controls = 10 [(serein.options.v1.field) = {
     keywords: ["GIF", "playback", "controls"]
   }];
+  optional bool force_click_preview = 15 [(serein.options.v1.field) = {
+    keywords: ["Force Click", "Force Touch", "trackpad", "preview", "haptic"]
+    note: "lng_serein_force_click_preview_note"
+  }];
   optional bool mp4_file_preview = 11 [(serein.options.v1.field) = {
     keywords: ["MP4", "file", "preview"]
   }];

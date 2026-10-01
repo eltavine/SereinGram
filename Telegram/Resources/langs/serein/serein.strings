@@ -100,6 +100,8 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_sticker_author_bot_note" = "When a sticker or emoji pack author is not known to this account, \"Author\" sends the author's user ID to this inline bot and opens the profile only if a username from its answer belongs to that exact ID. The bot's operator sees every ID you look up. Leave empty to only copy the ID.";
 "lng_serein_disable_video_autoplay" = "Disable video autoplay in chats";
 "lng_serein_gif_playback_controls" = "Show GIF playback controls";
+"lng_serein_force_click_preview" = "Preview media with Force Click (macOS)";
+"lng_serein_force_click_preview_note" = "On a Force Touch trackpad, pressing firmly on a sticker, GIF or photo in a chat shows its preview with haptic feedback until you release, instead of opening it.";
 "lng_serein_mp4_file_preview" = "Keep video preview for MP4 files";
 "lng_serein_denoise_voice_messages" = "Reduce background noise in voice messages";
 "lng_serein_denoise_voice_messages_note" = "Recorded voice messages pass through the RNNoise noise suppressor that group calls use. It runs on this device; turning it on affects the next recording.";

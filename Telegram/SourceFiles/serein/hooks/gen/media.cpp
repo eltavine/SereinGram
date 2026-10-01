@@ -102,6 +102,14 @@ rpl::producer<bool> GifPlaybackControlsValue() {
 	return ForDevice().Value(Serein::Media::kGifPlaybackControls);
 }
 
+bool ForceClickPreview() {
+	return ForDevice().Get(Serein::Media::kForceClickPreview);
+}
+
+rpl::producer<bool> ForceClickPreviewValue() {
+	return ForDevice().Value(Serein::Media::kForceClickPreview);
+}
+
 bool Mp4FilePreview() {
 	return ForDevice().Get(Serein::Media::kMp4FilePreview);
 }
