@@ -713,6 +713,24 @@ const auto kMeta = BuildHelper({
 		}, chatButton->lifetime());
 	}
 	builder.addDividerText(tr::lng_serein_chat_translation_about());
+	const auto session = &controller->session();
+	const auto autoButton = builder.addButton({
+		.id = u"serein/services/auto-translate"_q,
+		.title = tr::lng_serein_auto_translate_chats(),
+		.st = &st::settingsButtonNoIcon,
+		.toggled = ForAccount(session).Value(
+			ServiceSettings::kAutoTranslateChats),
+		.keywords = { u"translate"_q, u"automatic"_q, u"chat"_q },
+	});
+	if (autoButton) {
+		autoButton->toggledChanges(
+		) | rpl::on_next([=](bool value) {
+			Expects(ForAccount(session).Set(
+				ServiceSettings::kAutoTranslateChats,
+				value));
+		}, autoButton->lifetime());
+	}
+	builder.addDividerText(tr::lng_serein_auto_translate_chats_about());
 	AddNetworkSettings(builder);
 	const auto webAppsButton = builder.addButton({
 		.id = u"serein/services/android-web-apps"_q,

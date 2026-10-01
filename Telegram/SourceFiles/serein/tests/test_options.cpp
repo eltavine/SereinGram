@@ -427,6 +427,7 @@ void TestOptions() {
 		HistorySettings::kHistoryKeepExpiredMedia.scope,
 		HistorySettings::kHistorySaveEdits.scope,
 		HistorySettings::kHistoryExcludedPeers.scope,
+		ServiceSettings::kAutoTranslateChats.scope,
 	};
 	Require(std::ranges::all_of(accountScoped, [](Scope scope) {
 		return scope == Scope::Account;

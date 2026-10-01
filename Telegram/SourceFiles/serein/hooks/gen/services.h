@@ -3,7 +3,12 @@
 
 #include <QtCore/QByteArray>
 #include <QtCore/QString>
+#include <gsl/pointers>
 #include <rpl/producer.h>
+
+namespace Main {
+class Session;
+} // namespace Main
 
 namespace Serein::Hooks::ServiceSettings {
 
@@ -15,6 +20,8 @@ namespace Serein::Hooks::ServiceSettings {
 [[nodiscard]] rpl::producer<bool> TranslationContextValue();
 [[nodiscard]] bool ChatTranslationWithoutPremium();
 [[nodiscard]] rpl::producer<bool> ChatTranslationWithoutPremiumValue();
+[[nodiscard]] bool AutoTranslateChats(gsl::not_null<Main::Session*> session);
+[[nodiscard]] rpl::producer<bool> AutoTranslateChatsValue(gsl::not_null<Main::Session*> session);
 [[nodiscard]] QString ProxySubscription();
 [[nodiscard]] rpl::producer<QString> ProxySubscriptionValue();
 [[nodiscard]] QByteArray ProxyNotes();

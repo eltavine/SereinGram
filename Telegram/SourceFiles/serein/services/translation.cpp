@@ -2,11 +2,13 @@
 
 #include "core/application.h"
 #include "data/data_peer_values.h"
+#include "history/history.h"
 #include "lang/translate_mtproto_provider.h"
 #include "lang/translate_provider.h"
 #include "lang/lang_keys.h"
 #include "main/main_session.h"
 #include "serein/core/options.h"
+#include "serein/hooks/history.h"
 #include "serein/schema/gen/settings/services.h"
 #include "serein/services/request.h"
 #include "serein/services/translation_context.h"
@@ -431,6 +433,12 @@ bool ChatTranslationAllowed(not_null<Main::Session*> session) {
 	return session->premium()
 		|| (ForDevice().Get(ServiceSettings::kChatTranslationWithoutPremium)
 			&& !CreateChatTranslateProvider(session)->supportsMessageId());
+}
+
+bool Hooks::AutoTranslate(not_null<::History*> history) {
+	const auto session = &history->session();
+	return ForAccount(session).Get(Serein::ServiceSettings::kAutoTranslateChats)
+		&& ChatTranslationAllowed(session);
 }
 
 } // namespace Serein

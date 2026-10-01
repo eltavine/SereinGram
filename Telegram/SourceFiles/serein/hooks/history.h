@@ -34,6 +34,7 @@ void OnBeforeEdition(
 	std::vector<gsl::not_null<HistoryItem*>> items);
 [[nodiscard]] bool KeepExpiredMedia(gsl::not_null<const HistoryItem*> item);
 void OnHistorySliceAdded(gsl::not_null<::History*> history);
+[[nodiscard]] bool AutoTranslate(gsl::not_null<::History*> history);
 
 [[nodiscard]] Ports::HistoryStore *HistoryStoreFor(
 	gsl::not_null<Main::Session*> session);

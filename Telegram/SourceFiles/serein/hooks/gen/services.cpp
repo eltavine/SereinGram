@@ -38,6 +38,14 @@ rpl::producer<bool> ChatTranslationWithoutPremiumValue() {
 	return ForDevice().Value(Serein::ServiceSettings::kChatTranslationWithoutPremium);
 }
 
+bool AutoTranslateChats(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Get(Serein::ServiceSettings::kAutoTranslateChats);
+}
+
+rpl::producer<bool> AutoTranslateChatsValue(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Value(Serein::ServiceSettings::kAutoTranslateChats);
+}
+
 QString ProxySubscription() {
 	return ForDevice().Get(Serein::ServiceSettings::kProxySubscription);
 }

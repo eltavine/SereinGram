@@ -38,6 +38,13 @@ inline constexpr auto kChatTranslationWithoutPremium = Option<bool>{
 	Category::Services,
 	"lng_serein_chat_translation_without_premium",
 	0 };
+inline constexpr auto kAutoTranslateChats = Option<bool>{
+	"serein.autoTranslateChats",
+	Scope::Account,
+	false,
+	Category::Services,
+	"lng_serein_auto_translate_chats",
+	0 };
 inline const auto kProxySubscription = Option<QString>{
 	"serein.proxySubscription",
 	Scope::Device,
@@ -95,6 +102,7 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kPreferSystemAi));
 	Expects(registry.Add(kTranslationContext));
 	Expects(registry.Add(kChatTranslationWithoutPremium));
+	Expects(registry.Add(kAutoTranslateChats));
 	Expects(registry.Add(kProxySubscription));
 	Expects(registry.Add(kProxyNotes));
 	Expects(registry.Add(kPauseProxyOnVpn));
