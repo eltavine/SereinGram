@@ -13,7 +13,8 @@
     "BRANDING.md",
     "Telegram/Resources/qrc/serein_opencc.qrc",
     "Telegram/ThirdParty/OpenCC",
-    "Telegram/Resources/serein/"
+    "Telegram/Resources/serein/",
+    "crowdin.yml"
   ],
   "own_include_prefixes": [
     "serein/"
