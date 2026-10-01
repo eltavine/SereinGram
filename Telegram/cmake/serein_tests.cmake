@@ -20,6 +20,7 @@ set(serein_test_sources
     serein/tests/test_proxy_notes.cpp
     serein/tests/test_batches.cpp
     serein/tests/test_download_names.cpp
+    serein/tests/test_shown_order.cpp
     serein/tests/test_persian_calendar.cpp
     serein/tests/test_defaults.cpp
     serein/tests/test_chinese.cpp
@@ -65,6 +66,7 @@ set(serein_test_sources
     serein/network/proxy_order.cpp
     serein/network/proxy_notes.cpp
     serein/media/download_names.cpp
+    serein/chats/shown_order.cpp
     serein/filters/model.cpp
     serein/links/model.cpp
     serein/snapshot/rules.cpp

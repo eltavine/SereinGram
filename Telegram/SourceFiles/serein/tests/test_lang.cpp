@@ -28,6 +28,7 @@ void TestProxyOrder();
 void TestProxyNotes();
 void TestBatches();
 void TestDownloadNames();
+void TestShownOrder();
 void TestPersianCalendar();
 void TestNeutralDefaults();
 void TestChinese();
@@ -197,6 +198,7 @@ int main() {
 		TestProxyNotes();
 		TestBatches();
 		TestDownloadNames();
+		TestShownOrder();
 		TestPersianCalendar();
 		TestNeutralDefaults();
 		TestChinese();

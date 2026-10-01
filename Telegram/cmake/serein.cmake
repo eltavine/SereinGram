@@ -67,6 +67,7 @@ set(serein_sources
     serein/app/reading_positions.cpp
     serein/chats/managed_folders.cpp
     serein/chats/shown_filters.cpp
+    serein/chats/shown_order.cpp
     serein/interface/roundness.cpp
     serein/settings/interface.cpp
     serein/settings/restart.cpp
