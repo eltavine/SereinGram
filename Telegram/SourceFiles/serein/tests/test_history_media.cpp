@@ -61,9 +61,12 @@ void TestCachedMedia() {
 		&& WriteCachedMedia(cipher, orphan, bytes)
 		&& WriteCachedMedia(cipher, other, bytes),
 		"cached media written");
-	auto raw = QFile(kept);
-	Require(raw.open(QIODevice::ReadOnly) && !raw.readAll().contains("photo"),
-		"cached media stored in plain text");
+	{
+		auto raw = QFile(kept);
+		Require(raw.open(QIODevice::ReadOnly)
+			&& !raw.readAll().contains("photo"),
+			"cached media stored in plain text");
+	}
 	Require(ReadCachedMedia(cipher, kept) == bytes, "cached media read back");
 	Require(!WriteCachedMedia(cipher, kept, QByteArray())
 		&& !WriteCachedMedia(
