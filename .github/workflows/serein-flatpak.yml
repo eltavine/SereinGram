@@ -1,0 +1,66 @@
+name: Serein Flatpak.
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+    tags:
+      - 'v*'
+    paths:
+      - 'packaging/flatpak/**'
+      - '.github/workflows/serein-flatpak.yml'
+  schedule:
+    - cron: '0 4 * * 1'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+
+  flatpak:
+    name: Flatpak bundle
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    container:
+      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-51
+      options: >-
+        --privileged
+        --volume /usr/share/dotnet:/host/dotnet
+        --volume /usr/local/lib/android:/host/android
+        --volume /opt/ghc:/host/ghc
+
+    steps:
+      - name: Free disk space.
+        run: rm -rf /host/dotnet/* /host/android/* /host/ghc/*
+
+      - name: Clone.
+        uses: actions/checkout@v7
+        with:
+          submodules: recursive
+
+      - name: Provide the API credentials.
+        env:
+          SEREIN_API_ID: ${{ secrets.SEREIN_API_ID }}
+          SEREIN_API_HASH: ${{ secrets.SEREIN_API_HASH }}
+        run: |
+          file=Telegram/build/api_credentials.local.cmake
+          if [ -n "$SEREIN_API_ID" ]; then
+            printf 'set(SEREIN_API_ID %s)\nset(SEREIN_API_HASH %s)\n' \
+              "$SEREIN_API_ID" "$SEREIN_API_HASH" > "$file"
+          else
+            # Without the repository secrets, build with the test-only credentials.
+            echo 'set(TDESKTOP_API_TEST ON CACHE BOOL "" FORCE)' > "$file"
+          fi
+
+      - name: Build the bundle.
+        uses: flathub-infra/flatpak-github-actions/flatpak-builder@master
+        with:
+          bundle: SereinGram.flatpak
+          manifest-path: packaging/flatpak/io.github.eltavine.SereinGram.yml
+          cache-key: flatpak-builder-${{ github.sha }}
