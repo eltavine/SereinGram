@@ -7,6 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/history_view_list_widget.h"
 #include "serein/hooks/messages/reactions.h"
+#include "serein/hooks/media/force_preview.h"
 #include "serein/hooks/gen/privacy.h"
 
 #include "history/view/history_view_about_view.h"
@@ -748,6 +749,7 @@ ListWidget::ListWidget(
 	) | rpl::on_next([=](int d) {
 		delegate->listScrollTo(_visibleTop + d, false);
 	}, lifetime());
+	Serein::Hooks::Media::InstallForcePreview(this, delegate);
 }
 
 Main::Session &ListWidget::session() const {

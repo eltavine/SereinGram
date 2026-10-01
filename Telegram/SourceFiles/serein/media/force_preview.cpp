@@ -8,6 +8,7 @@
 #include "history/history.h"
 #include "history/history_item.h"
 #include "history/view/history_view_element.h"
+#include "history/view/history_view_list_widget.h"
 #include "main/main_session.h"
 #include "mainwindow.h"
 #include "serein/hooks/gen/media.h"
@@ -60,6 +61,14 @@ void InstallForcePreview(
 		}
 		return base::EventFilterResult::Continue;
 	}, widget->lifetime());
+}
+
+void InstallForcePreview(
+		not_null<Ui::RpWidget*> widget,
+		not_null<HistoryView::ListDelegate*> delegate) {
+	if (delegate->listContext() != HistoryView::Context::ChatPreview) {
+		InstallForcePreview(widget, delegate->listWindow());
+	}
 }
 
 } // namespace Serein::Hooks::Media
