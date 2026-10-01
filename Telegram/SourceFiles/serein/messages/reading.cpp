@@ -2,6 +2,7 @@
 
 #include "serein/hooks/compose/text.h"
 #include "serein/messages/chinese.h"
+#include "serein/messages/chinese_warmup.h"
 #include "logs.h"
 #include "settings.h"
 #include "ui/text/text_utilities.h"
@@ -10,6 +11,7 @@
 #include <QtCore/QFile>
 
 #include <algorithm>
+#include <mutex>
 
 namespace Serein::Messages {
 namespace {
@@ -55,11 +57,10 @@ bool Protected(EntityType type) {
 }
 
 [[nodiscard]] const ChineseConverter *Converter(bool traditional) {
-	static auto loaded = std::array<bool, 2>();
+	static auto loaded = std::array<std::once_flag, 2>();
 	static auto converters = std::array<std::unique_ptr<ChineseConverter>, 2>();
 	const auto index = traditional ? 1 : 0;
-	if (!loaded[index]) {
-		loaded[index] = true;
+	std::call_once(loaded[index], [&] {
 		const auto directory = DictionaryDirectory();
 		converters[index] = directory.isEmpty()
 			? nullptr
@@ -67,11 +68,17 @@ bool Protected(EntityType type) {
 		if (!converters[index]) {
 			LOG(("Serein Chinese conversion: OpenCC could not be loaded."));
 		}
-	}
+	});
 	return converters[index].get();
 }
 
 } // namespace
+
+void WarmUpChineseConversion(bool traditional) {
+	crl::async([=] {
+		Converter(traditional);
+	});
+}
 
 std::optional<TextWithEntities> ConvertChinese(
 		const TextWithEntities &source,

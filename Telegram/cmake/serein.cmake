@@ -114,6 +114,7 @@ set(serein_sources
     serein/messages/reactions.cpp
     serein/messages/chinese.cpp
     serein/messages/reading.cpp
+    serein/messages/chinese_warmup.cpp
     serein/tests/menu_scenario.cpp
     serein/filters/model.cpp
     serein/filters/hidden_messages.cpp
