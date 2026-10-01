@@ -98,7 +98,15 @@ jobs:
           if [[ "$FROM" =~ ^0+$ ]]; then
             FROM="$TO~1"
           fi
-          npx commitlint --config tools/serein/commitlint.config.mjs --from "$FROM" --to "$TO" --verbose
+          # Upstream commits arrive through merges; only our mainline is linted.
+          failed=0
+          for sha in $(git rev-list --first-parent --reverse "$FROM..$TO"); do
+            echo "Checking $(git log -1 --format='%h %s' "$sha")"
+            git log -1 --format=%B "$sha" \
+              | npx commitlint --config tools/serein/commitlint.config.mjs --verbose \
+              || failed=1
+          done
+          exit "$failed"
 
   core-tests:
     name: Core tests (Qt only)

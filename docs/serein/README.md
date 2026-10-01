@@ -57,3 +57,4 @@ SereinGram 是基于 Telegram Desktop 的第三方桌面客户端，功能对标
 - CI 的 `Commit messages` 任务用 commitlint 与 `tools/serein/commitlint.config.mjs` 检查每次推送或 PR 新增的提交：标题不超过 72 字符，正文不少于 60 字符、每行不超过 100 字符，只允许可打印 ASCII。
 - 提交前可运行 `python3 tools/serein/check_commit_message.py <信息文件>` 做同样的检查；执行 `git config core.hooksPath tools/serein/githooks` 可在本地启用 `commit-msg` 钩子自动检查。
 - 该规则自 2026-09-30 起生效，优先于 `AGENTS.md` 中“标题一行”的约定；此前已推送的提交不改写。
+- 只检查主线（first-parent）上的提交：同步上游时检查合并提交本身，随合并进入的上游提交保持原样，不按本规范检查。
