@@ -32,6 +32,7 @@
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
 #include <QtCore/QMimeDatabase>
+#include <crl/crl_async.h>
 
 #include <map>
 
@@ -41,7 +42,7 @@ namespace {
 constexpr auto kRemovedChatLimit = 500;
 
 struct Backend {
-	std::unique_ptr<Adapters::AesGcmCipher> cipher;
+	std::shared_ptr<Adapters::AesGcmCipher> cipher;
 	std::unique_ptr<Adapters::SqlHistoryStore> store;
 	std::unique_ptr<HistoryFeature::Recorder> recorder;
 };
@@ -231,25 +232,27 @@ void RecordDeleted(
 		return;
 	}
 	auto snapshot = TakeSnapshot(item);
+	auto media = snapshot.localPath.isEmpty()
+		? CaptureCachedMedia(item)
+		: std::nullopt;
+	if (media) {
+		snapshot.cachedMediaName = media->name;
+	}
+	if (!backend->recorder->recordDeleted(policy, snapshot) || !media) {
+		return;
+	}
 	const auto path = HistoryFeature::CachedMediaPath(
 		MediaDirectory(session),
 		snapshot.peerId,
 		snapshot.messageId);
-	auto written = false;
-	if (snapshot.localPath.isEmpty()) {
-		if (const auto media = CaptureCachedMedia(item)) {
-			written = HistoryFeature::WriteCachedMedia(
-				*backend->cipher,
-				path,
-				media->bytes);
-			if (written) {
-				snapshot.cachedMediaName = media->name;
-			}
+	crl::async([
+			cipher = backend->cipher,
+			path,
+			bytes = std::move(media->bytes)] {
+		if (!HistoryFeature::WriteCachedMedia(*cipher, path, bytes)) {
+			LOG(("Serein History: could not cache deleted media in %1.").arg(path));
 		}
-	}
-	if (!backend->recorder->recordDeleted(policy, snapshot) && written) {
-		QFile::remove(path);
-	}
+	});
 }
 
 } // namespace
