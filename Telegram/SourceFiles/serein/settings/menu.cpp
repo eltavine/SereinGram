@@ -97,6 +97,7 @@ const style::icon *Icon(Menu::ActionId id) {
 	case Menu::ActionId::BatchUnpin: return &st::menuIconUnpin;
 	case Menu::ActionId::QuickRatingFirst: return &st::menuIconLike;
 	case Menu::ActionId::QuickRatingSecond: return &st::menuIconReply;
+	case Menu::ActionId::Reminder: return &st::menuIconNotifications;
 	default: return &st::menuIconChatBubble;
 	}
 }

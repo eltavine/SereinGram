@@ -211,6 +211,7 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_menu_items" = "Menu items";
 "lng_serein_menu_quick_rating_first" = "Reply with the first rating";
 "lng_serein_menu_quick_rating_second" = "Reply with the second rating";
+"lng_serein_menu_reminder" = "Set a reminder";
 "lng_serein_menu_quick_rating_send" = "Reply “{text}”";
 "lng_serein_menu_repeat" = "Repeat";
 "lng_serein_menu_repeat_as_copy" = "Repeat without attribution";

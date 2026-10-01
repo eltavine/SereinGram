@@ -207,6 +207,7 @@
 "lng_serein_menu_items" = "菜单项";
 "lng_serein_menu_quick_rating_first" = "用第一条评价回复";
 "lng_serein_menu_quick_rating_second" = "用第二条评价回复";
+"lng_serein_menu_reminder" = "设置提醒";
 "lng_serein_menu_quick_rating_send" = "回复“{text}”";
 "lng_serein_menu_repeat" = "复读";
 "lng_serein_menu_repeat_as_copy" = "无引用复读";

@@ -93,6 +93,7 @@ set(serein_sources
     serein/menu/model.cpp
     serein/menu/repeat.cpp
     serein/menu/reading.cpp
+    serein/menu/reminder.cpp
     serein/menu/selection.cpp
 	serein/media/sticker_catalog.cpp
 	serein/media/sticker_catalog_rules.cpp

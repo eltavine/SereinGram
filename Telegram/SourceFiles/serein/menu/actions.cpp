@@ -9,6 +9,7 @@
 #include "serein/menu/batch.h"
 #include "serein/menu/media.h"
 #include "serein/menu/reading.h"
+#include "serein/menu/reminder.h"
 #include "serein/menu/ghost_read.h"
 #include "serein/menu/history.h"
 #include "serein/filters/menu.h"
@@ -114,6 +115,7 @@ void Apply(
 		if (item) {
 			InsertQuickRatingActions(menu, item, controller);
 			InsertRepeatActions(menu, item, controller);
+			InsertReminderAction(menu, item, controller);
 		}
 		if (item || !selected.empty()) {
 			InsertBatchActions(menu, item, controller,

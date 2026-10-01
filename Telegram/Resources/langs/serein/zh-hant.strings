@@ -207,6 +207,7 @@
 "lng_serein_menu_items" = "選單項目";
 "lng_serein_menu_quick_rating_first" = "以第一則評價回覆";
 "lng_serein_menu_quick_rating_second" = "以第二則評價回覆";
+"lng_serein_menu_reminder" = "設定提醒";
 "lng_serein_menu_quick_rating_send" = "回覆「{text}」";
 "lng_serein_menu_repeat" = "複讀";
 "lng_serein_menu_repeat_as_copy" = "無引用複讀";
