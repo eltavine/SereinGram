@@ -1,5 +1,7 @@
 #include "serein/features/history/viewer.h"
 
+#include "serein/features/history/bubbles.h"
+
 #include "serein/hooks/history.h"
 #include "serein/ports/history_store.h"
 #include "base/unixtime.h"
@@ -122,6 +124,13 @@ void ShowDeletedMessages(
 				box,
 				tr::lng_serein_history_empty(tr::now),
 				st::boxLabel));
+		} else {
+			const auto chat = box->addRow(object_ptr<Ui::LinkButton>(
+				box,
+				tr::lng_serein_history_show_chat(tr::now)));
+			chat->setClickedCallback([=] {
+				ShowDeletedBubbles(controller, peer, records);
+			});
 		}
 		for (const auto &record : records) {
 			const auto label = box->addRow(object_ptr<Ui::FlatLabel>(

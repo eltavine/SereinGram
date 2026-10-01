@@ -1,7 +1,7 @@
 #include "serein/hooks/history.h"
 
-#include "serein/app/history_entities.h"
 #include "serein/features/history/deleted_marks.h"
+#include "serein/features/history/restored_message.h"
 #include "serein/hooks/gen/history.h"
 #include "serein/ports/history_store.h"
 #include "data/data_peer.h"
@@ -31,54 +31,14 @@ using RestoredKey = std::pair<PeerId, qint64>;
 	return i->second;
 }
 
-[[nodiscard]] TextWithEntities RestoredText(
-		const Serein::History::Record &record) {
-	if (record.text.isEmpty()) {
-		return TextWithEntities{ record.mediaSummary };
-	}
-	auto result = TextWithEntities{ record.text };
-	for (const auto &entity : record.entities) {
-		if (const auto type = App::EntityTypeFromName(entity.type)) {
-			result.entities.push_back(EntityInText(
-				*type,
-				entity.offset,
-				entity.length,
-				entity.data));
-		}
-	}
-	return result;
-}
-
 void Restore(
 		gsl::not_null<::History*> history,
 		const Serein::History::Record &record) {
-	const auto session = &history->session();
-	const auto peer = history->peer;
-	const auto from = record.fromPeerId
-		? PeerId(PeerIdHelper(BareId(record.fromPeerId)))
-		: peer->id;
-	auto flags = MessageFlags(MessageFlag::Local);
-	if (peer->isBroadcast()) {
-		flags |= MessageFlag::Post;
-	} else if (from != peer->id) {
-		flags |= MessageFlag::HasFromId;
-	}
-	if (from == session->userPeerId()) {
-		flags |= MessageFlag::Outgoing;
-	}
-	auto fields = HistoryItemCommonFields{
-		.id = session->data().nextLocalMessageId(),
-		.flags = flags,
-		.from = from,
-		.date = TimeId(record.date),
-	};
-	if (record.topicRootId) {
-		fields.replyTo.topicRootId = MsgId(record.topicRootId);
-	}
-	const auto item = history->makeMessage(
-		std::move(fields),
-		RestoredText(record),
-		MTP_messageMediaEmpty());
+	const auto item = HistoryFeature::MakeRestoredMessage(
+		history,
+		record,
+		history->session().data().nextLocalMessageId(),
+		MessageFlag::Local);
 	history->insertRestoredMessage(item);
 	HistoryFeature::MarkDeletedInPlace(item);
 }

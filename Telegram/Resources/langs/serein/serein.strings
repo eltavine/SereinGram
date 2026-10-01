@@ -603,6 +603,7 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_menu_edit_history" = "Edit history";
 "lng_serein_menu_deleted_messages" = "Deleted messages";
 "lng_serein_history_empty" = "No deleted messages are saved for this chat.";
+"lng_serein_history_show_chat" = "Show as chat";
 "lng_serein_history_open_file" = "Open file";
 "lng_serein_history_open_media" = "Open media";
 "lng_serein_history_media_missing" = "This media is no longer available.";

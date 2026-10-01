@@ -599,6 +599,7 @@
 "lng_serein_menu_edit_history" = "编辑历史";
 "lng_serein_menu_deleted_messages" = "已删除的消息";
 "lng_serein_history_empty" = "此对话没有保存的已删除消息。";
+"lng_serein_history_show_chat" = "以聊天形式查看";
 "lng_serein_history_open_file" = "打开文件";
 "lng_serein_history_open_media" = "打开媒体";
 "lng_serein_history_media_missing" = "这份媒体已不存在。";
