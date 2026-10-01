@@ -526,6 +526,8 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_link_changed" = "Open this modified link?";
 "lng_serein_config_off" = "Off";
 "lng_serein_link_confirm_all" = "Confirm all external links";
+"lng_serein_link_previews" = "Use link rules for link previews";
+"lng_serein_link_previews_about" = "While you write a message, its link preview is requested for the link that the rules produce, so a rule that points a site to a mirror can give a fuller preview. The text keeps the link you typed.";
 "lng_serein_link_rules_about" = "Rules match exact hosts, in order; only the first enabled match applies. Changed links always require a preview confirmation and open without Telegram auto-login. Internal Telegram links keep their native behavior.";
 "lng_serein_link_rule" = "Edit link rule";
 "lng_serein_link_rule_about" = "Use a lowercase host without a scheme or port (international hosts use punycode). A new host uses HTTPS and its default port. List parameter names one per line; a final * matches a prefix. Names are case-sensitive. Preview tests this rule without enabling or opening it.";

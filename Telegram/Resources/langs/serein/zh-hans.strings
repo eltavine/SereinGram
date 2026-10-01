@@ -522,6 +522,8 @@
 "lng_serein_link_changed" = "打开修改后的链接？";
 "lng_serein_config_off" = "已停用";
 "lng_serein_link_confirm_all" = "打开外部链接前确认";
+"lng_serein_link_previews" = "将链接规则用于链接预览";
+"lng_serein_link_previews_about" = "编写消息时，按规则改写后的链接请求预览，把网站指向镜像的规则可以得到更完整的预览；消息文字仍保留你输入的链接。";
 "lng_serein_link_rules_about" = "按顺序精确匹配域名，仅应用第一条已启用规则。修改后的链接始终先预览确认，且不附加 Telegram 自动登录信息。Telegram 内部链接保留原生行为。";
 "lng_serein_link_rule" = "编辑链接规则";
 "lng_serein_link_rule_about" = "填写不含协议和端口的小写域名，国际化域名使用 punycode。替换域名后使用 HTTPS 默认端口。要移除的参数每行一个，末尾 * 匹配前缀，区分大小写。预览仅测试此规则，不会启用或打开链接。";

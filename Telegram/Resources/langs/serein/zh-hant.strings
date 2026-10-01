@@ -522,6 +522,8 @@
 "lng_serein_link_changed" = "開啟修改後的連結？";
 "lng_serein_config_off" = "已停用";
 "lng_serein_link_confirm_all" = "開啟外部連結前確認";
+"lng_serein_link_previews" = "將連結規則用於連結預覽";
+"lng_serein_link_previews_about" = "編寫訊息時，依規則改寫後的連結請求預覽，將網站指向鏡像的規則可以得到更完整的預覽；訊息文字仍保留你輸入的連結。";
 "lng_serein_link_rules_about" = "按順序精確比對網域，僅套用第一條已啟用規則。修改後的連結一律先預覽確認，且不附加 Telegram 自動登入資訊。Telegram 內部連結保留原生行為。";
 "lng_serein_link_rule" = "編輯連結規則";
 "lng_serein_link_rule_about" = "填寫不含協定和連接埠的小寫網域，國際化網域使用 punycode。替換網域後使用 HTTPS 預設連接埠。要移除的參數每行一個，末尾 * 比對前綴，區分大小寫。預覽僅測試此規則，不會啟用或開啟連結。";

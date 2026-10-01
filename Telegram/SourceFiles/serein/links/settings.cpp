@@ -148,6 +148,17 @@ void SettingsBox(not_null<Ui::GenericBox*> box) {
 			updated.confirmAll = value;
 			Save(box, *config, updated);
 		}, confirm->lifetime());
+		const auto previews = rows->add(object_ptr<Ui::Checkbox>(
+			rows,
+			tr::lng_serein_link_previews(tr::now),
+			ForDevice().Get(kPreviewLinkRules)));
+		previews->checkedChanges() | rpl::on_next([=](bool value) {
+			Expects(ForDevice().Set(kPreviewLinkRules, value));
+		}, previews->lifetime());
+		rows->add(object_ptr<Ui::FlatLabel>(
+			rows,
+			tr::lng_serein_link_previews_about(),
+			st::boxLabel));
 		const auto count = int(config->rules.size());
 		for (auto index = 0; index != count; ++index) {
 			const auto &rule = config->rules[index];

@@ -18,4 +18,9 @@ message LinkSettings {
     custom_ui: true
     validator: "Validate"
   }];
+  optional bool preview_link_rules = 2 [(serein.options.v1.field) = {
+    title: "lng_serein_link_previews"
+    keywords: ["link preview", "mirror", "rules"]
+    custom_ui: true
+  }];
 }

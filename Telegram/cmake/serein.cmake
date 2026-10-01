@@ -151,6 +151,7 @@ set(serein_sources
     serein/services/request.cpp
     serein/services/translation.cpp
     serein/services/web_apps.cpp
+    serein/links/preview.cpp
     serein/services/translation_context.cpp
     serein/services/draft_translation.cpp
     serein/services/credentials_local.cpp
