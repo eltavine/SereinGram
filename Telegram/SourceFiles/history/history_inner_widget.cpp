@@ -3030,7 +3030,6 @@ void HistoryInner::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 					_widget->editMessage(item, selection);
 				}
 			}, &st::menuIconEdit);
-			Serein::Menu::Tag(_menu->actions().back(), Serein::Menu::ActionId::Edit);
 		}
 		if (session->factchecks().canEdit(item)) {
 			const auto text = item->factcheckText();
@@ -3055,7 +3054,6 @@ void HistoryInner::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 			_menu->addAction(isPinned ? tr::lng_context_unpin_msg(tr::now) : tr::lng_context_pin_msg(tr::now), crl::guard(controller, [=] {
 				Window::ToggleMessagePinned(controller, pinItemId, !isPinned);
 			}), isPinned ? &st::menuIconUnpin : &st::menuIconPin);
-			Serein::Menu::Tag(_menu->actions().back(), Serein::Menu::ActionId::Pin);
 		}
 		if (canViewMessageStats(item)) {
 			const auto channel = _peer->asChannel();
@@ -3067,7 +3065,6 @@ void HistoryInner::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 				tr::lng_stats_title(tr::now),
 				std::move(callback),
 				&st::menuIconStats);
-			Serein::Menu::Tag(_menu->actions().back(), Serein::Menu::ActionId::Statistics);
 		}
 	};
 	const auto addPhotoActions = [&](not_null<PhotoData*> photo, HistoryItem *item) {
@@ -3089,7 +3086,6 @@ void HistoryInner::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 					controller,
 					photo);
 			}, &st::menuIconStickers);
-			Serein::Menu::Tag(_menu->actions().back(), Serein::Menu::ActionId::StickerPack);
 		}
 	};
 	auto rateTranscriptionItem = (HistoryItem*)(nullptr);
@@ -3207,7 +3203,6 @@ void HistoryInner::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 					}
 				}
 			}, &st::menuIconSelect);
-			Serein::Menu::Tag(_menu->actions().back(), Serein::Menu::ActionId::Select);
 			const auto collectBetween = [=](
 					not_null<HistoryItem*> from,
 					not_null<HistoryItem*> to,
@@ -3289,7 +3284,6 @@ void HistoryInner::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 					tr::lng_context_select_msg_bulk(tr::now),
 					callback,
 					&st::menuIconSelect);
-				Serein::Menu::Tag(_menu->actions().back(), Serein::Menu::ActionId::Select);
 			}();
 		}
 	};
@@ -3324,7 +3318,6 @@ void HistoryInner::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 					_widget->clearSelected();
 				}
 			}, &st::menuIconReply);
-			Serein::Menu::Tag(_menu->actions().back(), Serein::Menu::ActionId::Reply);
 			const auto media = item->media();
 			const auto document = media
 				? media->document()
@@ -3360,7 +3353,6 @@ void HistoryInner::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 				}));
 			}),
 			&st::menuIconUnpin);
-		Serein::Menu::Tag(_menu->actions().back(), Serein::Menu::ActionId::Pin);
 	};
 
 	const auto addTodoListAction = [&](HistoryItem *item) {
@@ -3400,7 +3392,6 @@ void HistoryInner::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 						: tr::lng_context_copy_selected(tr::now)),
 					[=] { copySelectedText(); },
 					&st::menuIconCopy);
-				Serein::Menu::Tag(_menu->actions().back(), Serein::Menu::ActionId::Copy);
 			}
 			if (item && !Ui::SkipTranslate(selectedText.rich)) {
 				const auto peer = item->history()->peer;
@@ -3412,7 +3403,6 @@ void HistoryInner::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 						getSelectedText().rich,
 						hasCopyRestrictionForSelected()));
 				}, &st::menuIconTranslate);
-				Serein::Menu::Tag(_menu->actions().back(), Serein::Menu::ActionId::Translate);
 			}
 		}
 		addItemActions(item, item);
@@ -3431,20 +3421,17 @@ void HistoryInner::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 			_menu->addAction(item->history()->peer->isMegagroup() ? tr::lng_context_copy_message_link(tr::now) : tr::lng_context_copy_post_link(tr::now), [=] {
 				HistoryView::CopyPostLink(controller, itemId, HistoryView::Context::History);
 			}, &st::menuIconLink);
-			Serein::Menu::Tag(_menu->actions().back(), Serein::Menu::ActionId::CopyLink);
 		}
 		if (isUponSelected > 1) {
 			if (selectedState.count > 0 && selectedState.canForwardCount == selectedState.count) {
 				_menu->addAction(tr::lng_context_forward_selected(tr::now), [=] {
 					_widget->forwardSelected();
 				}, &st::menuIconForward);
-				Serein::Menu::Tag(_menu->actions().back(), Serein::Menu::ActionId::Forward);
 			}
 			if (selectedState.count > 0 && selectedState.canDeleteCount == selectedState.count) {
 				_menu->addAction(tr::lng_context_delete_selected(tr::now), [=] {
 					_widget->confirmDeleteSelected();
 				}, &st::menuIconDelete);
-				Serein::Menu::Tag(_menu->actions().back(), Serein::Menu::ActionId::Delete);
 			}
 			addUnpinSelectedAction();
 			if (selectedState.count > 0 && !hasCopyRestrictionForSelected()) {
@@ -3470,7 +3457,6 @@ void HistoryInner::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 					_menu->addAction(tr::lng_context_forward_msg(tr::now), [=] {
 						forwardItem(itemId);
 					}, &st::menuIconForward);
-					Serein::Menu::Tag(_menu->actions().back(), Serein::Menu::ActionId::Forward);
 				}
 				if (HistoryView::CanAddOfferToMessage(item)) {
 					_menu->addAction(tr::lng_context_add_offer(tr::now), [=] {
@@ -3501,7 +3487,6 @@ void HistoryInner::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 					_menu->addAction(tr::lng_context_report_msg(tr::now), [=] {
 						reportItem(itemId);
 					}, &st::menuIconReport);
-						Serein::Menu::Tag(_menu->actions().back(), Serein::Menu::ActionId::Report);
 				}
 				HistoryView::AddEphemeralMessageActions(
 					_menu,
@@ -3516,7 +3501,6 @@ void HistoryInner::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 				_menu->addAction(tr::lng_profile_block_user(tr::now), [=] {
 					blockSenderItem(itemId);
 				}, &st::menuIconBlock);
-				Serein::Menu::Tag(_menu->actions().back(), Serein::Menu::ActionId::BlockSender);
 			}
 		}
 	} else { // maybe cursor on some text history item?
@@ -3571,7 +3555,6 @@ void HistoryInner::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 						: tr::lng_context_copy_selected(tr::now)),
 					[=] { copySelectedText(); },
 					&st::menuIconCopy);
-				Serein::Menu::Tag(_menu->actions().back(), Serein::Menu::ActionId::Copy);
 			}
 			if (item && !Ui::SkipTranslate(selectedText.rich)) {
 				const auto peer = item->history()->peer;
@@ -3583,7 +3566,6 @@ void HistoryInner::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 						selectedText.rich,
 						hasCopyRestrictionForSelected()));
 				}, &st::menuIconTranslate);
-				Serein::Menu::Tag(_menu->actions().back(), Serein::Menu::ActionId::Translate);
 			}
 			const auto editItem = [&]() -> HistoryItem* {
 				const auto view = (item && item->groupId())
@@ -3614,7 +3596,6 @@ void HistoryInner::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 							_menu->addAction(document->isStickerSetInstalled() ? tr::lng_context_pack_info(tr::now) : tr::lng_context_pack_add(tr::now), [=] {
 								showStickerPackInfo(document);
 							}, &st::menuIconStickers);
-							Serein::Menu::Tag(_menu->actions().back(), Serein::Menu::ActionId::StickerPack);
 						} else if (!sending) {
 							Api::AddAddToOwnedSetAction(
 								Ui::Menu::CreateAddActionCallback(_menu),
@@ -3691,7 +3672,6 @@ void HistoryInner::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 							tr::lng_context_copy_text(tr::now),
 							[=] { copyContextText(itemId); },
 							&st::menuIconCopy);
-						Serein::Menu::Tag(_menu->actions().back(), Serein::Menu::ActionId::Copy);
 					}
 					if ((!item->translation() || !_history->translatedTo())
 						&& (view->hasVisibleText() || mediaHasTextForCopy)) {
@@ -3712,7 +3692,6 @@ void HistoryInner::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 									translate,
 									hasRestriction));
 							}, &st::menuIconTranslate);
-							Serein::Menu::Tag(_menu->actions().back(), Serein::Menu::ActionId::Translate);
 						}
 					}
 				}
@@ -3733,7 +3712,6 @@ void HistoryInner::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 			_menu->addAction(item->history()->peer->isMegagroup() ? tr::lng_context_copy_message_link(tr::now) : tr::lng_context_copy_post_link(tr::now), [=] {
 				HistoryView::CopyPostLink(controller, itemId, HistoryView::Context::History);
 			}, &st::menuIconLink);
-			Serein::Menu::Tag(_menu->actions().back(), Serein::Menu::ActionId::CopyLink);
 		}
 		if (sponsored) {
 			const auto hasAbout = ranges::any_of(
@@ -3765,13 +3743,11 @@ void HistoryInner::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 				_menu->addAction(tr::lng_context_forward_selected(tr::now), [=] {
 					_widget->forwardSelected();
 				}, &st::menuIconForward);
-				Serein::Menu::Tag(_menu->actions().back(), Serein::Menu::ActionId::Forward);
 			}
 			if (selectedState.count > 0 && selectedState.count == selectedState.canDeleteCount) {
 				_menu->addAction(tr::lng_context_delete_selected(tr::now), [=] {
 					_widget->confirmDeleteSelected();
 				}, &st::menuIconDelete);
-				Serein::Menu::Tag(_menu->actions().back(), Serein::Menu::ActionId::Delete);
 			}
 			addUnpinSelectedAction();
 			if (selectedState.count > 0 && !hasCopyRestrictionForSelected()) {
@@ -3798,7 +3774,6 @@ void HistoryInner::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 					_menu->addAction(tr::lng_context_forward_msg(tr::now), [=] {
 						forwardAsGroup(itemId);
 					}, &st::menuIconForward);
-					Serein::Menu::Tag(_menu->actions().back(), Serein::Menu::ActionId::Forward);
 				}
 				if (HistoryView::CanAddOfferToMessage(item)) {
 					_menu->addAction(tr::lng_context_add_offer(tr::now), [=] {
@@ -3831,7 +3806,6 @@ void HistoryInner::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 					_menu->addAction(tr::lng_context_report_msg(tr::now), [=] {
 						reportAsGroup(itemId);
 					}, &st::menuIconReport);
-					Serein::Menu::Tag(_menu->actions().back(), Serein::Menu::ActionId::Report);
 				}
 				HistoryView::AddEphemeralMessageActions(
 					_menu,
@@ -3846,7 +3820,6 @@ void HistoryInner::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 				_menu->addAction(tr::lng_profile_block_user(tr::now), [=] {
 					blockSenderAsGroup(itemId);
 				}, &st::menuIconBlock);
-				Serein::Menu::Tag(_menu->actions().back(), Serein::Menu::ActionId::BlockSender);
 			}
 		} else if (Element::Moused()) {
 			addSelectMessageAction(Element::Moused()->data());
