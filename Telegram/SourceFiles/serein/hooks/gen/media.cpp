@@ -78,6 +78,14 @@ rpl::producer<bool> HideGreetingStickerValue() {
 	return ForDevice().Value(Serein::Media::kHideGreetingSticker);
 }
 
+QString StickerAuthorBot() {
+	return ForDevice().Get(Serein::Media::kStickerAuthorBot);
+}
+
+rpl::producer<QString> StickerAuthorBotValue() {
+	return ForDevice().Value(Serein::Media::kStickerAuthorBot);
+}
+
 bool DisableVideoAutoplay() {
 	return ForDevice().Get(Serein::Media::kDisableVideoAutoplay);
 }

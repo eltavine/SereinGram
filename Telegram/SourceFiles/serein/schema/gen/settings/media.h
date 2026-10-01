@@ -2,6 +2,7 @@
 #pragma once
 
 #include "serein/core/options.h"
+#include "serein/schema/codec.h"
 
 namespace Serein::Media {
 
@@ -76,6 +77,17 @@ inline constexpr auto kHideGreetingSticker = Option<bool>{
 	Category::Media,
 	"lng_serein_hide_greeting_sticker",
 	0 };
+inline const auto kStickerAuthorBot = Option<QString>{
+	"serein.stickerAuthorBot",
+	Scope::Device,
+	QString(),
+	Category::Media,
+	"lng_serein_sticker_author_bot",
+	0,
+	[](const QString &value) {
+		return (value == QString())
+			|| ((value.toUcs4().size() <= 33) && (Codec::Matches(value, QString::fromUtf8("^(@?[A-Za-z][A-Za-z0-9_]{3,31})?$"))));
+	} };
 inline constexpr auto kDisableVideoAutoplay = Option<bool>{
 	"serein.disableVideoAutoplay",
 	Scope::Device,
@@ -115,6 +127,7 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kHideRecommendedEmoji));
 	Expects(registry.Add(kHideGifCategories));
 	Expects(registry.Add(kHideGreetingSticker));
+	Expects(registry.Add(kStickerAuthorBot));
 	Expects(registry.Add(kDisableVideoAutoplay));
 	Expects(registry.Add(kGifPlaybackControls));
 	Expects(registry.Add(kMp4FilePreview));

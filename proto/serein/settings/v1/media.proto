@@ -55,6 +55,15 @@ message MediaSettings {
   optional bool hide_greeting_sticker = 8 [(serein.options.v1.field) = {
     keywords: ["greeting", "sticker"]
   }];
+  optional string sticker_author_bot = 14 [
+    (serein.options.v1.field) = {
+      title: "lng_serein_sticker_author_bot"
+      keywords: ["sticker", "author", "bot", "lookup"]
+      note: "lng_serein_sticker_author_bot_note"
+      text: {placeholder: "lng_serein_sticker_author_bot_placeholder"}
+    },
+    (buf.validate.field).string = {max_len: 33, pattern: "^(@?[A-Za-z][A-Za-z0-9_]{3,31})?$"}
+  ];
   optional bool disable_video_autoplay = 9 [
     (serein.options.v1.field) = {
       keywords: ["video", "autoplay"]

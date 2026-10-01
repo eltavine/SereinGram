@@ -91,6 +91,9 @@
 "lng_serein_hide_recommended_emoji" = "隱藏推薦表情";
 "lng_serein_hide_gif_categories" = "隱藏 GIF 推薦分類";
 "lng_serein_hide_greeting_sticker" = "隱藏新私人對話的問候貼圖";
+"lng_serein_sticker_author_bot" = "貼圖作者查詢機器人";
+"lng_serein_sticker_author_bot_placeholder" = "內嵌機器人使用者名稱";
+"lng_serein_sticker_author_bot_note" = "目前帳號不認識貼圖包或表情包的作者時，「作者」會把作者的使用者 ID 傳給這個內嵌機器人，只有它回答中的使用者名稱確實屬於該 ID 時才開啟個人資料。機器人的營運者能看到你查詢的每個 ID。留空則只複製 ID。";
 "lng_serein_disable_video_autoplay" = "關閉聊天中的影片自動播放";
 "lng_serein_gif_playback_controls" = "顯示 GIF 播放控制";
 "lng_serein_mp4_file_preview" = "以檔案傳送 MP4 時保留影片預覽";
@@ -644,3 +647,5 @@
 "lng_serein_details_sticker_set_author" = "貼圖包作者";
 "lng_serein_sticker_set_author" = "作者";
 "lng_serein_sticker_set_author_copied" = "作者資料尚未載入，已複製作者 ID。";
+"lng_serein_sticker_set_author_searching" = "正在尋找作者…";
+"lng_serein_sticker_set_author_not_found" = "未能找到作者，已複製作者 ID。";

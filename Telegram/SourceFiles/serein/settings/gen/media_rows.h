@@ -105,6 +105,14 @@ inline void AddLayout(
 	AddToggle(builder, kToggleRows[4]);
 	AddToggle(builder, kToggleRows[5]);
 	AddToggle(builder, kToggleRows[6]);
+	AddText(builder, {
+		.option = &kStickerAuthorBot,
+		.title = tr::lng_serein_sticker_author_bot,
+		.id = u"serein/media/sticker-author-bot"_q,
+		.keywords = { u"sticker"_q, u"author"_q, u"bot"_q, u"lookup"_q },
+		.placeholder = tr::lng_serein_sticker_author_bot_placeholder,
+	});
+	AddNote(builder, tr::lng_serein_sticker_author_bot_note);
 	AddToggle(builder, kToggleRows[7]);
 	AddToggle(builder, kToggleRows[8]);
 	AddToggle(builder, kToggleRows[9]);

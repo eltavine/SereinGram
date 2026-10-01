@@ -39,6 +39,7 @@ set(serein_sources
     serein/app/send_options.cpp
     serein/app/shortcuts.cpp
     serein/app/sticker_set_menu.cpp
+    serein/app/user_lookup.cpp
     serein/features/history/bubbles.cpp
     serein/features/history/restored_message.cpp
     serein/features/history/viewer.cpp

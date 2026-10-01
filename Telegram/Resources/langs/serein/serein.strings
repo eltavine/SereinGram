@@ -95,6 +95,9 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_hide_recommended_emoji" = "Hide recommended emoji";
 "lng_serein_hide_gif_categories" = "Hide suggested GIF categories";
 "lng_serein_hide_greeting_sticker" = "Hide greeting sticker in new private chats";
+"lng_serein_sticker_author_bot" = "Sticker author lookup bot";
+"lng_serein_sticker_author_bot_placeholder" = "Inline bot username";
+"lng_serein_sticker_author_bot_note" = "When a sticker or emoji pack author is not known to this account, \"Author\" sends the author's user ID to this inline bot and opens the profile only if a username from its answer belongs to that exact ID. The bot's operator sees every ID you look up. Leave empty to only copy the ID.";
 "lng_serein_disable_video_autoplay" = "Disable video autoplay in chats";
 "lng_serein_gif_playback_controls" = "Show GIF playback controls";
 "lng_serein_mp4_file_preview" = "Keep video preview for MP4 files";
@@ -648,3 +651,5 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_details_sticker_set_author" = "Sticker set author";
 "lng_serein_sticker_set_author" = "Author";
 "lng_serein_sticker_set_author_copied" = "The author is not loaded yet. Author ID copied.";
+"lng_serein_sticker_set_author_searching" = "Looking up the author…";
+"lng_serein_sticker_set_author_not_found" = "The author could not be found. Author ID copied.";

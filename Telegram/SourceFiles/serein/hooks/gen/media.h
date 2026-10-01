@@ -1,6 +1,7 @@
 // Generated from proto/serein/settings/v1/media.proto by tools/serein/codegen; do not edit.
 #pragma once
 
+#include <QtCore/QString>
 #include <rpl/producer.h>
 
 namespace Serein::Hooks::Media {
@@ -23,6 +24,8 @@ namespace Serein::Hooks::Media {
 [[nodiscard]] rpl::producer<bool> HideGifCategoriesValue();
 [[nodiscard]] bool HideGreetingSticker();
 [[nodiscard]] rpl::producer<bool> HideGreetingStickerValue();
+[[nodiscard]] QString StickerAuthorBot();
+[[nodiscard]] rpl::producer<QString> StickerAuthorBotValue();
 [[nodiscard]] bool DisableVideoAutoplay();
 [[nodiscard]] rpl::producer<bool> DisableVideoAutoplayValue();
 [[nodiscard]] bool GifPlaybackControls();

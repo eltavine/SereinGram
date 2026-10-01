@@ -91,6 +91,9 @@
 "lng_serein_hide_recommended_emoji" = "隐藏推荐表情";
 "lng_serein_hide_gif_categories" = "隐藏 GIF 推荐分类";
 "lng_serein_hide_greeting_sticker" = "隐藏新私聊的问候贴纸";
+"lng_serein_sticker_author_bot" = "贴纸作者查询机器人";
+"lng_serein_sticker_author_bot_placeholder" = "内联机器人用户名";
+"lng_serein_sticker_author_bot_note" = "当前账号不认识贴纸包或表情包的作者时，“作者”会把作者的用户 ID 发给这个内联机器人，只有它回答中的用户名确实属于该 ID 时才打开资料页。机器人的运营者能看到你查询的每个 ID。留空则只复制 ID。";
 "lng_serein_disable_video_autoplay" = "关闭聊天中的视频自动播放";
 "lng_serein_gif_playback_controls" = "显示 GIF 播放控制";
 "lng_serein_mp4_file_preview" = "以文件发送 MP4 时保留视频预览";
@@ -644,3 +647,5 @@
 "lng_serein_details_sticker_set_author" = "贴纸包作者";
 "lng_serein_sticker_set_author" = "作者";
 "lng_serein_sticker_set_author_copied" = "作者资料尚未加载，已复制作者 ID。";
+"lng_serein_sticker_set_author_searching" = "正在查找作者…";
+"lng_serein_sticker_set_author_not_found" = "未能找到作者，已复制作者 ID。";
