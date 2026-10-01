@@ -144,6 +144,8 @@ set(serein_sources
     serein/network/doh.cpp
     serein/network/proxy_import.cpp
     serein/network/proxy_order.cpp
+    serein/network/proxy_notes.cpp
+    serein/network/proxy_note.cpp
     serein/network/proxy_subscription.cpp
     serein/network/proxy_tools.cpp
     serein/network/vpn_proxy.cpp

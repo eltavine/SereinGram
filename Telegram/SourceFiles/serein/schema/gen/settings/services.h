@@ -7,6 +7,7 @@
 namespace Serein::ServiceSettings {
 
 [[nodiscard]] bool ValidServicesBytes(const QByteArray &value);
+[[nodiscard]] bool ValidProxyNotes(const QByteArray &value);
 
 inline const auto kServicesConfig = Option<QByteArray>{
 	"serein.services",
@@ -48,6 +49,14 @@ inline const auto kProxySubscription = Option<QString>{
 		return (value == QString())
 			|| ((value.toUcs4().size() <= 2048) && (Codec::Matches(value, QString::fromUtf8("^(https://[^\\s]+)?$"))));
 	} };
+inline const auto kProxyNotes = Option<QByteArray>{
+	"serein.proxyNotes",
+	Scope::Device,
+	QByteArray(),
+	Category::Services,
+	"lng_serein_proxy_notes",
+	0,
+	&ValidProxyNotes };
 inline constexpr auto kPauseProxyOnVpn = Option<bool>{
 	"serein.pauseProxyOnVpn",
 	Scope::Device,
@@ -80,6 +89,7 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kTranslationContext));
 	Expects(registry.Add(kChatTranslationWithoutPremium));
 	Expects(registry.Add(kProxySubscription));
+	Expects(registry.Add(kProxyNotes));
 	Expects(registry.Add(kPauseProxyOnVpn));
 	Expects(registry.Add(kProxyPausedByVpn));
 	Expects(registry.Add(kCustomDoh));

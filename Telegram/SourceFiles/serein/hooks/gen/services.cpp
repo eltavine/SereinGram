@@ -46,6 +46,14 @@ rpl::producer<QString> ProxySubscriptionValue() {
 	return ForDevice().Value(Serein::ServiceSettings::kProxySubscription);
 }
 
+QByteArray ProxyNotes() {
+	return ForDevice().Get(Serein::ServiceSettings::kProxyNotes);
+}
+
+rpl::producer<QByteArray> ProxyNotesValue() {
+	return ForDevice().Value(Serein::ServiceSettings::kProxyNotes);
+}
+
 bool PauseProxyOnVpn() {
 	return ForDevice().Get(Serein::ServiceSettings::kPauseProxyOnVpn);
 }

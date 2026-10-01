@@ -383,6 +383,10 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_proxy_sort" = "Sort proxies by latency";
 "lng_serein_proxy_clean" = "Remove unavailable proxies";
 "lng_serein_proxy_tools_about" = "Each proxy is checked by connecting to Telegram through it, for up to 15 seconds. The proxy in use is never removed. Web proxies are not checked, and sorting puts them after the reachable ones.";
+"lng_serein_proxy_notes" = "Proxy notes";
+"lng_serein_proxy_notes_about" = "Notes appear after the address in the proxy list. A note belongs to the address and port, so proxies that share them also share the note.";
+"lng_serein_proxy_notes_empty" = "Add a proxy first.";
+"lng_serein_proxy_notes_invalid" = "Could not save the notes. Keep each note under 64 characters on a single line.";
 "lng_serein_proxy_checking" = "Checking proxies: {amount}…";
 "lng_serein_proxy_check_busy" = "Proxies are already being checked.";
 "lng_serein_proxy_check_empty" = "The proxy list is empty.";

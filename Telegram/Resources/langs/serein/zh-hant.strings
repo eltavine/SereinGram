@@ -379,6 +379,10 @@
 "lng_serein_proxy_sort" = "依延遲排序代理";
 "lng_serein_proxy_clean" = "移除無法使用的代理";
 "lng_serein_proxy_tools_about" = "透過每個代理連線 Telegram 來檢測，最長 15 秒。正在使用的代理不會被移除。Web 代理不檢測，排序時排在可用代理之後。";
+"lng_serein_proxy_notes" = "代理備註";
+"lng_serein_proxy_notes_about" = "備註顯示在代理清單中的位址後面。備註依位址與連接埠儲存，位址與連接埠相同的代理共用同一則備註。";
+"lng_serein_proxy_notes_empty" = "請先新增代理。";
+"lng_serein_proxy_notes_invalid" = "無法儲存備註。每則備註須為單行且不超過 64 個字元。";
 "lng_serein_proxy_checking" = "正在檢測代理：{amount}…";
 "lng_serein_proxy_check_busy" = "代理正在檢測中。";
 "lng_serein_proxy_check_empty" = "代理列表是空的。";

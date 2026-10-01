@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "boxes/connection_box.h"
+#include "serein/hooks/network/proxy_note.h"
 
 #include "base/call_delayed.h"
 #include "base/qt/qt_key_modifiers.h"
@@ -805,7 +806,8 @@ void ProxyRow::updateFields(View &&view) {
 		TextWithEntities()
 			.append(_view.type)
 			.append(' ')
-			.append(tr::link(endpoint, QString())),
+			.append(tr::link(endpoint, QString()))
+			.append(Serein::Hooks::Network::ProxyNote(_view.host, _view.port)),
 		Ui::ItemTextDefaultOptions());
 
 	const auto state = _view.state;

@@ -17,6 +17,8 @@ namespace Serein::Hooks::ServiceSettings {
 [[nodiscard]] rpl::producer<bool> ChatTranslationWithoutPremiumValue();
 [[nodiscard]] QString ProxySubscription();
 [[nodiscard]] rpl::producer<QString> ProxySubscriptionValue();
+[[nodiscard]] QByteArray ProxyNotes();
+[[nodiscard]] rpl::producer<QByteArray> ProxyNotesValue();
 [[nodiscard]] bool PauseProxyOnVpn();
 [[nodiscard]] rpl::producer<bool> PauseProxyOnVpnValue();
 [[nodiscard]] bool ProxyPausedByVpn();

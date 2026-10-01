@@ -1,8 +1,13 @@
 #include "serein/settings/services_network.h"
 
+#include "core/application.h"
+#include "base/flat_set.h"
+#include "core/core_settings.h"
 #include "lang/lang_keys.h"
+#include "mtproto/mtproto_proxy_data.h"
 #include "serein/core/options.h"
 #include "serein/network/proxy_import.h"
+#include "serein/network/proxy_notes.h"
 #include "serein/network/proxy_tools.h"
 #include "serein/schema/gen/settings/services.h"
 #include "ui/layers/generic_box.h"
@@ -81,6 +86,76 @@ void ProxySubscriptionBox(not_null<Ui::GenericBox*> box) {
 	box->addButton(tr::lng_cancel(), [=] { box->closeBox(); });
 }
 
+[[nodiscard]] QString ProxyTitle(const MTP::ProxyData &proxy) {
+	using Type = MTP::ProxyData::Type;
+	const auto type = (proxy.type == Type::Socks5) ? u"SOCKS5"_q
+		: (proxy.type == Type::Http) ? u"HTTP"_q
+		: (proxy.type == Type::Mtproto) ? u"MTProto"_q
+		: u"Web"_q;
+	return (proxy.type == Type::Web)
+		? (type + u' ' + proxy.host)
+		: (type + u' ' + proxy.host + u':' + QString::number(proxy.port));
+}
+
+void ProxyNotesBox(not_null<Ui::GenericBox*> box) {
+	box->setTitle(tr::lng_serein_proxy_notes());
+	box->addRow(object_ptr<Ui::FlatLabel>(
+		box,
+		tr::lng_serein_proxy_notes_about(),
+		st::boxLabel));
+	const auto &list = Core::App().settings().proxy().list();
+	if (list.empty()) {
+		box->addRow(object_ptr<Ui::FlatLabel>(
+			box,
+			tr::lng_serein_proxy_notes_empty(),
+			st::boxLabel));
+		box->addButton(tr::lng_close(), [=] { box->closeBox(); });
+		return;
+	}
+	const auto current = Network::ParseProxyNotes(
+		ForDevice().Get(ServiceSettings::kProxyNotes)
+	).value_or(Network::ProxyNotes());
+	auto fields = std::vector<std::pair<QString, Ui::InputField*>>();
+	auto seen = base::flat_set<QString>();
+	for (const auto &proxy : list) {
+		const auto key = Network::ProxyNoteKey(proxy.host, proxy.port);
+		if (int(fields.size()) >= Network::kMaxProxyNotes
+			|| !seen.insert(key).second) {
+			continue;
+		}
+		const auto i = current.find(key);
+		const auto field = box->addRow(object_ptr<Ui::InputField>(
+			box,
+			st::defaultInputField,
+			Ui::InputField::Mode::SingleLine,
+			rpl::single(ProxyTitle(proxy)),
+			(i != current.end()) ? i->second : QString()));
+		field->setMaxLength(Network::kMaxProxyNoteLength);
+		fields.emplace_back(key, field);
+	}
+	box->addButton(tr::lng_settings_save(), [=] {
+		auto notes = Network::ProxyNotes();
+		for (const auto &[key, field] : fields) {
+			const auto note = field->getLastText().trimmed();
+			if (note.isEmpty()) {
+				continue;
+			} else if (!Network::ValidProxyNote(note)) {
+				field->showError();
+				return;
+			}
+			notes.emplace(key, note);
+		}
+		if (!ForDevice().Set(
+				ServiceSettings::kProxyNotes,
+				Network::SerializeProxyNotes(notes))) {
+			box->showToast(tr::lng_serein_proxy_notes_invalid(tr::now));
+			return;
+		}
+		box->closeBox();
+	});
+	box->addButton(tr::lng_cancel(), [=] { box->closeBox(); });
+}
+
 } // namespace
 
 void AddNetworkSettings(::Settings::Builder::SectionBuilder &builder) {
@@ -114,6 +189,13 @@ void AddNetworkSettings(::Settings::Builder::SectionBuilder &builder) {
 			Network::RemoveUnavailableProxies(controller->uiShow());
 		},
 		.keywords = { u"proxy"_q, u"unavailable"_q, u"clean"_q },
+	});
+	builder.addButton({
+		.id = u"serein/services/proxy-notes"_q,
+		.title = tr::lng_serein_proxy_notes(),
+		.st = &st::settingsButtonNoIcon,
+		.onClick = [=] { controller->show(Box(ProxyNotesBox)); },
+		.keywords = { u"proxy"_q, u"note"_q, u"remark"_q },
 	});
 	builder.addDividerText(tr::lng_serein_proxy_tools_about());
 	const auto vpnButton = builder.addButton({

@@ -379,6 +379,10 @@
 "lng_serein_proxy_sort" = "按延迟排序代理";
 "lng_serein_proxy_clean" = "移除不可用的代理";
 "lng_serein_proxy_tools_about" = "通过每个代理连接 Telegram 来检测，最长 15 秒。正在使用的代理不会被移除。Web 代理不检测，排序时排在可用代理之后。";
+"lng_serein_proxy_notes" = "代理备注";
+"lng_serein_proxy_notes_about" = "备注显示在代理列表中的地址后面。备注按地址与端口保存，地址与端口相同的代理共用同一条备注。";
+"lng_serein_proxy_notes_empty" = "请先添加代理。";
+"lng_serein_proxy_notes_invalid" = "无法保存备注。每条备注须为单行且不超过 64 个字符。";
 "lng_serein_proxy_checking" = "正在检测代理：{amount}…";
 "lng_serein_proxy_check_busy" = "代理正在检测中。";
 "lng_serein_proxy_check_empty" = "代理列表为空。";

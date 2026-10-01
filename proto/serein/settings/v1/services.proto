@@ -37,6 +37,11 @@ message ServicesSettings {
     },
     (buf.validate.field).string = {max_len: 2048, pattern: "^(https://[^\\s]+)?$"}
   ];
+  optional bytes proxy_notes = 9 [(serein.options.v1.field) = {
+    title: "lng_serein_proxy_notes"
+    custom_ui: true
+    validator: "ValidProxyNotes"
+  }];
   optional bool pause_proxy_on_vpn = 4 [(serein.options.v1.field) = {
     title: "lng_serein_proxy_vpn"
     custom_ui: true
