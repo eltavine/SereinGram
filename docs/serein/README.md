@@ -34,7 +34,7 @@ SereinGram 是基于 Telegram Desktop 的第三方桌面客户端，功能对标
 | --- | --- | --- | --- |
 | macOS | arm64 + x86_64 通用二进制，DMG | 上游 `prepare.py` + Xcode | 随上游 |
 | Windows | x64 安装包与便携版；arm64 随后 | 上游 `prepare.py` + MSVC | 随上游 |
-| Linux | x86_64 静态构建 tar 包（Rocky Linux 8 容器，glibc 兼容主流发行版）；发行版打包走 `DESKTOP_APP_USE_PACKAGED` | 上游 Docker 环境 | 随上游 |
+| Linux | x86_64 静态构建 tar 包与 AppImage（Rocky Linux 8 容器，glibc 兼容主流发行版）；发行版打包走 `DESKTOP_APP_USE_PACKAGED` | 上游 Docker 环境 | 随上游 |
 
 ## 3. 标识与状态
 
@@ -47,7 +47,7 @@ SereinGram 是基于 Telegram Desktop 的第三方桌面客户端，功能对标
 1. 三平台 CI 构建成功，`test_serein` 全部通过。
 2. 守卫全部通过：源文件行数、模块边界、上游侵入预算、`buf lint` 与 `buf breaking`、生成代码无漂移、三语文案一致、门面命名空间遮蔽、功能矩阵格式、工作流 actionlint。本地用 `tools/serein/check_all.sh` 一次运行全部守卫与核心测试。
 3. 发布说明分别列出本版本 `Verified` 与仅 `Implemented` 的功能。
-4. 发布流程：推送 `v*` 标签后，三平台工作流构建并把产物（macOS 通用 DMG、Linux x86_64 tar 包、Windows x64 便携版与安装包）上传到同一个草稿预发布 Release，核对门禁后手动发布；应用内的 GitHub 更新检查只提示正式版。CI 目前只构建 Debug 配置，正式版的构建配置与签名尚未确定。
+4. 发布流程：推送 `v*` 标签后，三平台工作流构建并把产物（macOS 通用 DMG、Linux x86_64 tar 包与 AppImage、Windows x64 便携版与安装包）上传到同一个草稿预发布 Release，核对门禁后手动发布；应用内的 GitHub 更新检查只提示正式版。CI 目前只构建 Debug 配置，正式版的构建配置与签名尚未确定。
 
 ## 5. 提交规范
 
