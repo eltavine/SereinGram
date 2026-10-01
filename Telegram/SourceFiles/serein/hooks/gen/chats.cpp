@@ -94,6 +94,14 @@ rpl::producer<int> ChatSortValue() {
 	return ForDevice().Value(Serein::Chats::kChatSort);
 }
 
+bool ManagedFolderFilter() {
+	return ForDevice().Get(Serein::Chats::kManagedFolderFilter);
+}
+
+rpl::producer<bool> ManagedFolderFilterValue() {
+	return ForDevice().Value(Serein::Chats::kManagedFolderFilter);
+}
+
 QString ManagedFolderIds(gsl::not_null<Main::Session*> session) {
 	return ForAccount(session).Get(Serein::Chats::kManagedFolderIds);
 }

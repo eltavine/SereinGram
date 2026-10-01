@@ -164,7 +164,7 @@ void TestOptions() {
 		"unknown refresh option");
 	auto chats = Registry();
 	Chats::RegisterOptions(chats);
-	Require(chats.All().size() == 25, "chat option count");
+	Require(chats.All().size() == 26, "chat option count");
 	Require(!Chats::kLocalPinning.fallback
 		&& Chats::kLocalPins.scope == Scope::Account
 		&& Chats::kLocalPins.validate(QString::fromLatin1("7,9"))
@@ -265,7 +265,7 @@ void TestOptions() {
 		"notification delay bounds");
 	auto compose = Registry();
 	Compose::RegisterOptions(compose);
-	Require(compose.All().size() == 31, "compose option count");
+	Require(compose.All().size() == 32, "compose option count");
 	Require(Compose::kMentionMenu.key == "serein.mentionMenu"
 		&& Compose::kMentionMenu.scope == Scope::Device
 		&& !Compose::kMentionMenu.fallback
@@ -307,6 +307,7 @@ void TestOptions() {
 			&& entry.key != Compose::kSendSilently.key
 			&& entry.key != Compose::kMentionMenu.key
 			&& entry.key != Compose::kFormatToolbar.key
+			&& entry.key != Compose::kDraftTranslation.key
 			&& entry.key != Compose::kTextReplacements.key) {
 			Require(compose.HasFlag(entry.key, Flag::RefreshComposeButtons),
 				"compose button refresh flag");
@@ -314,7 +315,7 @@ void TestOptions() {
 	}
 	auto media = Registry();
 	Media::RegisterOptions(media);
-	Require(media.All().size() == 15, "media option count");
+	Require(media.All().size() == 16, "media option count");
 	Require(media.HasFlag(Media::kStickerScale.key,
 		Flag::RefreshMessageView), "sticker scale refresh flag");
 	Require(!media.HasFlag(Media::kRecentStickerLimit.key,

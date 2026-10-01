@@ -91,6 +91,7 @@
 "lng_serein_hide_recommended_emoji" = "隐藏推荐表情";
 "lng_serein_hide_gif_categories" = "隐藏 GIF 推荐分类";
 "lng_serein_hide_greeting_sticker" = "隐藏新私聊的问候贴纸";
+"lng_serein_sticker_pack_author" = "在贴纸包与表情包菜单中显示“作者”";
 "lng_serein_sticker_author_bot" = "贴纸作者查询机器人";
 "lng_serein_sticker_author_bot_placeholder" = "内联机器人用户名";
 "lng_serein_sticker_author_bot_note" = "当前账号不认识贴纸包或表情包的作者时，“作者”会把作者的用户 ID 发给这个内联机器人，只有它回答中的用户名确实属于该 ID 时才打开资料页。机器人的运营者能看到你查询的每个 ID。留空则只复制 ID。";
@@ -298,6 +299,8 @@
 "lng_serein_sort_changed" = "编辑期间会话排序设置已变化，请重新打开此页。";
 "lng_serein_sort_about" = "启用规则并拖动调整优先级。置顶会话始终在最前。";
 "lng_serein_managed_only" = "仅显示我管理的群组和频道";
+"lng_serein_managed_folder_filter" = "按我管理的对话筛选文件夹";
+"lng_serein_managed_folder_filter_note" = "在文件夹菜单中加入“仅显示我管理的群组和频道”。关闭后保留已标记的文件夹，但不再筛选。";
 "lng_serein_text_format" = "文本格式";
 "lng_serein_disable_auto_markdown" = "关闭自动 Markdown";
 "lng_serein_disable_link_preview" = "默认不显示链接预览";
@@ -397,6 +400,7 @@
 "lng_serein_service_translation" = "手动翻译";
 "lng_serein_translate_apply" = "应用到草稿";
 "lng_serein_translate_draft" = "翻译草稿…";
+"lng_serein_draft_translation" = "在输入框菜单中显示“翻译草稿”";
 "lng_serein_summary_action" = "总结最近的消息";
 "lng_serein_summary_title" = "对话摘要";
 "lng_serein_summary_about" = "为生成摘要，本对话中最多 60 条最近加载的消息会发送给 {name}。";

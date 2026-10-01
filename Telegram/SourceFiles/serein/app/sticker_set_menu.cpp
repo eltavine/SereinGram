@@ -2,6 +2,7 @@
 
 #include "serein/app/user_lookup.h"
 #include "serein/features/stickers/model/owner.h"
+#include "serein/schema/gen/settings/media.h"
 #include "chat_helpers/compose/compose_show.h"
 #include "data/data_peer.h"
 #include "data/data_session.h"
@@ -22,7 +23,7 @@ void FillStickerSetMenu(
 		std::shared_ptr<ChatHelpers::Show> show,
 		quint64 setId) {
 	const auto ownerId = Stickers::SetOwnerId(setId);
-	if (!ownerId) {
+	if (!ownerId || !ForDevice().Get(Serein::Media::kStickerPackAuthor)) {
 		return;
 	}
 	menu->addAction(tr::lng_serein_sticker_set_author(tr::now), [=] {

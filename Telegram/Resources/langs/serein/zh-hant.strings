@@ -91,6 +91,7 @@
 "lng_serein_hide_recommended_emoji" = "隱藏推薦表情";
 "lng_serein_hide_gif_categories" = "隱藏 GIF 推薦分類";
 "lng_serein_hide_greeting_sticker" = "隱藏新私人對話的問候貼圖";
+"lng_serein_sticker_pack_author" = "在貼圖包與表情包選單中顯示「作者」";
 "lng_serein_sticker_author_bot" = "貼圖作者查詢機器人";
 "lng_serein_sticker_author_bot_placeholder" = "內嵌機器人使用者名稱";
 "lng_serein_sticker_author_bot_note" = "目前帳號不認識貼圖包或表情包的作者時，「作者」會把作者的使用者 ID 傳給這個內嵌機器人，只有它回答中的使用者名稱確實屬於該 ID 時才開啟個人資料。機器人的營運者能看到你查詢的每個 ID。留空則只複製 ID。";
@@ -298,6 +299,8 @@
 "lng_serein_sort_changed" = "編輯期間會話排序設定已變更，請重新開啟此頁。";
 "lng_serein_sort_about" = "啟用規則並拖曳調整優先順序。置頂會話始終在最前。";
 "lng_serein_managed_only" = "僅顯示我管理的群組和頻道";
+"lng_serein_managed_folder_filter" = "依我管理的對話篩選資料夾";
+"lng_serein_managed_folder_filter_note" = "在資料夾選單中加入「僅顯示我管理的群組和頻道」。關閉後保留已標記的資料夾，但不再篩選。";
 "lng_serein_text_format" = "文字格式";
 "lng_serein_disable_auto_markdown" = "關閉自動 Markdown";
 "lng_serein_disable_link_preview" = "預設不顯示連結預覽";
@@ -397,6 +400,7 @@
 "lng_serein_service_translation" = "手動翻譯";
 "lng_serein_translate_apply" = "套用到草稿";
 "lng_serein_translate_draft" = "翻譯草稿…";
+"lng_serein_draft_translation" = "在輸入框選單中顯示「翻譯草稿」";
 "lng_serein_summary_action" = "總結最近的訊息";
 "lng_serein_summary_title" = "對話摘要";
 "lng_serein_summary_about" = "為產生摘要，本對話中最多 60 則最近載入的訊息會傳送給 {name}。";

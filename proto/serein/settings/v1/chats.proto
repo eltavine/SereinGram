@@ -83,6 +83,11 @@ message ChatsSettings {
       validator: "ValidChatSort"
     }
   ];
+  optional bool managed_folder_filter = 26 [(serein.options.v1.field) = {
+    keywords: ["folder", "admin", "manage", "groups", "channels"]
+    note: "lng_serein_managed_folder_filter_note"
+    restart: true
+  }];
   optional string managed_folder_ids = 12 [
     (serein.options.v1.field) = {
       hidden: true

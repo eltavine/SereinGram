@@ -77,6 +77,13 @@ inline constexpr auto kHideGreetingSticker = Option<bool>{
 	Category::Media,
 	"lng_serein_hide_greeting_sticker",
 	0 };
+inline constexpr auto kStickerPackAuthor = Option<bool>{
+	"serein.stickerPackAuthor",
+	Scope::Device,
+	false,
+	Category::Media,
+	"lng_serein_sticker_pack_author",
+	0 };
 inline const auto kStickerAuthorBot = Option<QString>{
 	"serein.stickerAuthorBot",
 	Scope::Device,
@@ -134,6 +141,7 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kHideRecommendedEmoji));
 	Expects(registry.Add(kHideGifCategories));
 	Expects(registry.Add(kHideGreetingSticker));
+	Expects(registry.Add(kStickerPackAuthor));
 	Expects(registry.Add(kStickerAuthorBot));
 	Expects(registry.Add(kDisableVideoAutoplay));
 	Expects(registry.Add(kGifPlaybackControls));

@@ -95,6 +95,7 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_hide_recommended_emoji" = "Hide recommended emoji";
 "lng_serein_hide_gif_categories" = "Hide suggested GIF categories";
 "lng_serein_hide_greeting_sticker" = "Hide greeting sticker in new private chats";
+"lng_serein_sticker_pack_author" = "“Author” in sticker and emoji pack menus";
 "lng_serein_sticker_author_bot" = "Sticker author lookup bot";
 "lng_serein_sticker_author_bot_placeholder" = "Inline bot username";
 "lng_serein_sticker_author_bot_note" = "When a sticker or emoji pack author is not known to this account, \"Author\" sends the author's user ID to this inline bot and opens the profile only if a username from its answer belongs to that exact ID. The bot's operator sees every ID you look up. Leave empty to only copy the ID.";
@@ -302,6 +303,8 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_sort_changed" = "Chat order changed while this page was open. Reopen it to edit the latest settings.";
 "lng_serein_sort_about" = "Enable rules and drag rows to set their priority. Pinned chats stay first.";
 "lng_serein_managed_only" = "Show only groups and channels I manage";
+"lng_serein_managed_folder_filter" = "Folder filter for chats you manage";
+"lng_serein_managed_folder_filter_note" = "Adds “Show only groups and channels I manage” to folder menus. Turning this off keeps the folders you marked but stops filtering them.";
 "lng_serein_text_format" = "Text formatting";
 "lng_serein_disable_auto_markdown" = "Disable automatic Markdown";
 "lng_serein_disable_link_preview" = "Hide link previews by default";
@@ -401,6 +404,7 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_service_translation" = "Manual translation";
 "lng_serein_translate_apply" = "Use in draft";
 "lng_serein_translate_draft" = "Translate draft…";
+"lng_serein_draft_translation" = "“Translate draft” in the message field menu";
 "lng_serein_summary_action" = "Summarize recent messages";
 "lng_serein_summary_title" = "Chat summary";
 "lng_serein_summary_about" = "Up to 60 of the latest loaded messages in this chat are sent to {name} to write this summary.";

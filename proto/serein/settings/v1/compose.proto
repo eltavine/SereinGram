@@ -115,6 +115,9 @@ message ComposeSettings {
   optional bool mention_menu = 29 [(serein.options.v1.field) = {
     keywords: ["mention", "format"]
   }];
+  optional bool draft_translation = 32 [(serein.options.v1.field) = {
+    keywords: ["translate", "draft", "message field"]
+  }];
   optional bool format_toolbar = 31 [(serein.options.v1.field) = {
     keywords: ["format", "toolbar", "bold", "selection"]
   }];

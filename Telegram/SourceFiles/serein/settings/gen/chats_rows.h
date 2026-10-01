@@ -10,7 +10,7 @@
 
 namespace Serein::Chats {
 
-inline const auto kToggleRows = std::array<ToggleRow, 16>{ {
+inline const auto kToggleRows = std::array<ToggleRow, 17>{ {
 	{
 		&kCompactList,
 		tr::lng_serein_compact_chat_list,
@@ -46,6 +46,12 @@ inline const auto kToggleRows = std::array<ToggleRow, 16>{ {
 		tr::lng_serein_hide_folder_unread_counters,
 		u"serein/chats/hide-folder-unread-counters"_q,
 		{ u"unread"_q, u"folders"_q },
+	},
+	{
+		&kManagedFolderFilter,
+		tr::lng_serein_managed_folder_filter,
+		u"serein/chats/managed-folder-filter"_q,
+		{ u"folder"_q, u"admin"_q, u"manage"_q, u"groups"_q, u"channels"_q },
 	},
 	{
 		&kHideSponsoredMessages,
@@ -148,29 +154,31 @@ inline void AddLayout(
 		{ u"sort"_q, u"order"_q },
 	});
 	custom.chatSort();
+	AddToggle(builder, kToggleRows[6]);
+	AddNote(builder, tr::lng_serein_managed_folder_filter_note);
 	AddSection(builder, {
 		u"serein/chats/promotions"_q,
 		tr::lng_serein_promotions,
 		{ u"promotions"_q, u"ads"_q },
 	});
-	AddToggle(builder, kToggleRows[6]);
 	AddToggle(builder, kToggleRows[7]);
 	AddToggle(builder, kToggleRows[8]);
 	AddToggle(builder, kToggleRows[9]);
+	AddToggle(builder, kToggleRows[10]);
 	AddSection(builder, {
 		u"serein/chats/scroll-navigation"_q,
 		tr::lng_serein_scroll_navigation,
 		{ u"scroll"_q, u"navigation"_q },
 	});
-	AddToggle(builder, kToggleRows[10]);
 	AddToggle(builder, kToggleRows[11]);
 	AddToggle(builder, kToggleRows[12]);
-	AddNote(builder, tr::lng_serein_remember_reading_position_note);
 	AddToggle(builder, kToggleRows[13]);
-	AddNote(builder, tr::lng_serein_chat_quick_actions_note);
+	AddNote(builder, tr::lng_serein_remember_reading_position_note);
 	AddToggle(builder, kToggleRows[14]);
-	AddNote(builder, tr::lng_serein_management_shortcuts_note);
+	AddNote(builder, tr::lng_serein_chat_quick_actions_note);
 	AddToggle(builder, kToggleRows[15]);
+	AddNote(builder, tr::lng_serein_management_shortcuts_note);
+	AddToggle(builder, kToggleRows[16]);
 	AddNote(builder, tr::lng_serein_local_pinning_note);
 }
 

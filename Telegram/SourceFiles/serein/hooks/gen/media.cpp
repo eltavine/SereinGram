@@ -78,6 +78,14 @@ rpl::producer<bool> HideGreetingStickerValue() {
 	return ForDevice().Value(Serein::Media::kHideGreetingSticker);
 }
 
+bool StickerPackAuthor() {
+	return ForDevice().Get(Serein::Media::kStickerPackAuthor);
+}
+
+rpl::producer<bool> StickerPackAuthorValue() {
+	return ForDevice().Value(Serein::Media::kStickerPackAuthor);
+}
+
 QString StickerAuthorBot() {
 	return ForDevice().Get(Serein::Media::kStickerAuthorBot);
 }

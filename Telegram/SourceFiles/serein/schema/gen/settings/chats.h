@@ -105,6 +105,13 @@ inline constexpr auto kChatSort = Option<int>{
 	"lng_serein_chat_sort",
 	0,
 	&ValidChatSort };
+inline constexpr auto kManagedFolderFilter = Option<bool>{
+	"serein.managedFolderFilter",
+	Scope::Device,
+	false,
+	Category::Chats,
+	"lng_serein_managed_folder_filter",
+	static_cast<unsigned>(Flag::RequiresRestart) };
 inline const auto kManagedFolderIds = Option<QString>{
 	"serein.managedFolderIds",
 	Scope::Account,
@@ -220,6 +227,7 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kShowArchiveInFolders));
 	Expects(registry.Add(kHideFolderUnreadCounters));
 	Expects(registry.Add(kChatSort));
+	Expects(registry.Add(kManagedFolderFilter));
 	Expects(registry.Add(kManagedFolderIds));
 	Expects(registry.Add(kHideSponsoredMessages));
 	Expects(registry.Add(kHideProxySponsor));

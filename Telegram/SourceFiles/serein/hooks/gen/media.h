@@ -24,6 +24,8 @@ namespace Serein::Hooks::Media {
 [[nodiscard]] rpl::producer<bool> HideGifCategoriesValue();
 [[nodiscard]] bool HideGreetingSticker();
 [[nodiscard]] rpl::producer<bool> HideGreetingStickerValue();
+[[nodiscard]] bool StickerPackAuthor();
+[[nodiscard]] rpl::producer<bool> StickerPackAuthorValue();
 [[nodiscard]] QString StickerAuthorBot();
 [[nodiscard]] rpl::producer<QString> StickerAuthorBotValue();
 [[nodiscard]] bool DisableVideoAutoplay();

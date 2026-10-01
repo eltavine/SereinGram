@@ -55,6 +55,9 @@ message MediaSettings {
   optional bool hide_greeting_sticker = 8 [(serein.options.v1.field) = {
     keywords: ["greeting", "sticker"]
   }];
+  optional bool sticker_pack_author = 16 [(serein.options.v1.field) = {
+    keywords: ["sticker", "emoji", "pack", "author", "creator"]
+  }];
   optional string sticker_author_bot = 14 [
     (serein.options.v1.field) = {
       title: "lng_serein_sticker_author_bot"

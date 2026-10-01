@@ -153,6 +153,13 @@ inline constexpr auto kMentionMenu = Option<bool>{
 	Category::Compose,
 	"lng_serein_mention_menu",
 	0 };
+inline constexpr auto kDraftTranslation = Option<bool>{
+	"serein.draftTranslation",
+	Scope::Device,
+	false,
+	Category::Compose,
+	"lng_serein_draft_translation",
+	0 };
 inline constexpr auto kFormatToolbar = Option<bool>{
 	"serein.formatToolbar",
 	Scope::Device,
@@ -258,6 +265,7 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kSpaceOnSend));
 	Expects(registry.Add(kSpaceOnEdit));
 	Expects(registry.Add(kMentionMenu));
+	Expects(registry.Add(kDraftTranslation));
 	Expects(registry.Add(kFormatToolbar));
 	Expects(registry.Add(kDefaultCodeLanguage));
 	Expects(registry.Add(kQuickReplies));

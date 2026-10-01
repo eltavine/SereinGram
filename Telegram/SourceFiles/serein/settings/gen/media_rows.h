@@ -10,7 +10,7 @@
 
 namespace Serein::Media {
 
-inline const auto kToggleRows = std::array<ToggleRow, 12>{ {
+inline const auto kToggleRows = std::array<ToggleRow, 13>{ {
 	{
 		&kHideStickerTime,
 		tr::lng_serein_hide_sticker_time,
@@ -52,6 +52,12 @@ inline const auto kToggleRows = std::array<ToggleRow, 12>{ {
 		tr::lng_serein_hide_greeting_sticker,
 		u"serein/media/hide-greeting-sticker"_q,
 		{ u"greeting"_q, u"sticker"_q },
+	},
+	{
+		&kStickerPackAuthor,
+		tr::lng_serein_sticker_pack_author,
+		u"serein/media/sticker-pack-author"_q,
+		{ u"sticker"_q, u"emoji"_q, u"pack"_q, u"author"_q, u"creator"_q },
 	},
 	{
 		&kDisableVideoAutoplay,
@@ -111,6 +117,7 @@ inline void AddLayout(
 	AddToggle(builder, kToggleRows[4]);
 	AddToggle(builder, kToggleRows[5]);
 	AddToggle(builder, kToggleRows[6]);
+	AddToggle(builder, kToggleRows[7]);
 	AddText(builder, {
 		.option = &kStickerAuthorBot,
 		.title = tr::lng_serein_sticker_author_bot,
@@ -119,12 +126,12 @@ inline void AddLayout(
 		.placeholder = tr::lng_serein_sticker_author_bot_placeholder,
 	});
 	AddNote(builder, tr::lng_serein_sticker_author_bot_note);
-	AddToggle(builder, kToggleRows[7]);
 	AddToggle(builder, kToggleRows[8]);
 	AddToggle(builder, kToggleRows[9]);
-	AddNote(builder, tr::lng_serein_force_click_preview_note);
 	AddToggle(builder, kToggleRows[10]);
+	AddNote(builder, tr::lng_serein_force_click_preview_note);
 	AddToggle(builder, kToggleRows[11]);
+	AddToggle(builder, kToggleRows[12]);
 	AddNote(builder, tr::lng_serein_denoise_voice_messages_note);
 }
 
