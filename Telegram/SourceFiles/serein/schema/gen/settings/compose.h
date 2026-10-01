@@ -171,6 +171,13 @@ inline constexpr auto kLastForwardOptions = Option<int>{
 		return (value == 0)
 			|| (((value == 0 || value == 1 || value == 2)));
 	} };
+inline constexpr auto kCaptionAboveMedia = Option<bool>{
+	"serein.captionAboveMedia",
+	Scope::Device,
+	false,
+	Category::Compose,
+	"lng_serein_caption_above_media",
+	0 };
 inline constexpr auto kDraftTranslation = Option<bool>{
 	"serein.draftTranslation",
 	Scope::Device,
@@ -285,6 +292,7 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kMentionMenu));
 	Expects(registry.Add(kRememberForwardOptions));
 	Expects(registry.Add(kLastForwardOptions));
+	Expects(registry.Add(kCaptionAboveMedia));
 	Expects(registry.Add(kDraftTranslation));
 	Expects(registry.Add(kFormatToolbar));
 	Expects(registry.Add(kDefaultCodeLanguage));

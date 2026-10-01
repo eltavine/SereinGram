@@ -412,6 +412,7 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_service_translation" = "Manual translation";
 "lng_serein_translate_apply" = "Use in draft";
 "lng_serein_translate_draft" = "Translate draft…";
+"lng_serein_caption_above_media" = "Place captions above media by default";
 "lng_serein_draft_translation" = "“Translate draft” in the message field menu";
 "lng_serein_remember_forward_options" = "Remember forward options";
 "lng_serein_remember_forward_options_note" = "New forwards start with the sender name and caption choice you last made in the forward bar or the share window.";

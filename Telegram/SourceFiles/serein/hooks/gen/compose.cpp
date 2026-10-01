@@ -182,6 +182,14 @@ rpl::producer<int> LastForwardOptionsValue() {
 	return ForDevice().Value(Serein::Compose::kLastForwardOptions);
 }
 
+bool CaptionAboveMedia() {
+	return ForDevice().Get(Serein::Compose::kCaptionAboveMedia);
+}
+
+rpl::producer<bool> CaptionAboveMediaValue() {
+	return ForDevice().Value(Serein::Compose::kCaptionAboveMedia);
+}
+
 bool DraftTranslation() {
 	return ForDevice().Get(Serein::Compose::kDraftTranslation);
 }

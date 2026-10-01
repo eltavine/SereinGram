@@ -51,6 +51,8 @@ namespace Serein::Hooks::Compose {
 [[nodiscard]] rpl::producer<bool> RememberForwardOptionsValue();
 [[nodiscard]] int LastForwardOptions();
 [[nodiscard]] rpl::producer<int> LastForwardOptionsValue();
+[[nodiscard]] bool CaptionAboveMedia();
+[[nodiscard]] rpl::producer<bool> CaptionAboveMediaValue();
 [[nodiscard]] bool DraftTranslation();
 [[nodiscard]] rpl::producer<bool> DraftTranslationValue();
 [[nodiscard]] bool FormatToolbar();

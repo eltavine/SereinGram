@@ -408,6 +408,7 @@
 "lng_serein_service_translation" = "手動翻譯";
 "lng_serein_translate_apply" = "套用到草稿";
 "lng_serein_translate_draft" = "翻譯草稿…";
+"lng_serein_caption_above_media" = "預設將說明文字放在媒體上方";
 "lng_serein_draft_translation" = "在輸入框選單中顯示「翻譯草稿」";
 "lng_serein_remember_forward_options" = "記住轉傳選項";
 "lng_serein_remember_forward_options_note" = "新的轉傳預設使用你上次在轉傳列或分享視窗中對傳送者名稱與說明文字的選擇。";

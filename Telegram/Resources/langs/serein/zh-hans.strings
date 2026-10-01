@@ -408,6 +408,7 @@
 "lng_serein_service_translation" = "手动翻译";
 "lng_serein_translate_apply" = "应用到草稿";
 "lng_serein_translate_draft" = "翻译草稿…";
+"lng_serein_caption_above_media" = "默认将说明文字放在媒体上方";
 "lng_serein_draft_translation" = "在输入框菜单中显示“翻译草稿”";
 "lng_serein_remember_forward_options" = "记住转发选项";
 "lng_serein_remember_forward_options_note" = "新的转发默认使用你上次在转发栏或分享窗口中对发送者名字与说明文字的选择。";

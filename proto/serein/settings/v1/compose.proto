@@ -126,6 +126,9 @@ message ComposeSettings {
     },
     (buf.validate.field).int32 = {in: [0, 1, 2]}
   ];
+  optional bool caption_above_media = 35 [(serein.options.v1.field) = {
+    keywords: ["caption", "above", "media", "photo", "video"]
+  }];
   optional bool draft_translation = 32 [(serein.options.v1.field) = {
     keywords: ["translate", "draft", "message field"]
   }];

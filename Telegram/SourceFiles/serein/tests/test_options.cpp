@@ -265,7 +265,7 @@ void TestOptions() {
 		"notification delay bounds");
 	auto compose = Registry();
 	Compose::RegisterOptions(compose);
-	Require(compose.All().size() == 34, "compose option count");
+	Require(compose.All().size() == 35, "compose option count");
 	Require(Compose::kMentionMenu.key == "serein.mentionMenu"
 		&& Compose::kMentionMenu.scope == Scope::Device
 		&& !Compose::kMentionMenu.fallback
@@ -308,6 +308,7 @@ void TestOptions() {
 			&& entry.key != Compose::kMentionMenu.key
 			&& entry.key != Compose::kFormatToolbar.key
 			&& entry.key != Compose::kDraftTranslation.key
+			&& entry.key != Compose::kCaptionAboveMedia.key
 			&& entry.key != Compose::kRememberForwardOptions.key
 			&& entry.key != Compose::kLastForwardOptions.key
 			&& entry.key != Compose::kTextReplacements.key) {
