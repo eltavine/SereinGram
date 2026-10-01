@@ -86,6 +86,35 @@ void RestoreLoaded(gsl::not_null<::History*> history) {
 
 } // namespace
 
+QString DeletedReplyText(
+		gsl::not_null<::History*> history,
+		qint64 messageId,
+		const QString &fallback) {
+	constexpr auto kPreviewLength = 64;
+	const auto store = (messageId > 0)
+		? HistoryStoreFor(&history->session())
+		: nullptr;
+	if (!store) {
+		return fallback;
+	}
+	const auto records = store->deleted({
+		.peerId = qint64(history->peer->id.value),
+		.minMessageId = messageId,
+		.maxMessageId = messageId,
+		.limit = 1,
+	});
+	if (records.empty()) {
+		return fallback;
+	}
+	const auto &record = records.front();
+	const auto text = (record.text.isEmpty()
+		? record.mediaSummary
+		: record.text).simplified();
+	return text.isEmpty()
+		? fallback
+		: (fallback + u": "_q + text.left(kPreviewLength));
+}
+
 void OnHistorySliceAdded(gsl::not_null<::History*> history) {
 	const auto session = &history->session();
 	if (!HistorySettings::HistoryKeepDeletedInPlace(session)) {

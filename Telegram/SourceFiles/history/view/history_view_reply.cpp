@@ -8,6 +8,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "history/view/history_view_reply.h"
 #include "serein/hooks/filters/view.h"
 #include "serein/hooks/gen/interface.h"
+#include "serein/hooks/history.h"
 #include "serein/hooks/interface/reply_colors.h"
 
 #include "core/click_handler_types.h"
@@ -717,7 +718,10 @@ void Reply::updateName(
 			? tr::lng_profile_loading(tr::now)
 			: fields.storyId
 			? tr::lng_deleted_story(tr::now)
-			: tr::lng_deleted_message(tr::now);
+			: Serein::Hooks::DeletedReplyText(
+				history,
+				fields.messageId.bare,
+				tr::lng_deleted_message(tr::now));
 		const auto phraseWidth = st::msgDateFont->width(_stateText);
 		_maxWidth = unavailable
 			? phraseWidth

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QtCore/QByteArray>
+#include <QtCore/QString>
 #include <gsl/pointers>
 
 #include <optional>
@@ -35,6 +36,10 @@ void OnBeforeEdition(
 [[nodiscard]] bool KeepExpiredMedia(gsl::not_null<const HistoryItem*> item);
 void OnHistorySliceAdded(gsl::not_null<::History*> history);
 [[nodiscard]] bool AutoTranslate(gsl::not_null<::History*> history);
+[[nodiscard]] QString DeletedReplyText(
+	gsl::not_null<::History*> history,
+	qint64 messageId,
+	const QString &fallback);
 
 [[nodiscard]] Ports::HistoryStore *HistoryStoreFor(
 	gsl::not_null<Main::Session*> session);
