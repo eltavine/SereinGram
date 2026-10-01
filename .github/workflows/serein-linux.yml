@@ -277,7 +277,7 @@ jobs:
           tar -xzf "$archive" -C "$RUNNER_TEMP" nfpm
           stage="$RUNNER_TEMP/packages"
           packaging/nfpm/stage.sh out/Debug/SereinGram \
-            out/Telegram/io.github.eltavine.SereinGram.metainfo.xml "$stage"
+            lib/xdg/io.github.eltavine.SereinGram.metainfo.xml "$stage"
           version=$(sed -n 's/^AppVersionStrSmall *//p' Telegram/build/version)
           if [[ "$GITHUB_REF" != refs/tags/* ]]; then
             version="$version+g${GITHUB_SHA::7}"

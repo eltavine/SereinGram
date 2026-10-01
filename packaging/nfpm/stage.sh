@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Lays out the files that nfpm.yaml packages.
-# Usage: stage.sh <SereinGram binary> <generated metainfo> <stage directory>
+# Usage: stage.sh <SereinGram binary> <metainfo> <stage directory>
 set -euo pipefail
 
 if [ "$#" -ne 3 ]; then
