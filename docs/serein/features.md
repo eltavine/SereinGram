@@ -18,7 +18,7 @@
 | SG-PLAT-01 | macOS 通用二进制（arm64 + x86_64）构建与 DMG（依赖与应用默认按 `x86_64;arm64` 构建；CI 用 `lipo -verify_arch` 校验两种架构后打包 DMG 上传，2026-10-01 首次通过，`test_serein` 同时运行；签名与公证需要 Apple Developer ID 证书，尚未接入） | T | In Progress | P0 |
 | SG-PLAT-02 | Windows x64 构建、安装包与便携版（便携版为单个 `SereinGram.exe`；CI 每次构建都以 Inno Setup 编译 `setup.iss` 生成安装包，失败即构建失败，发布时命名为 `SereinGram-windows-x64-setup.exe`；签名待做） | T | In Progress | P0 |
 | SG-PLAT-03 | Linux x86_64 静态构建（Rocky Linux 8 容器）与 tar 包（CI 打包 `SereinGram.tar.gz` 与 `SereinGram-x86_64.AppImage` 上传，AppImage 用固定版本与校验和的 appimagetool 1.9.1 和 type2 运行时生成；ffcfe2a 起 Linux 工作流全绿：应用与 `test_serein` 构建通过、全部核心测试通过、产物上传成功，构建失败时也保存 ccache，热缓存下整轮约 17 分钟） | T | Implemented | P0 |
-| SG-PLAT-04 | 三平台 CI：构建、`test_serein`、全部守卫（`serein-{mac,win,linux}.yml` 构建应用与 `test_serein`，`serein-guards.yml` 在每次推送运行全部守卫、核心测试与 commitlint 且持续通过；Linux 与 macOS 已于 2026-10-01 首次全绿，Windows 已修复全部已知错误，等待首次全绿） | D | In Progress | P0 |
+| SG-PLAT-04 | 三平台 CI：构建、`test_serein`、全部守卫（`serein-{mac,win,linux}.yml` 构建应用与 `test_serein`，`serein-guards.yml` 在每次推送运行全部守卫、核心测试与 commitlint 且持续通过；三平台的应用构建与 `test_serein` 均已通过，Windows 同时生成安装包，macOS 同时生成通用 DMG，Linux 同时生成 AppImage、`.deb` 与 `.rpm`） | D | Implemented | P0 |
 | SG-PLAT-05 | 发行版打包：Flatpak 清单、AUR PKGBUILD、`DESKTOP_APP_USE_PACKAGED` 依赖清单（Arch Linux：`packaging/arch/PKGBUILD` 以系统库构建 `sereingram-desktop-git`，依赖清单与 Arch 官方 telegram-desktop 一致，tde2e 按 `snap/snapcraft.yaml` 锁定的 tdlib 提交现场编译，守卫 `check_packaging.py` 要求 PKGBUILD 与 Flatpak 清单锁定的 tdlib、tg_owt、tlottie、patches 提交与 Qt 版本都与 snap 配方一致；打包者通过 `SEREIN_API_ID` 与 `SEREIN_API_HASH` 提供自己的凭据，缺少时构建直接报错，绝不使用官方 Telegram 凭据；CI 工作流 `serein-arch.yml` 在 Arch 容器中用 makepkg 构建当前提交、安装后检查文件与动态库并上传包，已在 CI 中构建并安装通过；以系统库构建时不启动 GitHub 更新检查，设置页改为说明由系统包管理器更新；Flatpak：`packaging/flatpak/io.github.eltavine.SereinGram.yml` 基于 GNOME 51 运行时，依赖模块与 Flathub 的 Telegram 清单一致，构建本地检出，凭据来自被忽略的 `api_credentials.local.cmake`；CI 工作流 `serein-flatpak.yml` 构建并上传 `.flatpak` 包，已在 CI 中生成；尚未提交到 Flathub；Debian／Ubuntu 与 Fedora／openSUSE：Linux 工作流用 nFPM（`packaging/nfpm/`）把 CentOS 基线构建的同一个程序连同桌面入口、图标与 AppStream 元数据打成 `.deb` 与 `.rpm`，与 AppImage 一起上传，覆盖 glibc 2.28 及以上的主流发行版） | Ad | Implemented | P2 |
 | SG-PLAT-06 | Windows arm64 构建（暂从 CI 矩阵移除：上游 ffmpeg n8.1.3 在 arm64 上生成的 `epel_neon.d` 依赖文件格式错误，导致依赖构建失败） | T | Planned | P2 |
 | SG-PLAT-07 | 独立更新检查（GitHub Releases，默认不自动下载）（界面设置“在 GitHub 上检查更新”默认开启：启动 30 秒后及每 24 小时查询最新正式版，只接受 github.com 的发布页链接，发现新版本时提示链接，不自动下载；官方更新通道在构建中关闭；推送 `v*` 标签时三平台工作流把产物上传到草稿预发布 Release，核对后手动发布） | D | In Progress | P2 |
@@ -58,18 +58,18 @@ Nagram 的品牌政策要求分支使用不同品牌并替换 Nagram 名称与�
 
 | ID | 功能 | 来源 | 状态 | 优先级 |
 | --- | --- | --- | --- | --- |
-| SG-GHOST-01 | 不发送消息已读回执（私聊、群组、频道、讨论、话题、提及与反应已读）（对话、话题与评论、频道私信子列表与内容已读均已拦截，本地已读状态照常推进；“全部提及已读”“全部回应已读”只清除自己的计数，不拦截） | Ad Aa Na | In Progress | P1 |
-| SG-GHOST-02 | 不发送动态已读与动态浏览 | Ad Aa Na | In Progress | P1 |
-| SG-GHOST-03 | 不发送在线状态；发送消息后立即恢复离线 | Ad Aa Na | In Progress | P1 |
-| SG-GHOST-04 | 不发送输入、上传、选贴纸等活动状态 | Ad Aa Na | In Progress | P1 |
-| SG-GHOST-05 | 总开关、子项锁定，全局策略与按账号策略（各账号的总开关与子项按账号保存，子项在总开关关闭时不生效；设备级“所有账号启用幽灵模式”默认关闭，开启后每个账号都按各自子项进入幽灵模式；主菜单开关与快捷键显示实际生效状态，关闭时同时关闭账号与全局开关） | Ad Na | In Progress | P1 |
-| SG-GHOST-06 | 主菜单、托盘与聊天顶部的快速切换入口和状态指示（界面设置“主菜单与托盘菜单中的 SereinGram 快捷入口”默认关闭，开启后主菜单开关显示当前账号的实际状态，托盘菜单切换“所有账号启用幽灵模式”，文字随状态变化，托盘菜单在重启后更新；快捷键可切换；幽灵模式生效时聊天顶栏的状态文字前显示 👻，钩子位于上游计算状态文字之后，先去掉旧前缀再按当前状态添加，状态文字在下次刷新时更新） | Ad Na | In Progress | P1 |
-| SG-GHOST-07 | 阅读频道消息时不增加浏览数 | Ad | In Progress | P2 |
-| SG-GHOST-08 | 发送消息或互动后自动标记该对话已读（可选） | Ad Na | In Progress | P2 |
-| SG-GHOST-09 | 幽灵模式下用定时消息发送，避免上线（在 `Api::SendAction` 构造处统一挂钩：未手动定时、非快捷消息、非收藏夹时改为 12 秒后定时发送） | Ad | In Progress | P2 |
+| SG-GHOST-01 | 不发送消息已读回执（私聊、群组、频道、讨论、话题、提及与反应已读）（对话、话题与评论、频道私信子列表与内容已读均已拦截，本地已读状态照常推进；“全部提及已读”“全部回应已读”只清除自己的计数，不拦截） | Ad Aa Na | Implemented | P1 |
+| SG-GHOST-02 | 不发送动态已读与动态浏览 | Ad Aa Na | Implemented | P1 |
+| SG-GHOST-03 | 不发送在线状态；发送消息后立即恢复离线 | Ad Aa Na | Implemented | P1 |
+| SG-GHOST-04 | 不发送输入、上传、选贴纸等活动状态 | Ad Aa Na | Implemented | P1 |
+| SG-GHOST-05 | 总开关、子项锁定，全局策略与按账号策略（各账号的总开关与子项按账号保存，子项在总开关关闭时不生效；设备级“所有账号启用幽灵模式”默认关闭，开启后每个账号都按各自子项进入幽灵模式；主菜单开关与快捷键显示实际生效状态，关闭时同时关闭账号与全局开关） | Ad Na | Implemented | P1 |
+| SG-GHOST-06 | 主菜单、托盘与聊天顶部的快速切换入口和状态指示（界面设置“主菜单与托盘菜单中的 SereinGram 快捷入口”默认关闭，开启后主菜单开关显示当前账号的实际状态，托盘菜单切换“所有账号启用幽灵模式”，文字随状态变化，托盘菜单在重启后更新；快捷键可切换；幽灵模式生效时聊天顶栏的状态文字前显示 👻，钩子位于上游计算状态文字之后，先去掉旧前缀再按当前状态添加，状态文字在下次刷新时更新） | Ad Na | Implemented | P1 |
+| SG-GHOST-07 | 阅读频道消息时不增加浏览数 | Ad | Implemented | P2 |
+| SG-GHOST-08 | 发送消息或互动后自动标记该对话已读（可选） | Ad Na | Implemented | P2 |
+| SG-GHOST-09 | 幽灵模式下用定时消息发送，避免上线（在 `Api::SendAction` 构造处统一挂钩：未手动定时、非快捷消息、非收藏夹时改为 12 秒后定时发送） | Ad | Implemented | P2 |
 | SG-GHOST-10 | “仅本地已读”与“同步到服务端”两个显式动作：读到此处、全部已读（消息菜单“读到此处”已实现：幽灵模式隐藏已读时，把已读同步到该条为止；对话列表的“标记为已读”“全部标记为已读”默认只在本地生效，开启“手动标记已读时发送已读回执”后同步到服务端） | Ad Na | Implemented | P2 |
 | SG-GHOST-11 | 查看动态前提示当前幽灵模式状态（“不标记动态为已看”生效时，每个账号在本次运行中第一次观看动态会弹出提示，说明这次观看不会被标记为已看） | Na | Implemented | P3 |
-| SG-GHOST-12 | 幽灵模式下静音发送（幽灵模式子项“静音发送消息”按账号保存，默认关闭；幽灵模式生效时发出的消息不触发对方的通知提示音，与“默认静音发送”任一开启即静音） | Aa | In Progress | P3 |
+| SG-GHOST-12 | 幽灵模式下静音发送（幽灵模式子项“静音发送消息”按账号保存，默认关闭；幽灵模式生效时发出的消息不触发对方的通知提示音，与“默认静音发送”任一开启即静音） | Aa | Implemented | P3 |
 
 ## HIST 消息历史与防撤回
 
