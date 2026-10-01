@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iostream>
 #include <map>
+#include <optional>
 #include <regex>
 #include <set>
 #include <stdexcept>
@@ -46,14 +47,60 @@ namespace {
 
 using Strings = std::map<std::string, std::string>;
 
+[[nodiscard]] std::optional<std::pair<std::string, std::string>> ParseEntry(
+		const std::string &line) {
+	auto i = std::size_t();
+	const auto skip = [&] {
+		while (i < line.size() && (line[i] == ' ' || line[i] == '\t')) {
+			++i;
+		}
+	};
+	const auto quoted = [&](bool escapes) -> std::optional<std::string> {
+		if (i >= line.size() || line[i] != '"') {
+			return std::nullopt;
+		}
+		const auto start = ++i;
+		while (i < line.size() && line[i] != '"') {
+			if (escapes && line[i] == '\\') {
+				if (i + 1 >= line.size()) {
+					return std::nullopt;
+				}
+				++i;
+			}
+			++i;
+		}
+		if (i >= line.size()) {
+			return std::nullopt;
+		}
+		return line.substr(start, i++ - start);
+	};
+	skip();
+	const auto key = quoted(false);
+	if (!key || key->empty()) {
+		return std::nullopt;
+	}
+	skip();
+	if (i >= line.size() || line[i++] != '=') {
+		return std::nullopt;
+	}
+	skip();
+	const auto value = quoted(true);
+	if (!value || i >= line.size() || line[i++] != ';') {
+		return std::nullopt;
+	}
+	skip();
+	if (i != line.size()) {
+		return std::nullopt;
+	}
+	return std::pair(*key, *value);
+}
+
 [[nodiscard]] Strings ReadStrings(const std::string &path, bool strict) {
 	auto input = std::ifstream(path);
 	if (!input) {
 		throw std::runtime_error("Cannot open " + path);
 	}
 
-	const auto entry = std::regex(
-		R"serein(^[ \t]*"([^"]+)"[ \t]*=[ \t]*"((?:\\.|[^"\\])*)";[ \t]*$)serein");
 	auto result = Strings();
 	auto line = std::string();
 	auto number = 0;
@@ -66,16 +113,16 @@ using Strings = std::map<std::string, std::string>;
 		if (first == std::string::npos || line[first] != '"') {
 			continue;
 		}
-		auto match = std::smatch();
-		if (!std::regex_match(line, match, entry)) {
+		const auto entry = ParseEntry(line);
+		if (!entry) {
 			if (strict) {
 				throw std::runtime_error(path + ":" + std::to_string(number)
 					+ ": invalid string entry");
 			}
 			continue;
 		}
-		const auto key = match[1].str();
-		if (!result.emplace(key, match[2].str()).second) {
+		const auto &[key, value] = *entry;
+		if (!result.emplace(key, value).second) {
 			throw std::runtime_error(path + ":" + std::to_string(number)
 				+ ": duplicate key " + key);
 		}
