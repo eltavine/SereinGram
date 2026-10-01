@@ -142,7 +142,7 @@ void TestOptions() {
 	Require(registry.All().size() == 1, "registry count");
 	auto messages = Registry();
 	Messages::RegisterOptions(messages);
-	Require(messages.All().size() == 34, "message option count");
+	Require(messages.All().size() == 35, "message option count");
 	Require(Messages::kFadeDeletedMessages.fallback, "deleted messages not faded by default");
 	auto refreshCount = 0;
 	for (const auto &entry : messages.All()) {

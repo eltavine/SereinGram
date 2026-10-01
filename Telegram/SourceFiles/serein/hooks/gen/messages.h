@@ -16,6 +16,8 @@ namespace Serein::Hooks::Messages {
 [[nodiscard]] rpl::producer<bool> ShowMessageIdValue();
 [[nodiscard]] bool PersianCalendar();
 [[nodiscard]] rpl::producer<bool> PersianCalendarValue();
+[[nodiscard]] bool RaiseSelectionLimit();
+[[nodiscard]] rpl::producer<bool> RaiseSelectionLimitValue();
 [[nodiscard]] bool ExactMessageCounters();
 [[nodiscard]] rpl::producer<bool> ExactMessageCountersValue();
 [[nodiscard]] bool HideMessageViews();

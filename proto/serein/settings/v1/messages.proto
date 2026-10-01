@@ -44,6 +44,11 @@ message MessagesSettings {
       refresh: REFRESH_MESSAGE_VIEW
     }
   ];
+  optional bool raise_selection_limit = 35 [(serein.options.v1.field) = {
+    keywords: ["select", "selection", "limit", "forward", "delete", "batch"]
+    note: "lng_serein_raise_selection_limit_note"
+    restart: true
+  }];
   optional bool exact_message_counters = 5 [
     (serein.options.v1.field) = {
       section: {title: "lng_serein_marks_and_counts" id: "marks" keywords: ["labels", "counts"]}

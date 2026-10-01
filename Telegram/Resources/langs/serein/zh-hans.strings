@@ -131,6 +131,8 @@
 "lng_serein_show_message_id" = "时间提示中显示消息 ID";
 "lng_serein_persian_calendar" = "波斯历（伊朗太阳历）";
 "lng_serein_persian_calendar_note" = "聊天、最后上线时间与媒体查看器中的日期改用伊朗太阳历的月份，月份名称随界面语言显示。日期选择器仍使用公历。";
+"lng_serein_raise_selection_limit" = "最多选择 1000 条消息";
+"lng_serein_raise_selection_limit_note" = "Telegram 每次请求最多接受 100 条消息，因此转发与删除更多选中消息时按每批 100 条发送，相册不会被拆开。重启后生效。";
 "lng_serein_message_id" = "消息 ID：{id}";
 "lng_serein_marks_and_counts" = "标记与计数";
 "lng_serein_exact_message_counters" = "显示精确的浏览数和回复数";

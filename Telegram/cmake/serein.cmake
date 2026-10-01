@@ -98,6 +98,7 @@ set(serein_sources
     serein/messages/content.cpp
     serein/messages/dates.cpp
     serein/messages/persian_calendar.cpp
+    serein/messages/selection_limit.cpp
     serein/messages/badges.cpp
     serein/messages/effects.cpp
     serein/messages/reactions.cpp

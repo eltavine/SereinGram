@@ -46,6 +46,14 @@ rpl::producer<bool> PersianCalendarValue() {
 	return ForDevice().Value(Serein::Messages::kPersianCalendar);
 }
 
+bool RaiseSelectionLimit() {
+	return ForDevice().Get(Serein::Messages::kRaiseSelectionLimit);
+}
+
+rpl::producer<bool> RaiseSelectionLimitValue() {
+	return ForDevice().Value(Serein::Messages::kRaiseSelectionLimit);
+}
+
 bool ExactMessageCounters() {
 	return ForDevice().Get(Serein::Messages::kExactMessageCounters);
 }

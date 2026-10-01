@@ -18,6 +18,7 @@ set(serein_test_sources
     serein/tests/test_vpn_rules.cpp
     serein/tests/test_proxy_order.cpp
     serein/tests/test_proxy_notes.cpp
+    serein/tests/test_batches.cpp
     serein/tests/test_persian_calendar.cpp
     serein/tests/test_defaults.cpp
     serein/tests/test_chinese.cpp

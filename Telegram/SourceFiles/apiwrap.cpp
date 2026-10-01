@@ -82,6 +82,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "history/history_item_helpers.h"
 #include "history/view/controls/history_view_forward_panel.h"
 #include "serein/hooks/gen/compose.h"
+#include "serein/hooks/messages/batches.h"
 #include "serein/hooks/compose/text.h"
 #include "iv/editor/iv_editor_session.h"
 #include "iv/iv_rich_message_serializer.h"
@@ -3874,6 +3875,11 @@ void ApiWrap::forwardMessages(
 		FnMut<void()> &&successCallback) {
 	Expects(!draft.items.empty());
 
+	if (Serein::Hooks::SplitForward(draft, successCallback, [&](auto &&part, auto &&done) {
+		forwardMessages(std::move(part), action, std::move(done));
+	})) {
+		return;
+	}
 	auto &histories = _session->data().histories();
 
 	for (auto i = begin(draft.items); i != end(draft.items);) {

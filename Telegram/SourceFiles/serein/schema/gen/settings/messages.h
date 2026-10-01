@@ -40,6 +40,13 @@ inline constexpr auto kPersianCalendar = Option<bool>{
 	Category::Messages,
 	"lng_serein_persian_calendar",
 	static_cast<unsigned>(Flag::RefreshMessageView) };
+inline constexpr auto kRaiseSelectionLimit = Option<bool>{
+	"serein.raiseSelectionLimit",
+	Scope::Device,
+	false,
+	Category::Messages,
+	"lng_serein_raise_selection_limit",
+	static_cast<unsigned>(Flag::RequiresRestart) };
 inline constexpr auto kExactMessageCounters = Option<bool>{
 	"serein.exactMessageCounters",
 	Scope::Device,
@@ -262,6 +269,7 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kShowServiceTime));
 	Expects(registry.Add(kShowMessageId));
 	Expects(registry.Add(kPersianCalendar));
+	Expects(registry.Add(kRaiseSelectionLimit));
 	Expects(registry.Add(kExactMessageCounters));
 	Expects(registry.Add(kHideMessageViews));
 	Expects(registry.Add(kHideChannelSignature));
