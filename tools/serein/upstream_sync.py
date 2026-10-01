@@ -52,6 +52,24 @@ def classify(conflicts, owned, hooked):
     return groups
 
 
+def changed_gitlinks(root, old, new):
+    paths = []
+    raw = git(root, "diff-tree", "-r", "--no-renames", old, new).stdout
+    for line in raw.splitlines():
+        meta, path = line.split("\t", 1)
+        old_mode, new_mode = meta.split()[:2]
+        if "160000" in (old_mode.lstrip(":"), new_mode):
+            paths.append(path)
+    return paths
+
+
+def init_submodules(root, paths):
+    for path in paths:
+        if not (Path(root) / path / ".git").exists():
+            git(root, "-c", "protocol.file.allow=always", "submodule",
+                "update", "--init", "-q", "--", path, check=False)
+
+
 def resolve_submodules(root, conflicts):
     remaining = []
     for path in conflicts:
@@ -113,6 +131,7 @@ def sync(root, ref, policy_path, owned_policy_path, url=None):
     patterns = owned + policy["owned_extra"]
     hooked = {path for path, _added in upstream_budget.changed_files(root, old)
               if not is_owned(path, patterns)}
+    init_submodules(root, changed_gitlinks(root, old, new))
     git(root, "switch", "-q", "-c", branch_name(ref))
     merge = git(root, "merge", "--no-ff", "--no-commit", new, check=False)
     conflicts = git(root, "diff", "--name-only", "--diff-filter=U").stdout.split()

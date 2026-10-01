@@ -1,4 +1,5 @@
 import json
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -94,6 +95,12 @@ class UpstreamSyncTest(unittest.TestCase):
         self.assertEqual(json.loads(self.policy.read_text())["base"], self.base)
 
     def test_submodule_pointer_conflicts_take_the_newer_commit(self):
+        self.check_submodule_conflict(initialized=True)
+
+    def test_uninitialized_submodules_are_fetched_before_merging(self):
+        self.check_submodule_conflict(initialized=False)
+
+    def check_submodule_conflict(self, initialized):
         lib = Path(self._temp.name) / "lib"
         lib.mkdir()
         git(lib, "init", "-q", "-b", "main")
@@ -115,6 +122,10 @@ class UpstreamSyncTest(unittest.TestCase):
         git(self.upstream / "cmake", "checkout", "-q", commits[2])
         git(self.upstream, "commit", "-q", "-am", "bump to c3")
         git(self.upstream, "tag", "v4")
+        if not initialized:
+            module_git = git(self.fork / "cmake", "rev-parse", "--absolute-git-dir")
+            git(self.fork, "submodule", "deinit", "-q", "-f", "cmake")
+            shutil.rmtree(module_git)
         conflicts, metrics = self.sync("v4")
         self.assertIsNone(conflicts)
         self.assertIsNotNone(metrics)
