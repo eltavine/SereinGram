@@ -9,6 +9,7 @@
 #include "serein/features/history/viewer.h"
 #include "serein/services/summary.h"
 #include "serein/hooks/privacy/alias.h"
+#include "serein/privacy/options.h"
 #include "data/data_forum_topic.h"
 #include "data/data_peer.h"
 #include "lang/lang_keys.h"
@@ -25,19 +26,21 @@ void FillHistoryMenu(
 		gsl::not_null<PeerData*> peer,
 		Data::ForumTopic *topic) {
 	const auto weak = base::make_weak(topic);
-	addAction(tr::lng_serein_jump_to_beginning(tr::now), [=] {
-		if (!topic) {
-			controller->showPeerHistory(
-				peer,
-				Window::SectionShow::Way::Forward,
-				MsgId(1));
-		} else if (const auto strong = weak.get()) {
-			controller->showTopic(
-				strong,
-				strong->rootId(),
-				Window::SectionShow::Way::Forward);
-		}
-	}, &st::menuIconShowInChat);
+	if (ForDevice().Get(Chats::kChatQuickActions)) {
+		addAction(tr::lng_serein_jump_to_beginning(tr::now), [=] {
+			if (!topic) {
+				controller->showPeerHistory(
+					peer,
+					Window::SectionShow::Way::Forward,
+					MsgId(1));
+			} else if (const auto strong = weak.get()) {
+				controller->showTopic(
+					strong,
+					strong->rootId(),
+					Window::SectionShow::Way::Forward);
+			}
+		}, &st::menuIconShowInChat);
+	}
 	if (!topic) {
 		Chats::FillQuickActions(addAction, controller, peer);
 	}
@@ -73,7 +76,9 @@ void FillHistoryMenu(
 			HistoryFeature::ShowDeletedMessages(controller, peer);
 		}, &st::menuIconInfo);
 	}
-	if (!topic && Admin::CanDeleteMyMessages(peer)) {
+	if (!topic
+		&& ForDevice().Get(Chats::kManagementShortcuts)
+		&& Admin::CanDeleteMyMessages(peer)) {
 		addAction({
 			.text = tr::lng_serein_delete_mine(tr::now),
 			.handler = [=] {
@@ -94,10 +99,13 @@ void FillProfileMenu(
 		return;
 	}
 	const auto show = controller->uiShow();
-	addAction(tr::lng_serein_peer_alias(tr::now), [=] {
-		Privacy::ShowAlias(show, peer);
-	}, &st::menuIconEdit);
-	if (Admin::CanUpgradeToSupergroup(peer)) {
+	if (ForDevice().Get(Privacy::kLocalNames)) {
+		addAction(tr::lng_serein_peer_alias(tr::now), [=] {
+			Privacy::ShowAlias(show, peer);
+		}, &st::menuIconEdit);
+	}
+	if (ForDevice().Get(Chats::kManagementShortcuts)
+		&& Admin::CanUpgradeToSupergroup(peer)) {
 		addAction(tr::lng_serein_upgrade_supergroup(tr::now), [=] {
 			Admin::ConfirmUpgradeToSupergroup(controller, peer);
 		}, &st::menuIconGroups);

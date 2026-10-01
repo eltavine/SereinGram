@@ -114,6 +114,8 @@
 "lng_serein_profile_dc" = "資料中心";
 "lng_serein_show_registration_date" = "顯示估算的註冊時間";
 "lng_serein_registration_date_note" = "根據使用者 ID 在 WizardLoop/CreationDate（MIT）公開資料點之間插值估算，可能相差數月。";
+"lng_serein_local_names" = "對話本地名稱";
+"lng_serein_local_names_note" = "在個人資料選單中加入「設定本地名稱」。本地名稱會取代使用者、群組與頻道在本裝置上的顯示名稱；關閉後保留已儲存的名稱，但不再顯示。";
 "lng_serein_profile_registered" = "註冊於";
 "lng_serein_profile_registered_about" = "約 {date}";
 "lng_serein_profile_registered_after" = "晚於 {date}";
@@ -521,7 +523,7 @@
 "lng_serein_peer_alias" = "設定本機名稱";
 "lng_serein_jump_to_beginning" = "跳到對話開頭";
 "lng_serein_chat_quick_actions" = "對話選單中的快捷操作";
-"lng_serein_chat_quick_actions_note" = "在對話選單「跳到開頭」旁加入搜尋、共享媒體與置頂訊息。";
+"lng_serein_chat_quick_actions_note" = "在對話選單中加入「跳到開頭」、搜尋、共享媒體與置頂訊息。";
 "lng_serein_quick_search" = "在對話中搜尋";
 "lng_serein_quick_media" = "共享媒體";
 "lng_serein_quick_pinned" = "置頂訊息";
@@ -539,7 +541,7 @@
 "lng_serein_upgrade_supergroup_confirm" = "升級";
 "lng_serein_upgrade_supergroup_done" = "群組已升級為超級群組。";
 "lng_serein_management_shortcuts" = "資料選單中的群組管理";
-"lng_serein_management_shortcuts_note" = "在你能管理的群組資料選單中加入成員、管理員、已移除的使用者與最近動作，無需開啟「管理群組」。";
+"lng_serein_management_shortcuts_note" = "在你能管理的群組資料選單中加入成員、管理員、已移除的使用者與最近動作，無需開啟「管理群組」；同時為你建立的一般群組加入「升級為超級群組」，並在群組對話選單中加入「刪除我的全部訊息」。";
 "lng_serein_manage_members" = "成員";
 "lng_serein_manage_admins" = "管理員";
 "lng_serein_manage_removed" = "已移除的使用者";

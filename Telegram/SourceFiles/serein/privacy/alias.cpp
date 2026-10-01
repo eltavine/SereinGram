@@ -1,7 +1,9 @@
 #include "serein/privacy/alias.h"
+#include "serein/privacy/options.h"
 
 #include "data/data_peer.h"
 #include "data/data_channel.h"
+#include "data/data_session.h"
 #include "lang/lang_keys.h"
 #include "main/main_session.h"
 #include "main/session/session_show.h"
@@ -21,6 +23,8 @@ constexpr auto kMaximumAliasLength = 96;
 
 struct State {
 	PeerAliases aliases;
+	bool enabled = false;
+	rpl::lifetime lifetime;
 };
 
 auto &States() {
@@ -36,6 +40,17 @@ State &ForSession(not_null<Main::Session*> session) {
 	const auto raw = ForAccount(session).Get(kAliases);
 	auto state = std::make_unique<State>();
 	state->aliases = ParseAliases(raw).value_or(PeerAliases());
+	state->enabled = ForDevice().Get(kLocalNames);
+	ForDevice().Value(
+		kLocalNames
+	) | rpl::skip(1) | rpl::on_next([=, raw = state.get()](bool enabled) {
+		raw->enabled = enabled;
+		for (const auto &[id, alias] : raw->aliases) {
+			if (const auto peer = session->data().peerLoaded(id)) {
+				peer->localNameChanged();
+			}
+		}
+	}, state->lifetime);
 	const auto inserted = states.emplace(session, std::move(state)).first;
 	session->lifetime().add([session] { States().erase(session); });
 	return *inserted->second;
@@ -44,10 +59,10 @@ State &ForSession(not_null<Main::Session*> session) {
 } // namespace
 
 const QString &Alias(not_null<const PeerData*> peer) {
-	const auto &aliases = ForSession(&peer->session()).aliases;
-	const auto i = aliases.find(peer->id);
+	const auto &state = ForSession(&peer->session());
+	const auto i = state.aliases.find(peer->id);
 	static const auto empty = QString();
-	return (i != aliases.end()) ? i->second : empty;
+	return (state.enabled && i != state.aliases.end()) ? i->second : empty;
 }
 
 const QString &DisplayName(not_null<const PeerData*> peer) {

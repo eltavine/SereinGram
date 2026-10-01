@@ -70,6 +70,14 @@ rpl::producer<bool> ShowRegistrationDateValue() {
 	return ForDevice().Value(Serein::Privacy::kShowRegistrationDate);
 }
 
+bool LocalNames() {
+	return ForDevice().Get(Serein::Privacy::kLocalNames);
+}
+
+rpl::producer<bool> LocalNamesValue() {
+	return ForDevice().Value(Serein::Privacy::kLocalNames);
+}
+
 bool HideProfileGifts() {
 	return ForDevice().Get(Serein::Privacy::kHideProfileGifts);
 }

@@ -118,6 +118,8 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_profile_dc" = "Data center";
 "lng_serein_show_registration_date" = "Show estimated registration date";
 "lng_serein_registration_date_note" = "Estimated from the user ID by interpolating public data points from WizardLoop/CreationDate (MIT). It can be off by months.";
+"lng_serein_local_names" = "Local names for chats";
+"lng_serein_local_names_note" = "Adds “Set local name” to profile menus. Local names replace how users, groups and channels are shown on this device. Turning this off keeps the saved names but stops showing them.";
 "lng_serein_profile_registered" = "Registered";
 "lng_serein_profile_registered_about" = "about {date}";
 "lng_serein_profile_registered_after" = "after {date}";
@@ -525,7 +527,7 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_peer_alias" = "Set local name";
 "lng_serein_jump_to_beginning" = "Jump to the beginning";
 "lng_serein_chat_quick_actions" = "Quick actions in the chat menu";
-"lng_serein_chat_quick_actions_note" = "Adds search, shared media and pinned messages to the chat menu next to “Jump to the beginning”.";
+"lng_serein_chat_quick_actions_note" = "Adds “Jump to the beginning”, search, shared media and pinned messages to the chat menu.";
 "lng_serein_quick_search" = "Search in chat";
 "lng_serein_quick_media" = "Shared media";
 "lng_serein_quick_pinned" = "Pinned messages";
@@ -543,7 +545,7 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_upgrade_supergroup_confirm" = "Upgrade";
 "lng_serein_upgrade_supergroup_done" = "The group is now a supergroup.";
 "lng_serein_management_shortcuts" = "Group management in the profile menu";
-"lng_serein_management_shortcuts_note" = "Adds members, administrators, removed users and recent actions to the profile menu of groups you can manage, without opening “Manage group”.";
+"lng_serein_management_shortcuts_note" = "Adds members, administrators, removed users and recent actions to the profile menu of groups you can manage, without opening “Manage group”. Also adds “Upgrade to supergroup” for basic groups you created and “Delete all my messages” to group chat menus.";
 "lng_serein_manage_members" = "Members";
 "lng_serein_manage_admins" = "Administrators";
 "lng_serein_manage_removed" = "Removed users";

@@ -65,6 +65,13 @@ inline constexpr auto kShowRegistrationDate = Option<bool>{
 	Category::Privacy,
 	"lng_serein_show_registration_date",
 	0 };
+inline constexpr auto kLocalNames = Option<bool>{
+	"serein.localNames",
+	Scope::Device,
+	false,
+	Category::Privacy,
+	"lng_serein_local_names",
+	0 };
 inline constexpr auto kHideProfileGifts = Option<bool>{
 	"serein.hideProfileGifts",
 	Scope::Device,
@@ -96,6 +103,7 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kProfileIdFormat));
 	Expects(registry.Add(kShowProfileDc));
 	Expects(registry.Add(kShowRegistrationDate));
+	Expects(registry.Add(kLocalNames));
 	Expects(registry.Add(kHideProfileGifts));
 	Expects(registry.Add(kHideCreateTodo));
 	Expects(registry.Add(kSaveProtectedContent));

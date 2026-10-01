@@ -10,7 +10,7 @@
 
 namespace Serein::Privacy {
 
-inline const auto kToggleRows = std::array<ToggleRow, 10>{ {
+inline const auto kToggleRows = std::array<ToggleRow, 11>{ {
 	{
 		&kDemoMode,
 		tr::lng_serein_demo_mode,
@@ -54,6 +54,12 @@ inline const auto kToggleRows = std::array<ToggleRow, 10>{ {
 		{ u"profile"_q, u"registration"_q, u"account age"_q },
 	},
 	{
+		&kLocalNames,
+		tr::lng_serein_local_names,
+		u"serein/privacy/local-names"_q,
+		{ u"local name"_q, u"alias"_q, u"rename"_q, u"nickname"_q },
+	},
+	{
 		&kHideProfileGifts,
 		tr::lng_serein_hide_profile_gifts,
 		u"serein/privacy/hide-profile-gifts"_q,
@@ -95,8 +101,10 @@ inline void AddLayout(
 	AddToggle(builder, kToggleRows[6]);
 	AddNote(builder, tr::lng_serein_registration_date_note);
 	AddToggle(builder, kToggleRows[7]);
+	AddNote(builder, tr::lng_serein_local_names_note);
 	AddToggle(builder, kToggleRows[8]);
 	AddToggle(builder, kToggleRows[9]);
+	AddToggle(builder, kToggleRows[10]);
 	AddNote(builder, tr::lng_serein_save_protected_content_note);
 }
 
