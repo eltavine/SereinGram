@@ -15,10 +15,10 @@
 
 | ID | 功能 | 来源 | 状态 | 优先级 |
 | --- | --- | --- | --- | --- |
-| SG-PLAT-01 | macOS 通用二进制（arm64 + x86_64）构建与 DMG（依赖与应用默认按 `x86_64;arm64` 构建；CI 用 `lipo -verify_arch` 校验两种架构后打包 DMG 上传；签名与公证待做） | T | In Progress | P0 |
+| SG-PLAT-01 | macOS 通用二进制（arm64 + x86_64）构建与 DMG（依赖与应用默认按 `x86_64;arm64` 构建；CI 用 `lipo -verify_arch` 校验两种架构后打包 DMG 上传，2026-10-01 首次通过，`test_serein` 同时运行；签名与公证需要维护者的 Apple 开发者证书，待做） | T | In Progress | P0 |
 | SG-PLAT-02 | Windows x64 构建、安装包与便携版（便携版为单个 `SereinGram.exe`；CI 以 Inno Setup 编译 `setup.iss` 生成安装包，步骤暂为允许失败的试验状态；签名待做） | T | In Progress | P0 |
 | SG-PLAT-03 | Linux x86_64 静态构建（Rocky Linux 8 容器）与 tar 包（CI 打包 `SereinGram.tar.gz` 上传；ffcfe2a 起 Linux 工作流全绿：应用与 `test_serein` 构建通过、全部核心测试通过、产物上传成功，构建失败时也保存 ccache，热缓存下整轮约 17 分钟） | T | Implemented | P0 |
-| SG-PLAT-04 | 三平台 CI：构建、`test_serein`、全部守卫（`serein-{mac,win,linux}.yml` 构建应用与 `test_serein`，`serein-guards.yml` 在每次推送运行全部守卫、核心测试与 commitlint 且持续通过；三平台构建此前只剩 `history_restore.cpp` 的标志类型、测试目标缺 `EntityInText` 与菜单页缺 `lang_auto_counts.h` 三处错误，均已修复，等待首次全绿） | D | In Progress | P0 |
+| SG-PLAT-04 | 三平台 CI：构建、`test_serein`、全部守卫（`serein-{mac,win,linux}.yml` 构建应用与 `test_serein`，`serein-guards.yml` 在每次推送运行全部守卫、核心测试与 commitlint 且持续通过；Linux 与 macOS 已于 2026-10-01 首次全绿，Windows 已修复全部已知错误，等待首次全绿） | D | In Progress | P0 |
 | SG-PLAT-05 | 发行版打包：Flatpak 清单、AUR PKGBUILD、`DESKTOP_APP_USE_PACKAGED` 依赖清单 | Ad | Planned | P2 |
 | SG-PLAT-06 | Windows arm64 构建（暂从 CI 矩阵移除：上游 ffmpeg n8.1.3 在 arm64 上生成的 `epel_neon.d` 依赖文件格式错误，导致依赖构建失败） | T | Planned | P2 |
 | SG-PLAT-07 | 独立更新检查（GitHub Releases，默认不自动下载）（界面设置“在 GitHub 上检查更新”默认开启：启动 30 秒后及每 24 小时查询最新正式版，只接受 github.com 的发布页链接，发现新版本时提示链接，不自动下载；官方更新通道在构建中关闭；推送 `v*` 标签时三平台工作流把产物上传到草稿预发布 Release，由维护者核对后发布） | D | In Progress | P2 |
