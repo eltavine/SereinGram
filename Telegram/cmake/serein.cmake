@@ -250,6 +250,10 @@ else()
 endif()
 target_link_libraries(Telegram PRIVATE Serein::OpenCC)
 
+if (WIN32)
+    target_link_libraries(Telegram PRIVATE Dnsapi)
+endif()
+
 if (DESKTOP_APP_TEST_APPS)
     add_executable(test_serein)
     init_target(test_serein "(tests)")
