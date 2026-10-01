@@ -238,4 +238,36 @@ rpl::producer<int> ReadingChineseValue() {
 	return ForDevice().Value(Serein::Messages::kReadingChinese);
 }
 
+bool RevokePrivateChatDeletion() {
+	return ForDevice().Get(Serein::Messages::kRevokePrivateChatDeletion);
+}
+
+rpl::producer<bool> RevokePrivateChatDeletionValue() {
+	return ForDevice().Value(Serein::Messages::kRevokePrivateChatDeletion);
+}
+
+bool ModerateReportSpam() {
+	return ForDevice().Get(Serein::Messages::kModerateReportSpam);
+}
+
+rpl::producer<bool> ModerateReportSpamValue() {
+	return ForDevice().Value(Serein::Messages::kModerateReportSpam);
+}
+
+bool ModerateDeleteAll() {
+	return ForDevice().Get(Serein::Messages::kModerateDeleteAll);
+}
+
+rpl::producer<bool> ModerateDeleteAllValue() {
+	return ForDevice().Value(Serein::Messages::kModerateDeleteAll);
+}
+
+bool ModerateBan() {
+	return ForDevice().Get(Serein::Messages::kModerateBan);
+}
+
+rpl::producer<bool> ModerateBanValue() {
+	return ForDevice().Value(Serein::Messages::kModerateBan);
+}
+
 } // namespace Serein::Hooks::Messages

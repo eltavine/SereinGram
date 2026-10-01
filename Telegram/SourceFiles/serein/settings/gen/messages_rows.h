@@ -10,7 +10,7 @@
 
 namespace Serein::Messages {
 
-inline const auto kToggleRows = std::array<ToggleRow, 26>{ {
+inline const auto kToggleRows = std::array<ToggleRow, 30>{ {
 	{
 		&kSecondsInMessages,
 		tr::lng_serein_seconds_in_messages,
@@ -170,6 +170,30 @@ inline const auto kToggleRows = std::array<ToggleRow, 26>{ {
 		u"serein/messages/reading-spacing"_q,
 		{ u"reading"_q, u"spacing"_q },
 	},
+	{
+		&kRevokePrivateChatDeletion,
+		tr::lng_serein_revoke_private_chat_deletion,
+		u"serein/messages/revoke-private-chat-deletion"_q,
+		{ u"delete for everyone"_q, u"clear history"_q, u"private chat"_q },
+	},
+	{
+		&kModerateReportSpam,
+		tr::lng_serein_moderate_report_spam,
+		u"serein/messages/moderate-report-spam"_q,
+		{ u"report spam"_q, u"moderate"_q },
+	},
+	{
+		&kModerateDeleteAll,
+		tr::lng_serein_moderate_delete_all,
+		u"serein/messages/moderate-delete-all"_q,
+		{ u"delete all"_q, u"moderate"_q },
+	},
+	{
+		&kModerateBan,
+		tr::lng_serein_moderate_ban,
+		u"serein/messages/moderate-ban"_q,
+		{ u"ban"_q, u"moderate"_q },
+	},
 } };
 
 struct CustomRows {
@@ -249,6 +273,16 @@ inline void AddLayout(
 	AddToggle(builder, kToggleRows[25]);
 	custom.readingChinese();
 	AddNote(builder, tr::lng_serein_reading_chinese_note);
+	AddSection(builder, {
+		u"serein/messages/deleting"_q,
+		tr::lng_serein_deleting,
+		{ u"delete"_q, u"moderate"_q },
+	});
+	AddToggle(builder, kToggleRows[26]);
+	AddToggle(builder, kToggleRows[27]);
+	AddToggle(builder, kToggleRows[28]);
+	AddToggle(builder, kToggleRows[29]);
+	AddNote(builder, tr::lng_serein_delete_defaults_note);
 }
 
 } // namespace Serein::Messages

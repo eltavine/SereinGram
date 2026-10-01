@@ -183,4 +183,18 @@ message MessagesSettings {
     },
     (buf.validate.field).int32 = {gte: 0, lte: 2}
   ];
+  optional bool revoke_private_chat_deletion = 30 [(serein.options.v1.field) = {
+    section: {title: "lng_serein_deleting" id: "deleting" keywords: ["delete", "moderate"]}
+    keywords: ["delete for everyone", "clear history", "private chat"]
+  }];
+  optional bool moderate_report_spam = 31 [(serein.options.v1.field) = {
+    keywords: ["report spam", "moderate"]
+  }];
+  optional bool moderate_delete_all = 32 [(serein.options.v1.field) = {
+    keywords: ["delete all", "moderate"]
+  }];
+  optional bool moderate_ban = 33 [(serein.options.v1.field) = {
+    keywords: ["ban", "moderate"]
+    note: "lng_serein_delete_defaults_note"
+  }];
 }

@@ -220,6 +220,34 @@ inline constexpr auto kReadingChinese = Option<int>{
 		return (value == 0)
 			|| ((value >= 0) && (value <= 2));
 	} };
+inline constexpr auto kRevokePrivateChatDeletion = Option<bool>{
+	"serein.revokePrivateChatDeletion",
+	Scope::Device,
+	false,
+	Category::Messages,
+	"lng_serein_revoke_private_chat_deletion",
+	0 };
+inline constexpr auto kModerateReportSpam = Option<bool>{
+	"serein.moderateReportSpam",
+	Scope::Device,
+	false,
+	Category::Messages,
+	"lng_serein_moderate_report_spam",
+	0 };
+inline constexpr auto kModerateDeleteAll = Option<bool>{
+	"serein.moderateDeleteAll",
+	Scope::Device,
+	false,
+	Category::Messages,
+	"lng_serein_moderate_delete_all",
+	0 };
+inline constexpr auto kModerateBan = Option<bool>{
+	"serein.moderateBan",
+	Scope::Device,
+	false,
+	Category::Messages,
+	"lng_serein_moderate_ban",
+	0 };
 
 inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kSecondsInMessages));
@@ -251,6 +279,10 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kHidePrivateChatActivities));
 	Expects(registry.Add(kReadingSpacing));
 	Expects(registry.Add(kReadingChinese));
+	Expects(registry.Add(kRevokePrivateChatDeletion));
+	Expects(registry.Add(kModerateReportSpam));
+	Expects(registry.Add(kModerateDeleteAll));
+	Expects(registry.Add(kModerateBan));
 }
 
 } // namespace Serein::Messages

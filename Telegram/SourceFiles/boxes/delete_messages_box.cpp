@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "boxes/delete_messages_box.h"
+#include "serein/hooks/messages/delete_defaults.h"
 
 #include "apiwrap.h"
 #include "base/unixtime.h"
@@ -159,7 +160,7 @@ void DeleteMessagesBox::prepare() {
 			_revoke.create(
 				this,
 				revoke->checkbox,
-				false,
+				Serein::Messages::RevokeChatByDefault(peer->isUser()),
 				st::defaultBoxCheckbox);
 			appendDetails(std::move(revoke->description));
 			if (!peer->isUser() && !_wipeHistoryJustClear) {

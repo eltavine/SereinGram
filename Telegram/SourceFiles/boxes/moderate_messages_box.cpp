@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "boxes/moderate_messages_box.h"
+#include "serein/hooks/messages/delete_defaults.h"
 
 #include "api/api_blocked_peers.h"
 #include "api/api_chat_participants.h"
@@ -1802,5 +1803,5 @@ ModerateMessagesBoxOptions DefaultModerateMessagesBoxOptions() {
 			.deleteAll = true,
 			.banUser = true,
 		}
-		: ModerateMessagesBoxOptions{};
+		: Serein::Messages::ModerateDefaults<ModerateMessagesBoxOptions>();
 }

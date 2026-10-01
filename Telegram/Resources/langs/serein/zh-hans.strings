@@ -155,6 +155,12 @@
 "lng_serein_reading_traditional" = "转为繁体";
 "lng_serein_reading_unavailable" = "当前平台不支持";
 "lng_serein_reading_chinese_note" = "转换按单个字处理，个别词可能转换不准确。";
+"lng_serein_deleting" = "删除";
+"lng_serein_revoke_private_chat_deletion" = "删除私聊时默认勾选“同时为对方删除”";
+"lng_serein_moderate_report_spam" = "管理消息时默认勾选“举报垃圾信息”";
+"lng_serein_moderate_delete_all" = "管理消息时默认勾选“删除此用户的全部消息”";
+"lng_serein_moderate_ban" = "管理消息时默认勾选“封禁用户”";
+"lng_serein_delete_defaults_note" = "这些设置只改变对话框打开时的勾选状态，每次删除仍需确认。删除时按住 Ctrl 仍会勾选全部管理选项。";
 "lng_serein_reading_original" = "显示原文";
 "lng_serein_reading_apply" = "显示转换后文字";
 "lng_serein_menu" = "消息菜单";

@@ -159,6 +159,12 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_reading_traditional" = "Traditional Chinese";
 "lng_serein_reading_unavailable" = "Not supported on this platform";
 "lng_serein_reading_chinese_note" = "Conversion works one character at a time; some phrases may be inaccurate.";
+"lng_serein_deleting" = "Deleting";
+"lng_serein_revoke_private_chat_deletion" = "Check “Also delete for” when deleting a private chat";
+"lng_serein_moderate_report_spam" = "Check “Report spam” when moderating";
+"lng_serein_moderate_delete_all" = "Check “Delete all from this user” when moderating";
+"lng_serein_moderate_ban" = "Check “Ban user” when moderating";
+"lng_serein_delete_defaults_note" = "These only change what is checked when the box opens; every deletion still asks for confirmation. Holding Ctrl while deleting still checks every moderation option.";
 "lng_serein_reading_original" = "Show original text";
 "lng_serein_reading_apply" = "Show converted text";
 "lng_serein_menu" = "Message menu";
