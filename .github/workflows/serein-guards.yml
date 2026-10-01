@@ -48,9 +48,9 @@ jobs:
 
       - name: Fetch the libraries Serein includes from.
         run: |
-          git submodule update --init --depth 1 Telegram/ThirdParty/OpenCC \
-            $(git config --file .gitmodules --get-regexp 'path' \
-              | awk '{print $2}' | grep '^Telegram/lib_')
+          mapfile -t libs < <(git config --file .gitmodules --get-regexp 'path' \
+            | awk '{print $2}' | grep '^Telegram/lib_')
+          git submodule update --init --depth 1 Telegram/ThirdParty/OpenCC "${libs[@]}"
 
       - name: Includes name existing headers.
         run: python3 tools/serein/check_includes.py
