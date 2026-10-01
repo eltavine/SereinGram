@@ -55,6 +55,18 @@ class CheckIncludesTest(unittest.TestCase):
             "Telegram/SourceFiles/boxes/box.cpp: missing serein/hooks/missing.h",
         ])
 
+    def test_banned_system_header_is_reported_in_serein_only(self):
+        self.write(
+            "Telegram/SourceFiles/serein/feature/code.cpp",
+            "#include <filesystem>\n")
+        self.write(
+            "Telegram/SourceFiles/boxes/box.cpp",
+            "#include <filesystem>\n")
+        self.assertEqual(check_includes.problems(self.root), [
+            "Telegram/SourceFiles/serein/feature/code.cpp: <filesystem> "
+            "std::filesystem needs macOS 10.15; use QDir and QFileInfo",
+        ])
+
 
 if __name__ == "__main__":
     unittest.main()

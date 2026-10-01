@@ -169,7 +169,7 @@ message MessagesSettings {
 | schema 兼容 | `buf lint`；`tools/serein/proto_breaking.sh` 与推送前的提交或 PR 目标分支比较（`FILE` 级） | 已实施 |
 | 生成代码漂移 | `uv run tools/serein/codegen/generate.py --check` | 已实施 |
 | 中性默认值 | `test_serein` 的 `TestNeutralDefaults`：全部设置页的选项默认关闭、为零或为空，消息菜单中 Serein 新增的项默认隐藏，例外逐项写明理由 | 已实施 |
-| 头文件存在 | `tools/serein/check_includes.py`：Serein 代码中带引号的 `#include` 必须指向仓库或已拉取子模块中存在的头文件；只在构建目录中生成的头文件（样式、语言键与 schema 生成物）跳过 | 已实施 |
+| 头文件 | `tools/serein/check_includes.py`：Serein 代码中带引号的 `#include`，以及上游文件中引用 `serein/` 的 `#include`，必须指向仓库或已拉取子模块中存在的头文件，只在构建目录中生成的头文件（样式、语言键与 schema 生成物）跳过；Serein 代码不得包含平台目标缺少的系统头文件，目前为 `<filesystem>`（macOS 10.15 起才可用，改用 `QDir`、`QFileInfo`） | 已实施 |
 | 源文件登记 | `tools/serein/check_sources.py`：每个 Serein 源文件都必须登记在 `Telegram/cmake/serein.cmake` 或测试清单中，反过来已登记的路径也必须存在 | 已实施 |
 | 三语文案一致 | `test_serein` | 已有 |
 | 核心逻辑测试（只依赖 Qt） | `tools/serein/core_tests` 独立 CMake 工程，与主构建共用 `Telegram/cmake/serein_tests.cmake` 的测试清单 | 已实施 |

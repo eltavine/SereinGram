@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Check that quoted includes in Serein code name headers that exist.
+"""Check that quoted includes in Serein code name headers that exist,
+and that Serein code avoids system headers the platform targets lack.
 
 The app only compiles in CI, so a mistyped include path costs a full
 platform build. Generated headers are skipped because they only exist
@@ -12,6 +13,10 @@ import sys
 from pathlib import Path
 
 INCLUDE = re.compile(r'^\s*#\s*include\s+"([^"]+)"', re.M)
+SYSTEM_INCLUDE = re.compile(r'^\s*#\s*include\s+<([^>]+)>', re.M)
+BANNED_SYSTEM = {
+    "filesystem": "std::filesystem needs macOS 10.15; use QDir and QFileInfo",
+}
 GENERATED = (
     "styles/",
     "lang_auto",
@@ -60,6 +65,13 @@ def problems(root):
                 continue
             if not resolves(include, path, roots):
                 result.append(f"{path.relative_to(root)}: missing {include}")
+        if prefix:
+            continue
+        for include in SYSTEM_INCLUDE.findall(text):
+            if include in BANNED_SYSTEM:
+                result.append(
+                    f"{path.relative_to(root)}: <{include}> "
+                    f"{BANNED_SYSTEM[include]}")
     return result
 
 

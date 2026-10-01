@@ -1,5 +1,5 @@
 #include <QtCore/QCoreApplication>
-#include <filesystem>
+#include <QtCore/QDir>
 #include <fstream>
 #include <iostream>
 #include <map>
@@ -191,13 +191,13 @@ int main() {
 			const auto path = root + "/serein/" + locale + ".strings";
 			CheckTranslation(english, path);
 		}
-		for (const auto &file : std::filesystem::directory_iterator(
-				root + "/serein")) {
-			const auto name = file.path().filename().string();
-			if (name.ends_with(".strings")
-				&& name != "serein.strings"
-				&& !name.starts_with("zh-")) {
-				CheckPartialTranslation(english, file.path().string());
+		const auto directory = QDir(QString::fromStdString(root + "/serein"));
+		for (const auto &entry : directory.entryList(
+				{ QString::fromLatin1("*.strings") },
+				QDir::Files)) {
+			const auto name = entry.toStdString();
+			if (name != "serein.strings" && !name.starts_with("zh-")) {
+				CheckPartialTranslation(english, root + "/serein/" + name);
 			}
 		}
 		std::cout << "PASS: Serein strings (" << english.size()
