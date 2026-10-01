@@ -264,6 +264,30 @@ jobs:
           ln -s usr/bin/SereinGram "$app/AppRun"
           ARCH=x86_64 "$tool" --appimage-extract-and-run --runtime-file "$runtime" \
             "$app" out/Debug/artifact/SereinGram-x86_64.AppImage
+
+      - name: Debian and RPM packages.
+        if: env.UPLOAD_ARTIFACT == 'true'
+        env:
+          NFPM_SHA256: 0660ca602b2d2d2ae4781a06c692b3eeb9d437ffea05b831d76e41f4a3188783
+        run: |
+          archive="$RUNNER_TEMP/nfpm.tar.gz"
+          curl -sSfL -o "$archive" \
+            https://github.com/goreleaser/nfpm/releases/download/v2.47.0/nfpm_2.47.0_Linux_x86_64.tar.gz
+          echo "$NFPM_SHA256  $archive" | sha256sum -c -
+          tar -xzf "$archive" -C "$RUNNER_TEMP" nfpm
+          stage="$RUNNER_TEMP/packages"
+          packaging/nfpm/stage.sh out/Debug/SereinGram \
+            out/Telegram/io.github.eltavine.SereinGram.metainfo.xml "$stage"
+          version=$(sed -n 's/^AppVersionStrSmall *//p' Telegram/build/version)
+          if [[ "$GITHUB_REF" != refs/tags/* ]]; then
+            version="$version+g${GITHUB_SHA::7}"
+          fi
+          for packager in deb rpm; do
+            (cd "$stage" && SEREIN_VERSION="$version" "$RUNNER_TEMP/nfpm" package \
+              --config "$GITHUB_WORKSPACE/packaging/nfpm/nfpm.yaml" \
+              --packager "$packager" \
+              --target "$GITHUB_WORKSPACE/out/Debug/artifact/")
+          done
       - uses: actions/upload-artifact@v7
         if: env.UPLOAD_ARTIFACT == 'true'
         name: Upload artifact.
