@@ -295,6 +295,7 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_text_replacements_about" = "One rule per line: text => replacement. The text is replaced as soon as you type it in a message field, while “Replace emoji automatically” is on in chat settings. Up to 100 rules; each trigger is at most 32 characters.";
 "lng_serein_text_replacements_invalid" = "Every line needs “=>”, and triggers must be unique and 1–32 characters long.";
 "lng_serein_mention_menu" = "Show “Mention…” in the text menu";
+"lng_serein_format_toolbar" = "Formatting toolbar for selected text";
 "lng_serein_mention_create" = "Mention…";
 "lng_serein_mention_title" = "Mention a user";
 "lng_serein_mention_placeholder" = "Username, link or user ID";

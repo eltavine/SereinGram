@@ -115,6 +115,9 @@ message ComposeSettings {
   optional bool mention_menu = 29 [(serein.options.v1.field) = {
     keywords: ["mention", "format"]
   }];
+  optional bool format_toolbar = 31 [(serein.options.v1.field) = {
+    keywords: ["format", "toolbar", "bold", "selection"]
+  }];
   optional string default_code_language = 20 [
     (buf.validate.field).string = {max_len: 32, pattern: "^[A-Za-z0-9+-]*$"}
   ];

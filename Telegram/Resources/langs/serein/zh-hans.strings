@@ -291,6 +291,7 @@
 "lng_serein_text_replacements_about" = "每行一条规则：文本 => 替换内容。在消息输入框中一输入该文本就会被替换，需要开启聊天设置中的“自动替换表情”。最多 100 条规则，每个触发词最多 32 个字符。";
 "lng_serein_text_replacements_invalid" = "每行都需要“=>”，触发词不能重复，长度为 1–32 个字符。";
 "lng_serein_mention_menu" = "在文本菜单中显示“提及…”";
+"lng_serein_format_toolbar" = "选中文字时显示格式工具栏";
 "lng_serein_mention_create" = "提及…";
 "lng_serein_mention_title" = "提及用户";
 "lng_serein_mention_placeholder" = "用户名、链接或用户 ID";

@@ -1,5 +1,6 @@
 #include "serein/hooks/compose/field_menu.h"
 
+#include "serein/compose/format_toolbar.h"
 #include "serein/compose/mention.h"
 #include "serein/compose/options.h"
 #include "serein/compose/text_replacements.h"
@@ -13,6 +14,7 @@ void InstallFieldMenu(
 		not_null<Ui::InputField*> field,
 		std::shared_ptr<Main::SessionShow> show) {
 	Serein::Compose::InstallQuickReplies(field);
+	Serein::Compose::InstallFormatToolbar(field, show != nullptr);
 	crl::on_main(field, [=] {
 		ForDevice().Value(
 			Serein::Compose::kTextReplacements

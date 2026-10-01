@@ -8,3 +8,33 @@ sereinSnapshotPreviewHeight: 200px;
 sereinSnapshotPreviewMinimum: 80px;
 
 sereinHistoryPreviewSize: size(240px, 180px);
+
+sereinFormatToolbar: InnerDropdown(defaultInnerDropdown) {
+	scrollMargin: margins(4px, 4px, 4px, 4px);
+}
+sereinFormatToolbarButton: IconButton(defaultIconButton) {
+	width: 36px;
+	height: 36px;
+	iconPosition: point(-1px, -1px);
+	rippleAreaPosition: point(0px, 0px);
+	rippleAreaSize: 36px;
+	ripple: defaultRippleAnimationBgOver;
+}
+sereinFormatToolbarSkip: 4px;
+sereinFormatBold: icon {{ "menu/rich/bold-24x24", menuIconColor }};
+sereinFormatBoldActive: icon {{ "menu/rich/bold-24x24", windowActiveTextFg }};
+sereinFormatItalic: icon {{ "menu/rich/italic-24x24", menuIconColor }};
+sereinFormatItalicActive: icon {{ "menu/rich/italic-24x24", windowActiveTextFg }};
+sereinFormatUnderline: icon {{ "menu/rich/underline-24x24", menuIconColor }};
+sereinFormatUnderlineActive: icon {{ "menu/rich/underline-24x24", windowActiveTextFg }};
+sereinFormatStrikeOut: icon {{ "menu/rich/strikeout-24x24", menuIconColor }};
+sereinFormatStrikeOutActive: icon {{ "menu/rich/strikeout-24x24", windowActiveTextFg }};
+sereinFormatCode: icon {{ "menu/rich/code-24x24", menuIconColor }};
+sereinFormatCodeActive: icon {{ "menu/rich/code-24x24", windowActiveTextFg }};
+sereinFormatSpoiler: icon {{ "menu/rich/spoiler-24x24", menuIconColor }};
+sereinFormatSpoilerActive: icon {{ "menu/rich/spoiler-24x24", windowActiveTextFg }};
+sereinFormatQuote: icon {{ "menu/rich/blockquote-24x24", menuIconColor }};
+sereinFormatQuoteActive: icon {{ "menu/rich/blockquote-24x24", windowActiveTextFg }};
+sereinFormatLink: icon {{ "menu/rich/link-24x24", menuIconColor }};
+sereinFormatLinkActive: icon {{ "menu/rich/link-24x24", windowActiveTextFg }};
+sereinFormatClear: icon {{ "menu/clear", menuIconColor }};

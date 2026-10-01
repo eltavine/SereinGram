@@ -166,6 +166,14 @@ rpl::producer<bool> MentionMenuValue() {
 	return ForDevice().Value(Serein::Compose::kMentionMenu);
 }
 
+bool FormatToolbar() {
+	return ForDevice().Get(Serein::Compose::kFormatToolbar);
+}
+
+rpl::producer<bool> FormatToolbarValue() {
+	return ForDevice().Value(Serein::Compose::kFormatToolbar);
+}
+
 QString DefaultCodeLanguage() {
 	return ForDevice().Get(Serein::Compose::kDefaultCodeLanguage);
 }
