@@ -21,6 +21,7 @@ namespace Serein::Hooks {
 
 [[nodiscard]] bool AllowOnline(gsl::not_null<Main::Session*> session);
 [[nodiscard]] bool AllowReadReceipt(gsl::not_null<Main::Session*> session);
+[[nodiscard]] bool AllowReadReceiptIn(gsl::not_null<::History*> history);
 [[nodiscard]] bool AllowTyping(gsl::not_null<Main::Session*> session);
 [[nodiscard]] bool AllowStoryView(gsl::not_null<Main::Session*> session);
 [[nodiscard]] bool AllowViewIncrement(gsl::not_null<Main::Session*> session);

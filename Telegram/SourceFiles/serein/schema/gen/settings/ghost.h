@@ -5,6 +5,8 @@
 
 namespace Serein::Ghost {
 
+[[nodiscard]] bool ValidReadReceiptExceptions(const QString &value);
+
 inline constexpr auto kGhostMode = Option<bool>{
 	"serein.ghostMode",
 	Scope::Account,
@@ -75,6 +77,14 @@ inline constexpr auto kGhostUseScheduledMessages = Option<bool>{
 	Category::Privacy,
 	"lng_serein_ghost_use_scheduled_messages",
 	0 };
+inline const auto kReadReceiptExceptions = Option<QString>{
+	"serein.readReceiptExceptions",
+	Scope::Account,
+	QString(),
+	Category::Privacy,
+	"lng_serein_ghost_read_here",
+	static_cast<unsigned>(Flag::Hidden),
+	&ValidReadReceiptExceptions };
 
 inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kGhostMode));
@@ -87,6 +97,7 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kGhostMarkReadAfterSending));
 	Expects(registry.Add(kGhostExplicitReadReceipts));
 	Expects(registry.Add(kGhostUseScheduledMessages));
+	Expects(registry.Add(kReadReceiptExceptions));
 }
 
 } // namespace Serein::Ghost

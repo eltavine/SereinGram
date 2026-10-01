@@ -1476,7 +1476,7 @@ void ApiWrap::markContentsRead(
 void ApiWrap::markContentsRead(not_null<HistoryItem*> item) {
 	if (!item->markContentsRead(true)
 		|| !item->isRegular()
-		|| !Serein::Hooks::AllowReadReceipt(&session())) {
+		|| !Serein::Hooks::AllowReadReceiptIn(item->history())) {
 		return;
 	}
 	const auto ids = MTP_vector<MTPint>(1, MTP_int(item->id));

@@ -21,6 +21,7 @@ set(serein_test_sources
     serein/tests/test_batches.cpp
     serein/tests/test_download_names.cpp
     serein/tests/test_shown_order.cpp
+    serein/tests/test_ghost_exceptions.cpp
     serein/tests/test_persian_calendar.cpp
     serein/tests/test_defaults.cpp
     serein/tests/test_chinese.cpp
@@ -36,6 +37,7 @@ set(serein_test_sources
     serein/tests/text_entity_support.cpp
     serein/adapters/openssl/aes_gcm_cipher.cpp
     serein/features/ghost/model/policy.cpp
+    serein/features/ghost/model/exceptions.cpp
     serein/features/history/media_store.cpp
     serein/features/history/model/recorder.cpp
     serein/features/updates/model/release.cpp

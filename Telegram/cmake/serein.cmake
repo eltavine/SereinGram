@@ -19,6 +19,7 @@ set(serein_sources
     serein/core/options.cpp
     serein/schema/codec.cpp
     serein/features/ghost/model/policy.cpp
+    serein/features/ghost/model/exceptions.cpp
     serein/features/history/deleted_marks.cpp
     serein/features/history/media_store.cpp
     serein/features/history/model/recorder.cpp

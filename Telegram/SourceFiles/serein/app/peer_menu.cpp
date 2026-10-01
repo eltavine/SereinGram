@@ -9,9 +9,14 @@
 #include "serein/features/history/viewer.h"
 #include "serein/services/summary.h"
 #include "serein/hooks/privacy/alias.h"
+#include "serein/hooks/ghost.h"
+#include "serein/features/ghost/model/exceptions.h"
+#include "serein/schema/gen/settings/ghost.h"
 #include "serein/privacy/options.h"
 #include "data/data_forum_topic.h"
+#include "data/data_histories.h"
 #include "data/data_peer.h"
+#include "data/data_session.h"
 #include "lang/lang_keys.h"
 #include "main/main_session.h"
 #include "ui/widgets/menu/menu_add_action_callback.h"
@@ -19,6 +24,37 @@
 #include "styles/style_menu_icons.h"
 
 namespace Serein::Hooks {
+
+namespace {
+
+void FillReadExceptionAction(
+		const Ui::Menu::MenuCallback &addAction,
+		gsl::not_null<Window::SessionController*> controller,
+		gsl::not_null<PeerData*> peer) {
+	const auto session = &controller->session();
+	const auto excepted = Serein::Ghost::HasException(
+		ForAccount(session).Get(Serein::Ghost::kReadReceiptExceptions),
+		peer->id.value);
+	if (!excepted && AllowReadReceipt(session)) {
+		return;
+	}
+	addAction(excepted
+		? tr::lng_serein_ghost_read_here_off(tr::now)
+		: tr::lng_serein_ghost_read_here(tr::now), [=] {
+		auto &options = ForAccount(session);
+		Expects(options.Set(
+			Serein::Ghost::kReadReceiptExceptions,
+			Serein::Ghost::ToggleException(
+				options.Get(Serein::Ghost::kReadReceiptExceptions),
+				peer->id.value)));
+		if (!excepted) {
+			session->data().histories().readInbox(
+				session->data().history(peer));
+		}
+	}, &st::menuIconMarkRead);
+}
+
+} // namespace
 
 void FillHistoryMenu(
 		const Ui::Menu::MenuCallback &addAction,
@@ -43,6 +79,9 @@ void FillHistoryMenu(
 	}
 	if (!topic) {
 		Chats::FillQuickActions(addAction, controller, peer);
+	}
+	if (!topic) {
+		FillReadExceptionAction(addAction, controller, peer);
 	}
 	if (!topic && CanSummarizeChats()) {
 		addAction(tr::lng_serein_summary_action(tr::now), [=] {

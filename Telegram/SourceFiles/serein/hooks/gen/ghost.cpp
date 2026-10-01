@@ -86,4 +86,12 @@ rpl::producer<bool> GhostUseScheduledMessagesValue(gsl::not_null<Main::Session*>
 	return ForAccount(session).Value(Serein::Ghost::kGhostUseScheduledMessages);
 }
 
+QString ReadReceiptExceptions(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Get(Serein::Ghost::kReadReceiptExceptions);
+}
+
+rpl::producer<QString> ReadReceiptExceptionsValue(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Value(Serein::Ghost::kReadReceiptExceptions);
+}
+
 } // namespace Serein::Hooks::Ghost
