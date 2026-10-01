@@ -369,15 +369,20 @@ void TestOptions() {
 	Require(!options.Set(option, 101), "invalid value accepted");
 	Require(options.Get(option) == 42, "invalid value changed storage");
 
-	prefs.values["serein.testPercent"] = "broken";
-	Require(options.Get(option) == 0, "invalid stored value fallback");
-	Require(prefs.values["serein.testPercent"] == "broken",
-		"invalid payload overwritten");
-	Require(options.invalidKeys().contains(option.key), "read error absent");
 	Require(options.Set(option, 0), "clear to default");
 	Require(!prefs.values.contains("serein.testPercent"), "default not cleared");
-	Require(options.invalidKeys().empty(), "stale read error");
+	Require(options.Get(option) == 0, "cached value not refreshed by write");
 	Require(changes == (std::vector{ 0, 42, 0 }), "clear notification");
+
+	prefs.values["serein.testPercent"] = "broken";
+	auto reloaded = Options(prefs);
+	Require(reloaded.Get(option) == 0, "invalid stored value fallback");
+	Require(prefs.values["serein.testPercent"] == "broken",
+		"invalid payload overwritten");
+	Require(reloaded.invalidKeys().contains(option.key), "read error absent");
+	Require(reloaded.Set(option, 0), "clear invalid value");
+	Require(!prefs.values.contains("serein.testPercent"), "invalid value not cleared");
+	Require(reloaded.invalidKeys().empty(), "stale read error");
 
 	const auto text = Option<QString>{
 		"serein.testText", Scope::Device, QString::fromUtf8("default"),

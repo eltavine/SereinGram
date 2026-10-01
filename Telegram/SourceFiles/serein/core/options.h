@@ -2,6 +2,9 @@
 
 #include <QtCore/QByteArray>
 #include <QtCore/QJsonDocument>
+
+#include <unordered_map>
+#include <variant>
 #include <QtCore/QJsonObject>
 #include <QtCore/QJsonValue>
 #include <QtCore/QString>
@@ -200,6 +203,73 @@ public:
 			|| std::is_same_v<Type, int>
 			|| std::is_same_v<Type, QString>
 			|| std::is_same_v<Type, QByteArray>);
+		if (const auto i = _cache.find(option.key); i != _cache.end()) {
+			if (const auto value = std::get_if<Type>(&i->second)) {
+				return *value;
+			}
+		}
+		const auto result = read(option);
+		_cache.insert_or_assign(
+			option.key,
+			Cached(std::in_place_type<Type>, result));
+		return result;
+	}
+
+	template <typename Type>
+	[[nodiscard]] bool Set(const Option<Type> &option, const Type &value) {
+		if (option.scope != _scope
+			|| (option.validate && !option.validate(value))) {
+			return false;
+		}
+		if constexpr (std::is_same_v<Type, QString>) {
+			if (value.contains(u'\n') || value.contains(u'\r')) {
+				return false;
+			}
+		}
+		const auto old = _prefs.read(option.key);
+		if (value == option.fallback) {
+			_prefs.clear(option.key);
+		} else if constexpr (std::is_same_v<Type, bool>) {
+			_prefs.write(option.key, value ? "1" : "0");
+		} else if constexpr (std::is_same_v<Type, int>) {
+			_prefs.write(option.key, QByteArray::number(value));
+		} else if constexpr (std::is_same_v<Type, QString>) {
+			_prefs.write(option.key, "s" + value.toUtf8());
+		} else {
+			_prefs.write(option.key, value);
+		}
+		_cache.erase(option.key);
+		_invalidKeys.erase(option.key);
+		if (old != _prefs.read(option.key)) {
+			_changes.fire_copy(option.key);
+		}
+		return true;
+	}
+
+	template <typename Type>
+	[[nodiscard]] rpl::producer<Type> Value(const Option<Type> &option) {
+		return rpl::single(Get(option)) | rpl::then(
+			_changes.events() | rpl::filter([key = option.key](auto changed) {
+				return changed == key;
+			}) | rpl::map([this, option] { return Get(option); })
+		) | rpl::distinct_until_changed();
+	}
+
+	[[nodiscard]] rpl::producer<std::string_view> readErrors() const {
+		return _readErrors.events();
+	}
+	[[nodiscard]] rpl::producer<std::string_view> changes() const {
+		return _changes.events();
+	}
+	[[nodiscard]] const std::set<std::string_view> &invalidKeys() const {
+		return _invalidKeys;
+	}
+
+private:
+	using Cached = std::variant<bool, int, QString, QByteArray>;
+
+	template <typename Type>
+	[[nodiscard]] Type read(const Option<Type> &option) {
 		const auto raw = _prefs.read(option.key);
 		if (raw.isEmpty()) {
 			_invalidKeys.erase(option.key);
@@ -238,58 +308,9 @@ public:
 		return *value;
 	}
 
-	template <typename Type>
-	[[nodiscard]] bool Set(const Option<Type> &option, const Type &value) {
-		if (option.scope != _scope
-			|| (option.validate && !option.validate(value))) {
-			return false;
-		}
-		if constexpr (std::is_same_v<Type, QString>) {
-			if (value.contains(u'\n') || value.contains(u'\r')) {
-				return false;
-			}
-		}
-		const auto old = _prefs.read(option.key);
-		if (value == option.fallback) {
-			_prefs.clear(option.key);
-		} else if constexpr (std::is_same_v<Type, bool>) {
-			_prefs.write(option.key, value ? "1" : "0");
-		} else if constexpr (std::is_same_v<Type, int>) {
-			_prefs.write(option.key, QByteArray::number(value));
-		} else if constexpr (std::is_same_v<Type, QString>) {
-			_prefs.write(option.key, "s" + value.toUtf8());
-		} else {
-			_prefs.write(option.key, value);
-		}
-		_invalidKeys.erase(option.key);
-		if (old != _prefs.read(option.key)) {
-			_changes.fire_copy(option.key);
-		}
-		return true;
-	}
-
-	template <typename Type>
-	[[nodiscard]] rpl::producer<Type> Value(const Option<Type> &option) {
-		return rpl::single(Get(option)) | rpl::then(
-			_changes.events() | rpl::filter([key = option.key](auto changed) {
-				return changed == key;
-			}) | rpl::map([this, option] { return Get(option); })
-		) | rpl::distinct_until_changed();
-	}
-
-	[[nodiscard]] rpl::producer<std::string_view> readErrors() const {
-		return _readErrors.events();
-	}
-	[[nodiscard]] rpl::producer<std::string_view> changes() const {
-		return _changes.events();
-	}
-	[[nodiscard]] const std::set<std::string_view> &invalidKeys() const {
-		return _invalidKeys;
-	}
-
-private:
 	RawPrefs &_prefs;
 	Scope _scope;
+	std::unordered_map<std::string_view, Cached> _cache;
 	rpl::event_stream<std::string_view> _changes;
 	rpl::event_stream<std::string_view> _readErrors;
 	std::set<std::string_view> _invalidKeys;

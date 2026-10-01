@@ -189,6 +189,7 @@ ExchangeApply Exchange::Apply(
 		} else {
 			options._prefs.write(info->key, change.after);
 		}
+		options._cache.erase(info->key);
 		options._invalidKeys.erase(info->key);
 	}
 	for (const auto &change : plan.changes) {
