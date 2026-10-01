@@ -153,18 +153,24 @@ void ShowModified(not_null<Window::SessionController*> controller) {
 	}));
 }
 
-void ShowImport(
+struct PlanTexts {
+	tr::phrase<> title;
+	tr::phrase<> about;
+	tr::phrase<> apply;
+	tr::phrase<> done;
+};
+
+void ShowPlan(
 		not_null<Window::SessionController*> controller,
-		const QByteArray &bytes) {
-	const auto plan = Exchange::PlanImport(
-		ForDevice(), RegisteredOptions(), bytes);
+		const ExchangePlan &plan,
+		const PlanTexts &texts) {
 	if (!plan.error.isEmpty()) {
 		controller->showToast(plan.error);
 		return;
 	}
 	controller->show(Box([=](not_null<Ui::GenericBox*> box) {
-		box->setTitle(tr::lng_serein_config_preview());
-		AddText(box, tr::lng_serein_config_import_about(tr::now));
+		box->setTitle(texts.title());
+		AddText(box, texts.about(tr::now));
 		AddText(box, tr::lng_serein_config_changes(
 			tr::now, lt_amount, QString::number(plan.changes.size())));
 		for (const auto &change : plan.changes) {
@@ -183,7 +189,7 @@ void ShowImport(
 				+ u"\n"_q + plan.skippedKeys.mid(0, 20).join('\n'));
 		}
 		if (!plan.changes.empty()) {
-			box->addButton(tr::lng_serein_config_apply(),
+			box->addButton(texts.apply(),
 				crl::guard(controller, [=] {
 					const auto result = Exchange::Apply(
 						ForDevice(), RegisteredOptions(), plan);
@@ -192,7 +198,7 @@ void ShowImport(
 						return;
 					}
 					box->closeBox();
-					controller->showToast(tr::lng_serein_config_imported(tr::now));
+					controller->showToast(texts.done(tr::now));
 					if (ranges::any_of(plan.changes, [](const ExchangeChange &change) {
 						const auto key = change.key.toUtf8();
 						const auto info = RegisteredOptions().Find(std::string_view(
@@ -206,6 +212,34 @@ void ShowImport(
 		}
 		box->addButton(tr::lng_cancel(), [=] { box->closeBox(); });
 	}));
+}
+
+void ShowImport(
+		not_null<Window::SessionController*> controller,
+		const QByteArray &bytes) {
+	ShowPlan(
+		controller,
+		Exchange::PlanImport(ForDevice(), RegisteredOptions(), bytes),
+		{
+			.title = tr::lng_serein_config_preview,
+			.about = tr::lng_serein_config_import_about,
+			.apply = tr::lng_serein_config_apply,
+			.done = tr::lng_serein_config_imported,
+		});
+}
+
+void ShowReset(not_null<Window::SessionController*> controller) {
+	const auto plan = Exchange::PlanReset(ForDevice(), RegisteredOptions());
+	if (plan.error.isEmpty() && plan.changes.empty()) {
+		controller->showToast(tr::lng_serein_config_no_changes(tr::now));
+		return;
+	}
+	ShowPlan(controller, plan, {
+		.title = tr::lng_serein_config_reset,
+		.about = tr::lng_serein_config_reset_about,
+		.apply = tr::lng_serein_config_reset_apply,
+		.done = tr::lng_serein_config_reset_done,
+	});
 }
 
 void Export(not_null<Window::SessionController*> controller) {
@@ -296,6 +330,12 @@ const auto kMeta = BuildHelper({
 		.title = tr::lng_serein_config_import(),
 		.st = &st::settingsButtonNoIcon,
 		.onClick = [=] { Import(controller); },
+	});
+	builder.addButton({
+		.id = u"serein/config/reset"_q,
+		.title = tr::lng_serein_config_reset(),
+		.st = &st::settingsButtonNoIcon,
+		.onClick = [=] { ShowReset(controller); },
 	});
 	builder.addButton({
 		.id = u"serein/config/diagnostics"_q,

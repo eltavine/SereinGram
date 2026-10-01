@@ -615,6 +615,10 @@
 "lng_serein_config_title" = "配置管理";
 "lng_serein_config_scope" = "备份本机已修改的 SereinGram 设置，不包含账号、消息、凭据和 Telegram 设置。";
 "lng_serein_config_modified" = "已修改的设置";
+"lng_serein_config_reset" = "恢复默认设置";
+"lng_serein_config_reset_about" = "本设备上的以下 SereinGram 设置将恢复为默认值；按账号保存的设置（如幽灵模式）保持不变。";
+"lng_serein_config_reset_apply" = "恢复";
+"lng_serein_config_reset_done" = "SereinGram 设置已恢复为默认值。";
 "lng_serein_config_diagnostics" = "配置诊断";
 "lng_serein_config_preview" = "导入预览";
 "lng_serein_config_changes" = "修改项：{amount}";

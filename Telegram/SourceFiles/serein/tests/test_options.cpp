@@ -513,5 +513,14 @@ void TestOptions() {
 	Require(!Exchange::Apply(exchangeOptions, exchangeRegistry, stale).applied,
 		"stale import applied");
 	Require(exchangeOptions.Get(option) == 20, "stale import changed storage");
+	const auto reset = Exchange::PlanReset(exchangeOptions, exchangeRegistry);
+	Require(reset.error.isEmpty() && reset.changes.size() == 2,
+		"reset preview misses a changed device setting");
+	Require(Exchange::Apply(exchangeOptions, exchangeRegistry, reset).applied
+		&& exchangeOptions.Get(option) == option.fallback
+		&& exchangeOptions.Get(Menu::kMenuConfig).isEmpty(),
+		"reset did not restore the defaults");
+	Require(Exchange::PlanReset(exchangeOptions, exchangeRegistry)
+		.changes.empty(), "reset left changed settings");
 	std::cout << "PASS: Serein settings exchange" << std::endl;
 }

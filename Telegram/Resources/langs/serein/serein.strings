@@ -619,6 +619,10 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_config_title" = "Configuration";
 "lng_serein_config_scope" = "Back up changed SereinGram preferences on this device. Accounts, messages, credentials and Telegram settings are excluded.";
 "lng_serein_config_modified" = "Modified settings";
+"lng_serein_config_reset" = "Reset to defaults";
+"lng_serein_config_reset_about" = "These SereinGram settings on this device return to their defaults. Settings stored per account, such as ghost mode, stay as they are.";
+"lng_serein_config_reset_apply" = "Reset";
+"lng_serein_config_reset_done" = "SereinGram settings were reset to their defaults.";
 "lng_serein_config_diagnostics" = "Configuration diagnostics";
 "lng_serein_config_preview" = "Import preview";
 "lng_serein_config_changes" = "Changes: {amount}";

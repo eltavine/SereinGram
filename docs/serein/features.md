@@ -47,7 +47,7 @@ Nagram 的品牌政策要求分支使用不同品牌并替换 Nagram 名称与�
 | SG-CORE-05 | 功能模块注册与生命周期（应用、会话、窗口作用域）：应用与会话作用域已由 `serein/app/modules.cpp` 模块表统一分发（对话排序已从上游窗口构造函数移到会话作用域）；窗口作用域由 `Serein::Hooks::OnWindowStarted` 分发，首个使用者是最近会话记录；主菜单条目统一由 `Serein::Hooks::FillMainMenu` 添加 | D | Implemented | P0 |
 | SG-CORE-06 | 设置页与搜索索引由 schema 元数据生成（开关、选项、数值、文本、子页）：开关行、小标题、说明、依赖开关与自定义行位置已由 proto 生成 `AddLayout`，界面、聊天、消息、写作、菜单、媒体、隐私（含幽灵与历史）七页已迁移；数值输入行（范围取自 gte/lte 规则，0 的文字与复数格式由 `number` 选项声明）已生成；单选行（按序语言键或 `in` 规则加后缀）已生成；文本行（`text` 选项声明占位语言键，未设置时行标签显示占位文字，`disabled_by` 使该行在对应开关打开时隐藏）已生成，“已编辑/已删除标记文字”已改用生成行；子页由页面选项 `subpage` 声明标题、图标与搜索关键词，生成父页上的入口按钮 `AddSubpageButton` 以及分区标题、图标常量，分区类本身沿用各页相同的手写样板；幽灵模式与“已删除与已编辑消息”已拆成隐私页下的子页 | D | Implemented | P0 |
 | SG-CORE-07 | 英文、简体、繁体内置文案与一致性检查 | Ni Na | Implemented | P0 |
-| SG-CORE-08 | 配置管理：已修改项、导出、导入差异预览、诊断信息（J01–J04） | Ni Na | Implemented | P1 |
+| SG-CORE-08 | 配置管理：已修改项、导出、导入差异预览、诊断信息（J01–J04）；“恢复默认设置”先列出本设备上所有已修改的可导出设置及其当前值，确认后一次恢复为默认值，按账号保存的设置不受影响 | Ni Na | Implemented | P1 |
 | SG-CORE-09 | 守卫：源文件 ≤ 1000 行、模块依赖方向、上游侵入预算、生成代码漂移 | D | Implemented | P0 |
 | SG-CORE-10 | 测试：纯逻辑单元测试与 `-testagent` 界面场景 | D | Implemented | P0 |
 | SG-CORE-11 | 更多界面语言的社区翻译平台接入（Serein 字符串按界面语言加载任意 `langs/serein/<语言代码>.strings`，缺失的键回退英文，CMake 扫描目录自动生成资源清单；核心测试要求中文译文完整、其他译文的键与占位符与英文一致；`crowdin.yml` 已就绪，在 GitHub Secrets 中配置 Crowdin 项目 ID 与访问令牌后即可同步） | Ad Na | In Progress | P3 |
