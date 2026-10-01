@@ -118,6 +118,14 @@ rpl::producer<bool> ForceClickPreviewValue() {
 	return ForDevice().Value(Serein::Media::kForceClickPreview);
 }
 
+bool DownloadsPerChat() {
+	return ForDevice().Get(Serein::Media::kDownloadsPerChat);
+}
+
+rpl::producer<bool> DownloadsPerChatValue() {
+	return ForDevice().Value(Serein::Media::kDownloadsPerChat);
+}
+
 bool Mp4FilePreview() {
 	return ForDevice().Get(Serein::Media::kMp4FilePreview);
 }

@@ -34,6 +34,8 @@ namespace Serein::Hooks::Media {
 [[nodiscard]] rpl::producer<bool> GifPlaybackControlsValue();
 [[nodiscard]] bool ForceClickPreview();
 [[nodiscard]] rpl::producer<bool> ForceClickPreviewValue();
+[[nodiscard]] bool DownloadsPerChat();
+[[nodiscard]] rpl::producer<bool> DownloadsPerChatValue();
 [[nodiscard]] bool Mp4FilePreview();
 [[nodiscard]] rpl::producer<bool> Mp4FilePreviewValue();
 [[nodiscard]] bool DenoiseVoiceMessages();

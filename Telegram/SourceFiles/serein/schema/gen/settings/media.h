@@ -116,6 +116,13 @@ inline constexpr auto kForceClickPreview = Option<bool>{
 	Category::Media,
 	"lng_serein_force_click_preview",
 	0 };
+inline constexpr auto kDownloadsPerChat = Option<bool>{
+	"serein.downloadsPerChat",
+	Scope::Device,
+	false,
+	Category::Media,
+	"lng_serein_downloads_per_chat",
+	0 };
 inline constexpr auto kMp4FilePreview = Option<bool>{
 	"serein.mp4FilePreview",
 	Scope::Device,
@@ -146,6 +153,7 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kDisableVideoAutoplay));
 	Expects(registry.Add(kGifPlaybackControls));
 	Expects(registry.Add(kForceClickPreview));
+	Expects(registry.Add(kDownloadsPerChat));
 	Expects(registry.Add(kMp4FilePreview));
 	Expects(registry.Add(kDenoiseVoiceMessages));
 }

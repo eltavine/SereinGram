@@ -80,6 +80,10 @@ message MediaSettings {
     keywords: ["Force Click", "Force Touch", "trackpad", "preview", "haptic"]
     note: "lng_serein_force_click_preview_note"
   }];
+  optional bool downloads_per_chat = 17 [(serein.options.v1.field) = {
+    keywords: ["download", "folder", "chat", "channel", "organize"]
+    note: "lng_serein_downloads_per_chat_note"
+  }];
   optional bool mp4_file_preview = 11 [(serein.options.v1.field) = {
     keywords: ["MP4", "file", "preview"]
   }];

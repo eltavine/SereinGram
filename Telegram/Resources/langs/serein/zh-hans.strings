@@ -97,6 +97,8 @@
 "lng_serein_sticker_author_bot_note" = "当前账号不认识贴纸包或表情包的作者时，“作者”会把作者的用户 ID 发给这个内联机器人，只有它回答中的用户名确实属于该 ID 时才打开资料页。机器人的运营者能看到你查询的每个 ID。留空则只复制 ID。";
 "lng_serein_disable_video_autoplay" = "关闭聊天中的视频自动播放";
 "lng_serein_gif_playback_controls" = "显示 GIF 播放控制";
+"lng_serein_downloads_per_chat" = "按对话保存下载的文件";
+"lng_serein_downloads_per_chat_note" = "从对话中下载的文件会保存到下载目录下以该对话命名的子文件夹中。已经下载过的文件保持原位置。";
 "lng_serein_force_click_preview" = "用力点按预览媒体（macOS）";
 "lng_serein_force_click_preview_note" = "在支持力度感应的触控板上，用力点按聊天中的贴纸、GIF 或图片会显示预览并给出触感反馈，松开即关闭，不会打开该媒体。";
 "lng_serein_mp4_file_preview" = "以文件发送 MP4 时保留视频预览";

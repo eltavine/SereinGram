@@ -101,6 +101,8 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_sticker_author_bot_note" = "When a sticker or emoji pack author is not known to this account, \"Author\" sends the author's user ID to this inline bot and opens the profile only if a username from its answer belongs to that exact ID. The bot's operator sees every ID you look up. Leave empty to only copy the ID.";
 "lng_serein_disable_video_autoplay" = "Disable video autoplay in chats";
 "lng_serein_gif_playback_controls" = "Show GIF playback controls";
+"lng_serein_downloads_per_chat" = "Save downloads in a folder per chat";
+"lng_serein_downloads_per_chat_note" = "Files downloaded from a chat go into a subfolder named after it inside the download folder. Files that are already downloaded stay where they are.";
 "lng_serein_force_click_preview" = "Preview media with Force Click (macOS)";
 "lng_serein_force_click_preview_note" = "On a Force Touch trackpad, pressing firmly on a sticker, GIF or photo in a chat shows its preview with haptic feedback until you release, instead of opening it.";
 "lng_serein_mp4_file_preview" = "Keep video preview for MP4 files";

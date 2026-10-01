@@ -97,6 +97,8 @@
 "lng_serein_sticker_author_bot_note" = "目前帳號不認識貼圖包或表情包的作者時，「作者」會把作者的使用者 ID 傳給這個內嵌機器人，只有它回答中的使用者名稱確實屬於該 ID 時才開啟個人資料。機器人的營運者能看到你查詢的每個 ID。留空則只複製 ID。";
 "lng_serein_disable_video_autoplay" = "關閉聊天中的影片自動播放";
 "lng_serein_gif_playback_controls" = "顯示 GIF 播放控制";
+"lng_serein_downloads_per_chat" = "依對話儲存下載的檔案";
+"lng_serein_downloads_per_chat_note" = "從對話中下載的檔案會儲存到下載資料夾中以該對話命名的子資料夾。已經下載過的檔案保持原位置。";
 "lng_serein_force_click_preview" = "用力按壓預覽媒體（macOS）";
 "lng_serein_force_click_preview_note" = "在支援力度感應的觸控式軌跡板上，用力按壓聊天中的貼圖、GIF 或圖片會顯示預覽並提供觸覺回饋，放開即關閉，不會開啟該媒體。";
 "lng_serein_mp4_file_preview" = "以檔案傳送 MP4 時保留影片預覽";
