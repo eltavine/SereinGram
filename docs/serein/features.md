@@ -4,24 +4,24 @@
 
 来源缩写：`Ni` Nagram iOS · `Na` Nagram Android（含 NekoX／Nekogram 继承项）· `Ad` AyuGram Desktop · `Aa` AyuGram Android · `T` Telegram Desktop 已有 · `D` 桌面补充。
 
-现有代码来自 Nagram-qt 的 M0–M7（设置条目编号 A02–J04，见 `docs/nagram/settings-page.md`）。这些条目代码已完成、`test_nagram` 通过，但多数缺少现场验收，统一记为 `Implemented`；逐项的现场证据与缺口见 `docs/nagram/design.md` 第 8 节。
+部分功能继承自 Nagram-qt，代码与核心测试已完成但多数缺少现场验收，统一记为 `Implemented`。
 
 核对口径：
 
 - AyuGram：`docs.ayugram.one/desktop` 功能列表、AyuGramDesktop 与 AyuGram4A 的 README（2026-09-30 抓取）。
-- 手机版 Nagram：`docs/nagram/feature-catalog.md` 逐项目录（iOS 集中偏好、Android 继承与增强偏好、菜单动作、无开关能力）与 Nagram Android README。目录中“纳入／合并”的条目按下文“需求族映射”归入本表各族，排除项沿用目录末节口径。
+- 手机版 Nagram：Nagram iOS 的集中偏好，Nagram Android 继承自 NekoX／Nekogram 的偏好、菜单动作与无开关能力，以及 Nagram Android README（2026-09-30 整理）；按下文“需求族映射”归入本表各族，排除项见末节。
 
 ## PLAT 平台与交付
 
 | ID | 功能 | 来源 | 状态 | 优先级 |
 | --- | --- | --- | --- | --- |
-| SG-PLAT-01 | macOS 通用二进制（arm64 + x86_64）构建与 DMG（依赖与应用默认按 `x86_64;arm64` 构建；CI 用 `lipo -verify_arch` 校验两种架构后打包 DMG 上传，2026-10-01 首次通过，`test_serein` 同时运行；签名与公证需要维护者的 Apple 开发者证书，待做） | T | In Progress | P0 |
+| SG-PLAT-01 | macOS 通用二进制（arm64 + x86_64）构建与 DMG（依赖与应用默认按 `x86_64;arm64` 构建；CI 用 `lipo -verify_arch` 校验两种架构后打包 DMG 上传，2026-10-01 首次通过，`test_serein` 同时运行；签名与公证需要 Apple Developer ID 证书，尚未接入） | T | In Progress | P0 |
 | SG-PLAT-02 | Windows x64 构建、安装包与便携版（便携版为单个 `SereinGram.exe`；CI 以 Inno Setup 编译 `setup.iss` 生成安装包，步骤暂为允许失败的试验状态；签名待做） | T | In Progress | P0 |
 | SG-PLAT-03 | Linux x86_64 静态构建（Rocky Linux 8 容器）与 tar 包（CI 打包 `SereinGram.tar.gz` 上传；ffcfe2a 起 Linux 工作流全绿：应用与 `test_serein` 构建通过、全部核心测试通过、产物上传成功，构建失败时也保存 ccache，热缓存下整轮约 17 分钟） | T | Implemented | P0 |
 | SG-PLAT-04 | 三平台 CI：构建、`test_serein`、全部守卫（`serein-{mac,win,linux}.yml` 构建应用与 `test_serein`，`serein-guards.yml` 在每次推送运行全部守卫、核心测试与 commitlint 且持续通过；Linux 与 macOS 已于 2026-10-01 首次全绿，Windows 已修复全部已知错误，等待首次全绿） | D | In Progress | P0 |
-| SG-PLAT-05 | 发行版打包：Flatpak 清单、AUR PKGBUILD、`DESKTOP_APP_USE_PACKAGED` 依赖清单（等待维护者决定：发行版包与 Flatpak 都由公开的打包脚本构建，必须内置 API 凭据，而按约束不能使用官方 Telegram 凭据，SereinGram 自己的凭据目前只保存在仓库 Secrets 中；需要先决定公开一组应用凭据，或让打包者自行申请并通过 `SEREIN_API_ID` 与 `SEREIN_API_HASH` 传入） | Ad | Planned | P2 |
+| SG-PLAT-05 | 发行版打包：Flatpak 清单、AUR PKGBUILD、`DESKTOP_APP_USE_PACKAGED` 依赖清单（发行版包与 Flatpak 由公开的打包脚本构建，必须内置 API 凭据；SereinGram 不使用官方 Telegram 凭据，打包脚本应由打包者通过 `SEREIN_API_ID` 与 `SEREIN_API_HASH` 提供自己的凭据；打包脚本尚未提供，目前以 CentOS 基线构建的 Linux x86_64 便携包覆盖主流发行版） | Ad | Planned | P2 |
 | SG-PLAT-06 | Windows arm64 构建（暂从 CI 矩阵移除：上游 ffmpeg n8.1.3 在 arm64 上生成的 `epel_neon.d` 依赖文件格式错误，导致依赖构建失败） | T | Planned | P2 |
-| SG-PLAT-07 | 独立更新检查（GitHub Releases，默认不自动下载）（界面设置“在 GitHub 上检查更新”默认开启：启动 30 秒后及每 24 小时查询最新正式版，只接受 github.com 的发布页链接，发现新版本时提示链接，不自动下载；官方更新通道在构建中关闭；推送 `v*` 标签时三平台工作流把产物上传到草稿预发布 Release，由维护者核对后发布） | D | In Progress | P2 |
+| SG-PLAT-07 | 独立更新检查（GitHub Releases，默认不自动下载）（界面设置“在 GitHub 上检查更新”默认开启：启动 30 秒后及每 24 小时查询最新正式版，只接受 github.com 的发布页链接，发现新版本时提示链接，不自动下载；官方更新通道在构建中关闭；推送 `v*` 标签时三平台工作流把产物上传到草稿预发布 Release，核对后手动发布） | D | In Progress | P2 |
 | SG-PLAT-08 | API 凭据构建期注入（Secrets 或本地文件），禁止使用官方客户端凭据 | D | Implemented | P0 |
 
 ## BRAND 品牌与身份
@@ -50,7 +50,7 @@ Nagram 的品牌政策要求分支使用不同品牌并替换 Nagram 名称与�
 | SG-CORE-08 | 配置管理：已修改项、导出、导入差异预览、诊断信息（J01–J04） | Ni Na | Implemented | P1 |
 | SG-CORE-09 | 守卫：源文件 ≤ 1000 行、模块依赖方向、上游侵入预算、生成代码漂移 | D | Implemented | P0 |
 | SG-CORE-10 | 测试：纯逻辑单元测试与 `-testagent` 界面场景 | D | Implemented | P0 |
-| SG-CORE-11 | 更多界面语言的社区翻译平台接入（Serein 字符串按界面语言加载任意 `langs/serein/<语言代码>.strings`，缺失的键回退英文，CMake 扫描目录自动生成资源清单；核心测试要求中文译文完整、其他译文的键与占位符与英文一致；`crowdin.yml` 已就绪，待维护者创建 Crowdin 项目并设置密钥） | Ad Na | In Progress | P3 |
+| SG-CORE-11 | 更多界面语言的社区翻译平台接入（Serein 字符串按界面语言加载任意 `langs/serein/<语言代码>.strings`，缺失的键回退英文，CMake 扫描目录自动生成资源清单；核心测试要求中文译文完整、其他译文的键与占位符与英文一致；`crowdin.yml` 已就绪，在 GitHub Secrets 中配置 Crowdin 项目 ID 与访问令牌后即可同步） | Ad Na | In Progress | P3 |
 
 ## GHOST 幽灵模式
 
@@ -267,28 +267,28 @@ SG-HIST-05 的“已编辑”标记文字已由 C09 实现，删除标记随 SG-
 
 ## 需求族映射
 
-手机版 Nagram 需求（`docs/nagram/requirements.md` F01–F18）与本表各族的对应关系，用于逐项核对覆盖率：
+手机版 Nagram 的需求族与本表各族的对应关系，用于逐项核对覆盖率：
 
 | Nagram 需求族 | 本表 |
 | --- | --- |
-| F01 品牌、主题与外观 | APPEAR、BRAND |
-| F02 聊天列表与导航 | CHATS |
-| F03 消息显示 | MSG |
-| F04 输入与文本 | COMPOSE |
-| F05 消息菜单与批量操作 | MENU |
-| F06 媒体与贴纸 | MEDIA |
-| F07 翻译与 LLM | TRANS |
-| F08 语音转写 | TRANS |
-| F09 过滤与规则 | FILTER |
-| F10 隐私与本地锁 | PRIV |
-| F11 回执与在线状态 | GHOST |
-| F12 本地历史 | HIST |
-| F13 消息截图 | MENU |
-| F14 资料与群管理 | MSG、ADMIN |
-| F15 网络与代理 | NET |
-| F16 链接与外部集成 | FILTER、TRANS |
-| F17 配置、同步与更新 | CORE、PLAT、SYNC |
-| F18 通知呈现 | APPEAR、PRIV |
+| 品牌、主题与外观 | APPEAR、BRAND |
+| 聊天列表与导航 | CHATS |
+| 消息显示 | MSG |
+| 输入与文本 | COMPOSE |
+| 消息菜单与批量操作 | MENU |
+| 媒体与贴纸 | MEDIA |
+| 翻译与 LLM | TRANS |
+| 语音转写 | TRANS |
+| 过滤与规则 | FILTER |
+| 隐私与本地锁 | PRIV |
+| 回执与在线状态 | GHOST |
+| 本地历史 | HIST |
+| 消息截图 | MENU |
+| 资料与群管理 | MSG、ADMIN |
+| 网络与代理 | NET |
+| 链接与外部集成 | FILTER、TRANS |
+| 配置、同步与更新 | CORE、PLAT、SYNC |
+| 通知呈现 | APPEAR、PRIV |
 
 ## 明确排除
 

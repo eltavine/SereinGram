@@ -5,7 +5,6 @@
   "source_root": "Telegram/SourceFiles/",
   "owned_extra": [
     "docs/serein/",
-    "docs/nagram/",
     "Telegram/Resources/langs/serein/",
     "Telegram/Resources/branding/",
     "Telegram/Resources/qrc/serein.qrc",

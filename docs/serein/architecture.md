@@ -13,14 +13,14 @@
 | 上游侵入（源码） | 123 个文件，+1,386／−339 行；最多的是 `history_widget.cpp` +87 行 | 同上，限 `Telegram/SourceFiles` |
 | 设置声明 | 手写 `Option<T>` 注册表 + 24 个手写设置页文件（3,017 行） | `nagram/core`、`nagram/settings` |
 | 结构化配置 | 过滤、链接、服务、菜单各自手写 JSON 解析与校验 | `nagram/*/model.cpp` |
-| 构建 | 只在开发者本机做过 macOS Debug 构建；三平台 CI 从未运行 | `docs/nagram/design.md` |
+| 构建 | 三平台 CI 从未运行 | 仓库工作流记录 |
 
 当前（以 `tools/serein/upstream_budget.py` 与仓库统计为准）：
 
 | 项目 | 数值 |
 | --- | --- |
-| 自有代码 | `Telegram/SourceFiles/serein/` 307 个文件：手写 18,608 行，由 24 个 proto 生成 70 个文件、6,133 行；最大手写文件 690 行（`settings/services.cpp`） |
-| 上游侵入 | 210 个上游文件、+1,654 行；源码 140 个文件、+1,424 行；直接包含内部头文件的上游文件 0 个（初始 87 个），预算锁定为 0 |
+| 自有代码 | `Telegram/SourceFiles/serein/` 426 个文件：手写 25,704 行，由 26 个 proto 生成 76 个文件、7,434 行；最大手写文件 727 行（`settings/services.cpp`） |
+| 上游侵入 | 218 个上游文件、+1,598 行；源码 148 个文件、+1,368 行；直接包含内部头文件的上游文件 0 个（初始 87 个），预算锁定为 0 |
 | 设置页 | 布局、开关、数值、单选与文本行由 proto 生成；手写设置页只保留自定义控件 |
 | 结构化配置 | 链接、快捷回复、过滤、主菜单、消息菜单、服务与历史记录均由 proto3 声明，生成编解码器校验 |
 | 构建 | 三平台 CI 已接入并缓存依赖；核心测试与守卫在每次推送时运行 |
@@ -199,17 +199,12 @@ Phase 1（P1）：GHOST、HIST、SG-FILTER-03 之前的过滤项补验、SG-PRIV
 
 Phase 2 与 Phase 3：按功能矩阵的 P2、P3；P3 每项先写 ADR 再实施。
 
-## 9. 维护者决定（2026-09-30）
+## 9. 项目约定
 
-| 事项 | 决定 |
+| 事项 | 约定 |
 | --- | --- |
 | 应用 ID | `io.github.eltavine.SereinGram` |
-| 图标 | 先使用自有的临时占位图标，之后替换为正式图标；不沿用 Nagram 或 Telegram 图标 |
-| 推送与 CI | 允许推送到 `main` 触发三平台工作流 |
-| 服务条款风险功能 | SG-HIST-09、SG-PRIV-07、SG-PRIV-08 正常纳入 |
+| 图标 | 自有的临时占位图标，之后替换为正式图标；不沿用 Nagram 或 Telegram 图标 |
+| 功能范围 | 包含可能与服务条款冲突的功能（SG-HIST-09、SG-PRIV-07、SG-PRIV-08），与其他增强一样默认关闭 |
 | proto3 方案 | 按 ADR-0002：proto3 + Buf + 自有生成器，不引入 protobuf 运行时 |
-| 本机工具链 | 允许用 Homebrew 安装 qtbase，用于本机编译不依赖上游的核心逻辑测试 |
-
-仍待提供：发布用 API 凭据（维护者在 my.telegram.org 申请，放入仓库 Secrets；未配置时 CI 使用上游公开测试凭据）。
-
-本机没有 Xcode 与 `../Libraries`，暂时无法本地构建；在准备好本地工具链（`docs/building-mac.md`）之前，编译验证依赖 CI。
+| API 凭据 | 不使用官方 Telegram 客户端凭据；构建从仓库 Secrets 的 `SEREIN_API_ID` 与 `SEREIN_API_HASH` 注入，没有密钥的 fork 与 PR 构建回退到上游为开发构建公开提供的测试凭据（`TDESKTOP_API_TEST`） |

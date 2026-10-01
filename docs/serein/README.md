@@ -10,8 +10,6 @@ SereinGram 是基于 Telegram Desktop 的第三方桌面客户端，功能对标
 | [架构](architecture.md) | 模块分层、依赖方向、上游挂钩门面、schema、存储、守卫与迁移步骤 |
 | [ADR](adr/) | 关键取舍与调研记录 |
 
-`docs/nagram/` 保留 Nagram 阶段的需求、手机端功能来源目录与现场验证记录，作为参考资料；与本目录冲突时以本目录为准。
-
 ## 0. 全局工程原则
 
 以下原则是架构评审、代码评审、依赖升级和发布验收的强制检查项。例外必须写入 ADR，说明影响范围、补偿措施和到期条件。
@@ -28,7 +26,7 @@ SereinGram 是基于 Telegram Desktop 的第三方桌面客户端，功能对标
 - **目标**：实现功能矩阵中对标手机版 Nagram 与 AyuGram 的增强功能；Telegram 官方功能全部保留并随上游更新；三平台构建与发布。
 - **上游**：唯一上游是 Telegram Desktop。Nagram-qt 与 AyuGram 是功能与实现参考，不跟随其提交历史（[ADR-0001](adr/0001-upstream-and-intrusion.md)）。
 - **默认行为**：所有增强默认关闭或跟随 Telegram；全部关闭时客户端行为与上游一致。
-- **非目标**：冒充官方客户端或使用官方客户端的 API 凭据；伪造服务端权益；手机专属交互（振动、滑动手势、底栏等，排除口径见 `docs/nagram/feature-catalog.md` 末节）。
+- **非目标**：冒充官方客户端或使用官方客户端的 API 凭据；伪造服务端权益；手机专属交互（振动、滑动手势、底栏等，排除口径见[功能矩阵](features.md#明确排除)末节）。
 
 ## 2. 平台矩阵
 
@@ -49,7 +47,7 @@ SereinGram 是基于 Telegram Desktop 的第三方桌面客户端，功能对标
 1. 三平台 CI 构建成功，`test_serein` 全部通过。
 2. 守卫全部通过：源文件行数、模块边界、上游侵入预算、`buf lint` 与 `buf breaking`、生成代码无漂移、三语文案一致、门面命名空间遮蔽、功能矩阵格式、工作流 actionlint。本地用 `tools/serein/check_all.sh` 一次运行全部守卫与核心测试。
 3. 发布说明分别列出本版本 `Verified` 与仅 `Implemented` 的功能。
-4. 发布流程：推送 `v*` 标签后，三平台工作流构建并把产物（macOS 通用 DMG、Linux x86_64 tar 包、Windows x64 便携版与安装包）上传到同一个草稿预发布 Release，维护者核对门禁后手动发布；应用内的 GitHub 更新检查只提示正式版。CI 目前只构建 Debug 配置，正式版的构建配置与签名由维护者决定。
+4. 发布流程：推送 `v*` 标签后，三平台工作流构建并把产物（macOS 通用 DMG、Linux x86_64 tar 包、Windows x64 便携版与安装包）上传到同一个草稿预发布 Release，核对门禁后手动发布；应用内的 GitHub 更新检查只提示正式版。CI 目前只构建 Debug 配置，正式版的构建配置与签名尚未确定。
 
 ## 5. 提交规范
 
@@ -65,4 +63,4 @@ SereinGram 是基于 Telegram Desktop 的第三方桌面客户端，功能对标
 - `serein.strings` 是英文源文件；译文文件名为小写语言代码，例如 `fa.strings`、`pt-br.strings`。CMake 在配置时扫描该目录生成资源清单，新增语言无需改动构建文件。
 - 运行时先按界面语言的完整代码查找译文，再退回基础语言代码；缺少的键显示英文。`zh-hans` 与 `zh-hant` 必须完整，其他语言可以只翻译一部分。
 - 核心测试校验每个译文文件：键必须存在于英文源文件，`{name}` 形式的占位符必须一致。
-- 仓库根目录的 `crowdin.yml` 把该目录接入 Crowdin；维护者创建项目后，在 GitHub Secrets 中设置 `CROWDIN_PROJECT_ID` 与 `CROWDIN_PERSONAL_TOKEN` 即可同步。
+- 仓库根目录的 `crowdin.yml` 把该目录接入 Crowdin；创建 Crowdin 项目后，在 GitHub Secrets 中设置 `CROWDIN_PROJECT_ID` 与 `CROWDIN_PERSONAL_TOKEN` 即可同步。
