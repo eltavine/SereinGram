@@ -19,7 +19,8 @@ DEFAULT_POLICY = HERE / "policy" / "upstream.json"
 DEFAULT_OWNED_POLICY = HERE / "policy" / "file_size.json"
 POLICY_KEYS = {
     "schema_version", "upstream", "base", "source_root", "owned_extra",
-    "own_include_prefixes", "hook_include_prefixes", "budget",
+    "own_include_prefixes", "hook_include_prefixes", "submodule_overrides",
+    "budget",
 }
 BUDGET_KEYS = (
     "all_files", "all_added_lines",
@@ -47,7 +48,8 @@ def load_policy(path):
         value = budget[key]
         if not isinstance(value, int) or isinstance(value, bool) or value < 0:
             raise PolicyError(f"budget.{key} must be a non-negative integer")
-    for key in ("owned_extra", "own_include_prefixes", "hook_include_prefixes"):
+    for key in ("owned_extra", "own_include_prefixes", "hook_include_prefixes",
+                "submodule_overrides"):
         values = policy[key]
         if not isinstance(values, list) or not all(
                 isinstance(value, str) and value for value in values):
@@ -62,6 +64,32 @@ def changed_files(root, base):
     for record in filter(None, output.split("\0")):
         added, _deleted, path = record.split("\t", 2)
         yield path, 0 if added == "-" else int(added)
+
+
+def gitlinks(output, sha_field):
+    result = {}
+    for line in filter(None, output.split("\n")):
+        meta, path = line.split("\t", 1)
+        fields = meta.split()
+        if fields[0] == "160000":
+            result[path] = fields[sha_field]
+    return result
+
+
+def submodule_mismatches(root, policy):
+    def run(*args):
+        return subprocess.run(
+            ["git", *args], cwd=root, capture_output=True, check=True,
+        ).stdout.decode("utf-8")
+
+    upstream = gitlinks(run("ls-tree", "-r", policy["base"]), 2)
+    staged = gitlinks(run("ls-files", "-s"), 1)
+    return sorted(
+        (path, staged[path], sha)
+        for path, sha in upstream.items()
+        if path in staged
+        and staged[path] != sha
+        and path not in policy["submodule_overrides"])
 
 
 def includes_own_header(path, policy):
@@ -108,6 +136,7 @@ def main(argv=None):
         policy = load_policy(args.policy)
         owned = load_owned_policy(args.owned_policy)["owned"]
         metrics, offenders = measure(args.root, policy, owned)
+        mismatches = submodule_mismatches(args.root, policy)
     except PolicyError as error:
         print(error, file=sys.stderr)
         return 2
@@ -124,10 +153,13 @@ def main(argv=None):
     if args.list:
         for path in offenders:
             print(f"direct include: {path}")
+    for path, current, upstream in mismatches:
+        print(f"Submodule {path} is staged at {current[:10]} but the upstream "
+              f"base has {upstream[:10]}; run 'git submodule update {path}' "
+              "or list it in submodule_overrides.")
     if exceeded:
         print(f"Upstream intrusion over budget: {', '.join(exceeded)}.")
-        return 1
-    return 0
+    return 1 if (exceeded or mismatches) else 0
 
 
 if __name__ == "__main__":

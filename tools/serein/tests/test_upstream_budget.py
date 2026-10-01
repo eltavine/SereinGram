@@ -50,7 +50,8 @@ class UpstreamBudgetTest(unittest.TestCase):
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(text, encoding="utf-8")
 
-    def write_policy(self, **budget):
+    def write_policy(self, overrides=(), **budget):
+        overrides = list(overrides)
         values = dict.fromkeys(upstream_budget.BUDGET_KEYS, 100)
         values.update(budget)
         self.policy.write_text(json.dumps({
@@ -61,6 +62,7 @@ class UpstreamBudgetTest(unittest.TestCase):
             "owned_extra": ["docs/"],
             "own_include_prefixes": ["serein/"],
             "hook_include_prefixes": ["serein/hooks/"],
+            "submodule_overrides": overrides,
             "budget": values,
         }), encoding="utf-8")
 
@@ -114,6 +116,27 @@ class UpstreamBudgetTest(unittest.TestCase):
         code, output = self.run_budget()
         self.assertEqual(code, 1)
         self.assertIn("source_files, direct_include_files", output)
+
+    def link(self, path, sha):
+        git(self.root, "update-index", "--add", "--cacheinfo",
+            f"160000,{sha},{path}")
+
+    def test_reports_submodule_behind_upstream(self):
+        upstream = "1" * 40
+        self.link("deps/lib", upstream)
+        git(self.root, "commit", "-q", "-m", "add submodule")
+        self.base = git(self.root, "rev-parse", "HEAD")
+        self.link("deps/lib", "2" * 40)
+        self.link("deps/own", "3" * 40)
+        self.write_policy()
+        code, output = self.run_budget()
+        self.assertEqual(code, 1, output)
+        self.assertIn("Submodule deps/lib is staged at 2222222222", output)
+        self.assertIn("upstream base has 1111111111", output)
+        self.assertNotIn("deps/own", output)
+        self.write_policy(overrides=["deps/lib"])
+        code, output = self.run_budget()
+        self.assertEqual(code, 0, output)
 
     def test_rejects_short_base(self):
         self.write_policy()
