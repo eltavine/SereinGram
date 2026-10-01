@@ -2,28 +2,15 @@
 
 本方案参考 `pingora-panel` 的 ports-and-adapters 结构：上游框架（Telegram Desktop）只出现在适配器、界面层和挂钩门面中；核心模型、用例与存储契约不依赖上游。取舍记录见 [ADR](adr/)。
 
-## 1. 现状基线（2026-09-30）
+## 1. 现状
 
-重构开始时（Nagram-qt 分支原样）：
-
-| 项目 | 数值 | 来源 |
-| --- | --- | --- |
-| 自有代码 | `Telegram/SourceFiles/nagram/` 144 个文件、13,823 行，最大文件 650 行 | `wc -l` |
-| 上游侵入（全部） | 192 个上游文件，+1,781／−539 行 | `git diff 0b4a7faa9d..HEAD`，排除自有目录与文档 |
-| 上游侵入（源码） | 123 个文件，+1,386／−339 行；最多的是 `history_widget.cpp` +87 行 | 同上，限 `Telegram/SourceFiles` |
-| 设置声明 | 手写 `Option<T>` 注册表 + 24 个手写设置页文件（3,017 行） | `nagram/core`、`nagram/settings` |
-| 结构化配置 | 过滤、链接、服务、菜单各自手写 JSON 解析与校验 | `nagram/*/model.cpp` |
-| 构建 | 三平台 CI 从未运行 | 仓库工作流记录 |
-
-当前（以 `tools/serein/upstream_budget.py` 与仓库统计为准）：
-
-| 项目 | 数值 |
+| 项目 | 现状与数据来源 |
 | --- | --- |
-| 自有代码 | `Telegram/SourceFiles/serein/` 426 个文件：手写 25,704 行，由 26 个 proto 生成 76 个文件、7,434 行；最大手写文件 727 行（`settings/services.cpp`） |
-| 上游侵入 | 218 个上游文件、+1,598 行；源码 148 个文件、+1,368 行；直接包含内部头文件的上游文件 0 个（初始 87 个），预算锁定为 0 |
+| 自有代码 | `Telegram/SourceFiles/serein/`；手写源文件不超过 1000 行（`tools/serein/check_file_size.py`），生成代码在 `schema/gen`、`settings/gen`、`hooks/gen` |
+| 上游侵入 | 当前数值与上限由 `tools/serein/upstream_budget.py` 输出，上限记录在 `tools/serein/policy/upstream.json`；直接包含内部头文件的上游文件锁定为 0 |
 | 设置页 | 布局、开关、数值、单选与文本行由 proto 生成；手写设置页只保留自定义控件 |
 | 结构化配置 | 链接、快捷回复、过滤、主菜单、消息菜单、服务与历史记录均由 proto3 声明，生成编解码器校验 |
-| 构建 | 三平台 CI 已接入并缓存依赖；核心测试与守卫在每次推送时运行 |
+| 构建 | 三平台工作流构建应用并运行 `test_serein`；Arch 与 Flatpak 打包工作流在打包文件改动、发布标签与每周定时时运行；核心测试与守卫在每次推送时运行 |
 
 上游刻意不带 protobuf 运行时：cld3 用手写头文件替代生成代码（`cmake/external/cld3`），WebRTC 以 `WEBRTC_ENABLE_PROTOBUF=0` 构建。静态 Qt 只初始化 `qtbase`、`qtimageformats`、`qtshadertools`、`qtsvg`，但没有关闭 Qt SQL，Qt 自带的 SQLite 驱动可用。
 
@@ -113,7 +100,7 @@ namespace Serein::Hooks {
 
 门面的三种来源：设置选项的取值与订阅函数由 proto 生成到 `serein/hooks/gen/<页>.h`；面向上游的薄接口头文件位于 `serein/hooks/<领域>/`，只允许前置声明与库头文件，可脱离应用代码单独通过语法检查（参数或返回值是上游嵌套类型时，门面声明为函数模板，由实现文件对该类型显式实例化，例如 `ApplyInfoOptions(Data &, ...)` 与 `TranscriptionOverride<Entry>(item)`；只需填充上游私有结构而不读取其他成员时，模板直接写在门面头文件里，由上游传入自身类型，例如 `ModerateDefaults<ModerateMessagesBoxOptions>()` 与 `PrependCustomDoh(attempts, Type::Mozilla)`）；其余一次性挂钩（幽灵、历史、定时发送）位于 `serein/hooks/*.h`，实现放在组合根 `serein/app/`。应用启动只有一个挂钩 `Serein::Hooks::OnApplicationStarted()`：组合根的模块表 `serein/app/modules.cpp` 为每个模块登记“应用启动”“会话启动”和“窗口启动”回调（窗口启动由 `SessionController` 构造函数中的 `Serein::Hooks::OnWindowStarted` 分发），会话跟踪统一订阅各账号的 `sessionValue()`，功能模块不再各自挂接上游。消息菜单的定制按菜单项文字识别上游动作，文字在每次打开菜单时按当前语言计算；只有文字与其他菜单项重复或由自绘控件显示的项（保存图片、带自动删除倒计时的删除、表情包按钮）在上游保留显式标签。
 
-现有 Nagram 内联挂钩（123 个上游源文件）按功能族改走门面。预算：迁移完成后上游源码文件 ≤ 90 个、新增行 ≤ 900 行（不含品牌与构建文件），由 `tools/serein/upstream_budget.py` 与上游合并基线比较并在 CI 报告。当前为 148 个源码文件、+1,368 行（全部文件 218 个、+1,598 行），尚未达到该目标，后续继续把品牌与多处小挂钩合并到门面。
+上游侵入由 `tools/serein/upstream_budget.py` 与上游合并基线比较，CI 报告当前数值；长期目标是上游源码文件不超过 90 个、新增行不超过 900 行（不含品牌与构建文件），途径是把品牌改动与多处小挂钩合并到门面。
 
 中性默认值约定：Serein 向上游界面添加的任何入口（消息、对话、资料、主菜单、托盘、贴纸包、文件夹与输入框菜单中的项目，以及新的按钮与行）都必须由默认关闭的选项控制，选项关闭时上游界面保持原样；只有出现前提本身默认关闭的入口（例如依赖消息记录的“编辑历史”）可以不另设开关，并在测试中写明理由。只影响一次同步渲染的临时行为用作用域覆盖实现，例如消息截图在 `Snapshot::Render` 期间用 `Interface::ThemeReplyColorsScope` 让回复使用主题色，而不修改全局选项。通过消息列表委托安装的挂钩必须先排除 `Context::ChatPreview`，因为对话列表预览的委托把 `listWindow()` 实现为 `Unexpected()`。
 
@@ -141,8 +128,8 @@ message MessagesSettings {
 - 语义：proto3 `optional` 有值表示用户显式设置；无值表示跟随 Telegram。稳定标识是字段编号与 JSON 名，删除字段必须 `reserved`。
 - 校验使用 protovalidate 的标准注解；生成器只接受其中的范围、枚举、长度约束，遇到不支持的约束直接报错。
 - 生成器 `tools/serein/codegen`（`uv run tools/serein/codegen/generate.py`）读取 `buf build` 的 JSON 映像，用 Jinja2 为每个设置页生成 `serein/schema/gen/settings/<页>.h`：类型化的 `Option<T>` 句柄、校验与 `RegisterOptions`。命名约定：常量 `k<字段名驼峰>`、存储键 `serein.<json_name>`、标题 `lng_serein_<字段名>`，只有例外才写 `cpp_name`、`title`。
-- 已迁移：界面、会话列表、消息、输入、媒体、隐私 6 个页面共 103 个选项；原 `options.h` 只转发到生成头文件。其余 8 个结构化 JSON 选项（菜单、服务、过滤、链接、别名、截图等）改用生成的编解码后再迁移。
-- 编解码：带文件选项的 proto 生成 `serein/schema/gen/<目录>/<名>.h/.cpp`（值类型、`Read`/`Write`/`Validate`、文档级 `Parse…`/`Serialize…`），手写运行时只有 `serein/schema/codec.h`。生成的 `.cpp` 列在 `serein/schema/gen/sources.cmake`，主构建与测试构建都直接引入。使用者：消息历史记录 `proto/serein/history/v1/record.proto`；链接规则 `proto/serein/config/v1/links.proto`（第一个迁移的既有配置，结构与主机名、参数、UUID 约束改由 schema 声明，`require_fields` 保持旧格式的严格性，新增测试同时在迁移前后的实现上通过）。
+- 全部设置页的选项都由生成头文件声明；各功能目录的 `options.h` 只转发到生成头文件。
+- 编解码：带文件选项的 proto 生成 `serein/schema/gen/<目录>/<名>.h/.cpp`（值类型、`Read`/`Write`/`Validate`、文档级 `Parse…`/`Serialize…`），手写运行时只有 `serein/schema/codec.h`。生成的 `.cpp` 列在 `serein/schema/gen/sources.cmake`，主构建与测试构建都直接引入。使用者包括消息历史记录 `proto/serein/history/v1/record.proto` 与 `proto/serein/config/v1/` 下的各结构化配置；`require_fields` 让编解码器拒绝缺少字段的文档，格式变更需要提升文档版本并提供迁移。
 - 生成代码提交入库：三平台与发行版构建不需要 Buf 或 Python 依赖；CI 运行 `buf lint`、`tools/serein/proto_breaking.sh` 与 `generate.py --check`。
 
 ## 6. 存储（ADR-0003）
@@ -161,7 +148,7 @@ message MessagesSettings {
 | 守卫 | 工具 | 状态 |
 | --- | --- | --- |
 | 自有源文件 ≤ 1000 行 | `tools/serein/check_file_size.py` + `serein-guards.yml` | 已实施 |
-| 模块依赖方向 | `tools/serein/check_boundaries.py` 按 `policy/boundaries.json` 检查每个 `#include`：`schema`、`ports`、`adapters` 严格执行；旧功能目录暂归宽松的 `serein/` 兜底规则，迁移一个收紧一个 | 已实施 |
+| 模块依赖方向 | `tools/serein/check_boundaries.py` 按 `policy/boundaries.json` 检查每个 `#include`：`schema`、`ports`、`adapters` 严格执行，其余目录适用宽松的 `serein/` 兜底规则 | 已实施 |
 | 功能矩阵格式 | `tools/serein/check_features.py`：`features.md` 每行的 ID 唯一且形如 `SG-<族>-<两位序号>`，状态只能是 Planned、In Progress、Implemented、Verified，优先级 P0–P3，来源只用约定缩写 | 已实施 |
 | 门面命名空间遮蔽 | `tools/serein/check_hook_namespaces.py`：生成的门面命名空间 `Serein::Hooks::<页>` 会遮蔽同名的 `Serein::<页>`；位于 `Serein::Hooks` 内、且包含了该门面的代码，只能用 `<页>::` 访问门面里声明的函数，其余名字必须写成 `Serein::<页>::` | 已实施 |
 | 工作流静态检查 | actionlint 1.7.12 检查 `.github/workflows/serein-*.yml` 的表达式、矩阵属性、`needs` 引用与 Action 输入（暂不启用 shellcheck：沿用上游的构建脚本有大量引号提示）；本地未安装 actionlint 时 `check_all.sh` 跳过并提示 | 已实施 |
@@ -171,6 +158,9 @@ message MessagesSettings {
 | 中性默认值 | `test_serein` 的 `TestNeutralDefaults`：全部设置页的选项默认关闭、为零或为空，消息菜单中 Serein 新增的项默认隐藏，例外逐项写明理由 | 已实施 |
 | 头文件 | `tools/serein/check_includes.py`：Serein 代码中带引号的 `#include`，以及上游文件中引用 `serein/` 的 `#include`，必须指向仓库或已拉取子模块中存在的头文件，只在构建目录中生成的头文件（样式、语言键与 schema 生成物）跳过；Serein 代码不得包含平台目标缺少的系统头文件，目前为 `<filesystem>`（macOS 10.15 起才可用，改用 `QDir`、`QFileInfo`） | 已实施 |
 | 源文件登记 | `tools/serein/check_sources.py`：每个 Serein 源文件都必须登记在 `Telegram/cmake/serein.cmake` 或测试清单中，反过来已登记的路径也必须存在 | 已实施 |
+| 上游子模块指针 | `upstream_budget.py` 比较暂存区中与上游共有的子模块指针和上游基线，不一致即失败；有意保留的差异写入 `submodule_overrides` | 已实施 |
+| 打包依赖版本 | `tools/serein/check_packaging.py`：Arch PKGBUILD 与 Flatpak 清单锁定的 tdlib、tg_owt、tlottie、patches 提交与 Qt 版本必须与 `snap/snapcraft.yaml` 一致；`--update` 自动改写提交 | 已实施 |
+| 打包文件布局 | 工具自测运行 `packaging/nfpm/stage.sh`，检查 `.deb` 与 `.rpm` 需要的程序、桌面入口、元数据与各尺寸图标都能从上游路径取得 | 已实施 |
 | 三语文案一致 | `test_serein` | 已有 |
 | 核心逻辑测试（只依赖 Qt） | `tools/serein/core_tests` 独立 CMake 工程，与主构建共用 `Telegram/cmake/serein_tests.cmake` 的测试清单 | 已实施 |
 | 构建与单元测试 | `serein-{mac,win,linux}.yml` | 已有 |
@@ -183,21 +173,12 @@ cmake -S tools/serein/core_tests -B out/serein-core-tests -G Ninja \
 cmake --build out/serein-core-tests && ctest --test-dir out/serein-core-tests
 ```
 
-## 8. 迁移步骤
+## 8. 演进规则
 
-Phase 0 基础（全部 P0，每步独立提交、可回退）：
-
-1. 文档与守卫：本目录；源文件行数守卫接入 CI；边界与预算守卫先以报告模式运行。
-2. 更名：`nagram` → `serein`（目录、命名空间 `Nagram` → `Serein`、文案键 `lng_nagram_` → `lng_serein_`、存储键 `nagram.` → `serein.`、CMake、测试目标、工作流）。不迁移旧数据。
-3. 品牌：应用名、图标、应用 ID、数据目录、链接（见第 9 节待定项）。
-4. Schema：`proto/`、Buf、生成器；先让一个功能族（消息）端到端跑通，再迁移其余；随后删除手写注册表与通用设置页代码。
-5. 挂钩门面：现有内联挂钩改走 `serein/hooks`，达到第 4 节预算。
-6. 依赖替换：OpenCC 已接入；凭据存储按 ADR-0004 修订改为系统凭据库加本地加密存储；测试框架迁移暂缓（ADR-0004）。
-7. 三平台 CI 通过。
-
-Phase 1（P1）：GHOST、HIST、SG-FILTER-03 之前的过滤项补验、SG-PRIV-02、SG-TRANS-03、SG-TRANS-04、SG-ACCT-02。
-
-Phase 2 与 Phase 3：按功能矩阵的 P2、P3；P3 每项先写 ADR 再实施。
+1. 新功能先在功能矩阵登记 ID、来源与优先级；P3 或存在服务条款、平台能力风险的功能先写 ADR。
+2. 设置项在 proto 中声明并重新生成代码，默认值必须让客户端行为与上游一致，`TestNeutralDefaults` 负责检查。
+3. 逻辑放在 `features/` 或对应功能目录并配核心测试；上游只通过 `serein/hooks` 中的单行调用接入，需要新挂钩时在同一提交中按增量上调侵入预算。
+4. 同步上游用 `tools/serein/upstream_sync.py`：合并后移动预算基线，并让打包配方的依赖版本跟随 snap 配方；合并后的三平台构建通过才算完成同步。
 
 ## 9. 项目约定
 
