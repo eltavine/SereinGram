@@ -15,6 +15,7 @@ struct CustomRows {
 	CustomRow services;
 	CustomRow preferSystemAi;
 	CustomRow proxySubscription;
+	CustomRow pauseProxyOnVpn;
 };
 
 inline void AddLayout(
@@ -23,6 +24,7 @@ inline void AddLayout(
 	custom.services();
 	custom.preferSystemAi();
 	custom.proxySubscription();
+	custom.pauseProxyOnVpn();
 }
 
 } // namespace Serein::ServiceSettings

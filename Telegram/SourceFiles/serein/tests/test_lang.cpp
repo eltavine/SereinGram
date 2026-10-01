@@ -21,6 +21,7 @@ void TestLocalPins();
 void TestSummary();
 void TestTextReplacements();
 void TestProxySubscription();
+void TestVpnRules();
 void TestChinese();
 void TestAliases();
 void TestStickerCatalog();
@@ -123,6 +124,7 @@ int main() {
 		TestSummary();
 		TestTextReplacements();
 		TestProxySubscription();
+		TestVpnRules();
 		TestChinese();
 		TestAliases();
 		TestStickerCatalog();

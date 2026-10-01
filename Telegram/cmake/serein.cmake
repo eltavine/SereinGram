@@ -129,6 +129,8 @@ set(serein_sources
     serein/services/summary_protocol.cpp
     serein/network/proxy_import.cpp
     serein/network/proxy_subscription.cpp
+    serein/network/vpn_proxy.cpp
+    serein/network/vpn_rules.cpp
     serein/services/transcription.cpp
     serein/services/system_ai.cpp
 )

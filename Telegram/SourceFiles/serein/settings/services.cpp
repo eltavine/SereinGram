@@ -729,6 +729,20 @@ const auto kMeta = BuildHelper({
 		.keywords = { u"proxy"_q, u"subscription"_q, u"MTProto"_q },
 	});
 	builder.addDividerText(tr::lng_serein_proxy_subscription_about());
+	const auto vpnButton = builder.addButton({
+		.id = u"serein/services/proxy-vpn"_q,
+		.title = tr::lng_serein_proxy_vpn(),
+		.st = &st::settingsButtonNoIcon,
+		.toggled = ForDevice().Value(ServiceSettings::kPauseProxyOnVpn),
+		.keywords = { u"proxy"_q, u"VPN"_q },
+	});
+	if (vpnButton) {
+		vpnButton->toggledChanges(
+		) | rpl::on_next([](bool value) {
+			Expects(ForDevice().Set(ServiceSettings::kPauseProxyOnVpn, value));
+		}, vpnButton->lifetime());
+	}
+	builder.addDividerText(tr::lng_serein_proxy_vpn_about());
 });
 
 const SectionBuildMethod ServicesSection::kBuild = kMeta.build;

@@ -34,11 +34,27 @@ inline const auto kProxySubscription = Option<QString>{
 		return (value == QString())
 			|| ((value.toUcs4().size() <= 2048) && (Codec::Matches(value, QString::fromUtf8("^(https://[^\\s]+)?$"))));
 	} };
+inline constexpr auto kPauseProxyOnVpn = Option<bool>{
+	"serein.pauseProxyOnVpn",
+	Scope::Device,
+	false,
+	Category::Services,
+	"lng_serein_proxy_vpn",
+	0 };
+inline constexpr auto kProxyPausedByVpn = Option<bool>{
+	"serein.proxyPausedByVpn",
+	Scope::Device,
+	false,
+	Category::Services,
+	"lng_serein_proxy_vpn",
+	static_cast<unsigned>(Flag::Hidden) };
 
 inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kServicesConfig));
 	Expects(registry.Add(kPreferSystemAi));
 	Expects(registry.Add(kProxySubscription));
+	Expects(registry.Add(kPauseProxyOnVpn));
+	Expects(registry.Add(kProxyPausedByVpn));
 }
 
 } // namespace Serein::ServiceSettings

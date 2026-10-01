@@ -12,6 +12,7 @@
 #include "serein/hooks/interface/roundness.h"
 #include "serein/hooks/interface/text.h"
 #include "serein/interface/app_icon.h"
+#include "serein/network/vpn_proxy.h"
 
 #include <array>
 
@@ -28,6 +29,7 @@ constexpr auto kModules = std::array{
 	Module{ "chats.sorting", nullptr, Chats::WatchSorting },
 	Module{ "app.shortcuts", StartShortcuts },
 	Module{ "privacy.auto_demo", StartAutoDemoMode },
+	Module{ "network.vpn_proxy", Network::StartVpnProxyPause },
 	Module{ "chats.recent", nullptr, nullptr, TrackRecentChats },
 	Module{ "chats.reading_position", nullptr, nullptr, TrackReadingPositions },
 };

@@ -30,4 +30,20 @@ rpl::producer<QString> ProxySubscriptionValue() {
 	return ForDevice().Value(Serein::ServiceSettings::kProxySubscription);
 }
 
+bool PauseProxyOnVpn() {
+	return ForDevice().Get(Serein::ServiceSettings::kPauseProxyOnVpn);
+}
+
+rpl::producer<bool> PauseProxyOnVpnValue() {
+	return ForDevice().Value(Serein::ServiceSettings::kPauseProxyOnVpn);
+}
+
+bool ProxyPausedByVpn() {
+	return ForDevice().Get(Serein::ServiceSettings::kProxyPausedByVpn);
+}
+
+rpl::producer<bool> ProxyPausedByVpnValue() {
+	return ForDevice().Value(Serein::ServiceSettings::kProxyPausedByVpn);
+}
+
 } // namespace Serein::Hooks::ServiceSettings
