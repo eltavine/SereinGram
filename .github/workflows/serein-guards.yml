@@ -46,6 +46,9 @@ jobs:
       - name: Every Serein source is registered in CMake.
         run: python3 tools/serein/check_sources.py
 
+      - name: Packaging pins the upstream tdlib commit.
+        run: python3 tools/serein/check_packaging.py
+
       - name: Fetch the libraries Serein includes from.
         run: |
           mapfile -t libs < <(git config --file .gitmodules --get-regexp 'path' \

@@ -29,6 +29,7 @@ python3 tools/serein/check_boundaries.py
 python3 tools/serein/check_hook_namespaces.py
 python3 tools/serein/check_includes.py
 python3 tools/serein/check_sources.py
+python3 tools/serein/check_packaging.py
 python3 tools/serein/upstream_budget.py
 python3 tools/serein/check_features.py
 if command -v actionlint >/dev/null; then
