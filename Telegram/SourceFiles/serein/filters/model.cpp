@@ -9,6 +9,7 @@
 #include <QtCore/QUuid>
 
 #include <algorithm>
+#include <map>
 
 namespace Serein::Filters {
 namespace {
@@ -17,6 +18,7 @@ constexpr auto kMaxText = 16384;
 constexpr auto kMaxMatches = 256;
 constexpr auto kMaxWorkMs = 20;
 constexpr auto kMaxConfigBytes = 128 * 1024;
+constexpr auto kMaxCachedPatterns = 256;
 
 QString RegexPrefix() {
 	return u"(*NO_JIT)(*LIMIT_MATCH=10000)(*LIMIT_DEPTH=64)(*LIMIT_HEAP=1024)"_q;
@@ -29,6 +31,22 @@ QRegularExpression CompilePattern(const QString &pattern, bool caseInsensitive) 
 			| (caseInsensitive
 				? QRegularExpression::CaseInsensitiveOption
 				: QRegularExpression::NoPatternOption));
+}
+
+[[nodiscard]] QRegularExpression CachedPattern(
+		const QString &pattern,
+		bool caseInsensitive) {
+	static auto cache = std::map<std::pair<QString, bool>, QRegularExpression>();
+	auto key = std::pair(pattern, caseInsensitive);
+	if (const auto i = cache.find(key); i != end(cache)) {
+		return i->second;
+	}
+	if (cache.size() >= kMaxCachedPatterns) {
+		cache.clear();
+	}
+	auto expression = CompilePattern(pattern, caseInsensitive);
+	expression.optimize();
+	return cache.emplace(std::move(key), std::move(expression)).first->second;
 }
 
 bool ValidId(const QString &id) {
@@ -254,7 +272,7 @@ Result Apply(
 		if (!rule.enabled || !inScope) {
 			continue;
 		}
-		const auto expression = CompilePattern(
+		const auto expression = CachedPattern(
 			rule.pattern,
 			rule.caseInsensitive);
 		const auto &action = rule.action;
