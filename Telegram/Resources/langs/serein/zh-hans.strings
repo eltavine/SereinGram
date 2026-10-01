@@ -553,7 +553,7 @@
 "lng_serein_peer_alias" = "设置本地名称";
 "lng_serein_jump_to_beginning" = "跳到对话开头";
 "lng_serein_chat_quick_actions" = "对话菜单中的快捷操作";
-"lng_serein_chat_quick_actions_note" = "在对话菜单中加入“跳到开头”、搜索、共享媒体、置顶消息、“跳转到消息…”与“清除媒体缓存”。";
+"lng_serein_chat_quick_actions_note" = "在对话菜单中加入“跳到开头”、搜索、共享媒体、置顶消息、讨论群的“查看频道”、“跳转到消息…”与“清除媒体缓存”。";
 "lng_serein_quick_search" = "在对话中搜索";
 "lng_serein_quick_media" = "共享媒体";
 "lng_serein_quick_pinned" = "置顶消息";

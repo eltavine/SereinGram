@@ -553,7 +553,7 @@
 "lng_serein_peer_alias" = "設定本機名稱";
 "lng_serein_jump_to_beginning" = "跳到對話開頭";
 "lng_serein_chat_quick_actions" = "對話選單中的快捷操作";
-"lng_serein_chat_quick_actions_note" = "在對話選單中加入「跳到開頭」、搜尋、共享媒體、置頂訊息、「跳至訊息…」與「清除媒體快取」。";
+"lng_serein_chat_quick_actions_note" = "在對話選單中加入「跳到開頭」、搜尋、共享媒體、置頂訊息、討論群組的「檢視頻道」、「跳至訊息…」與「清除媒體快取」。";
 "lng_serein_quick_search" = "在對話中搜尋";
 "lng_serein_quick_media" = "共享媒體";
 "lng_serein_quick_pinned" = "置頂訊息";

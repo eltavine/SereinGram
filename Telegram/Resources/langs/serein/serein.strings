@@ -557,7 +557,7 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_peer_alias" = "Set local name";
 "lng_serein_jump_to_beginning" = "Jump to the beginning";
 "lng_serein_chat_quick_actions" = "Quick actions in the chat menu";
-"lng_serein_chat_quick_actions_note" = "Adds “Jump to the beginning”, search, shared media, pinned messages, “Go to message…” and “Clear cached media” to the chat menu.";
+"lng_serein_chat_quick_actions_note" = "Adds “Jump to the beginning”, search, shared media, pinned messages, “View Channel” for discussion groups, “Go to message…” and “Clear cached media” to the chat menu.";
 "lng_serein_quick_search" = "Search in chat";
 "lng_serein_quick_media" = "Shared media";
 "lng_serein_quick_pinned" = "Pinned messages";

@@ -2,6 +2,7 @@
 
 #include "serein/chats/chat_cache.h"
 #include "serein/chats/options.h"
+#include "data/data_channel.h"
 #include "data/data_peer.h"
 #include "data/data_session.h"
 #include "dialogs/dialogs_key.h"
@@ -77,6 +78,20 @@ void FillQuickActions(
 			peer,
 			Info::Section(Storage::SharedMediaType::Photo)));
 	}, &st::menuIconPhoto);
+	if (const auto channel = peer->asMegagroup()) {
+		if (const auto linked = channel->discussionLink()) {
+			addAction(tr::lng_profile_view_channel(tr::now), [=] {
+				if (channel->invitePeekExpires()) {
+					controller->showToast(
+						tr::lng_channel_invite_private(tr::now));
+					return;
+				}
+				controller->showPeerHistory(
+					linked,
+					Window::SectionShow::Way::Forward);
+			}, &st::menuIconChannel);
+		}
+	}
 	addAction(tr::lng_serein_quick_pinned(tr::now), [=] {
 		controller->showSection(
 			std::make_shared<HistoryView::PinnedMemento>(history));
