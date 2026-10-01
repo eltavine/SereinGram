@@ -11,6 +11,7 @@ struct SnapshotConfig {
 	bool headers = false;
 	bool reactions = false;
 	bool builtinTheme = false;
+	bool simpleReplies = false;
 
 	friend bool operator==(const SnapshotConfig &, const SnapshotConfig &) = default;
 };

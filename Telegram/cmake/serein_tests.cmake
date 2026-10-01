@@ -62,6 +62,7 @@ set(serein_test_sources
     serein/network/proxy_order.cpp
     serein/filters/model.cpp
     serein/links/model.cpp
+    serein/snapshot/rules.cpp
 )
 list(APPEND serein_test_sources ${serein_generated_sources})
 
