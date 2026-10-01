@@ -4,10 +4,10 @@
     <metadata_license>CC0-1.0</metadata_license>
     <project_license>GPL-3.0</project_license>
     <name>SereinGram</name>
-    <summary>New era of messaging</summary>
+    <summary>Feature-rich Telegram client</summary>
     <description>
-        <p>SereinGram is an independent Telegram client based on Telegram Desktop, with the SereinGram visual identity.</p>
-        <p>Chat, share media, and manage your Telegram accounts. SereinGram enhancements are being introduced incrementally.</p>
+        <p>SereinGram is an independent Telegram client based on Telegram Desktop. It keeps every Telegram feature and adds optional ones, such as ghost mode, a local history of edited and deleted messages, message filters, external translation services and many chat list, message and interface adjustments.</p>
+        <p>Every added feature stays off until you enable it, so a new installation behaves like Telegram Desktop.</p>
     </description>
     <categories>
         <category>Network</category>
