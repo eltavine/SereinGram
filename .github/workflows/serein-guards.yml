@@ -43,6 +43,15 @@ jobs:
       - name: Hook code does not reach shadowed page namespaces.
         run: python3 tools/serein/check_hook_namespaces.py
 
+      - name: Fetch the libraries Serein includes from.
+        run: |
+          git submodule update --init --depth 1 Telegram/ThirdParty/OpenCC \
+            $(git config --file .gitmodules --get-regexp 'path' \
+              | awk '{print $2}' | grep '^Telegram/lib_')
+
+      - name: Includes name existing headers.
+        run: python3 tools/serein/check_includes.py
+
       - name: Workflows pass actionlint.
         run: |
           bash <(curl -sSfL https://raw.githubusercontent.com/rhysd/actionlint/v1.7.12/scripts/download-actionlint.bash) 1.7.12
