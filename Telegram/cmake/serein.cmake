@@ -138,6 +138,7 @@ set(serein_sources
     serein/services/model.cpp
     serein/services/translation_protocol.cpp
     serein/services/store.cpp
+    serein/adapters/qtnetwork/manager.cpp
     serein/services/request.cpp
     serein/services/translation.cpp
     serein/services/translation_context.cpp

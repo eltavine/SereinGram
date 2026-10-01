@@ -1,4 +1,5 @@
 #include "serein/network/proxy_import.h"
+#include "serein/adapters/qtnetwork/manager.h"
 
 #include "serein/hooks/services/model.h"
 #include "serein/network/proxy_subscription.h"
@@ -56,14 +57,12 @@ void UpdateProxySubscription(std::shared_ptr<Ui::Show> show) {
 		show->showToast(tr::lng_serein_proxy_subscription_invalid(tr::now));
 		return;
 	}
-	const auto network = new QNetworkAccessManager(&Core::App());
 	auto request = QNetworkRequest(url);
 	request.setRawHeader("User-Agent", "SereinGram");
 	request.setTransferTimeout(kRequestTimeout);
-	const auto reply = network->get(request);
-	QObject::connect(reply, &QNetworkReply::finished, network, [=] {
+	const auto reply = Adapters::SharedNetwork().get(request);
+	QObject::connect(reply, &QNetworkReply::finished, reply, [=] {
 		reply->deleteLater();
-		network->deleteLater();
 		const auto body = reply->read(kSubscriptionMaximumSize + 1);
 		if (reply->error() != QNetworkReply::NoError
 			|| body.size() > kSubscriptionMaximumSize) {

@@ -1,4 +1,5 @@
 #include "serein/app/updates.h"
+#include "serein/adapters/qtnetwork/manager.h"
 
 #include "serein/features/updates/model/release.h"
 #include "serein/hooks/gen/interface.h"
@@ -39,7 +40,7 @@ private:
 		request.setRawHeader("Accept", "application/vnd.github+json");
 		request.setRawHeader("User-Agent", "SereinGram");
 		request.setTransferTimeout(kRequestTimeout);
-		_reply = _network.get(request);
+		_reply = Adapters::SharedNetwork().get(request);
 		connect(_reply, &QNetworkReply::finished, this, [=] { finished(); });
 	}
 
@@ -72,7 +73,6 @@ private:
 		}
 	}
 
-	QNetworkAccessManager _network;
 	QTimer _timer;
 	QPointer<QNetworkReply> _reply;
 	QString _announced;
