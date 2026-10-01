@@ -42,7 +42,7 @@ Linux 发行版打包：
 - `packaging/arch/PKGBUILD`：以系统库构建 `sereingram-desktop-git`，CI 工作流 `serein-arch.yml` 在 Arch 容器中构建并安装检查。
 - `packaging/flatpak/`：GNOME 运行时上的 Flatpak 清单，构建本地检出，CI 工作流 `serein-flatpak.yml` 生成 `.flatpak` 包。
 - 打包者必须使用自己的 API 凭据：PKGBUILD 读取环境变量 `SEREIN_API_ID` 与 `SEREIN_API_HASH`，Flatpak 读取被忽略的 `Telegram/build/api_credentials.local.cmake`；缺少凭据时构建报错。以系统库构建时不检查 GitHub 更新，由包管理器负责更新。
-- `tools/serein/check_packaging.py` 要求两份配方锁定的依赖版本与 `snap/snapcraft.yaml` 一致，上游同步后需随之更新。
+- `tools/serein/check_packaging.py` 要求两份配方锁定的依赖版本与 `snap/snapcraft.yaml` 一致。`upstream_sync.py` 合并上游后自动改写两份配方中 tdlib、tg_owt、tlottie 与 patches 的提交（也可运行 `check_packaging.py --update`）；Qt 版本变化需要新的源码包校验值，tlottie 提交变化需要重新生成 `tlottie-cargo-sources.yml`，这两项由检查报出后手动更新。
 
 ## 3. 标识与状态
 

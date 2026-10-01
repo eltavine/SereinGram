@@ -17,6 +17,7 @@ import subprocess
 import sys
 from pathlib import Path
 
+import check_packaging
 import upstream_budget
 from check_file_size import PolicyError, is_owned, load_policy as load_owned_policy
 
@@ -99,7 +100,7 @@ def resolve_submodules(root, conflicts):
     return remaining
 
 
-def commit_message(ref, old, new, metrics):
+def commit_message(ref, old, new, metrics, pins=()):
     lines = [
         f"chore(upstream): merge Telegram Desktop {ref}",
         "",
@@ -111,6 +112,9 @@ def commit_message(ref, old, new, metrics):
         "- Budget measured after the merge:",
     ]
     lines += [f"  - {key}: {value}" for key, value in metrics.items()]
+    if pins:
+        lines.append("- Packaging pins moved with the snap recipe:")
+        lines += [f"  - {pin}." for pin in pins]
     return "\n".join(lines) + "\n"
 
 
@@ -143,9 +147,13 @@ def sync(root, ref, policy_path, owned_policy_path, url=None):
     policy["base"] = new
     policy_path.write_text(json.dumps(policy, indent=2, ensure_ascii=False) + "\n",
                            encoding="utf-8")
+    pins = check_packaging.update(root)
+    if pins:
+        git(root, "add", check_packaging.PKGBUILD, check_packaging.FLATPAK)
     metrics, _offenders = upstream_budget.measure(root, policy, owned)
     git(root, "add", str(policy_path.resolve().relative_to(root.resolve())))
-    git(root, "commit", "-q", "-F", "-", stdin=commit_message(ref, old, new, metrics))
+    git(root, "commit", "-q", "-F", "-",
+        stdin=commit_message(ref, old, new, metrics, pins))
     return None, metrics
 
 

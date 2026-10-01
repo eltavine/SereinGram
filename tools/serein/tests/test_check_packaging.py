@@ -70,6 +70,19 @@ class CheckPackagingTest(unittest.TestCase):
             f"{check_packaging.FLATPAK} builds Qt 6.11.1, but "
             f"{check_packaging.SNAP} uses v6.11.2."])
 
+    def test_update_moves_stale_pins(self):
+        self.write(td=STALE, patches_second=STALE)
+        self.assertEqual(check_packaging.update(self.root), [
+            f"tde2e {STALE[:10]} -> {PINS['tde2e'][:10]}",
+            f"patches {STALE[:10]} -> {PINS['patches'][:10]}",
+        ])
+        self.assertEqual(check_packaging.problems(self.root), [])
+        self.assertEqual(check_packaging.update(self.root), [])
+
+    def test_update_skips_missing_recipes(self):
+        (self.root / check_packaging.FLATPAK).unlink()
+        self.assertEqual(check_packaging.update(self.root), [])
+
     def test_repository_is_consistent(self):
         self.assertEqual(check_packaging.problems(check_packaging.ROOT), [])
 

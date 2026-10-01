@@ -74,10 +74,50 @@ def problems(root):
     return result
 
 
+def update(root):
+    """Move the Arch and Flatpak commit pins to the snap recipe."""
+    root = Path(root)
+    if not all((root / path).exists() for path in (SNAP, PKGBUILD, FLATPAK)):
+        return []
+    snap = (root / SNAP).read_text(encoding="utf-8")
+    texts = {
+        PKGBUILD: (root / PKGBUILD).read_text(encoding="utf-8"),
+        FLATPAK: (root / FLATPAK).read_text(encoding="utf-8"),
+    }
+    changed = []
+    for part, url in FLATPAK_SOURCES.items():
+        expected = snap_value(snap, part, "source-commit")
+        if not expected or not re.fullmatch(r"[0-9a-f]{40}", expected):
+            continue
+        source = re.compile(
+            rf"(url: {re.escape(url)}\n\s+commit: )([0-9a-f]{{40}})")
+        stale = {match.group(2) for match in source.finditer(texts[FLATPAK])}
+        if part == "tde2e":
+            stale |= set(PKGBUILD_COMMIT.findall(texts[PKGBUILD]))
+            texts[PKGBUILD] = PKGBUILD_COMMIT.sub(
+                f"_td_commit={expected}", texts[PKGBUILD])
+        texts[FLATPAK] = source.sub(
+            lambda match: match.group(1) + expected, texts[FLATPAK])
+        for commit in sorted(stale - {expected}):
+            changed.append(f"{part} {commit[:10]} -> {expected[:10]}")
+    for path, text in texts.items():
+        (root / path).write_text(text, encoding="utf-8")
+    return changed
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=ROOT)
+    parser.add_argument(
+        "--update", action="store_true",
+        help="rewrite the commit pins from the snap recipe first")
     args = parser.parse_args(argv)
+    if args.update:
+        for change in update(args.root):
+            print(f"Updated {change}.")
+            if change.startswith("tlottie "):
+                print("Regenerate packaging/flatpak/tlottie-cargo-sources.yml "
+                      "from the new tlottie Cargo.lock.")
     found = problems(args.root)
     for problem in found:
         print(problem)

@@ -132,6 +132,35 @@ class UpstreamSyncTest(unittest.TestCase):
         self.assertIsNotNone(metrics)
         self.assertEqual(git(self.fork, "rev-parse", "HEAD:cmake"), commits[2])
 
+    def test_clean_merge_moves_packaging_pins(self):
+        old, new = "1" * 40, "2" * 40
+
+        def snap(commit):
+            return f"parts:\n  tde2e:\n    source-commit: {commit}\n"
+
+        write(self.upstream, "snap/snapcraft.yaml", snap(old))
+        git(self.upstream, "add", ".")
+        git(self.upstream, "commit", "-q", "-m", "snap")
+        git(self.fork, "pull", "-q", "--no-rebase", "--no-edit", "origin", "dev")
+        flatpak = "packaging/flatpak/io.github.eltavine.SereinGram.yml"
+        write(self.fork, "packaging/arch/PKGBUILD", f"_td_commit={old}\n")
+        write(self.fork, flatpak, "      - type: git\n"
+              "        url: https://github.com/tdlib/td.git\n"
+              f"        commit: {old}\n")
+        git(self.fork, "add", ".")
+        git(self.fork, "commit", "-q", "-m", "packaging")
+        self.upstream_commit("snap/snapcraft.yaml", snap(new), "v5")
+        conflicts, metrics = self.sync("v5")
+        self.assertIsNone(conflicts)
+        self.assertIsNotNone(metrics)
+        self.assertEqual(
+            (self.fork / "packaging/arch/PKGBUILD").read_text(),
+            f"_td_commit={new}\n")
+        self.assertIn(f"commit: {new}", (self.fork / flatpak).read_text())
+        message = git(self.fork, "log", "-1", "--format=%B")
+        self.assertIn(f"tde2e {old[:10]} -> {new[:10]}", message)
+        self.assertEqual(git(self.fork, "status", "--porcelain"), "")
+
     def test_dirty_worktree_is_refused(self):
         write(self.fork, "Telegram/SourceFiles/b.cpp", "dirty\n")
         with self.assertRaisesRegex(upstream_sync.SyncError, "uncommitted"):
