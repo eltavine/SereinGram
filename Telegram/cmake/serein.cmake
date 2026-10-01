@@ -148,6 +148,7 @@ set(serein_sources
     serein/adapters/qtnetwork/manager.cpp
     serein/services/request.cpp
     serein/services/translation.cpp
+    serein/services/web_apps.cpp
     serein/services/translation_context.cpp
     serein/services/draft_translation.cpp
     serein/services/credentials_local.cpp

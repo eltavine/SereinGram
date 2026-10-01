@@ -78,4 +78,12 @@ rpl::producer<QString> CustomDohValue() {
 	return ForDevice().Value(Serein::ServiceSettings::kCustomDoh);
 }
 
+bool AndroidWebApps() {
+	return ForDevice().Get(Serein::ServiceSettings::kAndroidWebApps);
+}
+
+rpl::producer<bool> AndroidWebAppsValue() {
+	return ForDevice().Value(Serein::ServiceSettings::kAndroidWebApps);
+}
+
 } // namespace Serein::Hooks::ServiceSettings

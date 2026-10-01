@@ -59,4 +59,8 @@ message ServicesSettings {
       pattern: "^(([A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?\\.)+[A-Za-z]{2,63})?$"
     }
   ];
+  optional bool android_web_apps = 10 [(serein.options.v1.field) = {
+    keywords: ["mini apps", "web apps", "bots", "Android"]
+    custom_ui: true
+  }];
 }

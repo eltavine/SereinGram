@@ -82,6 +82,13 @@ inline const auto kCustomDoh = Option<QString>{
 		return (value == QString())
 			|| ((value.toUcs4().size() <= 253) && (Codec::Matches(value, QString::fromUtf8("^(([A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?\\.)+[A-Za-z]{2,63})?$"))));
 	} };
+inline constexpr auto kAndroidWebApps = Option<bool>{
+	"serein.androidWebApps",
+	Scope::Device,
+	false,
+	Category::Services,
+	"lng_serein_android_web_apps",
+	0 };
 
 inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kServicesConfig));
@@ -93,6 +100,7 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kPauseProxyOnVpn));
 	Expects(registry.Add(kProxyPausedByVpn));
 	Expects(registry.Add(kCustomDoh));
+	Expects(registry.Add(kAndroidWebApps));
 }
 
 } // namespace Serein::ServiceSettings

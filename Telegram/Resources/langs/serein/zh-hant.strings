@@ -419,6 +419,8 @@
 "lng_serein_custom_doh" = "自訂 DNS-over-HTTPS 伺服器";
 "lng_serein_custom_doh_hint" = "填寫在 /dns-query 提供 JSON 介面的伺服器主機名稱，例如 dns.alidns.com。留空即關閉。";
 "lng_serein_custom_doh_about" = "Telegram 透過 DNS-over-HTTPS 查詢備用設定與代理網域時，會先於 Google 與 Cloudflare 嘗試該伺服器，適用於這兩者被封鎖的網路。";
+"lng_serein_android_web_apps" = "以 Android 用戶端身分開啟小程式";
+"lng_serein_android_web_apps_about" = "之後開啟的小程式會認為自己執行於 Android 用戶端而非 Telegram Desktop 中。部分小程式在 Android 上提供桌面版隱藏的功能或版面。";
 "lng_serein_services_about" = "外部服務僅接收你手動請求處理的文字或音訊。自動聊天翻譯仍使用原服務。API 金鑰儲存在系統憑證庫，不隨設定匯出。";
 "lng_serein_draft_changed" = "預覽期間草稿已變更。請關閉預覽並重新翻譯目前草稿。";
 "lng_serein_inherit" = "跟隨上游";

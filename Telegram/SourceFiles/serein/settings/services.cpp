@@ -714,6 +714,20 @@ const auto kMeta = BuildHelper({
 	}
 	builder.addDividerText(tr::lng_serein_chat_translation_about());
 	AddNetworkSettings(builder);
+	const auto webAppsButton = builder.addButton({
+		.id = u"serein/services/android-web-apps"_q,
+		.title = tr::lng_serein_android_web_apps(),
+		.st = &st::settingsButtonNoIcon,
+		.toggled = ForDevice().Value(ServiceSettings::kAndroidWebApps),
+		.keywords = { u"mini apps"_q, u"web apps"_q, u"Android"_q },
+	});
+	if (webAppsButton) {
+		webAppsButton->toggledChanges(
+		) | rpl::on_next([](bool value) {
+			Expects(ForDevice().Set(ServiceSettings::kAndroidWebApps, value));
+		}, webAppsButton->lifetime());
+	}
+	builder.addDividerText(tr::lng_serein_android_web_apps_about());
 });
 
 const SectionBuildMethod ServicesSection::kBuild = kMeta.build;

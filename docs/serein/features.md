@@ -237,6 +237,7 @@ SG-HIST-05 的“已编辑”标记文字已由 C09 实现，删除标记随 SG-
 | SG-NET-03 | 代理订阅（SIP008、Clash 等），新协议只通过外部代理程序接入（服务设置“代理订阅”：填写 HTTPS 地址，“立即更新”下载后提取其中的 tg://proxy、t.me/proxy 与 t.me/socks 链接（最多 200 个，响应不超过 1 MB），经上游链接解析后只加入代理列表中尚未存在的条目并提示数量；SIP008、Clash 等其他协议需要外部代理程序，不在客户端内解析） | Na | Implemented | P3 |
 | SG-NET-04 | 自定义 DoH 与 IP 策略（服务设置“自定义 DNS-over-HTTPS 服务器”默认关闭，填写在 `/dns-query` 提供 JSON 接口的主机名后，上游查询备用配置与解析代理域名时先于 Google 与 Cloudflare 请求该服务器；钩子以模板插入上游两处请求列表，不引用上游类型；IP 策略由上游连接设置中的“尝试通过 IPv6 连接”提供） | Na | Implemented | P3 |
 | SG-NET-05 | 上传、下载性能档位（先做基准测试） | Na | Planned | P3 |
+| SG-NET-06 | 以 Android 客户端身份打开小程序（服务设置“以 Android 客户端身份打开小程序”，默认关闭；开启后申请小程序、主应用、附件菜单与入群验证小程序时向服务器报告 Android 平台，小程序据此提供移动端的功能与布局，JS 桥保持不变） | Aa | Implemented | P3 |
 
 ## ACCT 账号
 
