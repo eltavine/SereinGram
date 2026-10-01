@@ -626,6 +626,9 @@
 "lng_serein_ghost_all_accounts_note" = "为本设备上的所有账号开启幽灵模式，各账号仍按下方各自的选项生效。从菜单或快捷键关闭幽灵模式时也会关闭此项。";
 "lng_serein_ghost_read_here" = "在此对话中发送已读回执";
 "lng_serein_ghost_read_here_off" = "在此对话中停止发送已读回执";
+"lng_serein_ghost_read_exceptions" = "发送已读回执的对话";
+"lng_serein_ghost_read_exceptions_about" = "幽灵模式在其他地方隐藏已读回执时，这些对话仍会发送。取消勾选即可停止。可在对话菜单中添加对话。";
+"lng_serein_ghost_read_exceptions_empty" = "还没有对话。在幽灵模式隐藏已读回执时，打开对话菜单并选择“在此对话中发送已读回执”。";
 "lng_serein_ghost_tray_enable" = "为所有账号开启幽灵模式";
 "lng_serein_ghost_tray_disable" = "为所有账号关闭幽灵模式";
 "lng_serein_ghost_mode_enabled" = "已为当前账号开启幽灵模式";

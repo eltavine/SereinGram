@@ -82,8 +82,8 @@ inline const auto kReadReceiptExceptions = Option<QString>{
 	Scope::Account,
 	QString(),
 	Category::Privacy,
-	"lng_serein_ghost_read_here",
-	static_cast<unsigned>(Flag::Hidden),
+	"lng_serein_ghost_read_exceptions",
+	0,
 	&ValidReadReceiptExceptions };
 
 inline void RegisterOptions(Registry &registry) {

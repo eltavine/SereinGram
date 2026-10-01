@@ -73,6 +73,7 @@ set(serein_sources
     serein/settings/interface.cpp
     serein/settings/restart.cpp
     serein/settings/rows.cpp
+    serein/settings/ghost_exceptions.cpp
     serein/settings/subpages.cpp
     serein/app/auto_demo.cpp
     serein/admin/delete_mine.cpp

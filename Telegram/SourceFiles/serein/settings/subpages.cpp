@@ -1,6 +1,7 @@
 #include "serein/settings/subpages.h"
 
 #include "serein/features/history/viewer.h"
+#include "serein/settings/ghost_exceptions.h"
 #include "serein/settings/gen/ghost_rows.h"
 #include "serein/settings/gen/history_rows.h"
 #include "serein/settings/privacy.h"
@@ -40,7 +41,9 @@ const auto kGhostMeta = BuildHelper({
 	.title = Ghost::kSubpageTitle,
 	.icon = Ghost::kSubpageIcon,
 }, [](SectionBuilder &builder) {
-	Ghost::AddLayout(builder);
+	Ghost::AddLayout(builder, {
+		.readReceiptExceptions = [&] { AddReadExceptionsRow(builder); },
+	});
 });
 
 const SectionBuildMethod GhostSection::kBuild = kGhostMeta.build;

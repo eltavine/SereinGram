@@ -74,8 +74,13 @@ inline const auto kToggleRows = std::array<ToggleRow, 10>{ {
 	},
 } };
 
+struct CustomRows {
+	CustomRow readReceiptExceptions;
+};
+
 inline void AddLayout(
-		::Settings::Builder::SectionBuilder &builder) {
+		::Settings::Builder::SectionBuilder &builder,
+		const CustomRows &custom) {
 	AddToggle(builder, kToggleRows[0]);
 	AddToggle(builder, kToggleRows[1]);
 	AddNote(builder, tr::lng_serein_ghost_all_accounts_note);
@@ -88,6 +93,7 @@ inline void AddLayout(
 	AddToggle(builder, kToggleRows[8]);
 	AddToggle(builder, kToggleRows[9]);
 	AddNote(builder, tr::lng_serein_ghost_note);
+	custom.readReceiptExceptions();
 }
 
 inline constexpr auto kSubpageTitle = &tr::lng_serein_ghost_mode;

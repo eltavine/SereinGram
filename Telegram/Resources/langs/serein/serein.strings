@@ -630,6 +630,9 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_ghost_all_accounts_note" = "Turns ghost mode on for every account on this device. Each account keeps its own choices below. Turning ghost mode off from the menu or the shortcut also turns this off.";
 "lng_serein_ghost_read_here" = "Send read receipts in this chat";
 "lng_serein_ghost_read_here_off" = "Stop read receipts in this chat";
+"lng_serein_ghost_read_exceptions" = "Chats with read receipts";
+"lng_serein_ghost_read_exceptions_about" = "These chats keep sending read receipts while ghost mode hides them elsewhere. Uncheck a chat to stop. Add chats from their chat menu.";
+"lng_serein_ghost_read_exceptions_empty" = "No chats yet. While ghost mode hides read receipts, open a chat menu and choose “Send read receipts in this chat”.";
 "lng_serein_ghost_tray_enable" = "Turn on ghost mode for all accounts";
 "lng_serein_ghost_tray_disable" = "Turn off ghost mode for all accounts";
 "lng_serein_ghost_mode_enabled" = "Ghost mode is on for this account";
