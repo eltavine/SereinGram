@@ -215,6 +215,28 @@ endif()
 
 nice_target_sources(Telegram ${res_loc} PRIVATE qrc/serein.qrc qrc/serein_opencc.qrc)
 
+file(GLOB serein_lang_files CONFIGURE_DEPENDS ${res_loc}/langs/serein/*.strings)
+list(FILTER serein_lang_files EXCLUDE REGEX "/serein\\.strings$")
+list(SORT serein_lang_files)
+set(serein_langs_entries "")
+foreach (serein_lang_file ${serein_lang_files})
+    get_filename_component(serein_lang_name ${serein_lang_file} NAME)
+    string(APPEND serein_langs_entries
+        "    <file alias=\"${serein_lang_name}\">${serein_lang_file}</file>\n")
+endforeach()
+set(serein_langs_qrc ${CMAKE_CURRENT_BINARY_DIR}/serein_langs.qrc)
+set(serein_langs_new "<RCC>\n  <qresource prefix=\"/langs/serein\">\n${serein_langs_entries}  </qresource>\n</RCC>\n")
+set(serein_langs_old "")
+if (EXISTS "${serein_langs_qrc}")
+    file(READ "${serein_langs_qrc}" serein_langs_old)
+endif()
+if (NOT "${serein_langs_new}" STREQUAL "${serein_langs_old}")
+    file(WRITE "${serein_langs_qrc}" "${serein_langs_new}")
+endif()
+set_source_files_properties("${serein_langs_qrc}" PROPERTIES
+    QRC_GENERATED_FROM "${serein_lang_files}")
+nice_target_sources(Telegram ${CMAKE_CURRENT_BINARY_DIR} PRIVATE serein_langs.qrc)
+
 option(SEREIN_USE_SYSTEM_OPENCC "Link the system OpenCC instead of the bundled submodule." OFF)
 if (SEREIN_USE_SYSTEM_OPENCC)
     find_package(PkgConfig REQUIRED)

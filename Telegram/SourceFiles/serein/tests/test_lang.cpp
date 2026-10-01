@@ -1,4 +1,5 @@
 #include <QtCore/QCoreApplication>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <map>
@@ -109,6 +110,20 @@ void CheckTranslation(
 	}
 }
 
+void CheckPartialTranslation(
+		const Strings &english,
+		const std::string &path) {
+	for (const auto &[key, value] : ReadStrings(path, true)) {
+		const auto found = english.find(key);
+		if (found == english.end()) {
+			throw std::runtime_error(path + ": unknown key " + key);
+		}
+		if (Placeholders(found->second) != Placeholders(value)) {
+			throw std::runtime_error(path + ": placeholder mismatch for " + key);
+		}
+	}
+}
+
 } // namespace
 
 int main() {
@@ -171,6 +186,15 @@ int main() {
 		for (const auto &locale : { "zh-hans", "zh-hant" }) {
 			const auto path = root + "/serein/" + locale + ".strings";
 			CheckTranslation(english, path);
+		}
+		for (const auto &file : std::filesystem::directory_iterator(
+				root + "/serein")) {
+			const auto name = file.path().filename().string();
+			if (name.ends_with(".strings")
+				&& name != "serein.strings"
+				&& !name.starts_with("zh-")) {
+				CheckPartialTranslation(english, file.path().string());
+			}
 		}
 		std::cout << "PASS: Serein strings (" << english.size()
 			<< " English keys)" << std::endl;

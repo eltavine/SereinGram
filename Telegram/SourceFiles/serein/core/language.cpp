@@ -99,18 +99,33 @@ const Translations &Traditional() {
 	return traditional ? *traditional : empty;
 }
 
+const Translations &Community(const QString &code) {
+	static auto cache = std::map<QString, Translations>();
+	if (const auto i = cache.find(code); i != cache.end()) {
+		return i->second;
+	}
+	const auto path = u":/langs/serein/"_q + code + u".strings"_q;
+	return cache.emplace(
+		code,
+		QFile::exists(path) ? Load(path) : Translations()).first->second;
+}
+
 const Translations &Defaults(const QString &language) {
-	static const auto empty = Translations();
 	auto parts = language.toLower().replace(u'_', u'-').split(u'-');
+	const auto full = parts.join(u'-');
 	if (parts.size() > 1 && parts[1].size() == 4) {
 		parts[1][0] = parts[1][0].toUpper();
 	}
 	const auto locale = QLocale(parts.join(u'-'));
-	if (locale.language() != QLocale::Chinese) {
-		return empty;
+	if (locale.language() == QLocale::Chinese) {
+		const auto traditional
+			= (locale.script() == QLocale::TraditionalHanScript);
+		return traditional ? Traditional() : Simplified();
 	}
-	const auto isTraditional = (locale.script() == QLocale::TraditionalHanScript);
-	return isTraditional ? Traditional() : Simplified();
+	const auto &exact = Community(full);
+	return (exact.empty() && parts.size() > 1)
+		? Community(parts.front())
+		: exact;
 }
 
 struct LanguageCache {

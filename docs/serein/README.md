@@ -58,3 +58,11 @@ SereinGram 是基于 Telegram Desktop 的第三方桌面客户端，功能对标
 - 提交前可运行 `python3 tools/serein/check_commit_message.py <信息文件>` 做同样的检查；执行 `git config core.hooksPath tools/serein/githooks` 可在本地启用 `commit-msg` 钩子自动检查。
 - 该规则自 2026-09-30 起生效，优先于 `AGENTS.md` 中“标题一行”的约定；此前已推送的提交不改写。
 - 只检查主线（first-parent）上的提交：同步上游时检查合并提交本身，随合并进入的上游提交保持原样，不按本规范检查。
+
+## 6. 界面翻译
+
+- Telegram 自身的字符串沿用官方翻译平台与语言包；Serein 新增的字符串（`lng_serein_*`）在 `Telegram/Resources/langs/serein/`。
+- `serein.strings` 是英文源文件；译文文件名为小写语言代码，例如 `fa.strings`、`pt-br.strings`。CMake 在配置时扫描该目录生成资源清单，新增语言无需改动构建文件。
+- 运行时先按界面语言的完整代码查找译文，再退回基础语言代码；缺少的键显示英文。`zh-hans` 与 `zh-hant` 必须完整，其他语言可以只翻译一部分。
+- 核心测试校验每个译文文件：键必须存在于英文源文件，`{name}` 形式的占位符必须一致。
+- 仓库根目录的 `crowdin.yml` 把该目录接入 Crowdin；维护者创建项目后，在 GitHub Secrets 中设置 `CROWDIN_PROJECT_ID` 与 `CROWDIN_PERSONAL_TOKEN` 即可同步。

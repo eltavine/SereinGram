@@ -1,8 +1,4 @@
 <RCC>
-  <qresource prefix="/langs/serein">
-    <file alias="zh-hans.strings">../langs/serein/zh-hans.strings</file>
-    <file alias="zh-hant.strings">../langs/serein/zh-hant.strings</file>
-  </qresource>
   <qresource prefix="/serein">
     <file alias="regdate_points.json">../serein/regdate_points.json</file>
   </qresource>
