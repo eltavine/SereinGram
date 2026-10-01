@@ -46,6 +46,26 @@ struct Backend {
 	std::unique_ptr<HistoryFeature::Recorder> recorder;
 };
 
+class Batch final {
+public:
+	explicit Batch(Ports::HistoryStore *store) : _store(store) {
+		if (_store) {
+			_store->beginBatch();
+		}
+	}
+	~Batch() {
+		if (_store) {
+			_store->endBatch();
+		}
+	}
+	Batch(const Batch &) = delete;
+	Batch &operator=(const Batch &) = delete;
+
+private:
+	Ports::HistoryStore *_store = nullptr;
+
+};
+
 struct CachedMedia {
 	QByteArray bytes;
 	QString name;
@@ -236,13 +256,22 @@ void RecordDeleted(
 
 std::vector<gsl::not_null<HistoryItem*>> OnServerDeleted(
 		std::vector<gsl::not_null<HistoryItem*>> items) {
+	auto batch = std::optional<Batch>();
+	auto batchSession = (Main::Session*)nullptr;
 	for (const auto &item : items) {
 		const auto session = &item->history()->session();
 		const auto policy = HistoryFeature::Read(ForAccount(session));
 		if (policy.saveDeleted) {
+			if (batchSession != session) {
+				batch.reset();
+				batchSession = session;
+				const auto backend = BackendFor(session, true);
+				batch.emplace(backend ? backend->store.get() : nullptr);
+			}
 			RecordDeleted(session, policy, item);
 		}
 	}
+	batch.reset();
 	return HistoryFeature::KeepDeletedInPlace(std::move(items));
 }
 

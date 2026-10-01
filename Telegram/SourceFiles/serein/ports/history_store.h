@@ -40,6 +40,10 @@ public:
 	[[nodiscard]] virtual bool clearPeer(qint64 peerId) = 0;
 	[[nodiscard]] virtual bool clearAll() = 0;
 	[[nodiscard]] virtual bool prune(qint64 recordedBefore, int keepAtMost) = 0;
+	virtual void beginBatch() {
+	}
+	virtual void endBatch() {
+	}
 };
 
 } // namespace Serein::Ports

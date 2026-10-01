@@ -109,6 +109,24 @@ void TestHistoryStore() {
 			"clearing a chat removes its records");
 	}
 	{
+		auto store = Adapters::SqlHistoryStore::Open(path, cipher);
+		Require(store != nullptr, "history store reopens for batches");
+		store->beginBatch();
+		store->beginBatch();
+		Require(store->save(Record(6, 600)) && store->save(Record(7, 700)),
+			"batched records save");
+		store->endBatch();
+		Require(store->deleted({ .peerId = 777 }).size() == 2,
+			"batched records are visible inside the batch");
+		store->endBatch();
+	}
+	{
+		auto store = Adapters::SqlHistoryStore::Open(path, cipher);
+		Require(store && store->deleted({ .peerId = 777 }).size() == 2,
+			"batched records are committed");
+		Require(store->clearPeer(777), "batched records clear");
+	}
+	{
 		auto other = ReversingCipher();
 		auto store = Adapters::SqlHistoryStore::Open(path, other);
 		Require(store->save(Record(5, 500)), "record saves before corruption");

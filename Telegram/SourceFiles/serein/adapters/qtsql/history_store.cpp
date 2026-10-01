@@ -1,5 +1,7 @@
 #include "serein/adapters/qtsql/history_store.h"
 
+#include "base/algorithm.h"
+#include "base/assertion.h"
 #include "base/basic_types.h"
 
 #include <QtCore/QUuid>
@@ -51,12 +53,36 @@ std::unique_ptr<SqlHistoryStore> SqlHistoryStore::Open(
 		}
 		return nullptr;
 	}
+	result->tune();
 	return result;
 }
 
 SqlHistoryStore::SqlHistoryStore(QString connection, Ports::Cipher &cipher)
 : _connection(std::move(connection))
 , _cipher(cipher) {
+}
+
+void SqlHistoryStore::tune() {
+	auto query = QSqlQuery(Database(_connection));
+	query.exec(u"PRAGMA journal_mode = WAL"_q);
+	query.exec(u"PRAGMA synchronous = NORMAL"_q);
+}
+
+void SqlHistoryStore::beginBatch() {
+	if (!_batchDepth++) {
+		_batchOpen = Database(_connection).transaction();
+	}
+}
+
+void SqlHistoryStore::endBatch() {
+	Expects(_batchDepth > 0);
+
+	if (!--_batchDepth && base::take(_batchOpen)) {
+		auto database = Database(_connection);
+		if (!database.commit()) {
+			database.rollback();
+		}
+	}
 }
 
 SqlHistoryStore::~SqlHistoryStore() {
