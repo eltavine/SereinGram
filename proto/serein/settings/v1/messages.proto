@@ -37,6 +37,13 @@ message MessagesSettings {
       refresh: REFRESH_MESSAGE_VIEW
     }
   ];
+  optional bool persian_calendar = 34 [
+    (serein.options.v1.field) = {
+      keywords: ["Persian", "Jalali", "Solar Hijri", "calendar", "date"]
+      note: "lng_serein_persian_calendar_note"
+      refresh: REFRESH_MESSAGE_VIEW
+    }
+  ];
   optional bool exact_message_counters = 5 [
     (serein.options.v1.field) = {
       section: {title: "lng_serein_marks_and_counts" id: "marks" keywords: ["labels", "counts"]}

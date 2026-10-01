@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "lang/lang_keys.h"
+#include "serein/hooks/messages/calendar.h"
 
 #include "base/const_string.h"
 #include "lang/lang_file_parser.h"
@@ -82,6 +83,7 @@ QString langFullName(
 }
 
 QString langDayOfMonth(const QDate &date) {
+	if (const auto persian = Serein::Messages::PersianDayOfMonth(date)) return *persian;
 	auto day = date.day();
 	return langDateMaybeWithYear(date, [&](int month, int year) {
 		return tr::lng_month_day_year(
@@ -103,6 +105,7 @@ QString langDayOfMonth(const QDate &date) {
 }
 
 QString langDayOfMonthFull(const QDate &date) {
+	if (const auto persian = Serein::Messages::PersianDayOfMonth(date)) return *persian;
 	auto day = date.day();
 	return langDateMaybeWithYear(date, [day](int month, int year) {
 		return tr::lng_month_day_year(
@@ -124,6 +127,7 @@ QString langDayOfMonthFull(const QDate &date) {
 }
 
 QString langDayOfMonthShort(const QDate &date) {
+	if (const auto persian = Serein::Messages::PersianDayOfMonthShort(date)) return *persian;
 	auto day = date.day();
 	return langDateMaybeWithYear(date, [&](int month, int year) {
 		return QLocale().toString(date, QLocale::ShortFormat);
@@ -149,6 +153,7 @@ QString langMonthOfYear(int month, int year) {
 }
 
 QString langMonth(const QDate &date) {
+	if (const auto persian = Serein::Messages::PersianMonth(date)) return *persian;
 	return langDateMaybeWithYear(date, [](int month, int year) {
 		return langMonthOfYear(month, year);
 	}, [](int month, int year) {
@@ -168,6 +173,7 @@ QString langMonthOfYearFull(int month, int year) {
 }
 
 QString langMonthFull(const QDate &date) {
+	if (const auto persian = Serein::Messages::PersianMonth(date)) return *persian;
 	return langDateMaybeWithYear(date, [](int month, int year) {
 		return langMonthOfYearFull(month, year);
 	}, [](int month, int year) {

@@ -33,6 +33,13 @@ inline constexpr auto kShowMessageId = Option<bool>{
 	Category::Messages,
 	"lng_serein_show_message_id",
 	static_cast<unsigned>(Flag::RefreshMessageView) };
+inline constexpr auto kPersianCalendar = Option<bool>{
+	"serein.persianCalendar",
+	Scope::Device,
+	false,
+	Category::Messages,
+	"lng_serein_persian_calendar",
+	static_cast<unsigned>(Flag::RefreshMessageView) };
 inline constexpr auto kExactMessageCounters = Option<bool>{
 	"serein.exactMessageCounters",
 	Scope::Device,
@@ -254,6 +261,7 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kShowForwardedMessageDate));
 	Expects(registry.Add(kShowServiceTime));
 	Expects(registry.Add(kShowMessageId));
+	Expects(registry.Add(kPersianCalendar));
 	Expects(registry.Add(kExactMessageCounters));
 	Expects(registry.Add(kHideMessageViews));
 	Expects(registry.Add(kHideChannelSignature));

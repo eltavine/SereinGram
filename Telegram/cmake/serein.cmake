@@ -88,6 +88,8 @@ set(serein_sources
 	serein/media/sticker_catalog_rules.cpp
     serein/messages/format.cpp
     serein/messages/content.cpp
+    serein/messages/dates.cpp
+    serein/messages/persian_calendar.cpp
     serein/messages/badges.cpp
     serein/messages/effects.cpp
     serein/messages/reactions.cpp

@@ -17,6 +17,7 @@ set(serein_test_sources
     serein/tests/test_proxy_subscription.cpp
     serein/tests/test_vpn_rules.cpp
     serein/tests/test_proxy_order.cpp
+    serein/tests/test_persian_calendar.cpp
     serein/tests/test_chinese.cpp
     serein/tests/test_aliases.cpp
     serein/tests/test_sticker_catalog.cpp
@@ -40,6 +41,7 @@ set(serein_test_sources
     serein/chats/reading_positions.cpp
     serein/chats/local_pins.cpp
     serein/messages/chinese.cpp
+    serein/messages/persian_calendar.cpp
     serein/privacy/alias_rules.cpp
     serein/privacy/recorders.cpp
     serein/media/sticker_catalog_rules.cpp

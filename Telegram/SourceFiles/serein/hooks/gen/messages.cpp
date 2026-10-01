@@ -38,6 +38,14 @@ rpl::producer<bool> ShowMessageIdValue() {
 	return ForDevice().Value(Serein::Messages::kShowMessageId);
 }
 
+bool PersianCalendar() {
+	return ForDevice().Get(Serein::Messages::kPersianCalendar);
+}
+
+rpl::producer<bool> PersianCalendarValue() {
+	return ForDevice().Value(Serein::Messages::kPersianCalendar);
+}
+
 bool ExactMessageCounters() {
 	return ForDevice().Get(Serein::Messages::kExactMessageCounters);
 }
