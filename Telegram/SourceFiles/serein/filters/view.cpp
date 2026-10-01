@@ -29,6 +29,7 @@ struct Cached {
 	QString searchable;
 	QString author;
 	QString peer;
+	QString topic;
 	bool blocked = false;
 	bool outgoing = false;
 	Result result;
@@ -121,6 +122,10 @@ QString Searchable(not_null<HistoryItem*> item) {
 	}
 	const auto peer = item->history()->peer;
 	const auto peerId = QString::number(SerializePeerId(peer->id));
+	const auto topicRoot = item->topicRootId();
+	const auto topic = (topicRoot && peer->isForum())
+		? (peerId + u':' + QString::number(topicRoot.bare))
+		: QString();
 	const auto searchable = Searchable(item);
 	const auto key = reinterpret_cast<quintptr>(item);
 	if (const auto cached = Results().object(key);
@@ -131,11 +136,12 @@ QString Searchable(not_null<HistoryItem*> item) {
 		&& cached->source.entities == source.entities
 		&& cached->searchable == searchable
 		&& cached->author == author && cached->peer == peerId
+		&& cached->topic == topic
 		&& cached->blocked == blocked && cached->outgoing == item->out()) {
 		return cached->result;
 	}
-	const auto result = Apply(raw, source, author,
-		peerId, blocked, item->out(), searchable, SharedRules(shared));
+	const auto result = Apply(raw, source, author, peerId, blocked,
+		item->out(), searchable, SharedRules(shared), topic);
 	Results().insert(key, new Cached{
 		.id = item->fullId(),
 		.config = raw,
@@ -144,6 +150,7 @@ QString Searchable(not_null<HistoryItem*> item) {
 		.searchable = searchable,
 		.author = author,
 		.peer = peerId,
+		.topic = topic,
 		.blocked = blocked,
 		.outgoing = item->out(),
 		.result = result,

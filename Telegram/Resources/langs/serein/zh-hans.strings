@@ -437,7 +437,7 @@
 "lng_serein_filter_title" = "规则名称";
 "lng_serein_filter_pattern" = "正则表达式";
 "lng_serein_filter_replacement" = "替换文本（不解析引用）";
-"lng_serein_filter_rule_peers" = "仅在这些对话中生效（对话 ID，以逗号分隔；留空表示所有对话）";
+"lng_serein_filter_rule_peers" = "仅在这些对话或话题中生效（对话 ID，或“对话 ID:话题 ID”，以逗号分隔；留空表示所有对话）";
 "lng_serein_filter_rule_enabled" = "启用此规则";
 "lng_serein_filter_case" = "忽略大小写";
 "lng_serein_filter_reverse" = "匹配不符合表达式的消息";

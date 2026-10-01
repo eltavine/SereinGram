@@ -204,7 +204,8 @@ Result Apply(
 		bool blocked,
 		bool outgoing,
 		const QString &searchable,
-		const std::vector<FilterRule> &shared) {
+		const std::vector<FilterRule> &shared,
+		const QString &topic) {
 	auto result = Result{ .text = source };
 	if (raw.isEmpty()) {
 		return result;
@@ -247,8 +248,10 @@ Result Apply(
 	}
 	for (const auto pointer : rules) {
 		const auto &rule = *pointer;
-		if (!rule.enabled
-			|| (!rule.peers.empty() && !contains(rule.peers, peer))) {
+		const auto inScope = rule.peers.empty()
+			|| contains(rule.peers, peer)
+			|| (!topic.isEmpty() && contains(rule.peers, topic));
+		if (!rule.enabled || !inScope) {
 			continue;
 		}
 		const auto expression = CompilePattern(

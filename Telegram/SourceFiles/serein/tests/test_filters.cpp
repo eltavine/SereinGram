@@ -64,6 +64,29 @@ void TestFilterScopes() {
 	Require(Apply(raw, { u"foo"_q }, {}, u"7"_q, false, false).text.text
 			== u"foo"_q,
 		"chat scoped rule applied in another chat");
+	Require(Apply(raw, { u"foo"_q }, {}, u"42"_q, false, false, {}, {},
+			u"42:7"_q).text.text == u"bar"_q,
+		"chat scoped rule skipped inside a topic of its chat");
+	auto topicRule = Rule(u"foo"_q, u"replace"_q);
+	topicRule.insert(u"peers"_q, QJsonArray{ u"42:7"_q });
+	auto topicConfig = QJsonDocument::fromJson(Config(topicRule)).object();
+	topicConfig.insert(u"version"_q, 2);
+	const auto topicRaw = QJsonDocument(topicConfig).toJson(
+		QJsonDocument::Compact);
+	Require(Validate(topicRaw), "topic scoped rule rejected");
+	const auto inTopic = [&](const QString &topic) {
+		return Apply(topicRaw, { u"foo"_q }, {}, u"42"_q, false, false, {},
+			{}, topic).text.text;
+	};
+	Require(inTopic(u"42:7"_q) == u"bar"_q
+		&& inTopic(u"42:8"_q) == u"foo"_q
+		&& inTopic(QString()) == u"foo"_q,
+		"topic scoped rule applied outside its topic");
+	topicRule.insert(u"peers"_q, QJsonArray{ u"42:0"_q });
+	auto badTopic = QJsonDocument::fromJson(Config(topicRule)).object();
+	badTopic.insert(u"version"_q, 2);
+	Require(!Validate(QJsonDocument(badTopic).toJson(QJsonDocument::Compact)),
+		"malformed topic scope accepted");
 	const auto upgraded = ReadRules(Config(Rule(u"foo"_q, u"mask"_q)));
 	Require(upgraded && upgraded->rules.size() == 1
 		&& upgraded->rules[0].peers.empty(),

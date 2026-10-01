@@ -35,6 +35,7 @@ struct Result {
 	bool blocked,
 	bool outgoing,
 	const QString &searchable = QString(),
-	const std::vector<FilterRule> &shared = {});
+	const std::vector<FilterRule> &shared = {},
+	const QString &topic = QString());
 
 } // namespace Serein::Filters
