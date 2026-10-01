@@ -70,7 +70,7 @@ void ShowMenu(
 
 	auto id = FilterId(0);
 	{
-		const auto list = session->data().chatsFilters().displayList();
+		const auto list = Serein::Chats::ShownFilters(session);
 		if (index < 0 || index >= list.size()) {
 			return;
 		}
@@ -142,13 +142,13 @@ void ShowFiltersListMenu(
 		not_null<State*> state,
 		int active,
 		Fn<void(int)> changeActive) {
-	const auto list = session->data().chatsFilters().displayList();
+	const auto list = Serein::Chats::ShownFilters(session);
 
 	state->menu = base::make_unique_q<Ui::PopupMenu>(
 		parent,
 		st::popupMenuWithIcons);
 
-	const auto premiumFrom = session->data().chatsFilters().displayLimit();
+	const auto premiumFrom = Serein::Chats::ShownFiltersLimit(session);
 
 	for (auto i = 0; i < list.size(); ++i) {
 		const auto title = list[i].title();
@@ -230,7 +230,7 @@ not_null<Ui::RpWidget*> AddChatFiltersTabsStrip(
 	const auto state = wrap->lifetime().make_state<State>();
 	const auto reassignUnreadValue = [=] {
 		state->reorderLifetime.destroy();
-		const auto list = session->data().chatsFilters().displayList();
+		const auto list = Serein::Chats::ShownFilters(session);
 		auto includeMuted = Data::IncludeMutedCounterFoldersValue();
 		for (auto i = 0; i < list.size(); i++) {
 			rpl::combine(
@@ -263,12 +263,12 @@ not_null<Ui::RpWidget*> AddChatFiltersTabsStrip(
 			}
 
 			const auto filters = &session->data().chatsFilters();
-			if (!session->user()->isPremium() && !filters->allChatsHidden()) {
+			if (!session->user()->isPremium() && !Serein::Chats::AllChatsHidden(session)) {
 				if (filters->list()[0].id() != FilterId()) {
 					filters->moveAllToFront();
 				}
 			}
-			const auto list = filters->displayList();
+			const auto list = Serein::Chats::ShownFilters(session);
 			Assert(oldPosition >= 0 && oldPosition < list.size());
 			Assert(newPosition >= 0 && newPosition < list.size());
 
@@ -280,7 +280,7 @@ not_null<Ui::RpWidget*> AddChatFiltersTabsStrip(
 			base::reorder(order, oldPosition, newPosition);
 
 			state->ignoreRefresh = true;
-			filters->saveDisplayOrder(order);
+			Serein::Chats::SaveShownOrder(session, order);
 			state->ignoreRefresh = false;
 		};
 
@@ -313,7 +313,7 @@ not_null<Ui::RpWidget*> AddChatFiltersTabsStrip(
 						: slider->width();
 					if (x >= left && x < right) {
 						const auto list
-							= session->data().chatsFilters().displayList();
+							= Serein::Chats::ShownFilters(session);
 						return (i < list.size())
 							? list[i].id()
 							: FilterId();
@@ -323,7 +323,7 @@ not_null<Ui::RpWidget*> AddChatFiltersTabsStrip(
 			},
 			[=] { return state->lastFilterId.value_or(FilterId()); },
 			[=](FilterId id) {
-				const auto list = session->data().chatsFilters().displayList();
+				const auto list = Serein::Chats::ShownFilters(session);
 				for (auto i = 0; i < list.size(); i++) {
 					if (list[i].id() == id) {
 						slider->selectSection(i);
@@ -371,15 +371,15 @@ not_null<Ui::RpWidget*> AddChatFiltersTabsStrip(
 	};
 
 	const auto filterByIndex = [=](int index) -> Data::ChatFilter {
-		const auto list = session->data().chatsFilters().displayList();
+		const auto list = Serein::Chats::ShownFilters(session);
 		Assert(index >= 0 && index < list.size());
 		return list[index];
 	};
 
 	const auto rebuild = [=] {
-		const auto list = session->data().chatsFilters().displayList();
+		const auto list = Serein::Chats::ShownFilters(session);
 		if ((list.size() <= 1 && !slider->width()
-			&& !session->data().chatsFilters().allChatsHidden()) || state->ignoreRefresh) {
+			&& !Serein::Chats::AllChatsHidden(session)) || state->ignoreRefresh) {
 			return;
 		}
 		const auto context = Core::TextContext({ .session = session });
@@ -414,7 +414,7 @@ not_null<Ui::RpWidget*> AddChatFiltersTabsStrip(
 			const auto reorderAll = session->user()->isPremium();
 			const auto maxLimit = (reorderAll ? 1 : 0)
 				+ Data::PremiumLimits(session).dialogFiltersCurrent();
-			const auto premiumFrom = session->data().chatsFilters().displayLimit();
+			const auto premiumFrom = Serein::Chats::ShownFiltersLimit(session);
 			slider->setLockedFrom((premiumFrom >= list.size())
 				? 0
 				: premiumFrom);
@@ -425,7 +425,7 @@ not_null<Ui::RpWidget*> AddChatFiltersTabsStrip(
 				state->reorder->cancel();
 				state->reorder->clearPinnedIntervals();
 				if (!reorderAll
-					&& !session->data().chatsFilters().allChatsHidden()) {
+					&& !Serein::Chats::AllChatsHidden(session)) {
 					state->reorder->addPinnedInterval(0, 1);
 				}
 				state->reorder->addPinnedInterval(
@@ -468,12 +468,12 @@ not_null<Ui::RpWidget*> AddChatFiltersTabsStrip(
 		if (trackActiveFilterAndUnreadAndReorder) {
 			controller->activeChatsFilter(
 			) | rpl::on_next([=](FilterId id) {
-				if (!id && session->data().chatsFilters().allChatsHidden()) {
+				if (!id && Serein::Chats::AllChatsHidden(session)) {
 					controller->setActiveChatsFilter(
-						session->data().chatsFilters().displayList().front().id());
+						Serein::Chats::ShownFilters(session).front().id());
 					return;
 				}
-				const auto list = session->data().chatsFilters().displayList();
+				const auto list = Serein::Chats::ShownFilters(session);
 				for (auto i = 0; i < list.size(); ++i) {
 					if (list[i].id() == id) {
 						slider->setActiveSection(i);
@@ -511,7 +511,7 @@ not_null<Ui::RpWidget*> AddChatFiltersTabsStrip(
 			}
 		}, state->rebuildLifetime);
 		wrap->toggle((list.size() > 1)
-			|| session->data().chatsFilters().allChatsHidden(),
+			|| Serein::Chats::AllChatsHidden(session),
 			anim::type::instant);
 
 		if (state->reorder) {
@@ -536,7 +536,7 @@ not_null<Ui::RpWidget*> AddChatFiltersTabsStrip(
 		if (!id || !state->lastFilterId || (id != state->lastFilterId)) {
 			return;
 		}
-		for (const auto &filter : session->data().chatsFilters().displayList()) {
+		for (const auto &filter : Serein::Chats::ShownFilters(session)) {
 			if (filter.id() == id) {
 				applyFilter(filter);
 				return;

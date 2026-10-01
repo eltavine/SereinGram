@@ -170,8 +170,8 @@ void FiltersMenu::setup() {
 	) | rpl::filter([=](FilterId id) {
 		return (id != _activeFilterId);
 	}) | rpl::on_next([=](FilterId id) {
-		if (!id && filters->allChatsHidden()) {
-			_session->setActiveChatsFilter(filters->displayList().front().id());
+		if (!id && Serein::Chats::AllChatsHidden(&_session->session())) {
+			_session->setActiveChatsFilter(Serein::Chats::ShownFilters(&_session->session()).front().id());
 			return;
 		}
 		if (!_list) {
@@ -367,13 +367,13 @@ void FiltersMenu::refresh() {
 	_reorder->clearPinnedIntervals();
 	const auto maxLimit = (reorderAll ? 1 : 0)
 		+ Data::PremiumLimits(&_session->session()).dialogFiltersCurrent();
-	const auto premiumFrom = filters->displayLimit();
-	if (!reorderAll && !filters->allChatsHidden()) {
+	const auto premiumFrom = Serein::Chats::ShownFiltersLimit(&_session->session());
+	if (!reorderAll && !Serein::Chats::AllChatsHidden(&_session->session())) {
 		_reorder->addPinnedInterval(0, 1);
 	}
 	_reorder->addPinnedInterval(
 		premiumFrom,
-		std::max(1, int(filters->displayList().size()) - maxLimit));
+		std::max(1, int(Serein::Chats::ShownFilters(&_session->session()).size()) - maxLimit));
 
 	// Remember which folder holds keyboard focus so the roving Tab-stop can be
 	// re-established on its replacement after the rebuild: the new buttons are
@@ -388,14 +388,14 @@ void FiltersMenu::refresh() {
 	}
 
 	auto now = base::flat_map<int, base::unique_qptr<Ui::SideBarButton>>();
-	if (filters->allChatsHidden() && !_session->activeChatsFilterCurrent()) {
-		_session->setActiveChatsFilter(filters->displayList().front().id());
+	if (Serein::Chats::AllChatsHidden(&_session->session()) && !_session->activeChatsFilterCurrent()) {
+		_session->setActiveChatsFilter(Serein::Chats::ShownFilters(&_session->session()).front().id());
 	}
 	const auto &currentFilter = _session->activeChatsFilterCurrent();
-	for (const auto &filter : filters->displayList()) {
+	for (const auto &filter : Serein::Chats::ShownFilters(&_session->session())) {
 		const auto nextIsLocked = (now.size() >= premiumFrom);
 		if (nextIsLocked && (currentFilter == filter.id())) {
-			_session->setActiveChatsFilter(filters->displayList().front().id());
+			_session->setActiveChatsFilter(Serein::Chats::ShownFilters(&_session->session()).front().id());
 		}
 		auto button = prepareButton(
 			_list,
@@ -820,12 +820,12 @@ void FiltersMenu::applyReorder(
 	}
 
 	const auto filters = &_session->session().data().chatsFilters();
-	if (!premium() && !filters->allChatsHidden()) {
+	if (!premium() && !Serein::Chats::AllChatsHidden(&_session->session())) {
 		if (filters->list()[0].id() != FilterId()) {
 			filters->moveAllToFront();
 		}
 	}
-	const auto list = filters->displayList();
+	const auto list = Serein::Chats::ShownFilters(&_session->session());
 	Assert(oldPosition >= 0 && oldPosition < list.size());
 	Assert(newPosition >= 0 && newPosition < list.size());
 	const auto id = list[oldPosition].id();
@@ -841,7 +841,7 @@ void FiltersMenu::applyReorder(
 	base::reorder(order, oldPosition, newPosition);
 
 	_ignoreRefresh = true;
-	filters->saveDisplayOrder(order);
+	Serein::Chats::SaveShownOrder(&_session->session(), order);
 	_ignoreRefresh = false;
 }
 
