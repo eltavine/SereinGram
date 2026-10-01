@@ -19,5 +19,7 @@ namespace Serein::Hooks::ServiceSettings {
 [[nodiscard]] rpl::producer<bool> PauseProxyOnVpnValue();
 [[nodiscard]] bool ProxyPausedByVpn();
 [[nodiscard]] rpl::producer<bool> ProxyPausedByVpnValue();
+[[nodiscard]] QString CustomDoh();
+[[nodiscard]] rpl::producer<QString> CustomDohValue();
 
 } // namespace Serein::Hooks::ServiceSettings

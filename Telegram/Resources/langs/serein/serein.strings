@@ -377,6 +377,9 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_proxy_vpn_about" = "SereinGram checks which network interface carries traffic to Telegram. When it is a VPN tunnel, the proxy is turned off, and it is turned back on after the VPN disconnects. Detection relies on interface names and types, so some VPNs may not be recognized.";
 "lng_serein_proxy_vpn_paused" = "A VPN is active, so the proxy is paused.";
 "lng_serein_proxy_vpn_resumed" = "The VPN disconnected, so the proxy is back on.";
+"lng_serein_custom_doh" = "Custom DNS-over-HTTPS server";
+"lng_serein_custom_doh_hint" = "Host name of a server that answers the JSON API at /dns-query, for example dns.alidns.com. Leave empty to turn this off.";
+"lng_serein_custom_doh_about" = "Tried before Google and Cloudflare when Telegram looks up its fallback configuration and proxy domains over DNS-over-HTTPS. Useful where those resolvers are blocked.";
 "lng_serein_services_about" = "External services receive only the text or audio you explicitly request to process. Automatic chat translation keeps its existing provider. API keys stay in the system credential store and are excluded from configuration exports.";
 "lng_serein_draft_changed" = "The draft changed while this preview was open. Close it and translate the current draft again.";
 "lng_serein_inherit" = "Inherit";

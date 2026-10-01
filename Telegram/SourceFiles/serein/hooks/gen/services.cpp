@@ -54,4 +54,12 @@ rpl::producer<bool> ProxyPausedByVpnValue() {
 	return ForDevice().Value(Serein::ServiceSettings::kProxyPausedByVpn);
 }
 
+QString CustomDoh() {
+	return ForDevice().Get(Serein::ServiceSettings::kCustomDoh);
+}
+
+rpl::producer<QString> CustomDohValue() {
+	return ForDevice().Value(Serein::ServiceSettings::kCustomDoh);
+}
+
 } // namespace Serein::Hooks::ServiceSettings

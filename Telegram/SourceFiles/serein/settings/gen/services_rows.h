@@ -17,6 +17,7 @@ struct CustomRows {
 	CustomRow translationContext;
 	CustomRow proxySubscription;
 	CustomRow pauseProxyOnVpn;
+	CustomRow customDoh;
 };
 
 inline void AddLayout(
@@ -27,6 +28,7 @@ inline void AddLayout(
 	custom.translationContext();
 	custom.proxySubscription();
 	custom.pauseProxyOnVpn();
+	custom.customDoh();
 }
 
 } // namespace Serein::ServiceSettings

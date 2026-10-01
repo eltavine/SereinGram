@@ -55,6 +55,17 @@ inline constexpr auto kProxyPausedByVpn = Option<bool>{
 	Category::Services,
 	"lng_serein_proxy_vpn",
 	static_cast<unsigned>(Flag::Hidden) };
+inline const auto kCustomDoh = Option<QString>{
+	"serein.customDoh",
+	Scope::Device,
+	QString(),
+	Category::Services,
+	"lng_serein_custom_doh",
+	0,
+	[](const QString &value) {
+		return (value == QString())
+			|| ((value.toUcs4().size() <= 253) && (Codec::Matches(value, QString::fromUtf8("^(([A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?\\.)+[A-Za-z]{2,63})?$"))));
+	} };
 
 inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kServicesConfig));
@@ -63,6 +74,7 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kProxySubscription));
 	Expects(registry.Add(kPauseProxyOnVpn));
 	Expects(registry.Add(kProxyPausedByVpn));
+	Expects(registry.Add(kCustomDoh));
 }
 
 } // namespace Serein::ServiceSettings

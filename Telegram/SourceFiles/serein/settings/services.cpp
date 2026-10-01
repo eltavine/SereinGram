@@ -617,6 +617,33 @@ void ServicesBox(not_null<Ui::GenericBox*> box, ServicesConfig initial) {
 	box->addButton(tr::lng_box_ok(), [=] { box->closeBox(); });
 }
 
+void CustomDohBox(not_null<Ui::GenericBox*> box) {
+	box->setTitle(tr::lng_serein_custom_doh());
+	box->addRow(object_ptr<Ui::FlatLabel>(
+		box,
+		tr::lng_serein_custom_doh_hint(),
+		st::boxLabel));
+	const auto field = box->addRow(object_ptr<Ui::InputField>(
+		box,
+		st::defaultInputField,
+		rpl::single(u"dns.alidns.com"_q),
+		ForDevice().Get(ServiceSettings::kCustomDoh)));
+	field->setMaxLength(253);
+	box->setFocusCallback([=] { field->setFocusFast(); });
+	const auto save = [=] {
+		const auto host = field->getLastText().trimmed().toLower();
+		if (!ForDevice().Set(ServiceSettings::kCustomDoh, host)) {
+			field->showError();
+			return;
+		}
+		box->closeBox();
+	};
+	field->submits(
+	) | rpl::on_next([=](auto) { save(); }, field->lifetime());
+	box->addButton(tr::lng_settings_save(), save);
+	box->addButton(tr::lng_cancel(), [=] { box->closeBox(); });
+}
+
 void ProxySubscriptionBox(not_null<Ui::GenericBox*> box) {
 	box->setTitle(tr::lng_serein_proxy_subscription());
 	box->addRow(object_ptr<Ui::FlatLabel>(
@@ -778,6 +805,20 @@ const auto kMeta = BuildHelper({
 		}, vpnButton->lifetime());
 	}
 	builder.addDividerText(tr::lng_serein_proxy_vpn_about());
+	builder.addButton({
+		.id = u"serein/services/custom-doh"_q,
+		.title = tr::lng_serein_custom_doh(),
+		.st = &st::settingsButtonNoIcon,
+		.label = ForDevice().Value(ServiceSettings::kCustomDoh)
+			| rpl::map([](const QString &host) {
+				return host.isEmpty()
+					? tr::lng_serein_config_off(tr::now)
+					: host;
+			}),
+		.onClick = [=] { controller->show(Box(CustomDohBox)); },
+		.keywords = { u"DNS"_q, u"DoH"_q, u"censorship"_q },
+	});
+	builder.addDividerText(tr::lng_serein_custom_doh_about());
 });
 
 const SectionBuildMethod ServicesSection::kBuild = kMeta.build;
