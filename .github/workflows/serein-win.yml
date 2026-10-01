@@ -306,7 +306,12 @@ jobs:
         run: |
           $root = "$env:TBUILD\$env:REPO_NAME"
           $version = (Select-String -Path "$root\Telegram\build\version" -Pattern '^AppVersionStr (.+)$').Matches[0].Groups[1].Value.Trim()
-          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" "/DMyAppVersion=$version" "/DMyAppVersionFull=$version" "/DReleasePath=$root\out\Debug" "/DMyBuildTarget=win64" "$root\Telegram\build\setup.iss"
+          $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path $iscc)) {
+            choco install innosetup --no-progress -y
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
+          & $iscc "/DMyAppVersion=$version" "/DMyAppVersionFull=$version" "/DReleasePath=$root\out\Debug" "/DMyBuildTarget=win64" "$root\Telegram\build\setup.iss"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Move artifact.
