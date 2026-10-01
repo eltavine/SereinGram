@@ -2,6 +2,7 @@
 
 #include "serein/filters/hidden_messages.h"
 #include "serein/filters/model.h"
+#include "serein/filters/reveal.h"
 
 #include "data/data_peer.h"
 #include "data/data_peer_id.h"
@@ -90,7 +91,10 @@ QString Searchable(not_null<HistoryItem*> item) {
 [[nodiscard]] Result Project(
 		HistoryItem *item,
 		const TextWithEntities &source) {
-	if (!item || item->isService() || item->sereinOriginalShown()) {
+	if (!item
+		|| item->isService()
+		|| item->sereinOriginalShown()
+		|| Revealed(item->history())) {
 		return { .text = source };
 	}
 	const auto raw = ForAccount(&item->history()->session()).Get(kRules);

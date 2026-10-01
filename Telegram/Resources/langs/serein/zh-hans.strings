@@ -478,6 +478,8 @@
 "lng_serein_filter_id_help" = "输入数字 ID 后添加；点击已有 ID 可移除。";
 "lng_serein_rules" = "规则";
 "lng_serein_filter_hidden" = "消息已被本机过滤器隐藏";
+"lng_serein_filter_show_in_chat" = "显示被过滤的消息";
+"lng_serein_filter_hide_in_chat" = "隐藏被过滤的消息";
 "lng_serein_hidden_messages" = "本地隐藏的消息";
 "lng_serein_menu_hide_message" = "隐藏消息";
 "lng_serein_menu_show_message" = "显示消息";

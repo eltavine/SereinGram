@@ -482,6 +482,8 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_filter_id_help" = "Enter a numeric peer ID to add it. Select an existing ID to remove it.";
 "lng_serein_rules" = "Rules";
 "lng_serein_filter_hidden" = "Message hidden by a local filter";
+"lng_serein_filter_show_in_chat" = "Show filtered messages";
+"lng_serein_filter_hide_in_chat" = "Hide filtered messages";
 "lng_serein_hidden_messages" = "Locally hidden messages";
 "lng_serein_menu_hide_message" = "Hide message";
 "lng_serein_menu_show_message" = "Show message";

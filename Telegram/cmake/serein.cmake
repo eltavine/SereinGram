@@ -118,6 +118,7 @@ set(serein_sources
     serein/tests/menu_scenario.cpp
     serein/filters/model.cpp
     serein/filters/hidden_messages.cpp
+    serein/filters/reveal.cpp
     serein/filters/view.cpp
     serein/filters/settings.cpp
     serein/filters/subscription.cpp

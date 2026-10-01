@@ -7,6 +7,8 @@
 #include "serein/chats/options.h"
 #include "serein/chats/quick_actions.h"
 #include "serein/features/history/viewer.h"
+#include "serein/filters/model.h"
+#include "serein/filters/reveal.h"
 #include "serein/services/summary.h"
 #include "serein/hooks/privacy/alias.h"
 #include "serein/hooks/ghost.h"
@@ -108,6 +110,17 @@ void FillHistoryMenu(
 				Chats::kLocalPins,
 				Chats::ToggleLocalPin(options.Get(Chats::kLocalPins), id)));
 		}, pinned ? &st::menuIconUnpin : &st::menuIconPin);
+	}
+	if (const auto filters = Serein::Filters::ReadRules(
+			ForAccount(&controller->session()).Get(Serein::Filters::kRules))
+		; !topic && filters && filters->enabled) {
+		const auto history = controller->session().data().history(peer);
+		const auto revealed = Serein::Filters::Revealed(history);
+		addAction(revealed
+			? tr::lng_serein_filter_hide_in_chat(tr::now)
+			: tr::lng_serein_filter_show_in_chat(tr::now), [=] {
+			Serein::Filters::ToggleRevealed(history);
+		}, revealed ? &st::menuIconCaptionHide : &st::menuIconShowAll);
 	}
 	if (!topic
 		&& HistoryFeature::HasDeletedMessages(&controller->session(), peer)) {
