@@ -301,7 +301,6 @@ jobs:
 
       - name: Installer.
         if: env.UPLOAD_ARTIFACT == 'true'
-        continue-on-error: true
         shell: pwsh
         run: |
           $root = "$env:TBUILD\$env:REPO_NAME"
