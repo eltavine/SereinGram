@@ -187,6 +187,36 @@ class UpstreamSyncTest(unittest.TestCase):
         self.assertEqual(git(self.fork / "cmake", "rev-parse", "HEAD"), commits[1])
         self.assertEqual(git(self.fork, "status", "--porcelain"), "")
 
+    def test_merged_sync_branch_is_replaced(self):
+        write(self.upstream, "Telegram/SourceFiles/b.cpp", "int b2;\n")
+        git(self.upstream, "commit", "-q", "-am", "first")
+        self.assertIsNone(self.sync("dev")[0])
+        git(self.fork, "switch", "-q", "dev")
+        git(self.fork, "merge", "-q", "--ff-only", "sync/dev")
+        write(self.upstream, "Telegram/SourceFiles/b.cpp", "int b3;\n")
+        git(self.upstream, "commit", "-q", "-am", "second")
+        conflicts, metrics = self.sync("dev")
+        self.assertIsNone(conflicts)
+        self.assertIsNotNone(metrics)
+        self.assertEqual(
+            (self.fork / "Telegram/SourceFiles/b.cpp").read_text(), "int b3;\n")
+
+    def test_current_baseline_is_reported(self):
+        with self.assertRaisesRegex(upstream_sync.SyncError, "already"):
+            self.sync("dev")
+
+    def test_unmerged_sync_branch_is_kept(self):
+        git(self.fork, "branch", "sync/v8")
+        git(self.fork, "switch", "-q", "sync/v8")
+        write(self.fork, "Telegram/SourceFiles/serein/y.cpp", "int y;\n")
+        git(self.fork, "add", ".")
+        git(self.fork, "commit", "-q", "-m", "unmerged")
+        git(self.fork, "switch", "-q", "dev")
+        self.upstream_commit("Telegram/SourceFiles/b.cpp", "int b3;\n", "v8")
+        with self.assertRaisesRegex(upstream_sync.SyncError, "does not contain"):
+            self.sync("v8")
+        self.assertEqual(git(self.fork, "rev-parse", "--abbrev-ref", "HEAD"), "dev")
+
     def test_dirty_worktree_is_refused(self):
         write(self.fork, "Telegram/SourceFiles/b.cpp", "dirty\n")
         with self.assertRaisesRegex(upstream_sync.SyncError, "uncommitted"):

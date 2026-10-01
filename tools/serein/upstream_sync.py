@@ -136,6 +136,8 @@ def sync(root, ref, policy_path, owned_policy_path, url=None):
     git(root, "fetch", "--no-tags", REMOTE, ref)
     new = git(root, "rev-parse", "FETCH_HEAD").stdout.strip()
     old = policy["base"]
+    if new == old:
+        raise SyncError(f"the baseline already is {ref} at {old[:12]}")
     if git(root, "merge-base", "--is-ancestor", old, new, check=False).returncode:
         raise SyncError(f"{ref} does not contain the current baseline {old[:12]}")
     patterns = owned + policy["owned_extra"]
@@ -143,7 +145,14 @@ def sync(root, ref, policy_path, owned_policy_path, url=None):
               if not is_owned(path, patterns)}
     links = changed_gitlinks(root, old, new)
     init_submodules(root, links)
-    git(root, "switch", "-q", "-c", branch_name(ref))
+    branch = branch_name(ref)
+    if git(root, "rev-parse", "-q", "--verify", f"refs/heads/{branch}",
+           check=False).returncode == 0:
+        if git(root, "merge-base", "--is-ancestor", branch, "HEAD",
+               check=False).returncode:
+            raise SyncError(f"{branch} has commits that HEAD does not contain")
+        git(root, "branch", "-q", "-D", branch)
+    git(root, "switch", "-q", "-c", branch)
     merge = git(root, "merge", "--no-ff", "--no-commit", new, check=False)
     conflicts = git(root, "diff", "--name-only", "--diff-filter=U").stdout.split()
     if merge.returncode and not conflicts:
