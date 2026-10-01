@@ -1,5 +1,6 @@
 #include "serein/hooks/filters/view.h"
 
+#include "serein/filters/hidden_messages.h"
 #include "serein/filters/model.h"
 
 #include "data/data_peer.h"
@@ -162,6 +163,29 @@ QString Searchable(not_null<HistoryItem*> item) {
 	return result;
 }
 
+[[nodiscard]] bool HiddenLocally(not_null<HistoryItem*> item) {
+	const auto raw = ForAccount(&item->history()->session()).Get(
+		kHiddenMessages);
+	if (raw.isEmpty()) {
+		return false;
+	}
+	static auto cachedRaw = QString();
+	static auto cachedSet = QSet<QString>();
+	if (!raw.isSharedWith(cachedRaw)) {
+		if (raw != cachedRaw) {
+			cachedSet = HiddenMessageSet(raw);
+		}
+		cachedRaw = raw;
+	}
+	return cachedSet.contains(HiddenMessageToken(
+		SerializePeerId(item->history()->peer->id),
+		item->id.bare));
+}
+
+[[nodiscard]] TextWithEntities HiddenLocallyText() {
+	return { tr::lng_serein_message_hidden_locally(tr::now) };
+}
+
 [[nodiscard]] TextWithEntities DisplayText(const Result &result) {
 	return result.hidden
 		? TextWithEntities{ tr::lng_serein_filter_hidden(tr::now) }
@@ -174,20 +198,28 @@ QString Searchable(not_null<HistoryItem*> item) {
 namespace Serein::Hooks::Filters {
 
 bool Hidden(HistoryItem *item) {
-	return item && Serein::Filters::Project(item,
-		item->translatedTextWithLocalEntities()).hidden;
+	return item && (Serein::Filters::HiddenLocally(item)
+		|| Serein::Filters::Project(
+			item,
+			item->translatedTextWithLocalEntities()).hidden);
 }
 
 TextWithEntities DisplayText(
 		HistoryItem *item,
 		const TextWithEntities &source) {
 	using namespace Serein::Filters;
+	if (item && HiddenLocally(item)) {
+		return HiddenLocallyText();
+	}
 	return Serein::Filters::DisplayText(Project(item, source));
 }
 
 TextWithEntities ReplyText(
 		HistoryItem *quoted,
 		const TextWithEntities &text) {
+	if (quoted && Serein::Filters::HiddenLocally(quoted)) {
+		return Serein::Filters::HiddenLocallyText();
+	}
 	return Hidden(quoted)
 		? TextWithEntities{ tr::lng_serein_filter_hidden(tr::now) }
 		: text;

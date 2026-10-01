@@ -94,6 +94,7 @@ set(serein_sources
     serein/menu/repeat.cpp
     serein/menu/reading.cpp
     serein/menu/reminder.cpp
+    serein/menu/hide_message.cpp
     serein/menu/selection.cpp
 	serein/media/sticker_catalog.cpp
 	serein/media/sticker_catalog_rules.cpp
@@ -115,6 +116,7 @@ set(serein_sources
     serein/messages/reading.cpp
     serein/tests/menu_scenario.cpp
     serein/filters/model.cpp
+    serein/filters/hidden_messages.cpp
     serein/filters/view.cpp
     serein/filters/settings.cpp
     serein/filters/subscription.cpp

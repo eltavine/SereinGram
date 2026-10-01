@@ -37,6 +37,7 @@ enum class ActionId : int {
 	QuickRatingFirst = 32,
 	QuickRatingSecond = 33,
 	Reminder = 34,
+	HideMessage = 35,
 };
 
 } // namespace Serein::Menu

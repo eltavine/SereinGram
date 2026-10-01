@@ -10,6 +10,7 @@
 #include "serein/menu/media.h"
 #include "serein/menu/reading.h"
 #include "serein/menu/reminder.h"
+#include "serein/menu/hide_message.h"
 #include "serein/menu/ghost_read.h"
 #include "serein/menu/history.h"
 #include "serein/filters/menu.h"
@@ -132,6 +133,7 @@ void Apply(
 			InsertHistoryExclusionAction(menu, item, controller);
 			InsertButtonDataAction(menu, item, controller);
 			InsertDetailsAction(menu, item, controller);
+			InsertHideMessageAction(menu, item, controller);
 		}
 	}
 	const auto config = ForDevice().Get(kMenuConfig);

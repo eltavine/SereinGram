@@ -35,4 +35,10 @@ message FilterSettings {
     validator: "ValidRuleList"
     refresh: REFRESH_MESSAGE_VIEW
   }];
+  optional string hidden_messages = 4 [(serein.options.v1.field) = {
+    title: "lng_serein_hidden_messages"
+    custom_ui: true
+    validator: "ValidHiddenMessages"
+    refresh: REFRESH_MESSAGE_VIEW
+  }];
 }

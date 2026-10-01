@@ -482,6 +482,12 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_filter_id_help" = "Enter a numeric peer ID to add it. Select an existing ID to remove it.";
 "lng_serein_rules" = "Rules";
 "lng_serein_filter_hidden" = "Message hidden by a local filter";
+"lng_serein_hidden_messages" = "Locally hidden messages";
+"lng_serein_menu_hide_message" = "Hide message";
+"lng_serein_menu_show_message" = "Show message";
+"lng_serein_message_hidden_locally" = "Message hidden on this device";
+"lng_serein_hidden_messages_show_all" = "Show hidden messages";
+"lng_serein_hidden_messages_show_all_about" = "All messages you hid in this account on this device will be shown again.";
 "lng_serein_filters" = "Local message filters";
 "lng_serein_filters_about" = "Applies only to this account’s chat views. Whole-message rules match original text, album captions, hidden links and button contents. Text masks and replacements affect displayed text. Blocked sources include forwarded authors and inline bots. Hidden content keeps a placeholder; search and notifications retain the original.";
 "lng_serein_filter_invalid" = "Invalid filter configuration. Edit the rule or import a supported version.";

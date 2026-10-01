@@ -30,4 +30,12 @@ rpl::producer<QByteArray> SubscribedRulesValue() {
 	return ForDevice().Value(Serein::Filters::kSubscribedRules);
 }
 
+QString HiddenMessages(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Get(Serein::Filters::kHiddenMessages);
+}
+
+rpl::producer<QString> HiddenMessagesValue(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Value(Serein::Filters::kHiddenMessages);
+}
+
 } // namespace Serein::Hooks::Filters

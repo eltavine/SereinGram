@@ -1,4 +1,5 @@
 #include "serein/filters/settings.h"
+#include "serein/filters/hidden_messages.h"
 #include "serein/filters/model.h"
 #include "serein/filters/subscription.h"
 
@@ -368,7 +369,10 @@ void FiltersBox(
 	const auto changed = crl::guard(box, [=](FilterRules value) {
 		crl::on_main(box, [=] { *state = value; });
 	});
-	state->value() | rpl::on_next([=](const FilterRules &current) {
+	rpl::combine(
+		state->value(),
+		ForAccount(session).Value(kHiddenMessages)
+	) | rpl::on_next([=](const FilterRules &current, const QString &hidden) {
 		rows->clear();
 		const auto add = [&](QString text, Fn<void()> click) {
 			const auto row = rows->add(object_ptr<Ui::SettingsButton>(
@@ -442,6 +446,23 @@ void FiltersBox(
 				: QString()), [=] {
 			box->uiShow()->showBox(Box(SubscriptionBox));
 		});
+		if (const auto count = HiddenMessageSet(hidden).size()) {
+			add(tr::lng_serein_hidden_messages_show_all(tr::now)
+				+ u" ("_q + QString::number(count) + ')', [=] {
+				box->uiShow()->showBox(Ui::MakeConfirmBox({
+					.text = tr::lng_serein_hidden_messages_show_all_about(
+						tr::now),
+					.confirmed = crl::guard(box, [=](Fn<void()> close) {
+						if (!ForAccount(session).Set(
+								kHiddenMessages,
+								QString())) {
+							LOG(("Serein: could not show hidden messages."));
+						}
+						close();
+					}),
+				}));
+			});
+		}
 	}, box->lifetime());
 	box->addButton(tr::lng_close(), [=] { box->closeBox(); });
 }

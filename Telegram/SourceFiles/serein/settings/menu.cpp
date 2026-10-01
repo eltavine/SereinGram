@@ -98,6 +98,7 @@ const style::icon *Icon(Menu::ActionId id) {
 	case Menu::ActionId::QuickRatingFirst: return &st::menuIconLike;
 	case Menu::ActionId::QuickRatingSecond: return &st::menuIconReply;
 	case Menu::ActionId::Reminder: return &st::menuIconNotifications;
+	case Menu::ActionId::HideMessage: return &st::menuIconCaptionHide;
 	default: return &st::menuIconChatBubble;
 	}
 }

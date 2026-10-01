@@ -478,6 +478,12 @@
 "lng_serein_filter_id_help" = "輸入數字 ID 後新增；點擊既有 ID 可移除。";
 "lng_serein_rules" = "規則";
 "lng_serein_filter_hidden" = "訊息已被本機過濾器隱藏";
+"lng_serein_hidden_messages" = "本機隱藏的訊息";
+"lng_serein_menu_hide_message" = "隱藏訊息";
+"lng_serein_menu_show_message" = "顯示訊息";
+"lng_serein_message_hidden_locally" = "此訊息已在本裝置上隱藏";
+"lng_serein_hidden_messages_show_all" = "顯示已隱藏的訊息";
+"lng_serein_hidden_messages_show_all_about" = "本裝置上此帳號隱藏的所有訊息將重新顯示。";
 "lng_serein_filters" = "本機訊息過濾";
 "lng_serein_filters_about" = "僅用於此帳號的聊天檢視。整條訊息規則比對原文、相簿說明、隱藏連結和按鈕內容；文字遮罩和取代作用於顯示文字。封鎖來源包括轉發作者和機器人。隱藏內容保留佔位；搜尋和通知仍顯示原文。";
 "lng_serein_filter_invalid" = "過濾設定無效，請修改規則或匯入支援的版本。";

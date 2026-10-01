@@ -18,6 +18,7 @@ set(serein_test_sources
     serein/tests/test_vpn_rules.cpp
     serein/tests/test_proxy_order.cpp
     serein/tests/test_proxy_notes.cpp
+    serein/tests/test_hidden_messages.cpp
     serein/tests/test_batches.cpp
     serein/tests/test_download_names.cpp
     serein/tests/test_shown_order.cpp
@@ -70,6 +71,7 @@ set(serein_test_sources
     serein/media/download_names.cpp
     serein/chats/shown_order.cpp
     serein/filters/model.cpp
+    serein/filters/hidden_messages.cpp
     serein/links/model.cpp
     serein/snapshot/rules.cpp
 )

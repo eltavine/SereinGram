@@ -26,6 +26,7 @@ void TestProxySubscription();
 void TestVpnRules();
 void TestProxyOrder();
 void TestProxyNotes();
+void TestHiddenMessages();
 void TestBatches();
 void TestDownloadNames();
 void TestShownOrder();
@@ -197,6 +198,7 @@ int main() {
 		TestVpnRules();
 		TestProxyOrder();
 		TestProxyNotes();
+		TestHiddenMessages();
 		TestBatches();
 		TestDownloadNames();
 		TestShownOrder();
