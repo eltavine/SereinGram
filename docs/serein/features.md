@@ -132,7 +132,7 @@ SG-HIST-05 的“已编辑”标记文字已由 C09 实现，删除标记随 SG-
 | SG-APPEAR-09 | 连续的文字、贴纸、圆形视频消息组的气泡尾巴修正 | Ad | Planned | P3 |
 | SG-APPEAR-10 | 圆角贴纸 | Ad | Planned | P3 |
 | SG-APPEAR-11 | Material 风格开关动画 | Ad | Planned | P3 |
-| SG-APPEAR-12 | 通知位置新增顶部居中 | Ad | Planned | P3 |
+| SG-APPEAR-12 | 通知位置新增顶部居中（界面设置“通知在屏幕顶部居中显示”，默认关闭；在上游通知位置选择顶部角落且使用应用内通知时，通知与“全部隐藏”按钮水平居中，向下堆叠；钩子位于上游唯一的起始位置计算函数，不改上游位置枚举与其存储） | Ad | Implemented | P3 |
 | SG-APPEAR-13 | macOS 触感反馈、Force Touch 媒体预览与快速反应 | Ad | Planned | P3 |
 
 ## CHATS 会话列表与导航

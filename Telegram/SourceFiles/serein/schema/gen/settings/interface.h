@@ -119,6 +119,13 @@ inline constexpr auto kOtherDeviceNotificationDelay = Option<int>{
 		return (value == 0)
 			|| (((value == 0 || value == 500 || value == 1000 || value == 2000 || value == 5000 || value == 10000 || value == 30000 || value == 60000)));
 	} };
+inline constexpr auto kCenterTopNotifications = Option<bool>{
+	"serein.centerTopNotifications",
+	Scope::Device,
+	false,
+	Category::Interface,
+	"lng_serein_center_top_notifications",
+	0 };
 inline constexpr auto kHalfwidthUiPunctuation = Option<bool>{
 	"serein.halfwidthUiPunctuation",
 	Scope::Device,
@@ -155,6 +162,7 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kHideAppIconBadge));
 	Expects(registry.Add(kNotificationDelay));
 	Expects(registry.Add(kOtherDeviceNotificationDelay));
+	Expects(registry.Add(kCenterTopNotifications));
 	Expects(registry.Add(kHalfwidthUiPunctuation));
 	Expects(registry.Add(kMoreAccounts));
 	Expects(registry.Add(kCheckUpdates));

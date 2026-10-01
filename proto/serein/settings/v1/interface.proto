@@ -84,6 +84,10 @@ message InterfaceSettings {
   optional int32 other_device_notification_delay = 13 [
     (buf.validate.field).int32 = {in: [0, 500, 1000, 2000, 5000, 10000, 30000, 60000]}
   ];
+  optional bool center_top_notifications = 17 [(serein.options.v1.field) = {
+    keywords: ["notification", "position", "center"]
+    note: "lng_serein_center_top_notifications_note"
+  }];
   optional bool halfwidth_ui_punctuation = 14 [
     (serein.options.v1.field) = {
       section: {title: "lng_serein_ui_text" id: "text" keywords: ["text", "punctuation"]}

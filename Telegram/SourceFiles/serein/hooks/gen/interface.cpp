@@ -110,6 +110,14 @@ rpl::producer<int> OtherDeviceNotificationDelayValue() {
 	return ForDevice().Value(Serein::Interface::kOtherDeviceNotificationDelay);
 }
 
+bool CenterTopNotifications() {
+	return ForDevice().Get(Serein::Interface::kCenterTopNotifications);
+}
+
+rpl::producer<bool> CenterTopNotificationsValue() {
+	return ForDevice().Value(Serein::Interface::kCenterTopNotifications);
+}
+
 bool HalfwidthUiPunctuation() {
 	return ForDevice().Get(Serein::Interface::kHalfwidthUiPunctuation);
 }

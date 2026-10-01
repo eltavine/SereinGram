@@ -20,4 +20,10 @@ int AppIconBadge(int unread) {
 	return ForDevice().Get(kHideAppIconBadge) ? 0 : unread;
 }
 
+int NotificationLeft(QRect area, int width, bool top, int upstream) {
+	return (top && ForDevice().Get(kCenterTopNotifications))
+		? (area.x() + (area.width() - width) / 2)
+		: upstream;
+}
+
 } // namespace Serein::Interface

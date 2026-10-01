@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "window/notifications_manager_default.h"
+#include "serein/hooks/interface/notifications.h"
 
 #include "platform/platform_notifications_manager.h"
 #include "platform/platform_specific.h"
@@ -60,7 +61,7 @@ namespace {
 		? (r.x() + r.width() - st::notifyWidth - st::notifyDeltaX)
 		: (r.x() + st::notifyDeltaX);
 	const auto y = isTop ? r.y() : (r.y() + r.height());
-	return QPoint(x, y);
+	return QPoint(Serein::Interface::NotificationLeft(r, st::notifyWidth, isTop, x), y);
 }
 
 internal::Widget::Direction notificationShiftDirection() {

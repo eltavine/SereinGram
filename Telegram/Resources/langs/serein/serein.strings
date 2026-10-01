@@ -252,6 +252,8 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_hide_app_icon_badge" = "Hide app icon badge";
 "lng_serein_notification_delay" = "Notification delay";
 "lng_serein_other_device_notification_delay" = "Delay when another device is active";
+"lng_serein_center_top_notifications" = "Center notifications at the top of the screen";
+"lng_serein_center_top_notifications_note" = "Applies when notifications are placed in a top corner and the native system notifications are off.";
 "lng_serein_seconds_suffix" = " s";
 "lng_serein_ui_text" = "Interface text";
 "lng_serein_halfwidth_ui_punctuation" = "Use halfwidth punctuation in interface text";

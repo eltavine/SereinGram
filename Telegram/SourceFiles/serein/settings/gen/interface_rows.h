@@ -10,7 +10,7 @@
 
 namespace Serein::Interface {
 
-inline const auto kToggleRows = std::array<ToggleRow, 9>{ {
+inline const auto kToggleRows = std::array<ToggleRow, 10>{ {
 	{
 		&kWideChannelPosts,
 		tr::lng_serein_wide_channel_posts,
@@ -46,6 +46,12 @@ inline const auto kToggleRows = std::array<ToggleRow, 9>{ {
 		tr::lng_serein_hide_app_icon_badge,
 		u"serein/interface/hide-app-icon-badge"_q,
 		{ u"dock"_q, u"icon"_q, u"badge"_q },
+	},
+	{
+		&kCenterTopNotifications,
+		tr::lng_serein_center_top_notifications,
+		u"serein/interface/center-top-notifications"_q,
+		{ u"notification"_q, u"position"_q, u"center"_q },
 	},
 	{
 		&kHalfwidthUiPunctuation,
@@ -124,25 +130,27 @@ inline void AddLayout(
 	AddToggle(builder, kToggleRows[5]);
 	custom.notificationDelay();
 	custom.otherDeviceNotificationDelay();
+	AddToggle(builder, kToggleRows[6]);
+	AddNote(builder, tr::lng_serein_center_top_notifications_note);
 	AddSection(builder, {
 		u"serein/interface/text"_q,
 		tr::lng_serein_ui_text,
 		{ u"text"_q, u"punctuation"_q },
 	});
-	AddToggle(builder, kToggleRows[6]);
+	AddToggle(builder, kToggleRows[7]);
 	AddSection(builder, {
 		u"serein/interface/accounts"_q,
 		tr::lng_serein_accounts,
 		{ u"accounts"_q },
 	});
-	AddToggle(builder, kToggleRows[7]);
+	AddToggle(builder, kToggleRows[8]);
 	AddNote(builder, tr::lng_serein_more_accounts_note);
 	AddSection(builder, {
 		u"serein/interface/updates"_q,
 		tr::lng_serein_updates,
 		{ u"updates"_q },
 	});
-	AddToggle(builder, kToggleRows[8]);
+	AddToggle(builder, kToggleRows[9]);
 }
 
 } // namespace Serein::Interface
