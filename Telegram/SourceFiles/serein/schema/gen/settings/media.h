@@ -23,6 +23,13 @@ inline constexpr auto kHideStickerTime = Option<bool>{
 	Category::Media,
 	"lng_serein_hide_sticker_time",
 	static_cast<unsigned>(Flag::RefreshMessageView) };
+inline constexpr auto kRoundedStickers = Option<bool>{
+	"serein.roundedStickers",
+	Scope::Device,
+	false,
+	Category::Media,
+	"lng_serein_rounded_stickers",
+	static_cast<unsigned>(Flag::RefreshMessageView) };
 inline constexpr auto kRecentStickerLimit = Option<int>{
 	"serein.recentStickerLimit",
 	Scope::Device,
@@ -101,6 +108,7 @@ inline constexpr auto kDenoiseVoiceMessages = Option<bool>{
 inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kStickerScale));
 	Expects(registry.Add(kHideStickerTime));
+	Expects(registry.Add(kRoundedStickers));
 	Expects(registry.Add(kRecentStickerLimit));
 	Expects(registry.Add(kHideGroupStickers));
 	Expects(registry.Add(kHideRecommendedStickers));

@@ -129,8 +129,8 @@ SG-HIST-05 的“已编辑”标记文字已由 C09 实现，删除标记随 SG-
 | SG-APPEAR-06 | 主字体与等宽字体自定义（主字体由上游 `customFontFamily` 提供；等宽字体的字体族写死在 lib_ui，需上游支持后接入） | Ad Ni | In Progress | P2 |
 | SG-APPEAR-07 | 应用图标选择（界面设置“应用图标”：选择至少 64×64 的 PNG、JPEG 或 WebP 图片，缩到 512 像素以内存为 `tdata/serein_app_icon.png`，启动时经上游 `Window::OverrideApplicationIcon` 替换窗口与任务栏图标，macOS 另经 `base::SetCustomAppIcon` 替换程序坞与访达图标；可恢复默认；内置图标方案待有正式图标素材后再加） | Ad Ni | Implemented | P2 |
 | SG-APPEAR-08 | 以频道身份发言时显示频道徽标（消息页开关，默认关闭：超级群中以广播频道身份发送的消息在名字右侧显示上游已有的“频道”标记；匿名管理员以群身份发言时不显示） | Ad Ni | Implemented | P2 |
-| SG-APPEAR-09 | 连续的文字、贴纸、圆形视频消息组的气泡尾巴修正 | Ad | Planned | P3 |
-| SG-APPEAR-10 | 圆角贴纸 | Ad | Planned | P3 |
+| SG-APPEAR-09 | 连续的文字、贴纸、圆形视频消息组的气泡尾巴修正（由上游覆盖：上游区分逻辑上的连续与气泡上的连续（`BubbleAttachedToNext`／`BubbleAttachedToPrevious`），下一条是贴纸、圆形视频等无气泡消息时文字气泡保留尾巴与大圆角，反之亦然；2026-10-01 对照 AyuGramDesktop 当前源码，相关的 `setAttachToNext` 与 `countMessageRounding` 与上游一致） | Ad | Implemented | P3 |
+| SG-APPEAR-10 | 圆角贴纸（媒体设置“贴纸圆角”默认关闭；开启后聊天中的静态贴纸以大圆角生成图像并随图像缓存，动画与视频贴纸逐帧加圆角，大号表情与自定义表情不处理；钩子位于上游贴纸的图像生成与逐帧绘制） | Ad | Implemented | P3 |
 | SG-APPEAR-11 | Material 风格开关动画 | Ad | Planned | P3 |
 | SG-APPEAR-12 | 通知位置新增顶部居中（界面设置“通知在屏幕顶部居中显示”，默认关闭；在上游通知位置选择顶部角落且使用应用内通知时，通知与“全部隐藏”按钮水平居中，向下堆叠；钩子位于上游唯一的起始位置计算函数，不改上游位置枚举与其存储） | Ad | Implemented | P3 |
 | SG-APPEAR-13 | macOS 触感反馈、Force Touch 媒体预览与快速反应 | Ad | Planned | P3 |

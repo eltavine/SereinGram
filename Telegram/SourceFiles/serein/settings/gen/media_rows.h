@@ -10,12 +10,18 @@
 
 namespace Serein::Media {
 
-inline const auto kToggleRows = std::array<ToggleRow, 10>{ {
+inline const auto kToggleRows = std::array<ToggleRow, 11>{ {
 	{
 		&kHideStickerTime,
 		tr::lng_serein_hide_sticker_time,
 		u"serein/media/hide-sticker-time"_q,
 		{ u"sticker"_q, u"time"_q },
+	},
+	{
+		&kRoundedStickers,
+		tr::lng_serein_rounded_stickers,
+		u"serein/media/rounded-stickers"_q,
+		{ u"sticker"_q, u"rounded"_q, u"corners"_q },
 	},
 	{
 		&kHideGroupStickers,
@@ -84,6 +90,7 @@ inline void AddLayout(
 		.suffix = u"%"_q,
 	});
 	AddToggle(builder, kToggleRows[0]);
+	AddToggle(builder, kToggleRows[1]);
 	AddNumber(builder, {
 		.option = &kRecentStickerLimit,
 		.title = tr::lng_serein_recent_sticker_limit,
@@ -93,7 +100,6 @@ inline void AddLayout(
 		.maximum = 200,
 		.zeroLabel = tr::lng_serein_preview_follow,
 	});
-	AddToggle(builder, kToggleRows[1]);
 	AddToggle(builder, kToggleRows[2]);
 	AddToggle(builder, kToggleRows[3]);
 	AddToggle(builder, kToggleRows[4]);
@@ -102,6 +108,7 @@ inline void AddLayout(
 	AddToggle(builder, kToggleRows[7]);
 	AddToggle(builder, kToggleRows[8]);
 	AddToggle(builder, kToggleRows[9]);
+	AddToggle(builder, kToggleRows[10]);
 	AddNote(builder, tr::lng_serein_denoise_voice_messages_note);
 }
 

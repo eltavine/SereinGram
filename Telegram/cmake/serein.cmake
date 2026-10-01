@@ -89,6 +89,7 @@ set(serein_sources
     serein/menu/selection.cpp
 	serein/media/sticker_catalog.cpp
 	serein/media/sticker_catalog_rules.cpp
+	serein/media/sticker_rounding.cpp
 	serein/media/voice_denoise.cpp
     serein/messages/format.cpp
     serein/messages/content.cpp

@@ -22,6 +22,14 @@ rpl::producer<bool> HideStickerTimeValue() {
 	return ForDevice().Value(Serein::Media::kHideStickerTime);
 }
 
+bool RoundedStickers() {
+	return ForDevice().Get(Serein::Media::kRoundedStickers);
+}
+
+rpl::producer<bool> RoundedStickersValue() {
+	return ForDevice().Value(Serein::Media::kRoundedStickers);
+}
+
 int RecentStickerLimit() {
 	return ForDevice().Get(Serein::Media::kRecentStickerLimit);
 }

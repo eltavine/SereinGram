@@ -9,6 +9,8 @@ namespace Serein::Hooks::Media {
 [[nodiscard]] rpl::producer<int> StickerScaleValue();
 [[nodiscard]] bool HideStickerTime();
 [[nodiscard]] rpl::producer<bool> HideStickerTimeValue();
+[[nodiscard]] bool RoundedStickers();
+[[nodiscard]] rpl::producer<bool> RoundedStickersValue();
 [[nodiscard]] int RecentStickerLimit();
 [[nodiscard]] rpl::producer<int> RecentStickerLimitValue();
 [[nodiscard]] bool HideGroupStickers();

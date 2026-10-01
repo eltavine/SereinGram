@@ -8,6 +8,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "history/view/media/history_view_sticker.h"
 #include "serein/hooks/messages/effects.h"
 #include "serein/hooks/gen/media.h"
+#include "serein/hooks/media/stickers.h"
 
 #include "base/options.h"
 #include "boxes/sticker_set_box.h"
@@ -368,7 +369,7 @@ void Sticker::paintAnimationFrame(
 				r.x() + (r.width() - size.width()) / 2,
 				r.y() + (r.height() - size.height()) / 2),
 			size),
-		prepared);
+		Serein::Hooks::Media::RoundStickerFrame(prepared, emojiSticker()));
 	if (!_lastFrameCached.isNull()) {
 		return;
 	}
@@ -480,8 +481,9 @@ QPixmap Sticker::paintedPixmap(const PaintContext &context) const {
 	const auto image = _sensitiveBlurred
 		? nullptr
 		: _dataMedia->getStickerLarge();
+	const auto rounded = Serein::Hooks::Media::StickerRoundOptions(emojiSticker());
 	if (image) {
-		return image->pix(useSize, { .colored = colored });
+		return image->pix(useSize, { .colored = colored, .options = rounded });
 	//
 	// Inline thumbnails can't have alpha channel.
 	//
@@ -490,11 +492,11 @@ QPixmap Sticker::paintedPixmap(const PaintContext &context) const {
 	//		useSize,
 	//		{ .colored = colored, .options = Images::Option::Blur });
 	} else if (good) {
-		return good->pix(useSize, { .colored = colored });
+		return good->pix(useSize, { .colored = colored, .options = rounded });
 	} else if (const auto thumbnail = _dataMedia->thumbnail()) {
 		return thumbnail->pix(
 			useSize,
-			{ .colored = colored, .options = Images::Option::Blur });
+			{ .colored = colored, .options = Images::Option::Blur | rounded });
 	}
 	return QPixmap();
 }

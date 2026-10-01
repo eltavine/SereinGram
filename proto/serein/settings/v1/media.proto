@@ -27,6 +27,12 @@ message MediaSettings {
       refresh: REFRESH_MESSAGE_VIEW
     }
   ];
+  optional bool rounded_stickers = 13 [
+    (serein.options.v1.field) = {
+      keywords: ["sticker", "rounded", "corners"]
+      refresh: REFRESH_MESSAGE_VIEW
+    }
+  ];
   optional int32 recent_sticker_limit = 3 [
     (serein.options.v1.field) = {
       keywords: ["recent", "sticker", "limit"]
