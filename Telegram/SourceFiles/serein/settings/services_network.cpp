@@ -1,5 +1,7 @@
 #include "serein/settings/services_network.h"
 
+#include "serein/settings/rows.h"
+
 #include "core/application.h"
 #include "base/flat_set.h"
 #include "core/core_settings.h"
@@ -198,19 +200,12 @@ void AddNetworkSettings(::Settings::Builder::SectionBuilder &builder) {
 		.keywords = { u"proxy"_q, u"note"_q, u"remark"_q },
 	});
 	builder.addDividerText(tr::lng_serein_proxy_tools_about());
-	const auto vpnButton = builder.addButton({
+	AddToggle(builder, {
+		.option = &ServiceSettings::kPauseProxyOnVpn,
+		.title = tr::lng_serein_proxy_vpn,
 		.id = u"serein/services/proxy-vpn"_q,
-		.title = tr::lng_serein_proxy_vpn(),
-		.st = &st::settingsButtonNoIcon,
-		.toggled = ForDevice().Value(ServiceSettings::kPauseProxyOnVpn),
 		.keywords = { u"proxy"_q, u"VPN"_q },
 	});
-	if (vpnButton) {
-		vpnButton->toggledChanges(
-		) | rpl::on_next([](bool value) {
-			Expects(ForDevice().Set(ServiceSettings::kPauseProxyOnVpn, value));
-		}, vpnButton->lifetime());
-	}
 	builder.addDividerText(tr::lng_serein_proxy_vpn_about());
 	builder.addButton({
 		.id = u"serein/services/custom-doh"_q,

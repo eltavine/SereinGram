@@ -1,4 +1,5 @@
 #include "serein/settings/services.h"
+#include "serein/settings/rows.h"
 #include "serein/settings/home.h"
 
 #include "core/application.h"
@@ -680,71 +681,34 @@ const auto kMeta = BuildHelper({
 		.keywords = { u"SereinGram"_q, u"LLM"_q, u"API"_q },
 	});
 	builder.addDividerText(tr::lng_serein_services_about());
-	const auto contextButton = builder.addButton({
+	AddToggle(builder, {
+		.option = &ServiceSettings::kTranslationContext,
+		.title = tr::lng_serein_translation_context,
 		.id = u"serein/services/translation-context"_q,
-		.title = tr::lng_serein_translation_context(),
-		.st = &st::settingsButtonNoIcon,
-		.toggled = ForDevice().Value(ServiceSettings::kTranslationContext),
 		.keywords = { u"LLM"_q, u"context"_q, u"translate"_q },
 	});
-	if (contextButton) {
-		contextButton->toggledChanges(
-		) | rpl::on_next([](bool value) {
-			Expects(ForDevice().Set(
-				ServiceSettings::kTranslationContext,
-				value));
-		}, contextButton->lifetime());
-	}
 	builder.addDividerText(tr::lng_serein_translation_context_about());
-	const auto chatButton = builder.addButton({
+	AddToggle(builder, {
+		.option = &ServiceSettings::kChatTranslationWithoutPremium,
+		.title = tr::lng_serein_chat_translation,
 		.id = u"serein/services/chat-translation"_q,
-		.title = tr::lng_serein_chat_translation(),
-		.st = &st::settingsButtonNoIcon,
-		.toggled = ForDevice().Value(
-			ServiceSettings::kChatTranslationWithoutPremium),
 		.keywords = { u"translate"_q, u"chat"_q, u"Premium"_q },
 	});
-	if (chatButton) {
-		chatButton->toggledChanges(
-		) | rpl::on_next([](bool value) {
-			Expects(ForDevice().Set(
-				ServiceSettings::kChatTranslationWithoutPremium,
-				value));
-		}, chatButton->lifetime());
-	}
 	builder.addDividerText(tr::lng_serein_chat_translation_about());
-	const auto session = &controller->session();
-	const auto autoButton = builder.addButton({
+	AddToggle(builder, {
+		.option = &ServiceSettings::kAutoTranslateChats,
+		.title = tr::lng_serein_auto_translate_chats,
 		.id = u"serein/services/auto-translate"_q,
-		.title = tr::lng_serein_auto_translate_chats(),
-		.st = &st::settingsButtonNoIcon,
-		.toggled = ForAccount(session).Value(
-			ServiceSettings::kAutoTranslateChats),
 		.keywords = { u"translate"_q, u"automatic"_q, u"chat"_q },
 	});
-	if (autoButton) {
-		autoButton->toggledChanges(
-		) | rpl::on_next([=](bool value) {
-			Expects(ForAccount(session).Set(
-				ServiceSettings::kAutoTranslateChats,
-				value));
-		}, autoButton->lifetime());
-	}
 	builder.addDividerText(tr::lng_serein_auto_translate_chats_about());
 	AddNetworkSettings(builder);
-	const auto webAppsButton = builder.addButton({
+	AddToggle(builder, {
+		.option = &ServiceSettings::kAndroidWebApps,
+		.title = tr::lng_serein_android_web_apps,
 		.id = u"serein/services/android-web-apps"_q,
-		.title = tr::lng_serein_android_web_apps(),
-		.st = &st::settingsButtonNoIcon,
-		.toggled = ForDevice().Value(ServiceSettings::kAndroidWebApps),
 		.keywords = { u"mini apps"_q, u"web apps"_q, u"Android"_q },
 	});
-	if (webAppsButton) {
-		webAppsButton->toggledChanges(
-		) | rpl::on_next([](bool value) {
-			Expects(ForDevice().Set(ServiceSettings::kAndroidWebApps, value));
-		}, webAppsButton->lifetime());
-	}
 	builder.addDividerText(tr::lng_serein_android_web_apps_about());
 });
 
