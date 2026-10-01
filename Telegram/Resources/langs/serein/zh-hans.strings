@@ -262,6 +262,8 @@
 "lng_serein_other_device_notification_delay" = "其他设备活跃时的通知延迟";
 "lng_serein_center_top_notifications" = "通知在屏幕顶部居中显示";
 "lng_serein_center_top_notifications_note" = "在通知位置选择顶部角落且未使用系统原生通知时生效。";
+"lng_serein_menu_shortcuts" = "主菜单与托盘菜单中的 SereinGram 快捷入口";
+"lng_serein_menu_shortcuts_note" = "在主菜单中加入幽灵模式、演示模式与最近对话，在托盘菜单中加入“所有账号启用幽灵模式”与演示模式。两种模式也可在各自的设置页中开启。";
 "lng_serein_seconds_suffix" = " 秒";
 "lng_serein_ui_text" = "界面文字";
 "lng_serein_halfwidth_ui_punctuation" = "界面文字使用半角标点";

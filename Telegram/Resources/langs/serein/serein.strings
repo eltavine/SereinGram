@@ -266,6 +266,8 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_other_device_notification_delay" = "Delay when another device is active";
 "lng_serein_center_top_notifications" = "Center notifications at the top of the screen";
 "lng_serein_center_top_notifications_note" = "Applies when notifications are placed in a top corner and the native system notifications are off.";
+"lng_serein_menu_shortcuts" = "SereinGram shortcuts in the main and tray menus";
+"lng_serein_menu_shortcuts_note" = "Adds ghost mode, presentation mode and recent chats to the main menu, and ghost mode for all accounts and presentation mode to the tray menu. Both modes stay available on their settings pages.";
 "lng_serein_seconds_suffix" = " s";
 "lng_serein_ui_text" = "Interface text";
 "lng_serein_halfwidth_ui_punctuation" = "Use halfwidth punctuation in interface text";

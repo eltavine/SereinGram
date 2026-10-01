@@ -118,6 +118,14 @@ rpl::producer<bool> CenterTopNotificationsValue() {
 	return ForDevice().Value(Serein::Interface::kCenterTopNotifications);
 }
 
+bool MenuShortcuts() {
+	return ForDevice().Get(Serein::Interface::kMenuShortcuts);
+}
+
+rpl::producer<bool> MenuShortcutsValue() {
+	return ForDevice().Value(Serein::Interface::kMenuShortcuts);
+}
+
 bool HalfwidthUiPunctuation() {
 	return ForDevice().Get(Serein::Interface::kHalfwidthUiPunctuation);
 }

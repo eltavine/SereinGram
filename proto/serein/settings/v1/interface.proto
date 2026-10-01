@@ -88,6 +88,11 @@ message InterfaceSettings {
     keywords: ["notification", "position", "center"]
     note: "lng_serein_center_top_notifications_note"
   }];
+  optional bool menu_shortcuts = 18 [(serein.options.v1.field) = {
+    keywords: ["main menu", "tray", "ghost", "presentation", "recent chats"]
+    note: "lng_serein_menu_shortcuts_note"
+    restart: true
+  }];
   optional bool halfwidth_ui_punctuation = 14 [
     (serein.options.v1.field) = {
       section: {title: "lng_serein_ui_text" id: "text" keywords: ["text", "punctuation"]}

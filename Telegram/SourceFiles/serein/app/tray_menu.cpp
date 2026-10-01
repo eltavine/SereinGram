@@ -2,12 +2,16 @@
 
 #include "serein/privacy/options.h"
 #include "serein/schema/gen/settings/ghost.h"
+#include "serein/schema/gen/settings/interface.h"
 #include "lang/lang_keys.h"
 #include "platform/platform_tray.h"
 
 namespace Serein::Hooks {
 
 void FillTrayMenu(Platform::Tray &tray) {
+	if (!ForDevice().Get(Serein::Interface::kMenuShortcuts)) {
+		return;
+	}
 	tray.addAction(
 		ForDevice().Value(Privacy::kDemoMode) | rpl::map([](bool enabled) {
 			return enabled

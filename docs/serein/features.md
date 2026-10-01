@@ -63,7 +63,7 @@ Nagram 的品牌政策要求分支使用不同品牌并替换 Nagram 名称与�
 | SG-GHOST-03 | 不发送在线状态；发送消息后立即恢复离线 | Ad Aa Na | In Progress | P1 |
 | SG-GHOST-04 | 不发送输入、上传、选贴纸等活动状态 | Ad Aa Na | In Progress | P1 |
 | SG-GHOST-05 | 总开关、子项锁定，全局策略与按账号策略（各账号的总开关与子项按账号保存，子项在总开关关闭时不生效；设备级“所有账号启用幽灵模式”默认关闭，开启后每个账号都按各自子项进入幽灵模式；主菜单开关与快捷键显示实际生效状态，关闭时同时关闭账号与全局开关） | Ad Na | In Progress | P1 |
-| SG-GHOST-06 | 主菜单、托盘与聊天顶部的快速切换入口和状态指示（主菜单开关显示当前账号的实际状态，快捷键可切换；托盘菜单切换“所有账号启用幽灵模式”，文字随状态变化；幽灵模式生效时聊天顶栏的状态文字前显示 👻，钩子位于上游计算状态文字之后，先去掉旧前缀再按当前状态添加，状态文字在下次刷新时更新） | Ad Na | In Progress | P1 |
+| SG-GHOST-06 | 主菜单、托盘与聊天顶部的快速切换入口和状态指示（界面设置“主菜单与托盘菜单中的 SereinGram 快捷入口”默认关闭，开启后主菜单开关显示当前账号的实际状态，托盘菜单切换“所有账号启用幽灵模式”，文字随状态变化，托盘菜单在重启后更新；快捷键可切换；幽灵模式生效时聊天顶栏的状态文字前显示 👻，钩子位于上游计算状态文字之后，先去掉旧前缀再按当前状态添加，状态文字在下次刷新时更新） | Ad Na | In Progress | P1 |
 | SG-GHOST-07 | 阅读频道消息时不增加浏览数 | Ad | In Progress | P2 |
 | SG-GHOST-08 | 发送消息或互动后自动标记该对话已读（可选） | Ad Na | In Progress | P2 |
 | SG-GHOST-09 | 幽灵模式下用定时消息发送，避免上线（在 `Api::SendAction` 构造处统一挂钩：未手动定时、非快捷消息、非收藏夹时改为 12 秒后定时发送） | Ad | In Progress | P2 |
@@ -107,7 +107,7 @@ SG-HIST-05 的“已编辑”标记文字已由 C09 实现，删除标记随 SG-
 | ID | 功能 | 来源 | 状态 | 优先级 |
 | --- | --- | --- | --- | --- |
 | SG-PRIV-01 | 主播模式：截屏录屏排除窗口，遮盖会话列表、标题与通知（G02） | Ad Ni | Implemented | P1 |
-| SG-PRIV-02 | 主播模式快捷键与菜单、托盘入口（主菜单开关与托盘菜单“开启/关闭演示模式”已接入，托盘项由 `serein/app/tray_menu.cpp` 提供；快捷键命令 `serein_toggle_presentation_mode` 与 `serein_toggle_ghost_mode` 默认不绑定按键，可在 `shortcuts-custom.json` 中绑定，切换后提示当前状态） | Ad | Implemented | P1 |
+| SG-PRIV-02 | 主播模式快捷键与菜单、托盘入口（主菜单开关与托盘菜单“开启/关闭演示模式”已接入，随界面设置“主菜单与托盘菜单中的 SereinGram 快捷入口”出现，该设置默认关闭；托盘项由 `serein/app/tray_menu.cpp` 提供；快捷键命令 `serein_toggle_presentation_mode` 与 `serein_toggle_ghost_mode` 默认不绑定按键，可在 `shortcuts-custom.json` 中绑定，切换后提示当前状态） | Ad | Implemented | P1 |
 | SG-PRIV-03 | 遮盖本机手机号（G01） | Ni Na | Implemented | P1 |
 | SG-PRIV-04 | 本地备注名称（隐私设置“对话本地名称”默认关闭；开启后资料菜单出现“设置本地名称”，本地名称替换用户、群组与频道在本设备上的显示；关闭时保留已保存的名称但不显示，切换时刷新已加载对象的名称） | Ni | Implemented | P2 |
 | SG-PRIV-05 | 默认隐藏赞助消息与代理赞助频道（B10、B11） | Ad Ni | Implemented | P1 |
