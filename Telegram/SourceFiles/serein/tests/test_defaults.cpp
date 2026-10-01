@@ -1,4 +1,5 @@
 #include "serein/core/options.h"
+#include "serein/menu/model.h"
 #include "serein/schema/gen/settings/chats.h"
 #include "serein/schema/gen/settings/compose.h"
 #include "serein/schema/gen/settings/filters.h"
@@ -29,6 +30,15 @@ const auto kInertDefaults = std::map<std::string_view, std::string_view>{
 	{ "serein.checkUpdates", "replaces the updater that builds disable" },
 	{ "serein.stickerScale", "100 percent is the upstream size" },
 	{ "serein.fadeDeletedMessages", "needs history recording, off by default" },
+};
+
+const auto kGatedMenuActions = std::map<Serein::Menu::ActionId, std::string_view>{
+	{ Serein::Menu::ActionId::EditHistory, "needs history recording, off by default" },
+	{ Serein::Menu::ActionId::DeletedMessages, "needs history recording, off by default" },
+	{ Serein::Menu::ActionId::HistoryExclusion, "needs history recording, off by default" },
+	{ Serein::Menu::ActionId::ReadUntilHere, "needs ghost read receipts, off by default" },
+	{ Serein::Menu::ActionId::QuickRatingFirst, "needs a quick rating, unset by default" },
+	{ Serein::Menu::ActionId::QuickRatingSecond, "needs a quick rating, unset by default" },
 };
 
 void Require(bool value, const char *message, std::string_view key) {
@@ -77,4 +87,15 @@ void TestNeutralDefaults() {
 		}
 	}
 	Require(inert == kInertDefaults.size(), "unknown listed default", {});
+	for (const auto &entry : Menu::kEntries) {
+		const auto shown = (Menu::DefaultVisibility(entry.id)
+			== Menu::Visibility::Show);
+		if (int(entry.id) < int(Menu::ActionId::Repeat)) {
+			Require(shown, "upstream menu action hidden", entry.titleKey);
+		} else if (kGatedMenuActions.contains(entry.id)) {
+			Require(shown, "listed menu action is already hidden", entry.titleKey);
+		} else {
+			Require(!shown, "Serein menu action shown by default", entry.titleKey);
+		}
+	}
 }
