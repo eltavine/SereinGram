@@ -537,6 +537,9 @@
 "lng_serein_quick_search" = "在对话中搜索";
 "lng_serein_quick_media" = "共享媒体";
 "lng_serein_quick_pinned" = "置顶消息";
+"lng_serein_quick_clear_cache" = "清除媒体缓存";
+"lng_serein_quick_clear_cache_confirm" = "要移除此对话中当前已加载消息里的图片、视频、文件与语音消息的缓存吗？未加载的较早消息、贴纸以及你保存的文件都会保留。移除后再次打开时会重新下载。";
+"lng_serein_quick_clear_cache_done" = "已移除的缓存文件：{amount}。";
 "lng_serein_delete_mine" = "删除我的全部消息";
 "lng_serein_delete_mine_sure" = "要为所有人删除你在“{chat}”中的全部消息吗？此操作无法撤销。";
 "lng_serein_delete_mine_done" = "已删除消息：{amount}";

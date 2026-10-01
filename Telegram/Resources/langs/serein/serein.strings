@@ -541,6 +541,9 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_quick_search" = "Search in chat";
 "lng_serein_quick_media" = "Shared media";
 "lng_serein_quick_pinned" = "Pinned messages";
+"lng_serein_quick_clear_cache" = "Clear cached media";
+"lng_serein_quick_clear_cache_confirm" = "Remove the cached copies of photos, videos, files and voice messages among the messages currently loaded in this chat? Older messages that are not loaded, stickers and files you saved are kept. Removed media downloads again when you open it.";
+"lng_serein_quick_clear_cache_done" = "Cached files removed: {amount}.";
 "lng_serein_delete_mine" = "Delete my messages";
 "lng_serein_delete_mine_sure" = "Delete all your messages in {chat} for everyone? This cannot be undone.";
 "lng_serein_delete_mine_done" = "Messages deleted: {amount}";
