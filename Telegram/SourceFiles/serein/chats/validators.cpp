@@ -31,4 +31,8 @@ bool ValidManagedFolderIds(const QString &value) {
 	return true;
 }
 
+bool ValidHiddenFolderIds(const QString &value) {
+	return ValidManagedFolderIds(value);
+}
+
 } // namespace Serein::Chats

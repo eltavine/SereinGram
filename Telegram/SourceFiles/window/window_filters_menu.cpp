@@ -160,7 +160,7 @@ void FiltersMenu::setup() {
 	rpl::combine(
 		rpl::single(rpl::empty) | rpl::then(filters->changed()),
 		std::move(premium),
-		Serein::Hooks::Chats::HideAllChatsFolderValue()
+		Serein::Chats::ShownFiltersChanges(&_session->session())
 	) | rpl::on_next([=] {
 		refresh();
 	}, _outer.lifetime());

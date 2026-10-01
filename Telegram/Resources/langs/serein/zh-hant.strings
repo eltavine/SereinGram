@@ -305,6 +305,9 @@
 "lng_serein_managed_only" = "僅顯示我管理的群組和頻道";
 "lng_serein_managed_folder_filter" = "依我管理的對話篩選資料夾";
 "lng_serein_managed_folder_filter_note" = "在資料夾選單中加入「僅顯示我管理的群組和頻道」。關閉後保留已標記的資料夾，但不再篩選。";
+"lng_serein_hidden_folders" = "隱藏的資料夾";
+"lng_serein_hidden_folders_about" = "勾選的資料夾不會出現在此帳號的資料夾標籤與側邊欄中，其中的對話仍在「所有對話」和其他資料夾裡。";
+"lng_serein_hidden_folders_empty" = "此帳號沒有資料夾。";
 "lng_serein_text_format" = "文字格式";
 "lng_serein_disable_auto_markdown" = "關閉自動 Markdown";
 "lng_serein_disable_link_preview" = "預設不顯示連結預覽";

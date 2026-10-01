@@ -521,8 +521,7 @@ not_null<Ui::RpWidget*> AddChatFiltersTabsStrip(
 	rpl::combine(
 		session->data().chatsFilters().changed(),
 		Data::AmPremiumValue(session) | rpl::to_empty,
-		Serein::Hooks::Chats::HideAllChatsFolderValue()
-			| rpl::to_empty
+		Serein::Chats::ShownFiltersChanges(session)
 	) | rpl::on_next(rebuild, wrap->lifetime());
 	Core::App().settings().chatFiltersTabsModeValue(
 	) | rpl::on_next([=](ChatsFiltersTabsMode mode) {

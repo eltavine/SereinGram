@@ -305,6 +305,9 @@
 "lng_serein_managed_only" = "仅显示我管理的群组和频道";
 "lng_serein_managed_folder_filter" = "按我管理的对话筛选文件夹";
 "lng_serein_managed_folder_filter_note" = "在文件夹菜单中加入“仅显示我管理的群组和频道”。关闭后保留已标记的文件夹，但不再筛选。";
+"lng_serein_hidden_folders" = "隐藏的文件夹";
+"lng_serein_hidden_folders_about" = "勾选的文件夹不会出现在此账号的文件夹标签与侧边栏中，其中的对话仍在“全部对话”和其他文件夹里。";
+"lng_serein_hidden_folders_empty" = "此账号没有文件夹。";
 "lng_serein_text_format" = "文本格式";
 "lng_serein_disable_auto_markdown" = "关闭自动 Markdown";
 "lng_serein_disable_link_preview" = "默认不显示链接预览";

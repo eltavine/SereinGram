@@ -164,7 +164,7 @@ void TestOptions() {
 		"unknown refresh option");
 	auto chats = Registry();
 	Chats::RegisterOptions(chats);
-	Require(chats.All().size() == 26, "chat option count");
+	Require(chats.All().size() == 27, "chat option count");
 	Require(!Chats::kLocalPinning.fallback
 		&& Chats::kLocalPins.scope == Scope::Account
 		&& Chats::kLocalPins.validate(QString::fromLatin1("7,9"))
@@ -178,6 +178,10 @@ void TestOptions() {
 		&& Chats::kReadingPositions.validate(QString::fromLatin1("7:150,9:200"))
 		&& !Chats::kReadingPositions.validate(QString::fromLatin1("7:0")),
 		"reading positions must be an opt-in with account scoped storage");
+	Require(Chats::kHiddenFolderIds.scope == Scope::Account
+		&& Chats::kHiddenFolderIds.validate(QString::fromLatin1("2,5"))
+		&& !Chats::kHiddenFolderIds.validate(QString::fromLatin1("5,2")),
+		"hidden folder ids");
 	Require(Chats::kManagedFolderIds.scope == Scope::Account
 		&& Chats::kManagedFolderIds.validate(QString::fromLatin1("1,3,8"))
 		&& !Chats::kManagedFolderIds.validate(QString::fromLatin1("3,1"))

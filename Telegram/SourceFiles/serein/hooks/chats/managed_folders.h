@@ -2,6 +2,8 @@
 
 #include "base/basic_types.h"
 
+#include <rpl/producer.h>
+
 #include <vector>
 
 class History;
@@ -25,5 +27,7 @@ void AddManagedOnlyAction(
 void SaveShownOrder(
 	gsl::not_null<Main::Session*> session,
 	const std::vector<int32> &order);
+[[nodiscard]] rpl::producer<> ShownFiltersChanges(
+	gsl::not_null<Main::Session*> session);
 
 } // namespace Serein::Chats

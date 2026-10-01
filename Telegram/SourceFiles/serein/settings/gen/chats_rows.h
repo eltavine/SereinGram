@@ -118,6 +118,7 @@ inline const auto kToggleRows = std::array<ToggleRow, 17>{ {
 struct CustomRows {
 	CustomRow startupFolderMode;
 	CustomRow chatSort;
+	CustomRow hiddenFolderIds;
 };
 
 inline void AddLayout(
@@ -156,6 +157,7 @@ inline void AddLayout(
 	custom.chatSort();
 	AddToggle(builder, kToggleRows[6]);
 	AddNote(builder, tr::lng_serein_managed_folder_filter_note);
+	custom.hiddenFolderIds();
 	AddSection(builder, {
 		u"serein/chats/promotions"_q,
 		tr::lng_serein_promotions,

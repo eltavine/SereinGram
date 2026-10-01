@@ -102,6 +102,14 @@ rpl::producer<bool> ManagedFolderFilterValue() {
 	return ForDevice().Value(Serein::Chats::kManagedFolderFilter);
 }
 
+QString HiddenFolderIds(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Get(Serein::Chats::kHiddenFolderIds);
+}
+
+rpl::producer<QString> HiddenFolderIdsValue(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Value(Serein::Chats::kHiddenFolderIds);
+}
+
 QString ManagedFolderIds(gsl::not_null<Main::Session*> session) {
 	return ForAccount(session).Get(Serein::Chats::kManagedFolderIds);
 }

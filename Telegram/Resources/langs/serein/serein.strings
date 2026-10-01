@@ -309,6 +309,9 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_managed_only" = "Show only groups and channels I manage";
 "lng_serein_managed_folder_filter" = "Folder filter for chats you manage";
 "lng_serein_managed_folder_filter_note" = "Adds “Show only groups and channels I manage” to folder menus. Turning this off keeps the folders you marked but stops filtering them.";
+"lng_serein_hidden_folders" = "Hidden folders";
+"lng_serein_hidden_folders_about" = "Checked folders disappear from the folder tabs and the side bar of this account. Their chats stay in All Chats and in other folders.";
+"lng_serein_hidden_folders_empty" = "This account has no folders.";
 "lng_serein_text_format" = "Text formatting";
 "lng_serein_disable_auto_markdown" = "Disable automatic Markdown";
 "lng_serein_disable_link_preview" = "Hide link previews by default";

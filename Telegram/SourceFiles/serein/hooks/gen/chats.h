@@ -35,6 +35,8 @@ namespace Serein::Hooks::Chats {
 [[nodiscard]] rpl::producer<int> ChatSortValue();
 [[nodiscard]] bool ManagedFolderFilter();
 [[nodiscard]] rpl::producer<bool> ManagedFolderFilterValue();
+[[nodiscard]] QString HiddenFolderIds(gsl::not_null<Main::Session*> session);
+[[nodiscard]] rpl::producer<QString> HiddenFolderIdsValue(gsl::not_null<Main::Session*> session);
 [[nodiscard]] QString ManagedFolderIds(gsl::not_null<Main::Session*> session);
 [[nodiscard]] rpl::producer<QString> ManagedFolderIdsValue(gsl::not_null<Main::Session*> session);
 [[nodiscard]] bool HideSponsoredMessages();
