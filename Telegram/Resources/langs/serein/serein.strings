@@ -541,10 +541,14 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_peer_alias" = "Set local name";
 "lng_serein_jump_to_beginning" = "Jump to the beginning";
 "lng_serein_chat_quick_actions" = "Quick actions in the chat menu";
-"lng_serein_chat_quick_actions_note" = "Adds “Jump to the beginning”, search, shared media and pinned messages to the chat menu.";
+"lng_serein_chat_quick_actions_note" = "Adds “Jump to the beginning”, search, shared media, pinned messages, “Go to message…” and “Clear cached media” to the chat menu.";
 "lng_serein_quick_search" = "Search in chat";
 "lng_serein_quick_media" = "Shared media";
 "lng_serein_quick_pinned" = "Pinned messages";
+"lng_serein_quick_jump" = "Go to message…";
+"lng_serein_quick_jump_placeholder" = "Message ID";
+"lng_serein_quick_jump_about" = "Opens the message with this ID in the current chat. The ID is the number at the end of a message link.";
+"lng_serein_quick_jump_go" = "Go";
 "lng_serein_quick_clear_cache" = "Clear cached media";
 "lng_serein_quick_clear_cache_confirm" = "Remove the cached copies of photos, videos, files and voice messages among the messages currently loaded in this chat? Older messages that are not loaded, stickers and files you saved are kept. Removed media downloads again when you open it.";
 "lng_serein_quick_clear_cache_done" = "Cached files removed: {amount}.";

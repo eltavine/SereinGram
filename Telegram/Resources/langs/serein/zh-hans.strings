@@ -537,10 +537,14 @@
 "lng_serein_peer_alias" = "设置本地名称";
 "lng_serein_jump_to_beginning" = "跳到对话开头";
 "lng_serein_chat_quick_actions" = "对话菜单中的快捷操作";
-"lng_serein_chat_quick_actions_note" = "在对话菜单中加入“跳到开头”、搜索、共享媒体与置顶消息。";
+"lng_serein_chat_quick_actions_note" = "在对话菜单中加入“跳到开头”、搜索、共享媒体、置顶消息、“跳转到消息…”与“清除媒体缓存”。";
 "lng_serein_quick_search" = "在对话中搜索";
 "lng_serein_quick_media" = "共享媒体";
 "lng_serein_quick_pinned" = "置顶消息";
+"lng_serein_quick_jump" = "跳转到消息…";
+"lng_serein_quick_jump_placeholder" = "消息 ID";
+"lng_serein_quick_jump_about" = "在当前对话中打开该 ID 的消息。ID 是消息链接末尾的数字。";
+"lng_serein_quick_jump_go" = "跳转";
 "lng_serein_quick_clear_cache" = "清除媒体缓存";
 "lng_serein_quick_clear_cache_confirm" = "要移除此对话中当前已加载消息里的图片、视频、文件与语音消息的缓存吗？未加载的较早消息、贴纸以及你保存的文件都会保留。移除后再次打开时会重新下载。";
 "lng_serein_quick_clear_cache_done" = "已移除的缓存文件：{amount}。";
