@@ -323,7 +323,7 @@ void TestOptions() {
 		Flag::RefreshMessageView), "video autoplay refresh flag");
 	auto privacy = Registry();
 	Privacy::RegisterOptions(privacy);
-	Require(privacy.All().size() == 10, "privacy option count");
+	Require(privacy.All().size() == 11, "privacy option count");
 	Require(!Privacy::kAutoDemoMode.fallback
 		&& Privacy::kAutoDemoMode.scope == Scope::Device
 		&& privacy.HasFlag(Privacy::kAutoDemoMode.key, Flag::Exportable),

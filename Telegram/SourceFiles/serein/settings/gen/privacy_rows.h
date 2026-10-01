@@ -10,7 +10,7 @@
 
 namespace Serein::Privacy {
 
-inline const auto kToggleRows = std::array<ToggleRow, 9>{ {
+inline const auto kToggleRows = std::array<ToggleRow, 10>{ {
 	{
 		&kDemoMode,
 		tr::lng_serein_demo_mode,
@@ -22,6 +22,12 @@ inline const auto kToggleRows = std::array<ToggleRow, 9>{ {
 		tr::lng_serein_auto_demo_mode,
 		u"serein/privacy/auto-demo-mode"_q,
 		{ u"presentation"_q, u"OBS"_q, u"recording"_q, u"streaming"_q },
+	},
+	{
+		&kLockSettings,
+		tr::lng_serein_lock_settings,
+		u"serein/privacy/lock-settings"_q,
+		{ u"lock"_q, u"passcode"_q, u"settings"_q },
 	},
 	{
 		&kHideReadTime,
@@ -74,7 +80,9 @@ inline void AddLayout(
 	AddToggle(builder, kToggleRows[1]);
 	AddNote(builder, tr::lng_serein_auto_demo_mode_note);
 	AddToggle(builder, kToggleRows[2]);
+	AddNote(builder, tr::lng_serein_lock_settings_note);
 	AddToggle(builder, kToggleRows[3]);
+	AddToggle(builder, kToggleRows[4]);
 	AddChoice(builder, {
 		.option = &kProfileIdFormat,
 		.title = tr::lng_serein_profile_id_format,
@@ -83,12 +91,12 @@ inline void AddLayout(
 		.values = { 0, 1, 2 },
 		.labels = { tr::lng_serein_id_off, tr::lng_serein_id_bot_api, tr::lng_serein_id_raw },
 	});
-	AddToggle(builder, kToggleRows[4]);
 	AddToggle(builder, kToggleRows[5]);
-	AddNote(builder, tr::lng_serein_registration_date_note);
 	AddToggle(builder, kToggleRows[6]);
+	AddNote(builder, tr::lng_serein_registration_date_note);
 	AddToggle(builder, kToggleRows[7]);
 	AddToggle(builder, kToggleRows[8]);
+	AddToggle(builder, kToggleRows[9]);
 	AddNote(builder, tr::lng_serein_save_protected_content_note);
 }
 

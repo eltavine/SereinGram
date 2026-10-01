@@ -19,6 +19,13 @@ inline constexpr auto kAutoDemoMode = Option<bool>{
 	Category::Privacy,
 	"lng_serein_auto_demo_mode",
 	0 };
+inline constexpr auto kLockSettings = Option<bool>{
+	"serein.lockSettings",
+	Scope::Device,
+	false,
+	Category::Privacy,
+	"lng_serein_lock_settings",
+	0 };
 inline constexpr auto kHideReadTime = Option<bool>{
 	"serein.hideReadTime",
 	Scope::Device,
@@ -83,6 +90,7 @@ inline constexpr auto kSaveProtectedContent = Option<bool>{
 inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kDemoMode));
 	Expects(registry.Add(kAutoDemoMode));
+	Expects(registry.Add(kLockSettings));
 	Expects(registry.Add(kHideReadTime));
 	Expects(registry.Add(kHideSharePhonePrompt));
 	Expects(registry.Add(kProfileIdFormat));

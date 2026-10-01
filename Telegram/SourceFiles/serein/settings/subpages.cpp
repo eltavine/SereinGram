@@ -4,6 +4,7 @@
 #include "serein/settings/gen/ghost_rows.h"
 #include "serein/settings/gen/history_rows.h"
 #include "serein/settings/privacy.h"
+#include "serein/settings/lock.h"
 #include "lang/lang_keys.h"
 #include "settings/settings_builder.h"
 #include "settings/settings_common_session.h"
@@ -22,7 +23,7 @@ public:
 	GhostSection(QWidget *parent, not_null<Window::SessionController*> controller)
 	: Section(parent, controller) {
 		const auto content = Ui::CreateChild<Ui::VerticalLayout>(this);
-		build(content, kBuild);
+		Serein::GuardSettings(content, [=] { build(content, kBuild); });
 		Ui::ResizeFitChild(this, content);
 	}
 
@@ -49,7 +50,7 @@ public:
 	HistorySection(QWidget *parent, not_null<Window::SessionController*> controller)
 	: Section(parent, controller) {
 		const auto content = Ui::CreateChild<Ui::VerticalLayout>(this);
-		build(content, kBuild);
+		Serein::GuardSettings(content, [=] { build(content, kBuild); });
 		Ui::ResizeFitChild(this, content);
 	}
 

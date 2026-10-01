@@ -4,6 +4,7 @@
 #include "serein/settings/home.h"
 #include "serein/settings/gen/menu_rows.h"
 #include "serein/hooks/core/language.h"
+#include "serein/settings/lock.h"
 #include "lang/lang_instance.h"
 #include "lang/lang_keys.h"
 #include "lang_auto_counts.h"
@@ -28,7 +29,7 @@ public:
 	MenuSection(QWidget *parent, not_null<Window::SessionController*> controller)
 	: Section(parent, controller) {
 		const auto content = Ui::CreateChild<Ui::VerticalLayout>(this);
-		build(content, kBuild);
+		Serein::GuardSettings(content, [=] { build(content, kBuild); });
 		Ui::ResizeFitChild(this, content);
 	}
 

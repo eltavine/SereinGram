@@ -9,6 +9,7 @@
 #include "serein/settings/privacy.h"
 #include "serein/settings/services.h"
 #include "serein/settings/rules.h"
+#include "serein/settings/lock.h"
 
 #include "boxes/about_box.h"
 #include "core/click_handler_types.h"
@@ -31,7 +32,7 @@ public:
 	Home(QWidget *parent, not_null<Window::SessionController*> controller)
 	: Section(parent, controller) {
 		const auto content = Ui::CreateChild<Ui::VerticalLayout>(this);
-		build(content, kBuild);
+		Serein::GuardSettings(content, [=] { build(content, kBuild); });
 		Ui::ResizeFitChild(this, content);
 	}
 

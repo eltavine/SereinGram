@@ -14,6 +14,7 @@
 #include "serein/hooks/interface/text.h"
 #include "serein/interface/app_icon.h"
 #include "serein/network/vpn_proxy.h"
+#include "serein/settings/lock.h"
 
 #include <array>
 
@@ -30,6 +31,7 @@ constexpr auto kModules = std::array{
 	Module{ "chats.sorting", nullptr, Chats::WatchSorting },
 	Module{ "app.shortcuts", StartShortcuts },
 	Module{ "privacy.auto_demo", StartAutoDemoMode },
+	Module{ "privacy.settings_lock", StartSettingsLock },
 	Module{ "network.vpn_proxy", Network::StartVpnProxyPause },
 	Module{ "filters.subscription", Filters::StartRuleSubscription },
 	Module{ "chats.recent", nullptr, nullptr, TrackRecentChats },

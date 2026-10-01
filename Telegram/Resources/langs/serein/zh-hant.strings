@@ -501,6 +501,9 @@
 "lng_serein_demo_mode_note" = "要求系統在錄影中排除 SereinGram 視窗，並遮蓋對話清單、標題和通知內容。部分錄影工具可能忽略此要求。";
 "lng_serein_auto_demo_mode" = "執行直播或錄影軟體時自動開啟";
 "lng_serein_auto_demo_mode_note" = "每隔幾秒檢查 OBS、Streamlabs、XSplit、vMix、Bandicam 等軟體是否在執行；軟體關閉後自動關閉主播模式，除非你在此期間手動改過。";
+"lng_serein_lock_settings" = "用本機密碼鎖定 SereinGram 設定";
+"lng_serein_lock_settings_note" = "設定了本機密碼時，開啟任一 SereinGram 設定頁需要先輸入密碼；每次啟動以及應用程式被鎖定後需要重新輸入。";
+"lng_serein_settings_locked" = "SereinGram 設定已鎖定。輸入本機密碼以開啟。";
 "lng_serein_demo_hidden" = "演示模式已遮蓋";
 "lng_serein_peer_alias" = "設定本機名稱";
 "lng_serein_jump_to_beginning" = "跳到對話開頭";

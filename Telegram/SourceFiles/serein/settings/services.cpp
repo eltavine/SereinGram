@@ -10,6 +10,7 @@
 #include "serein/services/request.h"
 #include "serein/services/translation_protocol.h"
 #include "serein/hooks/services/system_ai.h"
+#include "serein/settings/lock.h"
 #include "platform/platform_translate_provider.h"
 #include "settings/settings_builder.h"
 #include "settings/settings_common_session.h"
@@ -52,7 +53,7 @@ public:
 		not_null<Window::SessionController*> controller)
 	: Section(parent, controller) {
 		const auto content = Ui::CreateChild<Ui::VerticalLayout>(this);
-		build(content, kBuild);
+		Serein::GuardSettings(content, [=] { build(content, kBuild); });
 		Ui::ResizeFitChild(this, content);
 	}
 

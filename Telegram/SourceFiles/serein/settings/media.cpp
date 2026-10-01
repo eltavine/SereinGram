@@ -4,6 +4,7 @@
 #include "serein/media/sticker_catalog.h"
 #include "serein/settings/gen/media_rows.h"
 #include "serein/settings/home.h"
+#include "serein/settings/lock.h"
 #include "lang/lang_keys.h"
 #include "settings/settings_builder.h"
 #include "settings/settings_common_session.h"
@@ -29,7 +30,7 @@ public:
 	MediaSection(QWidget *parent, not_null<Window::SessionController*> controller)
 	: Section(parent, controller) {
 		const auto content = Ui::CreateChild<Ui::VerticalLayout>(this);
-		build(content, kBuild);
+		Serein::GuardSettings(content, [=] { build(content, kBuild); });
 		Ui::ResizeFitChild(this, content);
 	}
 
