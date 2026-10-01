@@ -26,8 +26,8 @@ bool ToggleGhostMode() {
 		return false;
 	}
 	auto &options = ForAccount(&account.session());
-	const auto enabled = !options.Get(Ghost::kGhostMode);
-	Expects(options.Set(Ghost::kGhostMode, enabled));
+	const auto enabled = !Ghost::Enabled(options, ForDevice());
+	Expects(Ghost::SetEnabled(options, ForDevice(), enabled));
 	Announce(enabled
 		? tr::lng_serein_ghost_mode_enabled(tr::now)
 		: tr::lng_serein_ghost_mode_disabled(tr::now));

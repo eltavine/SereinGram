@@ -12,6 +12,13 @@ inline constexpr auto kGhostMode = Option<bool>{
 	Category::Privacy,
 	"lng_serein_ghost_mode",
 	0 };
+inline constexpr auto kGhostAllAccounts = Option<bool>{
+	"serein.ghostAllAccounts",
+	Scope::Device,
+	false,
+	Category::Privacy,
+	"lng_serein_ghost_all_accounts",
+	0 };
 inline constexpr auto kGhostHideReadReceipts = Option<bool>{
 	"serein.ghostHideReadReceipts",
 	Scope::Account,
@@ -71,6 +78,7 @@ inline constexpr auto kGhostUseScheduledMessages = Option<bool>{
 
 inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kGhostMode));
+	Expects(registry.Add(kGhostAllAccounts));
 	Expects(registry.Add(kGhostHideReadReceipts));
 	Expects(registry.Add(kGhostHideStoryViews));
 	Expects(registry.Add(kGhostHideOnline));

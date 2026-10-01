@@ -24,7 +24,7 @@ void InsertReadUntilHereAction(
 		return;
 	}
 	const auto session = &controller->session();
-	const auto policy = Ghost::Read(ForAccount(session));
+	const auto policy = Ghost::Read(ForAccount(session), ForDevice());
 	if (Ghost::Allows(policy, Ghost::Activity::ReadReceipt)) {
 		return;
 	}

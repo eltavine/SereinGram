@@ -19,6 +19,11 @@ message GhostSettings {
   optional bool ghost_mode = 1 [(serein.options.v1.field) = {
     keywords: ["ghost", "online", "typing"]
   }];
+  optional bool ghost_all_accounts = 10 [(serein.options.v1.field) = {
+    scope: SCOPE_DEVICE
+    keywords: ["ghost", "all accounts", "global"]
+    note: "lng_serein_ghost_all_accounts_note"
+  }];
   optional bool ghost_hide_read_receipts = 2 [(serein.options.v1.field) = {
     default_bool: true
     keywords: ["ghost", "read", "receipts"]

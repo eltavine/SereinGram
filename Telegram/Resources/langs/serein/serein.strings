@@ -577,6 +577,8 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_config_diagnostic_report" = "SereinGram {version}\nConfiguration format: 1\nManaged settings: {amount}\nModified settings: {value}\nInvalid stored values: {error}\n\nThis report contains only version and counts.";
 "lng_serein_config_copy_report" = "Copy report";
 "lng_serein_ghost_mode" = "Ghost mode";
+"lng_serein_ghost_all_accounts" = "Ghost mode on all accounts";
+"lng_serein_ghost_all_accounts_note" = "Turns ghost mode on for every account on this device. Each account keeps its own choices below. Turning ghost mode off from the menu or the shortcut also turns this off.";
 "lng_serein_ghost_mode_enabled" = "Ghost mode is on for this account";
 "lng_serein_ghost_mode_disabled" = "Ghost mode is off for this account";
 "lng_serein_ghost_hide_read_receipts" = "Don't send read receipts";

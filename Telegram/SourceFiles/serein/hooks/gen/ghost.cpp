@@ -14,6 +14,14 @@ rpl::producer<bool> GhostModeValue(gsl::not_null<Main::Session*> session) {
 	return ForAccount(session).Value(Serein::Ghost::kGhostMode);
 }
 
+bool GhostAllAccounts() {
+	return ForDevice().Get(Serein::Ghost::kGhostAllAccounts);
+}
+
+rpl::producer<bool> GhostAllAccountsValue() {
+	return ForDevice().Value(Serein::Ghost::kGhostAllAccounts);
+}
+
 bool GhostHideReadReceipts(gsl::not_null<Main::Session*> session) {
 	return ForAccount(session).Get(Serein::Ghost::kGhostHideReadReceipts);
 }

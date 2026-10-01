@@ -573,6 +573,8 @@
 "lng_serein_config_diagnostic_report" = "SereinGram {version}\n設定格式：1\n管理的設定：{amount}\n已修改的設定：{value}\n無效儲存值：{error}\n\n本報告只包含版本和數量。";
 "lng_serein_config_copy_report" = "複製報告";
 "lng_serein_ghost_mode" = "幽靈模式";
+"lng_serein_ghost_all_accounts" = "所有帳號啟用幽靈模式";
+"lng_serein_ghost_all_accounts_note" = "為本裝置上的所有帳號開啟幽靈模式，各帳號仍依下方各自的選項生效。從選單或快速鍵關閉幽靈模式時也會關閉此項。";
 "lng_serein_ghost_mode_enabled" = "已為目前帳號開啟幽靈模式";
 "lng_serein_ghost_mode_disabled" = "已為目前帳號關閉幽靈模式";
 "lng_serein_ghost_hide_read_receipts" = "不傳送已讀回條";

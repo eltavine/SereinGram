@@ -17,7 +17,7 @@ constexpr auto kOfflineAfterSendingDelay = crl::time(1000);
 
 void OnSendingMessage(gsl::not_null<History*> history) {
 	const auto session = &history->session();
-	const auto policy = Ghost::Read(ForAccount(session));
+	const auto policy = Ghost::Read(ForAccount(session), ForDevice());
 	if (Ghost::MarkReadAfterSending(policy)) {
 		const auto forced = ForcedReadReceipt();
 		session->data().histories().readInbox(history);

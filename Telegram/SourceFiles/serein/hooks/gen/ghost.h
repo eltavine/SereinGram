@@ -12,6 +12,8 @@ namespace Serein::Hooks::Ghost {
 
 [[nodiscard]] bool GhostMode(gsl::not_null<Main::Session*> session);
 [[nodiscard]] rpl::producer<bool> GhostModeValue(gsl::not_null<Main::Session*> session);
+[[nodiscard]] bool GhostAllAccounts();
+[[nodiscard]] rpl::producer<bool> GhostAllAccountsValue();
 [[nodiscard]] bool GhostHideReadReceipts(gsl::not_null<Main::Session*> session);
 [[nodiscard]] rpl::producer<bool> GhostHideReadReceiptsValue(gsl::not_null<Main::Session*> session);
 [[nodiscard]] bool GhostHideStoryViews(gsl::not_null<Main::Session*> session);

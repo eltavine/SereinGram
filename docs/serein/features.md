@@ -62,7 +62,7 @@ Nagram 的品牌政策要求分支使用不同品牌并替换 Nagram 名称与�
 | SG-GHOST-02 | 不发送动态已读与动态浏览 | Ad Aa Na | In Progress | P1 |
 | SG-GHOST-03 | 不发送在线状态；发送消息后立即恢复离线 | Ad Aa Na | In Progress | P1 |
 | SG-GHOST-04 | 不发送输入、上传、选贴纸等活动状态 | Ad Aa Na | In Progress | P1 |
-| SG-GHOST-05 | 总开关、子项锁定，全局策略与按账号策略 | Ad Na | In Progress | P1 |
+| SG-GHOST-05 | 总开关、子项锁定，全局策略与按账号策略（各账号的总开关与子项按账号保存，子项在总开关关闭时不生效；设备级“所有账号启用幽灵模式”默认关闭，开启后每个账号都按各自子项进入幽灵模式；主菜单开关与快捷键显示实际生效状态，关闭时同时关闭账号与全局开关） | Ad Na | In Progress | P1 |
 | SG-GHOST-06 | 主菜单、托盘与聊天顶部的快速切换入口和状态指示 | Ad Na | In Progress | P1 |
 | SG-GHOST-07 | 阅读频道消息时不增加浏览数 | Ad | In Progress | P2 |
 | SG-GHOST-08 | 发送消息或互动后自动标记该对话已读（可选） | Ad Na | In Progress | P2 |

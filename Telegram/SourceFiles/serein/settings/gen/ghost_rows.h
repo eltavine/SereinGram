@@ -11,12 +11,18 @@
 
 namespace Serein::Ghost {
 
-inline const auto kToggleRows = std::array<ToggleRow, 9>{ {
+inline const auto kToggleRows = std::array<ToggleRow, 10>{ {
 	{
 		&kGhostMode,
 		tr::lng_serein_ghost_mode,
 		u"serein/ghost/ghost-mode"_q,
 		{ u"ghost"_q, u"online"_q, u"typing"_q },
+	},
+	{
+		&kGhostAllAccounts,
+		tr::lng_serein_ghost_all_accounts,
+		u"serein/ghost/ghost-all-accounts"_q,
+		{ u"ghost"_q, u"all accounts"_q, u"global"_q },
 	},
 	{
 		&kGhostHideReadReceipts,
@@ -72,6 +78,7 @@ inline void AddLayout(
 		::Settings::Builder::SectionBuilder &builder) {
 	AddToggle(builder, kToggleRows[0]);
 	AddToggle(builder, kToggleRows[1]);
+	AddNote(builder, tr::lng_serein_ghost_all_accounts_note);
 	AddToggle(builder, kToggleRows[2]);
 	AddToggle(builder, kToggleRows[3]);
 	AddToggle(builder, kToggleRows[4]);
@@ -79,6 +86,7 @@ inline void AddLayout(
 	AddToggle(builder, kToggleRows[6]);
 	AddToggle(builder, kToggleRows[7]);
 	AddToggle(builder, kToggleRows[8]);
+	AddToggle(builder, kToggleRows[9]);
 	AddNote(builder, tr::lng_serein_ghost_note);
 }
 

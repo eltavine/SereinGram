@@ -16,10 +16,13 @@ constexpr auto kGhostScheduleDelay = TimeId(12);
 void ApplyGhostSchedule(
 		gsl::not_null<History*> history,
 		Api::SendOptions &options) {
+	const auto policy = Ghost::Read(
+		ForAccount(&history->session()),
+		ForDevice());
 	if (options.scheduled
 		|| options.shortcutId
 		|| history->peer->isSelf()
-		|| !Ghost::ScheduleOutgoing(Ghost::Read(ForAccount(&history->session())))) {
+		|| !Ghost::ScheduleOutgoing(policy)) {
 		return;
 	}
 	options.scheduled = base::unixtime::now() + kGhostScheduleDelay;

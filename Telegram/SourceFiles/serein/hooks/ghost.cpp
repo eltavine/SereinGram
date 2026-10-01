@@ -13,7 +13,7 @@ auto ForcedReadReceipts = 0;
 		gsl::not_null<Main::Session*> session,
 		Serein::Ghost::Activity activity) {
 	return Serein::Ghost::Allows(
-		Serein::Ghost::Read(ForAccount(session)),
+		Serein::Ghost::Read(ForAccount(session), ForDevice()),
 		activity);
 }
 
