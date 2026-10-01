@@ -353,6 +353,16 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_proxy_subscription_empty" = "The subscription contains no supported proxy links.";
 "lng_serein_proxy_subscription_failed" = "Could not download the proxy subscription.";
 "lng_serein_proxy_subscription_invalid" = "Enter an HTTPS address first.";
+"lng_serein_proxy_sort" = "Sort proxies by latency";
+"lng_serein_proxy_clean" = "Remove unavailable proxies";
+"lng_serein_proxy_tools_about" = "Each proxy is checked by connecting to Telegram through it, for up to 15 seconds. The proxy in use is never removed. Web proxies are not checked, and sorting puts them after the reachable ones.";
+"lng_serein_proxy_checking" = "Checking proxies: {amount}…";
+"lng_serein_proxy_check_busy" = "Proxies are already being checked.";
+"lng_serein_proxy_check_empty" = "The proxy list is empty.";
+"lng_serein_proxy_check_changed" = "The proxy list changed during the check, so it was left as is.";
+"lng_serein_proxy_removed" = "Unavailable proxies removed: {amount}.";
+"lng_serein_proxy_none_removed" = "No unavailable proxies to remove.";
+"lng_serein_proxy_sorted" = "Proxies sorted by latency. Reachable: {reachable} of {total}.";
 "lng_serein_proxy_vpn" = "Pause the proxy while a VPN is active";
 "lng_serein_proxy_vpn_about" = "SereinGram checks which network interface carries traffic to Telegram. When it is a VPN tunnel, the proxy is turned off, and it is turned back on after the VPN disconnects. Detection relies on interface names and types, so some VPNs may not be recognized.";
 "lng_serein_proxy_vpn_paused" = "A VPN is active, so the proxy is paused.";

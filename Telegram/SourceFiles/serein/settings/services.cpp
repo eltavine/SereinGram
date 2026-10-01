@@ -5,6 +5,7 @@
 #include "core/file_utilities.h"
 #include "lang/lang_keys.h"
 #include "serein/network/proxy_import.h"
+#include "serein/network/proxy_tools.h"
 #include "serein/services/credentials.h"
 #include "serein/services/request.h"
 #include "serein/services/translation_protocol.h"
@@ -745,6 +746,23 @@ const auto kMeta = BuildHelper({
 		.keywords = { u"proxy"_q, u"subscription"_q, u"MTProto"_q },
 	});
 	builder.addDividerText(tr::lng_serein_proxy_subscription_about());
+	builder.addButton({
+		.id = u"serein/services/proxy-sort"_q,
+		.title = tr::lng_serein_proxy_sort(),
+		.st = &st::settingsButtonNoIcon,
+		.onClick = [=] { Network::SortProxiesByLatency(controller->uiShow()); },
+		.keywords = { u"proxy"_q, u"ping"_q, u"latency"_q },
+	});
+	builder.addButton({
+		.id = u"serein/services/proxy-clean"_q,
+		.title = tr::lng_serein_proxy_clean(),
+		.st = &st::settingsButtonNoIcon,
+		.onClick = [=] {
+			Network::RemoveUnavailableProxies(controller->uiShow());
+		},
+		.keywords = { u"proxy"_q, u"unavailable"_q, u"clean"_q },
+	});
+	builder.addDividerText(tr::lng_serein_proxy_tools_about());
 	const auto vpnButton = builder.addButton({
 		.id = u"serein/services/proxy-vpn"_q,
 		.title = tr::lng_serein_proxy_vpn(),

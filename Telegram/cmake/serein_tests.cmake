@@ -16,6 +16,7 @@ set(serein_test_sources
     serein/tests/test_text_replacements.cpp
     serein/tests/test_proxy_subscription.cpp
     serein/tests/test_vpn_rules.cpp
+    serein/tests/test_proxy_order.cpp
     serein/tests/test_chinese.cpp
     serein/tests/test_aliases.cpp
     serein/tests/test_sticker_catalog.cpp
@@ -55,6 +56,7 @@ set(serein_test_sources
     serein/services/summary_protocol.cpp
     serein/network/proxy_subscription.cpp
     serein/network/vpn_rules.cpp
+    serein/network/proxy_order.cpp
     serein/filters/model.cpp
     serein/links/model.cpp
 )

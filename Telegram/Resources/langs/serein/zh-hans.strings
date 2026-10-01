@@ -349,6 +349,16 @@
 "lng_serein_proxy_subscription_empty" = "订阅中没有受支持的代理链接。";
 "lng_serein_proxy_subscription_failed" = "无法下载代理订阅。";
 "lng_serein_proxy_subscription_invalid" = "请先填写 HTTPS 地址。";
+"lng_serein_proxy_sort" = "按延迟排序代理";
+"lng_serein_proxy_clean" = "移除不可用的代理";
+"lng_serein_proxy_tools_about" = "通过每个代理连接 Telegram 来检测，最长 15 秒。正在使用的代理不会被移除。Web 代理不检测，排序时排在可用代理之后。";
+"lng_serein_proxy_checking" = "正在检测代理：{amount}…";
+"lng_serein_proxy_check_busy" = "代理正在检测中。";
+"lng_serein_proxy_check_empty" = "代理列表为空。";
+"lng_serein_proxy_check_changed" = "检测期间代理列表发生了变化，因此未做修改。";
+"lng_serein_proxy_removed" = "已移除不可用的代理：{amount}。";
+"lng_serein_proxy_none_removed" = "没有需要移除的不可用代理。";
+"lng_serein_proxy_sorted" = "已按延迟排序代理。可用：{reachable} / {total}。";
 "lng_serein_proxy_vpn" = "VPN 开启时暂停代理";
 "lng_serein_proxy_vpn_about" = "SereinGram 会检查连接 Telegram 的流量走哪个网络接口；如果是 VPN 隧道，就关闭代理，VPN 断开后再重新开启。识别依据接口名称与类型，部分 VPN 可能无法识别。";
 "lng_serein_proxy_vpn_paused" = "VPN 已开启，代理已暂停。";
