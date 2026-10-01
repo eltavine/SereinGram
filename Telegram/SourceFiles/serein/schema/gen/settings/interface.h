@@ -133,6 +133,13 @@ inline constexpr auto kMenuShortcuts = Option<bool>{
 	Category::Interface,
 	"lng_serein_menu_shortcuts",
 	static_cast<unsigned>(Flag::RequiresRestart) };
+inline const auto kGlobalShortcut = Option<QByteArray>{
+	"serein.globalShortcut",
+	Scope::Device,
+	QByteArray(),
+	Category::Interface,
+	"lng_serein_global_shortcut",
+	0 };
 inline constexpr auto kHalfwidthUiPunctuation = Option<bool>{
 	"serein.halfwidthUiPunctuation",
 	Scope::Device,
@@ -171,6 +178,7 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kOtherDeviceNotificationDelay));
 	Expects(registry.Add(kCenterTopNotifications));
 	Expects(registry.Add(kMenuShortcuts));
+	Expects(registry.Add(kGlobalShortcut));
 	Expects(registry.Add(kHalfwidthUiPunctuation));
 	Expects(registry.Add(kMoreAccounts));
 	Expects(registry.Add(kCheckUpdates));

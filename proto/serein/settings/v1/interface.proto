@@ -93,6 +93,11 @@ message InterfaceSettings {
     note: "lng_serein_menu_shortcuts_note"
     restart: true
   }];
+  optional bytes global_shortcut = 19 [(serein.options.v1.field) = {
+    title: "lng_serein_global_shortcut"
+    keywords: ["global", "shortcut", "hotkey", "show", "window"]
+    custom_ui: true
+  }];
   optional bool halfwidth_ui_punctuation = 14 [
     (serein.options.v1.field) = {
       section: {title: "lng_serein_ui_text" id: "text" keywords: ["text", "punctuation"]}

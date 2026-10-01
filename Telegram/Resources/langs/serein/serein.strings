@@ -273,6 +273,16 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_center_top_notifications_note" = "Applies when notifications are placed in a top corner and the native system notifications are off.";
 "lng_serein_menu_shortcuts" = "SereinGram shortcuts in the main and tray menus";
 "lng_serein_menu_shortcuts_note" = "Adds ghost mode, presentation mode and recent chats to the main menu, and ghost mode for all accounts and presentation mode to the tray menu. Both modes stay available on their settings pages.";
+"lng_serein_global_shortcut" = "Global shortcut to show SereinGram";
+"lng_serein_global_shortcut_about" = "Press the shortcut in any app to bring SereinGram to the front, or to minimize it when it is already in front.";
+"lng_serein_global_shortcut_record" = "Record";
+"lng_serein_global_shortcut_press" = "Press the keys…";
+"lng_serein_global_shortcut_clear" = "Clear";
+"lng_serein_global_shortcut_none" = "Not set";
+"lng_serein_global_shortcut_set" = "On";
+"lng_serein_global_shortcut_unsupported" = "Global shortcuts are not available on this system. Wayland sessions do not let apps watch keys pressed in other windows.";
+"lng_serein_global_shortcut_permission" = "macOS must allow SereinGram to monitor input before it can watch a global shortcut. Grant access in Privacy & Security, then open this window again.";
+"lng_serein_global_shortcut_settings" = "Open Settings";
 "lng_serein_seconds_suffix" = " s";
 "lng_serein_ui_text" = "Interface text";
 "lng_serein_halfwidth_ui_punctuation" = "Use halfwidth punctuation in interface text";

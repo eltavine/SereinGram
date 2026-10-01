@@ -269,6 +269,16 @@
 "lng_serein_center_top_notifications_note" = "在通知位置选择顶部角落且未使用系统原生通知时生效。";
 "lng_serein_menu_shortcuts" = "主菜单与托盘菜单中的 SereinGram 快捷入口";
 "lng_serein_menu_shortcuts_note" = "在主菜单中加入幽灵模式、演示模式与最近对话，在托盘菜单中加入“所有账号启用幽灵模式”与演示模式。两种模式也可在各自的设置页中开启。";
+"lng_serein_global_shortcut" = "显示 SereinGram 的全局快捷键";
+"lng_serein_global_shortcut_about" = "在任何应用中按下快捷键即可把 SereinGram 切到前台；它已在前台时则将其最小化。";
+"lng_serein_global_shortcut_record" = "录制";
+"lng_serein_global_shortcut_press" = "请按下按键…";
+"lng_serein_global_shortcut_clear" = "清除";
+"lng_serein_global_shortcut_none" = "未设置";
+"lng_serein_global_shortcut_set" = "已设置";
+"lng_serein_global_shortcut_unsupported" = "此系统不支持全局快捷键。Wayland 会话不允许应用监听其他窗口中的按键。";
+"lng_serein_global_shortcut_permission" = "需要先在 macOS 中允许 SereinGram 监控输入，才能监听全局快捷键。请在“隐私与安全性”中授权后重新打开此窗口。";
+"lng_serein_global_shortcut_settings" = "打开设置";
 "lng_serein_seconds_suffix" = " 秒";
 "lng_serein_ui_text" = "界面文字";
 "lng_serein_halfwidth_ui_punctuation" = "界面文字使用半角标点";

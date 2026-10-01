@@ -1,4 +1,5 @@
 #include "serein/settings/interface.h"
+#include "serein/interface/global_shortcut.h"
 
 #include "serein/interface/options.h"
 #include "serein/hooks/interface/main_menu.h"
@@ -225,6 +226,24 @@ const auto kMeta = BuildHelper({
 			AddDelay(builder, Interface::kOtherDeviceNotificationDelay,
 				tr::lng_serein_other_device_notification_delay(),
 				u"serein/interface/other-device-notification-delay"_q);
+		},
+		.globalShortcut = [&] {
+			builder.addButton({
+				.id = u"serein/interface/global-shortcut"_q,
+				.title = tr::lng_serein_global_shortcut(),
+				.st = &st::settingsButtonNoIcon,
+				.label = ForDevice().Value(
+					Interface::kGlobalShortcut
+				) | rpl::map([](const QByteArray &value) {
+					return value.isEmpty()
+						? tr::lng_serein_config_off(tr::now)
+						: tr::lng_serein_global_shortcut_set(tr::now);
+				}),
+				.onClick = [=] {
+					controller->show(Box(Interface::GlobalShortcutBox));
+				},
+				.keywords = { u"hotkey"_q, u"shortcut"_q, u"global"_q },
+			});
 		},
 	});
 });

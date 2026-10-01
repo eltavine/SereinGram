@@ -86,6 +86,7 @@ struct CustomRows {
 	CustomRow mainMenu;
 	CustomRow notificationDelay;
 	CustomRow otherDeviceNotificationDelay;
+	CustomRow globalShortcut;
 };
 
 inline void AddLayout(
@@ -140,6 +141,7 @@ inline void AddLayout(
 	AddNote(builder, tr::lng_serein_center_top_notifications_note);
 	AddToggle(builder, kToggleRows[7]);
 	AddNote(builder, tr::lng_serein_menu_shortcuts_note);
+	custom.globalShortcut();
 	AddSection(builder, {
 		u"serein/interface/text"_q,
 		tr::lng_serein_ui_text,

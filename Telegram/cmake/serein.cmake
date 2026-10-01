@@ -55,6 +55,7 @@ set(serein_sources
     serein/interface/notifications.cpp
     serein/interface/text.cpp
     serein/interface/reply_colors.cpp
+    serein/interface/global_shortcut.cpp
     serein/chats/startup_folder.cpp
     serein/chats/sort.cpp
     serein/chats/validators.cpp
