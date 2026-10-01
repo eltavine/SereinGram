@@ -24,6 +24,7 @@ void TestProxySubscription();
 void TestVpnRules();
 void TestProxyOrder();
 void TestPersianCalendar();
+void TestNeutralDefaults();
 void TestChinese();
 void TestAliases();
 void TestStickerCatalog();
@@ -129,6 +130,7 @@ int main() {
 		TestVpnRules();
 		TestProxyOrder();
 		TestPersianCalendar();
+		TestNeutralDefaults();
 		TestChinese();
 		TestAliases();
 		TestStickerCatalog();
