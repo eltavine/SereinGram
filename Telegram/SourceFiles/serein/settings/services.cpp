@@ -696,6 +696,23 @@ const auto kMeta = BuildHelper({
 		}, contextButton->lifetime());
 	}
 	builder.addDividerText(tr::lng_serein_translation_context_about());
+	const auto chatButton = builder.addButton({
+		.id = u"serein/services/chat-translation"_q,
+		.title = tr::lng_serein_chat_translation(),
+		.st = &st::settingsButtonNoIcon,
+		.toggled = ForDevice().Value(
+			ServiceSettings::kChatTranslationWithoutPremium),
+		.keywords = { u"translate"_q, u"chat"_q, u"Premium"_q },
+	});
+	if (chatButton) {
+		chatButton->toggledChanges(
+		) | rpl::on_next([](bool value) {
+			Expects(ForDevice().Set(
+				ServiceSettings::kChatTranslationWithoutPremium,
+				value));
+		}, chatButton->lifetime());
+	}
+	builder.addDividerText(tr::lng_serein_chat_translation_about());
 	AddNetworkSettings(builder);
 });
 

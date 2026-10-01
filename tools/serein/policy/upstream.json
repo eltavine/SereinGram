@@ -23,10 +23,10 @@
     "serein/hooks/"
   ],
   "budget": {
-    "all_files": 216,
-    "all_added_lines": 1580,
-    "source_files": 146,
-    "source_added_lines": 1350,
+    "all_files": 217,
+    "all_added_lines": 1585,
+    "source_files": 147,
+    "source_added_lines": 1355,
     "direct_include_files": 0
   }
 }

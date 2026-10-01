@@ -1,9 +1,11 @@
 #include "serein/services/translation.h"
 
 #include "core/application.h"
+#include "data/data_peer_values.h"
 #include "lang/translate_mtproto_provider.h"
 #include "lang/translate_provider.h"
 #include "lang/lang_keys.h"
+#include "main/main_session.h"
 #include "serein/core/options.h"
 #include "serein/schema/gen/settings/services.h"
 #include "serein/services/request.h"
@@ -79,7 +81,85 @@ public:
 		next();
 	}
 
+	void requestBatch(
+			std::vector<Ui::TranslateProviderRequest> requests,
+			const LanguageId &to,
+			Fn<void(int, Ui::TranslateProviderResult)> doneOne,
+			Fn<void()> doneAll) override {
+		_request.cancel();
+		auto batch = Batch{
+			.doneOne = std::move(doneOne),
+			.doneAll = std::move(doneAll),
+		};
+		for (auto &request : requests) {
+			auto plan = (_service && to.known())
+				? PlanTranslation(std::move(request.text))
+				: std::nullopt;
+			batch.offsets.push_back(int(batch.texts.size()));
+			if (plan) {
+				batch.texts += plan->texts;
+			}
+			batch.plans.push_back(std::move(plan));
+		}
+		_batch = std::move(batch);
+		_to = to.twoLetterCode();
+		nextInBatch();
+	}
+
 private:
+	struct Batch {
+		std::vector<std::optional<TranslationPlan>> plans;
+		std::vector<int> offsets;
+		QStringList texts;
+		QStringList translated;
+		Fn<void(int, Ui::TranslateProviderResult)> doneOne;
+		Fn<void()> doneAll;
+	};
+
+	void nextInBatch() {
+		const auto offset = int(_batch.translated.size());
+		if (offset == _batch.texts.size()) {
+			finishBatch();
+			return;
+		}
+		const auto amount = std::min(
+			TranslationBatchLimit(*_service),
+			int(_batch.texts.size()) - offset);
+		const auto call = BuildTranslationCall(
+			*_service,
+			_batch.texts.mid(offset, amount),
+			_to);
+		_request.translate(*_service, call, [=](ServiceResult response) {
+			const auto values = (response.error == ServiceError::None)
+				? ParseTranslationResponse(*_service, response.body, amount)
+				: std::nullopt;
+			if (!values) {
+				finishBatch();
+				return;
+			}
+			_batch.translated += *values;
+			nextInBatch();
+		});
+	}
+
+	void finishBatch() {
+		auto batch = std::exchange(_batch, Batch());
+		for (auto i = 0; i != int(batch.plans.size()); ++i) {
+			const auto &plan = batch.plans[i];
+			const auto offset = batch.offsets[i];
+			const auto count = plan ? int(plan->texts.size()) : 0;
+			const auto result = (plan && offset + count <= batch.translated.size())
+				? ApplyTranslation(*plan, batch.translated.mid(offset, count))
+				: std::nullopt;
+			batch.doneOne(i, result
+				? Ui::TranslateProviderResult{ .text = *result }
+				: Ui::TranslateProviderResult{
+					.error = Ui::TranslateProviderError::Unknown,
+				});
+		}
+		batch.doneAll();
+	}
+
 	void fail(ServiceError error, int status, Fn<void(Ui::TranslateProviderResult)> done) {
 		const auto notify = _error;
 		notify(_unavailable.isEmpty()
@@ -135,6 +215,7 @@ private:
 	QStringList _translated;
 	QStringList _context;
 	QString _to;
+	Batch _batch;
 
 };
 
@@ -312,6 +393,44 @@ std::unique_ptr<Ui::TranslateProvider> CreateInteractiveTranslateProvider(
 	}
 	return std::make_unique<ExternalTranslateProvider>(
 		session, std::nullopt, std::move(error));
+}
+
+std::unique_ptr<Ui::TranslateProvider> CreateChatTranslateProvider(
+		not_null<Main::Session*> session) {
+	if (const auto settings = Services()) {
+		const auto &id = settings->translation;
+		if (id == u"telegram"_q) {
+			return Ui::CreateMTProtoTranslateProvider(session);
+		} else if (id == u"system"_q) {
+			if (Platform::IsTranslateProviderAvailable()) {
+				return Platform::CreateTranslateProvider();
+			}
+		} else if (!id.isEmpty()) {
+			if (auto service = FindService(*settings, id)) {
+				return std::make_unique<ExternalTranslateProvider>(
+					session, std::move(service), [](QString) {});
+			}
+		}
+	}
+	return Ui::CreateTranslateProvider(session);
+}
+
+rpl::producer<bool> ChatTranslationAllowedValue(
+		not_null<Main::Session*> session,
+		not_null<Ui::TranslateProvider*> provider) {
+	const auto external = !provider->supportsMessageId();
+	return rpl::combine(
+		Data::AmPremiumValue(session),
+		ForDevice().Value(ServiceSettings::kChatTranslationWithoutPremium)
+	) | rpl::map([=](bool premium, bool enabled) {
+		return premium || (enabled && external);
+	});
+}
+
+bool ChatTranslationAllowed(not_null<Main::Session*> session) {
+	return session->premium()
+		|| (ForDevice().Get(ServiceSettings::kChatTranslationWithoutPremium)
+			&& !CreateChatTranslateProvider(session)->supportsMessageId());
 }
 
 } // namespace Serein

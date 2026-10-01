@@ -30,6 +30,14 @@ rpl::producer<bool> TranslationContextValue() {
 	return ForDevice().Value(Serein::ServiceSettings::kTranslationContext);
 }
 
+bool ChatTranslationWithoutPremium() {
+	return ForDevice().Get(Serein::ServiceSettings::kChatTranslationWithoutPremium);
+}
+
+rpl::producer<bool> ChatTranslationWithoutPremiumValue() {
+	return ForDevice().Value(Serein::ServiceSettings::kChatTranslationWithoutPremium);
+}
+
 QString ProxySubscription() {
 	return ForDevice().Get(Serein::ServiceSettings::kProxySubscription);
 }

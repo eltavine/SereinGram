@@ -358,6 +358,8 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_services" = "Translation and transcription services";
 "lng_serein_translation_context" = "Send earlier messages as context";
 "lng_serein_translation_context_about" = "When the selected translation service is a language model, translating a chat message also sends up to 6 messages before it, with their authors, so the model can resolve references and tone. Those messages are not translated.";
+"lng_serein_chat_translation" = "Translate whole chats without Premium";
+"lng_serein_chat_translation_about" = "Telegram translates whole chats only for Premium subscribers. When the selected translation service is an external service or the system translator, SereinGram uses it for the translation bar and the chat menu item instead, and visible messages are sent to that service. Telegram's own translation keeps its Premium requirement. Applies to chats opened after the change.";
 "lng_serein_proxy_subscription" = "Proxy subscription";
 "lng_serein_proxy_subscription_about" = "An HTTPS address of a list of Telegram proxy links (tg://proxy, t.me/proxy or t.me/socks). “Update now” downloads it and adds the proxies that are not in your list yet. New protocols need an external proxy app.";
 "lng_serein_proxy_subscription_update" = "Update now";

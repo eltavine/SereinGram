@@ -354,6 +354,8 @@
 "lng_serein_services" = "翻譯與轉寫服務";
 "lng_serein_translation_context" = "附帶前文作為上下文";
 "lng_serein_translation_context_about" = "所選翻譯服務是語言模型時，翻譯聊天訊息會一併傳送它之前最多 6 則訊息及其作者，幫助模型理解指代與語氣。這些前文不會被翻譯。";
+"lng_serein_chat_translation" = "非 Premium 使用者也可翻譯整段對話";
+"lng_serein_chat_translation_about" = "Telegram 只為 Premium 使用者翻譯整段對話。所選翻譯服務為外部服務或系統翻譯時，SereinGram 改用該服務提供翻譯列與對話選單中的翻譯，螢幕上的訊息會傳送給該服務。Telegram 自己的翻譯仍需 Premium。變更後對新開啟的對話生效。";
 "lng_serein_proxy_subscription" = "代理訂閱";
 "lng_serein_proxy_subscription_about" = "填寫一個 HTTPS 位址，內容為 Telegram 代理連結列表（tg://proxy、t.me/proxy 或 t.me/socks）。「立即更新」會下載並加入列表中尚未存在的代理。其他協定需要藉助外部代理程式。";
 "lng_serein_proxy_subscription_update" = "立即更新";

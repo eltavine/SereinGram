@@ -25,6 +25,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "lang/translate_provider.h"
 #include "main/main_session.h"
 #include "spellcheck/platform/platform_language.h"
+#include "serein/hooks/services/translation.h"
 
 namespace HistoryView {
 namespace {
@@ -39,7 +40,7 @@ constexpr auto kRequestCountLimit = 20;
 
 TranslateTracker::TranslateTracker(not_null<History*> history)
 : _history(history)
-, _provider(Ui::CreateTranslateProvider(&_history->session()))
+, _provider(Serein::CreateChatTranslateProvider(&_history->session()))
 , _api(&_history->session().mtp())
 , _limit(kEnoughForRecognition) {
 	setup();
@@ -69,7 +70,7 @@ void TranslateTracker::setup() {
 	using namespace rpl::mappers;
 	_trackingLanguage = rpl::combine(
 		Core::App().settings().translateChatEnabledValue(),
-		Data::AmPremiumValue(&_history->session()),
+		Serein::ChatTranslationAllowedValue(&_history->session(), _provider.get()),
 		std::move(autoTranslationValue),
 		_1 && (_2 || _3));
 	_trackingLanguage.value() | rpl::on_next([=](bool tracking) {
