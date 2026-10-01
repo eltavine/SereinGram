@@ -5,6 +5,7 @@
 #include "apiwrap.h"
 #include "data/data_peer.h"
 #include "data/data_session.h"
+#include "data/data_user.h"
 #include "history/history.h"
 #include "history/history_item.h"
 #include "history/view/history_view_schedule_box.h"

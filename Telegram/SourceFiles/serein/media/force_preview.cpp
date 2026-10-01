@@ -3,6 +3,7 @@
 #include "base/event_filter.h"
 #include "base/platform/base_platform_haptic.h"
 #include "data/data_document.h"
+#include "data/data_file_origin.h"
 #include "data/data_media_types.h"
 #include "data/data_photo.h"
 #include "history/history.h"
