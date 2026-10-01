@@ -19,6 +19,8 @@ namespace Serein::Hooks::Chats {
 [[nodiscard]] rpl::producer<bool> HideSavedAndArchivedPreviewsValue();
 [[nodiscard]] bool HideStories();
 [[nodiscard]] rpl::producer<bool> HideStoriesValue();
+[[nodiscard]] bool SearchOwnChatsOnly();
+[[nodiscard]] rpl::producer<bool> SearchOwnChatsOnlyValue();
 [[nodiscard]] int StartupFolderMode(gsl::not_null<Main::Session*> session);
 [[nodiscard]] rpl::producer<int> StartupFolderModeValue(gsl::not_null<Main::Session*> session);
 [[nodiscard]] int StartupFolderId(gsl::not_null<Main::Session*> session);

@@ -44,6 +44,13 @@ inline constexpr auto kHideStories = Option<bool>{
 	Category::Chats,
 	"lng_serein_hide_stories",
 	0 };
+inline constexpr auto kSearchOwnChatsOnly = Option<bool>{
+	"serein.searchOwnChatsOnly",
+	Scope::Device,
+	false,
+	Category::Chats,
+	"lng_serein_search_own_chats_only",
+	0 };
 inline constexpr auto kStartupFolderMode = Option<int>{
 	"serein.startupFolderMode",
 	Scope::Account,
@@ -229,6 +236,7 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kPreviewLines));
 	Expects(registry.Add(kHideSavedAndArchivedPreviews));
 	Expects(registry.Add(kHideStories));
+	Expects(registry.Add(kSearchOwnChatsOnly));
 	Expects(registry.Add(kStartupFolderMode));
 	Expects(registry.Add(kStartupFolderId));
 	Expects(registry.Add(kLastOpenedFolderId));

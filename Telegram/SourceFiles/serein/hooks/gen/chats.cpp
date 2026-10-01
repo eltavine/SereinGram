@@ -38,6 +38,14 @@ rpl::producer<bool> HideStoriesValue() {
 	return ForDevice().Value(Serein::Chats::kHideStories);
 }
 
+bool SearchOwnChatsOnly() {
+	return ForDevice().Get(Serein::Chats::kSearchOwnChatsOnly);
+}
+
+rpl::producer<bool> SearchOwnChatsOnlyValue() {
+	return ForDevice().Value(Serein::Chats::kSearchOwnChatsOnly);
+}
+
 int StartupFolderMode(gsl::not_null<Main::Session*> session) {
 	return ForAccount(session).Get(Serein::Chats::kStartupFolderMode);
 }

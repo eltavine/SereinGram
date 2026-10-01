@@ -38,6 +38,8 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_preview_three" = "3 lines";
 "lng_serein_hide_saved_and_archived_previews" = "Hide Saved Messages and Archive previews";
 "lng_serein_hide_stories" = "Hide stories";
+"lng_serein_search_own_chats_only" = "Search only your own chats";
+"lng_serein_search_own_chats_only_note" = "Searching the chat list no longer sends what you type to Telegram to look up public chats, channels and users, so only chats you already have appear. Message search works as before.";
 "lng_serein_folders" = "Folders";
 "lng_serein_hide_all_chats_folder" = "Hide All Chats folder";
 "lng_serein_show_archive_in_folders" = "Show Archive in folders";

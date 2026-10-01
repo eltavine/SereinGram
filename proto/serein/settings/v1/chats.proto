@@ -41,6 +41,10 @@ message ChatsSettings {
   optional bool hide_stories = 4 [(serein.options.v1.field) = {
     keywords: ["stories"]
   }];
+  optional bool search_own_chats_only = 28 [(serein.options.v1.field) = {
+    keywords: ["search", "global", "public", "privacy"]
+    note: "lng_serein_search_own_chats_only_note"
+  }];
   optional int32 startup_folder_mode = 8 [
     (serein.options.v1.field) = {
       section: {title: "lng_serein_folders" id: "folders" keywords: ["folders"]}

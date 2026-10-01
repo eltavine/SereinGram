@@ -34,6 +34,8 @@
 "lng_serein_preview_three" = "3 行";
 "lng_serein_hide_saved_and_archived_previews" = "隐藏收藏夹和归档的消息预览";
 "lng_serein_hide_stories" = "隐藏动态";
+"lng_serein_search_own_chats_only" = "只搜索已有的对话";
+"lng_serein_search_own_chats_only_note" = "在对话列表中搜索时，不再把输入的内容发送给 Telegram 来查找公开的群组、频道与用户，只显示你已有的对话。消息搜索不受影响。";
 "lng_serein_folders" = "文件夹";
 "lng_serein_hide_all_chats_folder" = "隐藏“全部会话”文件夹";
 "lng_serein_show_archive_in_folders" = "在文件夹中显示归档入口";
