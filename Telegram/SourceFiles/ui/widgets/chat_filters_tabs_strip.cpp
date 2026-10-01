@@ -59,6 +59,7 @@ struct State final {
 
 	std::unique_ptr<Ui::ChatsFiltersTabsReorder> reorder;
 	bool ignoreRefresh = false;
+	bool ignoreActivation = false;
 };
 
 void ShowMenu(
@@ -476,7 +477,9 @@ not_null<Ui::RpWidget*> AddChatFiltersTabsStrip(
 				const auto list = Serein::Chats::ShownFilters(session);
 				for (auto i = 0; i < list.size(); ++i) {
 					if (list[i].id() == id) {
+						state->ignoreActivation = true;
 						slider->setActiveSection(i);
+						state->ignoreActivation = false;
 						scrollToIndex(i, anim::type::normal);
 						break;
 					}
@@ -496,7 +499,9 @@ not_null<Ui::RpWidget*> AddChatFiltersTabsStrip(
 				state->lastFilterId = filter.id();
 				scrollToIndex(index, anim::type::normal);
 			}
-			applyFilter(filter);
+			if (!state->ignoreActivation) {
+				applyFilter(filter);
+			}
 		}, state->rebuildLifetime);
 		slider->contextMenuRequested() | rpl::on_next([=](int index) {
 			if (trackActiveFilterAndUnreadAndReorder) {
