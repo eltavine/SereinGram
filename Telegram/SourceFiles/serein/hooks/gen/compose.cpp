@@ -166,6 +166,22 @@ rpl::producer<bool> MentionMenuValue() {
 	return ForDevice().Value(Serein::Compose::kMentionMenu);
 }
 
+bool RememberForwardOptions() {
+	return ForDevice().Get(Serein::Compose::kRememberForwardOptions);
+}
+
+rpl::producer<bool> RememberForwardOptionsValue() {
+	return ForDevice().Value(Serein::Compose::kRememberForwardOptions);
+}
+
+int LastForwardOptions() {
+	return ForDevice().Get(Serein::Compose::kLastForwardOptions);
+}
+
+rpl::producer<int> LastForwardOptionsValue() {
+	return ForDevice().Value(Serein::Compose::kLastForwardOptions);
+}
+
 bool DraftTranslation() {
 	return ForDevice().Get(Serein::Compose::kDraftTranslation);
 }

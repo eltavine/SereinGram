@@ -153,6 +153,24 @@ inline constexpr auto kMentionMenu = Option<bool>{
 	Category::Compose,
 	"lng_serein_mention_menu",
 	0 };
+inline constexpr auto kRememberForwardOptions = Option<bool>{
+	"serein.rememberForwardOptions",
+	Scope::Device,
+	false,
+	Category::Compose,
+	"lng_serein_remember_forward_options",
+	0 };
+inline constexpr auto kLastForwardOptions = Option<int>{
+	"serein.lastForwardOptions",
+	Scope::Device,
+	0,
+	Category::Compose,
+	"lng_serein_remember_forward_options",
+	static_cast<unsigned>(Flag::Hidden),
+	[](const int &value) {
+		return (value == 0)
+			|| (((value == 0 || value == 1 || value == 2)));
+	} };
 inline constexpr auto kDraftTranslation = Option<bool>{
 	"serein.draftTranslation",
 	Scope::Device,
@@ -265,6 +283,8 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kSpaceOnSend));
 	Expects(registry.Add(kSpaceOnEdit));
 	Expects(registry.Add(kMentionMenu));
+	Expects(registry.Add(kRememberForwardOptions));
+	Expects(registry.Add(kLastForwardOptions));
 	Expects(registry.Add(kDraftTranslation));
 	Expects(registry.Add(kFormatToolbar));
 	Expects(registry.Add(kDefaultCodeLanguage));

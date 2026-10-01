@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/controls/history_view_forward_panel.h"
+#include "serein/hooks/messages/forward.h"
 
 #include "history/history.h"
 #include "history/history_item.h"
@@ -244,6 +245,7 @@ void ForwardPanel::applyOptions(Data::ForwardOptions options) {
 		const auto topicRootId = _to->topicRootId();
 		const auto monoforumPeerId = _to->monoforumPeerId();
 		_data.options = options;
+		Serein::Hooks::RememberForwardOptions(int(options));
 		_to->owningHistory()->setForwardDraft(topicRootId, monoforumPeerId, {
 			.ids = _to->owner().itemsToIds(_data.items),
 			.options = options,

@@ -47,6 +47,10 @@ namespace Serein::Hooks::Compose {
 [[nodiscard]] rpl::producer<bool> SpaceOnEditValue();
 [[nodiscard]] bool MentionMenu();
 [[nodiscard]] rpl::producer<bool> MentionMenuValue();
+[[nodiscard]] bool RememberForwardOptions();
+[[nodiscard]] rpl::producer<bool> RememberForwardOptionsValue();
+[[nodiscard]] int LastForwardOptions();
+[[nodiscard]] rpl::producer<int> LastForwardOptionsValue();
 [[nodiscard]] bool DraftTranslation();
 [[nodiscard]] rpl::producer<bool> DraftTranslationValue();
 [[nodiscard]] bool FormatToolbar();

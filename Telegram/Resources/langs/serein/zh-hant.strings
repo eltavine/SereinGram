@@ -407,6 +407,8 @@
 "lng_serein_translate_apply" = "套用到草稿";
 "lng_serein_translate_draft" = "翻譯草稿…";
 "lng_serein_draft_translation" = "在輸入框選單中顯示「翻譯草稿」";
+"lng_serein_remember_forward_options" = "記住轉傳選項";
+"lng_serein_remember_forward_options_note" = "新的轉傳預設使用你上次在轉傳列或分享視窗中對傳送者名稱與說明文字的選擇。";
 "lng_serein_summary_action" = "總結最近的訊息";
 "lng_serein_summary_title" = "對話摘要";
 "lng_serein_summary_about" = "為產生摘要，本對話中最多 60 則最近載入的訊息會傳送給 {name}。";

@@ -6,6 +6,7 @@ set(serein_sources
     serein/compose/confirm.cpp
     serein/compose/field_menu.cpp
     serein/compose/format_toolbar.cpp
+    serein/compose/forward_options.cpp
     serein/compose/mention.cpp
     serein/compose/mention_query.cpp
     serein/compose/placeholder.cpp

@@ -35,6 +35,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "history/history_item_helpers.h"
 #include "history/view/controls/history_view_forward_panel.h"
 #include "serein/hooks/gen/compose.h"
+#include "serein/hooks/messages/forward.h"
 #include "history/view/history_view_element.h"
 #include "history/view/history_view_context_menu.h" // CopyPostLink.
 #include "settings/sections/settings_premium.h"
@@ -760,6 +761,9 @@ void ShareBox::submit(Api::SendOptions options) {
 			: _forwardOptions.dropNames
 			? Data::ForwardOptions::NoSenderNames
 			: Data::ForwardOptions::PreserveInfo;
+		Serein::Hooks::RememberForwardOptions(
+			int(forwardOptions),
+			_descriptor.forwardOptions.show);
 		onstack(
 			std::move(threads),
 			checkPaid,
