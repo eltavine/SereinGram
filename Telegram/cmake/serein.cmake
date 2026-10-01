@@ -124,6 +124,7 @@ set(serein_sources
     serein/settings/privacy.cpp
     serein/settings/messages.cpp
     serein/settings/services.cpp
+    serein/settings/services_network.cpp
     serein/services/credentials.cpp
     serein/services/model.cpp
     serein/services/translation_protocol.cpp
