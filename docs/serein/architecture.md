@@ -113,7 +113,9 @@ namespace Serein::Hooks {
 
 门面的三种来源：设置选项的取值与订阅函数由 proto 生成到 `serein/hooks/gen/<页>.h`；面向上游的薄接口头文件位于 `serein/hooks/<领域>/`，只允许前置声明与库头文件，可脱离应用代码单独通过语法检查（参数或返回值是上游嵌套类型时，门面声明为函数模板，由实现文件对该类型显式实例化，例如 `ApplyInfoOptions(Data &, ...)` 与 `TranscriptionOverride<Entry>(item)`；只需填充上游私有结构而不读取其他成员时，模板直接写在门面头文件里，由上游传入自身类型，例如 `ModerateDefaults<ModerateMessagesBoxOptions>()` 与 `PrependCustomDoh(attempts, Type::Mozilla)`）；其余一次性挂钩（幽灵、历史、定时发送）位于 `serein/hooks/*.h`，实现放在组合根 `serein/app/`。应用启动只有一个挂钩 `Serein::Hooks::OnApplicationStarted()`：组合根的模块表 `serein/app/modules.cpp` 为每个模块登记“应用启动”“会话启动”和“窗口启动”回调（窗口启动由 `SessionController` 构造函数中的 `Serein::Hooks::OnWindowStarted` 分发），会话跟踪统一订阅各账号的 `sessionValue()`，功能模块不再各自挂接上游。消息菜单的定制按菜单项文字识别上游动作，文字在每次打开菜单时按当前语言计算；只有文字与其他菜单项重复或由自绘控件显示的项（保存图片、带自动删除倒计时的删除、表情包按钮）在上游保留显式标签。
 
-现有 Nagram 内联挂钩（123 个上游源文件）按功能族改走门面。预算：迁移完成后上游源码文件 ≤ 90 个、新增行 ≤ 900 行（不含品牌与构建文件），由 `tools/serein/upstream_budget.py` 与上游合并基线比较并在 CI 报告。当前为 140 个源码文件、+1,424 行，尚未达到该目标，后续继续把品牌与多处小挂钩合并到门面。
+现有 Nagram 内联挂钩（123 个上游源文件）按功能族改走门面。预算：迁移完成后上游源码文件 ≤ 90 个、新增行 ≤ 900 行（不含品牌与构建文件），由 `tools/serein/upstream_budget.py` 与上游合并基线比较并在 CI 报告。当前为 148 个源码文件、+1,368 行（全部文件 218 个、+1,598 行），尚未达到该目标，后续继续把品牌与多处小挂钩合并到门面。
+
+中性默认值约定：Serein 向上游界面添加的任何入口（消息、对话、资料、主菜单、托盘、贴纸包、文件夹与输入框菜单中的项目，以及新的按钮与行）都必须由默认关闭的选项控制，选项关闭时上游界面保持原样；只有出现前提本身默认关闭的入口（例如依赖消息记录的“编辑历史”）可以不另设开关，并在测试中写明理由。只影响一次同步渲染的临时行为用作用域覆盖实现，例如消息截图在 `Snapshot::Render` 期间用 `Interface::ThemeReplyColorsScope` 让回复使用主题色，而不修改全局选项。通过消息列表委托安装的挂钩必须先排除 `Context::ChatPreview`，因为对话列表预览的委托把 `listWindow()` 实现为 `Unexpected()`。
 
 ## 5. Schema 与代码生成（ADR-0002）
 
@@ -166,6 +168,9 @@ message MessagesSettings {
 | 上游侵入预算 | `tools/serein/upstream_budget.py`，与 `policy/upstream.json` 记录的上游基线比较；预算默认只降不升；新功能需要新挂钩时，在同一提交中上调并在提交说明中写明增量与理由；同时统计上游文件直接包含非门面头文件的数量（已锁定为 0） | 已实施 |
 | schema 兼容 | `buf lint`；`tools/serein/proto_breaking.sh` 与推送前的提交或 PR 目标分支比较（`FILE` 级） | 已实施 |
 | 生成代码漂移 | `uv run tools/serein/codegen/generate.py --check` | 已实施 |
+| 中性默认值 | `test_serein` 的 `TestNeutralDefaults`：全部设置页的选项默认关闭、为零或为空，消息菜单中 Serein 新增的项默认隐藏，例外逐项写明理由 | 已实施 |
+| 头文件存在 | `tools/serein/check_includes.py`：Serein 代码中带引号的 `#include` 必须指向仓库或已拉取子模块中存在的头文件；只在构建目录中生成的头文件（样式、语言键与 schema 生成物）跳过 | 已实施 |
+| 源文件登记 | `tools/serein/check_sources.py`：每个 Serein 源文件都必须登记在 `Telegram/cmake/serein.cmake` 或测试清单中，反过来已登记的路径也必须存在 | 已实施 |
 | 三语文案一致 | `test_serein` | 已有 |
 | 核心逻辑测试（只依赖 Qt） | `tools/serein/core_tests` 独立 CMake 工程，与主构建共用 `Telegram/cmake/serein_tests.cmake` 的测试清单 | 已实施 |
 | 构建与单元测试 | `serein-{mac,win,linux}.yml` | 已有 |
