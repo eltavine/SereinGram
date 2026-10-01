@@ -71,4 +71,4 @@ Linux 发行版打包：
 - `serein.strings` 是英文源文件；译文文件名为小写语言代码，例如 `fa.strings`、`pt-br.strings`。CMake 在配置时扫描该目录生成资源清单，新增语言无需改动构建文件。
 - 运行时先按界面语言的完整代码查找译文，再退回基础语言代码；缺少的键显示英文。`zh-hans` 与 `zh-hant` 必须完整，其他语言可以只翻译一部分。
 - 核心测试校验每个译文文件：键必须存在于英文源文件，`{name}` 形式的占位符必须一致。
-- 仓库根目录的 `crowdin.yml` 把该目录接入 Crowdin；创建 Crowdin 项目后，在 GitHub Secrets 中设置 `CROWDIN_PROJECT_ID` 与 `CROWDIN_PERSONAL_TOKEN` 即可同步。
+- 仓库根目录的 `crowdin.yml` 把该目录接入 Crowdin；创建 Crowdin 项目后，在 GitHub Secrets 中设置 `CROWDIN_PROJECT_ID` 与 `CROWDIN_PERSONAL_TOKEN`。工作流 `serein-crowdin.yml` 在英文源文件改动推送到 develop 时上传源文件，每周一下载译文并向 develop 提交 PR，也可手动运行；未设置这两个机密时直接跳过。
