@@ -1,4 +1,5 @@
 using "ui/widgets/widgets.style";
+using "dialogs/dialogs.style";
 
 sereinSnapshotWidth: 640px;
 sereinSnapshotPadding: 16px;
@@ -38,3 +39,25 @@ sereinFormatQuoteActive: icon {{ "menu/rich/blockquote-24x24", windowActiveTextF
 sereinFormatLink: icon {{ "menu/rich/link-24x24", menuIconColor }};
 sereinFormatLinkActive: icon {{ "menu/rich/link-24x24", windowActiveTextFg }};
 sereinFormatClear: icon {{ "menu/clear", menuIconColor }};
+
+compactDialogRow: DialogRow(defaultDialogRow) {
+	height: 54px;
+	padding: margins(10px, 6px, 10px, 6px);
+	photoSize: 40px;
+	nameLeft: 62px;
+	nameTop: 6px;
+	textLeft: 62px;
+	textTop: 28px;
+}
+twoLineDialogRow: DialogRow(defaultDialogRow) {
+	height: 82px;
+}
+threeLineDialogRow: DialogRow(defaultDialogRow) {
+	height: 102px;
+}
+compactTwoLineDialogRow: DialogRow(compactDialogRow) {
+	height: 74px;
+}
+compactThreeLineDialogRow: DialogRow(compactDialogRow) {
+	height: 94px;
+}

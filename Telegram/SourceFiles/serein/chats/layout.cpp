@@ -2,6 +2,7 @@
 
 #include "serein/chats/options.h"
 #include "styles/style_dialogs.h"
+#include "styles/style_serein.h"
 
 #include <algorithm>
 
