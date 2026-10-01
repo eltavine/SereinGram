@@ -7,6 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/history_view_top_bar_widget.h"
 #include "serein/hooks/messages/content.h"
+#include "serein/hooks/ghost.h"
 
 #include "history/history.h"
 #include "history/view/history_view_send_action.h"
@@ -1987,6 +1988,7 @@ void TopBarWidget::updateOnlineDisplay() {
 			text = channel->isMegagroup() ? tr::lng_group_status(tr::now) : tr::lng_channel_status(tr::now);
 		}
 	}
+	text = Serein::Hooks::GhostStatus(&session(), text);
 	if (_titlePeerText.toString() != text) {
 		_titlePeerText.setText(st::dialogsTextStyle, text);
 		_titlePeerTextOnline = titlePeerTextOnline;

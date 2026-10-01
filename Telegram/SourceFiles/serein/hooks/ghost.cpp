@@ -19,6 +19,19 @@ auto ForcedReadReceipts = 0;
 
 } // namespace
 
+QString GhostStatus(
+		gsl::not_null<Main::Session*> session,
+		const QString &status) {
+	const auto prefix = QString::fromUtf8("\xf0\x9f\x91\xbb ");
+	const auto plain = status.startsWith(prefix)
+		? status.mid(prefix.size())
+		: status;
+	const auto enabled = Serein::Ghost::Enabled(
+		ForAccount(session),
+		ForDevice());
+	return (enabled && !plain.isEmpty()) ? (prefix + plain) : plain;
+}
+
 bool AllowOnline(gsl::not_null<Main::Session*> session) {
 	return Allows(session, Serein::Ghost::Activity::Online);
 }
