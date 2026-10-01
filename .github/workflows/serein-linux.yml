@@ -269,6 +269,7 @@ jobs:
         if: env.UPLOAD_ARTIFACT == 'true'
         env:
           NFPM_SHA256: 0660ca602b2d2d2ae4781a06c692b3eeb9d437ffea05b831d76e41f4a3188783
+          COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
           archive="$RUNNER_TEMP/nfpm.tar.gz"
           curl -sSfL -o "$archive" \
@@ -280,7 +281,7 @@ jobs:
             lib/xdg/io.github.eltavine.SereinGram.metainfo.xml "$stage"
           version=$(sed -n 's/^AppVersionStrSmall *//p' Telegram/build/version)
           if [[ "$GITHUB_REF" != refs/tags/* ]]; then
-            version="$version+g${GITHUB_SHA::7}"
+            version="$version+g${COMMIT::7}"
           fi
           for packager in deb rpm; do
             (cd "$stage" && SEREIN_VERSION="$version" "$RUNNER_TEMP/nfpm" package \
