@@ -135,6 +135,9 @@
 "lng_serein_persian_calendar_note" = "聊天、最後上線時間與媒體檢視器中的日期改用伊朗太陽曆的月份，月份名稱隨介面語言顯示。日期選擇器仍使用公曆。";
 "lng_serein_raise_selection_limit" = "最多選取 1000 則訊息";
 "lng_serein_raise_selection_limit_note" = "Telegram 每次請求最多接受 100 則訊息，因此轉傳與刪除更多選取的訊息時按每批 100 則傳送，相簿不會被拆開。重新啟動後生效。";
+"lng_serein_interaction" = "互動";
+"lng_serein_double_click_edits_own" = "雙擊自己的訊息進行編輯";
+"lng_serein_double_click_edits_own_note" = "雙擊仍可編輯的自己傳送的訊息時直接進入編輯；其他訊息仍執行聊天設定中的雙擊操作。";
 "lng_serein_message_id" = "訊息 ID：{id}";
 "lng_serein_marks_and_counts" = "標記與計數";
 "lng_serein_exact_message_counters" = "顯示精確的瀏覽數和回覆數";

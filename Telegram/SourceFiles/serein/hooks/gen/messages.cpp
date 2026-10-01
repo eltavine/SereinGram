@@ -46,14 +46,6 @@ rpl::producer<bool> PersianCalendarValue() {
 	return ForDevice().Value(Serein::Messages::kPersianCalendar);
 }
 
-bool RaiseSelectionLimit() {
-	return ForDevice().Get(Serein::Messages::kRaiseSelectionLimit);
-}
-
-rpl::producer<bool> RaiseSelectionLimitValue() {
-	return ForDevice().Value(Serein::Messages::kRaiseSelectionLimit);
-}
-
 bool ExactMessageCounters() {
 	return ForDevice().Get(Serein::Messages::kExactMessageCounters);
 }
@@ -252,6 +244,22 @@ int ReadingChinese() {
 
 rpl::producer<int> ReadingChineseValue() {
 	return ForDevice().Value(Serein::Messages::kReadingChinese);
+}
+
+bool RaiseSelectionLimit() {
+	return ForDevice().Get(Serein::Messages::kRaiseSelectionLimit);
+}
+
+rpl::producer<bool> RaiseSelectionLimitValue() {
+	return ForDevice().Value(Serein::Messages::kRaiseSelectionLimit);
+}
+
+bool DoubleClickEditsOwn() {
+	return ForDevice().Get(Serein::Messages::kDoubleClickEditsOwn);
+}
+
+rpl::producer<bool> DoubleClickEditsOwnValue() {
+	return ForDevice().Value(Serein::Messages::kDoubleClickEditsOwn);
 }
 
 bool RevokePrivateChatDeletion() {

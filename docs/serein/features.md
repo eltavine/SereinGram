@@ -168,6 +168,7 @@ SG-HIST-05 的“已编辑”标记文字已由 C09 实现，删除标记随 SG-
 | SG-MSG-10 | 语音与圆形视频拖动进度（先核对上游现状）（由上游提供：语音消息 `VoiceSeekClickHandler` 与圆形视频 `VideoMessageSeek` 均支持拖动进度，核对于 2026-09-30） | Ad | Implemented | P2 |
 | SG-MSG-11 | 反应时间显示秒（反应与已读列表的时间随“消息时间显示秒”选项显示到秒） | Ad | Implemented | P3 |
 | SG-MSG-12 | 注册日期估算（标注估算来源）、波斯日历（隐私页“显示估算的注册时间”，默认关闭：按用户 ID 在 WizardLoop/CreationDate（MIT，提交 f37728802d36，许可证随 `Telegram/Resources/serein/regdate_points.LICENSE` 分发）的 212 个公开数据点之间线性插值，资料页显示“约某年某月”，晚于最后数据点时显示“晚于”；消息设置“波斯历（伊朗太阳历）”默认关闭，开启后上游的按日期格式化函数（聊天日期分隔、最后上线、媒体查看器等）改用 Qt `QCalendar` 的 Jalali 历换算，月份名称取自 Qt 的 CLDR 数据并随界面语言显示，日期选择器仍为公历） | Ni Na | Implemented | P3 |
+| SG-MSG-13 | 双击自己的消息进行编辑（消息设置“交互”分区，默认关闭；开启后双击仍可编辑的自己发送的消息直接进入编辑，对话与话题、回复等列表都生效；其他消息仍执行上游聊天设置中的双击操作） | Na | Implemented | P3 |
 
 ## COMPOSE 输入与发送
 

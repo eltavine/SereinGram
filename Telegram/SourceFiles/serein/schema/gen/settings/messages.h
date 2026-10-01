@@ -40,13 +40,6 @@ inline constexpr auto kPersianCalendar = Option<bool>{
 	Category::Messages,
 	"lng_serein_persian_calendar",
 	static_cast<unsigned>(Flag::RefreshMessageView) };
-inline constexpr auto kRaiseSelectionLimit = Option<bool>{
-	"serein.raiseSelectionLimit",
-	Scope::Device,
-	false,
-	Category::Messages,
-	"lng_serein_raise_selection_limit",
-	static_cast<unsigned>(Flag::RequiresRestart) };
 inline constexpr auto kExactMessageCounters = Option<bool>{
 	"serein.exactMessageCounters",
 	Scope::Device,
@@ -234,6 +227,20 @@ inline constexpr auto kReadingChinese = Option<int>{
 		return (value == 0)
 			|| ((value >= 0) && (value <= 2));
 	} };
+inline constexpr auto kRaiseSelectionLimit = Option<bool>{
+	"serein.raiseSelectionLimit",
+	Scope::Device,
+	false,
+	Category::Messages,
+	"lng_serein_raise_selection_limit",
+	static_cast<unsigned>(Flag::RequiresRestart) };
+inline constexpr auto kDoubleClickEditsOwn = Option<bool>{
+	"serein.doubleClickEditsOwn",
+	Scope::Device,
+	false,
+	Category::Messages,
+	"lng_serein_double_click_edits_own",
+	0 };
 inline constexpr auto kRevokePrivateChatDeletion = Option<bool>{
 	"serein.revokePrivateChatDeletion",
 	Scope::Device,
@@ -269,7 +276,6 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kShowServiceTime));
 	Expects(registry.Add(kShowMessageId));
 	Expects(registry.Add(kPersianCalendar));
-	Expects(registry.Add(kRaiseSelectionLimit));
 	Expects(registry.Add(kExactMessageCounters));
 	Expects(registry.Add(kHideMessageViews));
 	Expects(registry.Add(kHideChannelSignature));
@@ -295,6 +301,8 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kHidePrivateChatActivities));
 	Expects(registry.Add(kReadingSpacing));
 	Expects(registry.Add(kReadingChinese));
+	Expects(registry.Add(kRaiseSelectionLimit));
+	Expects(registry.Add(kDoubleClickEditsOwn));
 	Expects(registry.Add(kRevokePrivateChatDeletion));
 	Expects(registry.Add(kModerateReportSpam));
 	Expects(registry.Add(kModerateDeleteAll));

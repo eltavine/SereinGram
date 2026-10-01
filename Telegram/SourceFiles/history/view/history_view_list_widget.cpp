@@ -7,6 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/history_view_list_widget.h"
 #include "serein/hooks/messages/reactions.h"
+#include "serein/hooks/messages/double_click.h"
 #include "serein/hooks/media/force_preview.h"
 #include "serein/hooks/gen/privacy.h"
 
@@ -3932,6 +3933,10 @@ void ListWidget::mouseDoubleClickEvent(QMouseEvent *e) {
 		&& (_overElement->data()->isRegular()
 			|| CanReplyToEphemeral(_overElement->data()))) {
 		mouseActionCancel();
+		if (Serein::Messages::EditOnDoubleClick(_overElement->data())) {
+			editMessageRequestNotify(_overElement->data()->fullId());
+			return;
+		}
 		switch (CurrentQuickAction()) {
 		case DoubleClickQuickAction::Reply: {
 			replyToMessageRequestNotify({ _overElement->data()->fullId() });

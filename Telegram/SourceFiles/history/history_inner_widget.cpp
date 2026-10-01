@@ -7,6 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/history_inner_widget.h"
 #include "serein/hooks/messages/reactions.h"
+#include "serein/hooks/messages/double_click.h"
 #include "serein/hooks/media/force_preview.h"
 #include "serein/hooks/gen/privacy.h"
 #include "serein/hooks/menu/actions.h"
@@ -2731,6 +2732,10 @@ void HistoryInner::mouseDoubleClickEvent(QMouseEvent *e) {
 		&& e->button() == Qt::LeftButton) {
 		if (const auto view = Element::Moused()) {
 			mouseActionCancel();
+			if (Serein::Messages::EditOnDoubleClick(view->data())) {
+				_widget->editMessage(view->data(), {});
+				return;
+			}
 			switch (HistoryView::CurrentQuickAction()) {
 			case HistoryView::DoubleClickQuickAction::Reply: {
 				_widget->replyToMessage(view->data());

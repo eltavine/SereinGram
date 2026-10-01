@@ -139,6 +139,9 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_persian_calendar_note" = "Dates in chats, last seen and the media viewer use Solar Hijri months, named in the interface language. The date picker stays Gregorian.";
 "lng_serein_raise_selection_limit" = "Select up to 1000 messages";
 "lng_serein_raise_selection_limit_note" = "Telegram accepts at most 100 messages per request, so forwarding and deleting larger selections is sent in batches of 100, keeping albums together. Applies after a restart.";
+"lng_serein_interaction" = "Interaction";
+"lng_serein_double_click_edits_own" = "Double-click your messages to edit";
+"lng_serein_double_click_edits_own_note" = "Double-clicking a message you sent opens it for editing while it can still be edited. Other messages keep the double-click action from the chat settings.";
 "lng_serein_message_id" = "Message ID: {id}";
 "lng_serein_marks_and_counts" = "Labels and counts";
 "lng_serein_exact_message_counters" = "Show exact view and reply counts";
