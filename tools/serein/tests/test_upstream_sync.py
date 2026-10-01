@@ -161,6 +161,32 @@ class UpstreamSyncTest(unittest.TestCase):
         self.assertIn(f"tde2e {old[:10]} -> {new[:10]}", message)
         self.assertEqual(git(self.fork, "status", "--porcelain"), "")
 
+    def test_clean_merge_checks_out_moved_submodules(self):
+        lib = Path(self._temp.name) / "moved"
+        lib.mkdir()
+        git(lib, "init", "-q", "-b", "main")
+        commits = []
+        for name in ("c1", "c2"):
+            write(lib, "f.txt", name + "\n")
+            git(lib, "add", ".")
+            git(lib, "commit", "-q", "-m", name)
+            commits.append(git(lib, "rev-parse", "HEAD"))
+        allow = ("-c", "protocol.file.allow=always")
+        git(self.upstream, *allow, "submodule", "add", "-q", str(lib), "cmake")
+        git(self.upstream / "cmake", "checkout", "-q", commits[0])
+        git(self.upstream, "add", "cmake")
+        git(self.upstream, "commit", "-q", "-m", "submodule")
+        git(self.fork, "pull", "-q", "--no-rebase", "--no-edit", "origin", "dev")
+        git(self.fork, *allow, "submodule", "update", "-q", "--init")
+        git(self.upstream / "cmake", "checkout", "-q", commits[1])
+        git(self.upstream, "commit", "-q", "-am", "bump to c2")
+        git(self.upstream, "tag", "v6")
+        conflicts, metrics = self.sync("v6")
+        self.assertIsNone(conflicts)
+        self.assertEqual(metrics["all_files"], 1)
+        self.assertEqual(git(self.fork / "cmake", "rev-parse", "HEAD"), commits[1])
+        self.assertEqual(git(self.fork, "status", "--porcelain"), "")
+
     def test_dirty_worktree_is_refused(self):
         write(self.fork, "Telegram/SourceFiles/b.cpp", "dirty\n")
         with self.assertRaisesRegex(upstream_sync.SyncError, "uncommitted"):
