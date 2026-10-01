@@ -27,6 +27,7 @@ void TestVpnRules();
 void TestProxyOrder();
 void TestProxyNotes();
 void TestBatches();
+void TestDownloadNames();
 void TestPersianCalendar();
 void TestNeutralDefaults();
 void TestChinese();
@@ -195,6 +196,7 @@ int main() {
 		TestProxyOrder();
 		TestProxyNotes();
 		TestBatches();
+		TestDownloadNames();
 		TestPersianCalendar();
 		TestNeutralDefaults();
 		TestChinese();
