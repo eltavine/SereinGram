@@ -19,6 +19,7 @@
 #include "ui/widgets/popup_menu.h"
 #include "window/window_session_controller.h"
 #include "styles/style_menu_icons.h"
+#include "styles/style_serein.h"
 
 namespace Serein::Menu {
 namespace {

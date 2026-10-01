@@ -1,5 +1,6 @@
 using "ui/widgets/widgets.style";
 using "dialogs/dialogs.style";
+using "ui/menu_icons.style";
 
 sereinSnapshotWidth: 640px;
 sereinSnapshotPadding: 16px;
@@ -61,3 +62,6 @@ compactTwoLineDialogRow: DialogRow(compactDialogRow) {
 compactThreeLineDialogRow: DialogRow(compactDialogRow) {
 	height: 94px;
 }
+
+menuIconRepeat: icon {{ "menu/repeat", menuIconColor }};
+menuIconSerein: icon {{ "menu/serein", menuIconColor }};
