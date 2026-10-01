@@ -6,6 +6,7 @@
 #include "serein/network/proxy_tools.h"
 #include "serein/schema/gen/settings/services.h"
 #include "ui/layers/generic_box.h"
+#include "ui/widgets/buttons.h"
 #include "ui/widgets/fields/input_field.h"
 #include "ui/widgets/labels.h"
 #include "window/window_session_controller.h"
