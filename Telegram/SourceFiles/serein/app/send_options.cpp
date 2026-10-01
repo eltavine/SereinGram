@@ -15,10 +15,8 @@ constexpr auto kGhostScheduleDelay = TimeId(12);
 
 void ApplyGhostSchedule(
 		gsl::not_null<History*> history,
+		const Ghost::Policy &policy,
 		Api::SendOptions &options) {
-	const auto policy = Ghost::Read(
-		ForAccount(&history->session()),
-		ForDevice());
 	if (options.scheduled
 		|| options.shortcutId
 		|| history->peer->isSelf()
@@ -33,10 +31,13 @@ void ApplyGhostSchedule(
 void ApplySendOptions(
 		gsl::not_null<History*> history,
 		Api::SendOptions &options) {
-	if (Compose::SendSilently()) {
+	const auto policy = Ghost::Read(
+		ForAccount(&history->session()),
+		ForDevice());
+	if (Compose::SendSilently() || Ghost::SendSilently(policy)) {
 		options.silent = true;
 	}
-	ApplyGhostSchedule(history, options);
+	ApplyGhostSchedule(history, policy, options);
 }
 
 } // namespace Serein::Hooks

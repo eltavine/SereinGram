@@ -21,6 +21,7 @@ struct Policy {
 	bool hideViewIncrements = false;
 	bool markReadAfterSending = false;
 	bool useScheduledMessages = false;
+	bool sendSilently = false;
 };
 
 [[nodiscard]] Policy Read(Options &account, Options &device);
@@ -30,5 +31,6 @@ struct Policy {
 [[nodiscard]] bool OfflineAfterSending(const Policy &policy);
 [[nodiscard]] bool MarkReadAfterSending(const Policy &policy);
 [[nodiscard]] bool ScheduleOutgoing(const Policy &policy);
+[[nodiscard]] bool SendSilently(const Policy &policy);
 
 } // namespace Serein::Ghost

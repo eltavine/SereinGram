@@ -70,6 +70,13 @@ inline constexpr auto kGhostExplicitReadReceipts = Option<bool>{
 	Category::Privacy,
 	"lng_serein_ghost_explicit_read_receipts",
 	0 };
+inline constexpr auto kGhostSendSilently = Option<bool>{
+	"serein.ghostSendSilently",
+	Scope::Account,
+	false,
+	Category::Privacy,
+	"lng_serein_ghost_send_silently",
+	0 };
 inline constexpr auto kGhostUseScheduledMessages = Option<bool>{
 	"serein.ghostUseScheduledMessages",
 	Scope::Account,
@@ -96,6 +103,7 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kGhostHideViewIncrements));
 	Expects(registry.Add(kGhostMarkReadAfterSending));
 	Expects(registry.Add(kGhostExplicitReadReceipts));
+	Expects(registry.Add(kGhostSendSilently));
 	Expects(registry.Add(kGhostUseScheduledMessages));
 	Expects(registry.Add(kReadReceiptExceptions));
 }

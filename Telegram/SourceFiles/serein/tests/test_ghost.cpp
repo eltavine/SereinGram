@@ -43,7 +43,9 @@ void TestGhost() {
 			Activity::Online, Activity::Typing, Activity::ViewIncrement }) {
 		Require(Allows(policy, activity), "ghost mode is off by default");
 	}
-	Require(!OfflineAfterSending(policy) && !ScheduleOutgoing(policy),
+	Require(!OfflineAfterSending(policy)
+		&& !ScheduleOutgoing(policy)
+		&& !SendSilently(policy),
 		"no ghost side effects by default");
 
 	Require(account.Set(kGhostMode, true), "ghost mode turns on");
@@ -59,14 +61,17 @@ void TestGhost() {
 
 	Require(account.Set(kGhostHideTyping, false)
 		&& account.Set(kGhostHideViewIncrements, true)
-		&& account.Set(kGhostUseScheduledMessages, true), "ghost details change");
+		&& account.Set(kGhostUseScheduledMessages, true)
+		&& account.Set(kGhostSendSilently, true), "ghost details change");
 	policy = Read(account, device);
 	Require(Allows(policy, Activity::Typing), "typing can stay visible");
 	Require(!Allows(policy, Activity::ViewIncrement), "view increments can be hidden");
 	Require(ScheduleOutgoing(policy), "scheduled sending can be enabled");
+	Require(SendSilently(policy), "silent sending can be enabled");
 
 	Require(account.Set(kGhostMode, false), "ghost mode turns off");
-	Require(Allows(Read(account, device), Activity::ViewIncrement),
+	Require(Allows(Read(account, device), Activity::ViewIncrement)
+		&& !SendSilently(Read(account, device)),
 		"details do not apply while ghost mode is off");
 
 	Require(device.Set(kGhostAllAccounts, true)
