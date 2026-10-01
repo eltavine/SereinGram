@@ -34,7 +34,15 @@ SereinGram 是基于 Telegram Desktop 的第三方桌面客户端，功能对标
 | --- | --- | --- | --- |
 | macOS | arm64 + x86_64 通用二进制，DMG | 上游 `prepare.py` + Xcode | 随上游 |
 | Windows | x64 安装包与便携版；arm64 随后 | 上游 `prepare.py` + MSVC | 随上游 |
-| Linux | x86_64 静态构建 tar 包与 AppImage（Rocky Linux 8 容器，glibc 兼容主流发行版）；发行版打包走 `DESKTOP_APP_USE_PACKAGED` | 上游 Docker 环境 | 随上游 |
+| Linux | x86_64 静态构建 tar 包、AppImage、`.deb` 与 `.rpm`（Rocky Linux 8 容器，glibc 2.28 及以上）；Arch Linux PKGBUILD 与 Flatpak 清单以系统库构建 | 上游 Docker 环境；Arch 与 Flatpak 用各自的依赖 | 随上游 |
+
+Linux 发行版打包：
+
+- `packaging/nfpm/`：把静态构建打成 `.deb` 与 `.rpm`，Linux 工作流随构建产物一起生成。
+- `packaging/arch/PKGBUILD`：以系统库构建 `sereingram-desktop-git`，CI 工作流 `serein-arch.yml` 在 Arch 容器中构建并安装检查。
+- `packaging/flatpak/`：GNOME 运行时上的 Flatpak 清单，构建本地检出，CI 工作流 `serein-flatpak.yml` 生成 `.flatpak` 包。
+- 打包者必须使用自己的 API 凭据：PKGBUILD 读取环境变量 `SEREIN_API_ID` 与 `SEREIN_API_HASH`，Flatpak 读取被忽略的 `Telegram/build/api_credentials.local.cmake`；缺少凭据时构建报错。以系统库构建时不检查 GitHub 更新，由包管理器负责更新。
+- `tools/serein/check_packaging.py` 要求两份配方锁定的依赖版本与 `snap/snapcraft.yaml` 一致，上游同步后需随之更新。
 
 ## 3. 标识与状态
 
