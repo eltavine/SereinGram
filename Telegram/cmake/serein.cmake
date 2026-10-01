@@ -275,6 +275,10 @@ if (TARGET desktop-app::external_rnnoise)
     target_compile_definitions(Telegram PRIVATE SEREIN_HAVE_RNNOISE)
 endif()
 
+if (DESKTOP_APP_USE_PACKAGED)
+    target_compile_definitions(Telegram PRIVATE SEREIN_SYSTEM_PACKAGE)
+endif()
+
 if (WIN32)
     target_link_libraries(Telegram PRIVATE Dnsapi)
 endif()

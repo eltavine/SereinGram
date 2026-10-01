@@ -114,5 +114,6 @@ message InterfaceSettings {
     section: {title: "lng_serein_updates" id: "updates" keywords: ["updates"]}
     keywords: ["updates", "GitHub", "version"]
     default_bool: true
+    custom_ui: true
   }];
 }

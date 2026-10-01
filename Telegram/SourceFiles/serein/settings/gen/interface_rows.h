@@ -10,7 +10,7 @@
 
 namespace Serein::Interface {
 
-inline const auto kToggleRows = std::array<ToggleRow, 11>{ {
+inline const auto kToggleRows = std::array<ToggleRow, 10>{ {
 	{
 		&kWideChannelPosts,
 		tr::lng_serein_wide_channel_posts,
@@ -71,12 +71,6 @@ inline const auto kToggleRows = std::array<ToggleRow, 11>{ {
 		u"serein/interface/more-accounts"_q,
 		{ u"accounts"_q, u"limit"_q, u"multiple"_q },
 	},
-	{
-		&kCheckUpdates,
-		tr::lng_serein_check_updates,
-		u"serein/interface/check-updates"_q,
-		{ u"updates"_q, u"GitHub"_q, u"version"_q },
-	},
 } };
 
 struct CustomRows {
@@ -87,6 +81,7 @@ struct CustomRows {
 	CustomRow notificationDelay;
 	CustomRow otherDeviceNotificationDelay;
 	CustomRow globalShortcut;
+	CustomRow checkUpdates;
 };
 
 inline void AddLayout(
@@ -160,7 +155,7 @@ inline void AddLayout(
 		tr::lng_serein_updates,
 		{ u"updates"_q },
 	});
-	AddToggle(builder, kToggleRows[10]);
+	custom.checkUpdates();
 }
 
 } // namespace Serein::Interface

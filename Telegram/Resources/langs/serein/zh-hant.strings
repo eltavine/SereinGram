@@ -288,6 +288,7 @@
 "lng_serein_more_accounts_note" = "超出官方上限的帳號只儲存在本機。官方用戶端最多只能開啟其中 6 個。";
 "lng_serein_updates" = "更新";
 "lng_serein_check_updates" = "在 GitHub 上檢查更新";
+"lng_serein_updates_system_package" = "此版本由系統的套件管理員負責更新。";
 "lng_serein_update_available" = "SereinGram {version} 已在 GitHub 發佈。";
 "lng_serein_startup_folder" = "啟動時開啟的資料夾";
 "lng_serein_startup_folder_last" = "上次開啟的資料夾";

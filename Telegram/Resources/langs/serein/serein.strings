@@ -292,6 +292,7 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_more_accounts_note" = "Accounts beyond the official limit stay on this device. The official app opens at most 6 of them.";
 "lng_serein_updates" = "Updates";
 "lng_serein_check_updates" = "Check for updates on GitHub";
+"lng_serein_updates_system_package" = "This build is updated by your system package manager.";
 "lng_serein_update_available" = "SereinGram {version} is available on GitHub.";
 "lng_serein_startup_folder" = "Folder to open at startup";
 "lng_serein_startup_folder_last" = "Last opened folder";

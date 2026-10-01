@@ -1,4 +1,6 @@
 #include "serein/settings/interface.h"
+
+#include "serein/core/build_flags.h"
 #include "serein/interface/global_shortcut.h"
 
 #include "serein/interface/options.h"
@@ -243,6 +245,18 @@ const auto kMeta = BuildHelper({
 					controller->show(Box(Interface::GlobalShortcutBox));
 				},
 				.keywords = { u"hotkey"_q, u"shortcut"_q, u"global"_q },
+			});
+		},
+		.checkUpdates = [&] {
+			if (kSystemPackage) {
+				AddNote(builder, tr::lng_serein_updates_system_package);
+				return;
+			}
+			AddToggle(builder, {
+				.option = &Interface::kCheckUpdates,
+				.title = tr::lng_serein_check_updates,
+				.id = u"serein/interface/check-updates"_q,
+				.keywords = { u"updates"_q, u"GitHub"_q, u"version"_q },
 			});
 		},
 	});

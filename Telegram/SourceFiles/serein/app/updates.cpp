@@ -1,6 +1,8 @@
 #include "serein/app/updates.h"
 #include "serein/adapters/qtnetwork/manager.h"
 
+#include "serein/core/build_flags.h"
+
 #include "serein/features/updates/model/release.h"
 #include "serein/hooks/gen/interface.h"
 #include "core/application.h"
@@ -82,7 +84,9 @@ private:
 } // namespace
 
 void StartUpdateChecks() {
-	new Checker(&Core::App());
+	if (!kSystemPackage) {
+		new Checker(&Core::App());
+	}
 }
 
 } // namespace Serein::App
