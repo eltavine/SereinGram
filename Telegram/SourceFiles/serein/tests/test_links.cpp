@@ -48,6 +48,20 @@ void TestLinks() {
 		"rule matched a different host");
 	Require(!Rewrite(raw, u"http://name:password@example.com/p"_q).error.isEmpty(),
 		"credential-bearing URL was rewritten");
+	Require(RewritePreviewLink(raw, u"example.com/p?utm_source=x"_q)
+			== u"https://mirror.example/p"_q,
+		"preview link without a scheme was not rewritten");
+	for (const auto kept : {
+			"https://other.example/p",
+			"http://name:password@example.com/p",
+			"not a link" }) {
+		const auto link = QString::fromLatin1(kept);
+		Require(RewritePreviewLink(raw, link) == link,
+			"preview link changed without a matching rule");
+	}
+	Require(RewritePreviewLink(QByteArray(), u"example.com/p"_q)
+			== u"example.com/p"_q,
+		"preview link changed without rules");
 
 	const auto config = QJsonDocument::fromJson(raw).object();
 	const auto enabled = config.value(u"rules"_q).toArray().at(0).toObject();

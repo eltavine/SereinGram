@@ -22,5 +22,8 @@ struct Result {
 [[nodiscard]] LinkRule NewRule();
 [[nodiscard]] Result Rewrite(const LinkRules &rules, const QString &original);
 [[nodiscard]] Result Rewrite(const QByteArray &raw, const QString &original);
+[[nodiscard]] QString RewritePreviewLink(
+	const QByteArray &raw,
+	const QString &link);
 
 } // namespace Serein::Links

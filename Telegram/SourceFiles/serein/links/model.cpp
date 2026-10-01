@@ -106,4 +106,14 @@ Result Rewrite(const LinkRules &rules, const QString &original) {
 	return result;
 }
 
+QString RewritePreviewLink(const QByteArray &raw, const QString &link) {
+	const auto absolute = link.contains(u"://"_q)
+		? link
+		: (u"https://"_q + link);
+	const auto result = Rewrite(raw, absolute);
+	return (result.error.isEmpty() && result.changed)
+		? result.url.toString(QUrl::FullyEncoded)
+		: link;
+}
+
 } // namespace Serein::Links
