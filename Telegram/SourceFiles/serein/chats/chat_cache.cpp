@@ -71,10 +71,10 @@ int ClearLoadedMediaCache(not_null<History*> history) {
 	if (const auto migrated = history->migrateFrom()) {
 		Collect(migrated, documents, photos);
 	}
-	for (const auto document : documents) {
+	for (const auto &document : documents) {
 		ClearDocument(document);
 	}
-	for (const auto photo : photos) {
+	for (const auto &photo : photos) {
 		photo->clearLocalCache();
 	}
 	return int(documents.size() + photos.size());
