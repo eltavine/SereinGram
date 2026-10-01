@@ -54,6 +54,7 @@ class UpstreamSyncTest(unittest.TestCase):
             "owned_extra": [],
             "own_include_prefixes": ["serein/"],
             "hook_include_prefixes": ["serein/hooks/"],
+            "submodule_overrides": [],
             "budget": dict.fromkeys(upstream_sync.upstream_budget.BUDGET_KEYS, 100),
         }))
         write(self.fork, "Telegram/SourceFiles/serein/x.cpp", "int x;\n")
