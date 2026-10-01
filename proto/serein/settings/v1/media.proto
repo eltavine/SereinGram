@@ -61,4 +61,8 @@ message MediaSettings {
   optional bool mp4_file_preview = 11 [(serein.options.v1.field) = {
     keywords: ["MP4", "file", "preview"]
   }];
+  optional bool denoise_voice_messages = 12 [(serein.options.v1.field) = {
+    keywords: ["noise", "voice", "recording", "microphone"]
+    note: "lng_serein_denoise_voice_messages_note"
+  }];
 }

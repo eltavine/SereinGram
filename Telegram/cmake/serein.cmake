@@ -88,6 +88,7 @@ set(serein_sources
     serein/menu/selection.cpp
 	serein/media/sticker_catalog.cpp
 	serein/media/sticker_catalog_rules.cpp
+	serein/media/voice_denoise.cpp
     serein/messages/format.cpp
     serein/messages/content.cpp
     serein/messages/dates.cpp
@@ -251,6 +252,11 @@ else()
     include(${CMAKE_CURRENT_LIST_DIR}/serein_opencc.cmake)
 endif()
 target_link_libraries(Telegram PRIVATE Serein::OpenCC)
+
+if (TARGET desktop-app::external_rnnoise)
+    target_link_libraries(Telegram PRIVATE desktop-app::external_rnnoise)
+    target_compile_definitions(Telegram PRIVATE SEREIN_HAVE_RNNOISE)
+endif()
 
 if (WIN32)
     target_link_libraries(Telegram PRIVATE Dnsapi)

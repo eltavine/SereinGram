@@ -97,6 +97,8 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_disable_video_autoplay" = "Disable video autoplay in chats";
 "lng_serein_gif_playback_controls" = "Show GIF playback controls";
 "lng_serein_mp4_file_preview" = "Keep video preview for MP4 files";
+"lng_serein_denoise_voice_messages" = "Reduce background noise in voice messages";
+"lng_serein_denoise_voice_messages_note" = "Recorded voice messages pass through the RNNoise noise suppressor that group calls use. It runs on this device; turning it on affects the next recording.";
 "lng_serein_privacy" = "Privacy and profile";
 "lng_serein_hide_my_phone" = "Hide my phone number";
 "lng_serein_hide_read_time" = "Hide read time hints";

@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "media/audio/media_audio_capture.h"
+#include "serein/hooks/media/voice_denoise.h"
 
 #include "media/audio/media_audio_capture_common.h"
 #include "media/audio/media_audio_ffmpeg_loader.h"
@@ -229,6 +230,7 @@ struct Instance::Inner::Private {
 	uint8_t **srcSamplesData = nullptr;
 	uint8_t **dstSamplesData = nullptr;
 	SwrContext *swrContext = nullptr;
+	Serein::Media::VoiceDenoiserPointer denoiser;
 
 	int32 lastUpdate = 0;
 	uint16 levelMax = 0;
@@ -319,6 +321,7 @@ void Instance::Inner::start(
 	if (_paused) {
 		_paused = false;
 	}
+	d->denoiser = Serein::Media::CreateVoiceDenoiser();
 
 	// Start OpenAL Capture
 	const auto utf = id.isDefault() ? std::string() : id.value.toStdString();
@@ -740,6 +743,7 @@ bool Instance::Inner::processFrame(int32 offset, int32 framesize) {
 		}
 	}
 
+	Serein::Media::Denoise(d->denoiser.get(), srcSamplesDataChannel, samplesCnt);
 	d->waveform.reserve(d->waveform.size() + (samplesCnt / d->waveformEach) + 1);
 	for (short *ptr = srcSamplesDataChannel, *end = ptr + samplesCnt; ptr != end; ++ptr) {
 		uint16 value = std::abs(int(*ptr));

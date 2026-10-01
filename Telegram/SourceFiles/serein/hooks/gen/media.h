@@ -27,5 +27,7 @@ namespace Serein::Hooks::Media {
 [[nodiscard]] rpl::producer<bool> GifPlaybackControlsValue();
 [[nodiscard]] bool Mp4FilePreview();
 [[nodiscard]] rpl::producer<bool> Mp4FilePreviewValue();
+[[nodiscard]] bool DenoiseVoiceMessages();
+[[nodiscard]] rpl::producer<bool> DenoiseVoiceMessagesValue();
 
 } // namespace Serein::Hooks::Media

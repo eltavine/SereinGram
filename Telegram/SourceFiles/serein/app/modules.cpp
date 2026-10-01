@@ -13,6 +13,7 @@
 #include "serein/hooks/interface/roundness.h"
 #include "serein/hooks/interface/text.h"
 #include "serein/interface/app_icon.h"
+#include "serein/media/voice_denoise.h"
 #include "serein/network/vpn_proxy.h"
 #include "serein/settings/lock.h"
 
@@ -32,6 +33,7 @@ constexpr auto kModules = std::array{
 	Module{ "app.shortcuts", StartShortcuts },
 	Module{ "privacy.auto_demo", StartAutoDemoMode },
 	Module{ "privacy.settings_lock", StartSettingsLock },
+	Module{ "media.voice_denoise", Media::StartVoiceDenoise },
 	Module{ "network.vpn_proxy", Network::StartVpnProxyPause },
 	Module{ "filters.subscription", Filters::StartRuleSubscription },
 	Module{ "chats.recent", nullptr, nullptr, TrackRecentChats },

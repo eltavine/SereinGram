@@ -94,4 +94,12 @@ rpl::producer<bool> Mp4FilePreviewValue() {
 	return ForDevice().Value(Serein::Media::kMp4FilePreview);
 }
 
+bool DenoiseVoiceMessages() {
+	return ForDevice().Get(Serein::Media::kDenoiseVoiceMessages);
+}
+
+rpl::producer<bool> DenoiseVoiceMessagesValue() {
+	return ForDevice().Value(Serein::Media::kDenoiseVoiceMessages);
+}
+
 } // namespace Serein::Hooks::Media

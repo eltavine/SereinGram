@@ -90,6 +90,13 @@ inline constexpr auto kMp4FilePreview = Option<bool>{
 	Category::Media,
 	"lng_serein_mp4_file_preview",
 	0 };
+inline constexpr auto kDenoiseVoiceMessages = Option<bool>{
+	"serein.denoiseVoiceMessages",
+	Scope::Device,
+	false,
+	Category::Media,
+	"lng_serein_denoise_voice_messages",
+	0 };
 
 inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kStickerScale));
@@ -103,6 +110,7 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kDisableVideoAutoplay));
 	Expects(registry.Add(kGifPlaybackControls));
 	Expects(registry.Add(kMp4FilePreview));
+	Expects(registry.Add(kDenoiseVoiceMessages));
 }
 
 } // namespace Serein::Media
