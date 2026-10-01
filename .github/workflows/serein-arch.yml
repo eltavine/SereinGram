@@ -2,17 +2,21 @@ name: Serein Arch Linux.
 
 on:
   push:
+    branches:
+      - develop
+      - main
     tags:
       - 'v*'
-  pull_request:
     paths:
       - 'packaging/arch/**'
       - '.github/workflows/serein-arch.yml'
+  schedule:
+    - cron: '0 3 * * 1'
   workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 permissions:
   contents: read
