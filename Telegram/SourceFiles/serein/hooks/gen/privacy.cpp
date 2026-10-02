@@ -70,6 +70,14 @@ rpl::producer<bool> ShowRegistrationDateValue() {
 	return ForDevice().Value(Serein::Privacy::kShowRegistrationDate);
 }
 
+bool ShowSessionDetails() {
+	return ForDevice().Get(Serein::Privacy::kShowSessionDetails);
+}
+
+rpl::producer<bool> ShowSessionDetailsValue() {
+	return ForDevice().Value(Serein::Privacy::kShowSessionDetails);
+}
+
 bool LocalNames() {
 	return ForDevice().Get(Serein::Privacy::kLocalNames);
 }

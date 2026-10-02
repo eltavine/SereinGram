@@ -124,6 +124,11 @@
 "lng_serein_profile_registered" = "註冊於";
 "lng_serein_profile_registered_about" = "約 {date}";
 "lng_serein_profile_registered_after" = "晚於 {date}";
+"lng_serein_show_session_details" = "顯示更多裝置資訊";
+"lng_serein_session_details_note" = "在「設定 > 裝置」的裝置詳情中加入登入時間、API ID 以及是否為官方應用程式。";
+"lng_serein_session_created" = "登入時間";
+"lng_serein_session_api_id" = "API ID";
+"lng_serein_session_official" = "官方應用程式";
 "lng_serein_hide_profile_gifts" = "隱藏個人資料禮物";
 "lng_serein_hide_create_todo" = "隱藏建立待辦清單入口";
 "lng_serein_save_protected_content" = "允許儲存受保護內容";

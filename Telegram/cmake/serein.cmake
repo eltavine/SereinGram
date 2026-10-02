@@ -130,6 +130,7 @@ set(serein_sources
     serein/snapshot/snapshot.cpp
     serein/privacy/peer_id.cpp
     serein/privacy/profile.cpp
+    serein/privacy/sessions.cpp
     serein/privacy/alias.cpp
     serein/privacy/alias_model.cpp
     serein/privacy/alias_rules.cpp

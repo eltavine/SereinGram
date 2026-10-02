@@ -23,8 +23,10 @@ public:
 
 		bool incomplete = false;
 		bool callsDisabled = false;
+		bool officialApp = false;
 		int apiId = 0;
 		TimeId activeTime = 0;
+		TimeId createdTime = 0;
 		QString name, active, info, ip, location, system, platform;
 	};
 	using List = std::vector<Entry>;

@@ -46,6 +46,10 @@ message PrivacySettings {
     keywords: ["profile", "registration", "account age"]
     note: "lng_serein_registration_date_note"
   }];
+  optional bool show_session_details = 13 [(serein.options.v1.field) = {
+    keywords: ["sessions", "devices", "API ID", "login"]
+    note: "lng_serein_session_details_note"
+  }];
   optional bool local_names = 12 [(serein.options.v1.field) = {
     keywords: ["local name", "alias", "rename", "nickname"]
     note: "lng_serein_local_names_note"

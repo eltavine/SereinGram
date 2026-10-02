@@ -128,6 +128,11 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_profile_registered" = "Registered";
 "lng_serein_profile_registered_about" = "about {date}";
 "lng_serein_profile_registered_after" = "after {date}";
+"lng_serein_show_session_details" = "Show more device details";
+"lng_serein_session_details_note" = "Adds the login time, the API ID and whether the app is official to the device details in Settings > Devices.";
+"lng_serein_session_created" = "Logged in";
+"lng_serein_session_api_id" = "API ID";
+"lng_serein_session_official" = "Official app";
 "lng_serein_hide_profile_gifts" = "Hide profile gifts";
 "lng_serein_hide_create_todo" = "Hide Create To-Do List";
 "lng_serein_save_protected_content" = "Allow saving protected content";
