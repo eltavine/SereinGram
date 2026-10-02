@@ -17,6 +17,7 @@ struct CustomRows {
 	CustomRow translationContext;
 	CustomRow chatTranslationWithoutPremium;
 	CustomRow autoTranslateChats;
+	CustomRow instantViewTranslation;
 	CustomRow proxySubscription;
 	CustomRow proxyNotes;
 	CustomRow pauseProxyOnVpn;
@@ -32,6 +33,7 @@ inline void AddLayout(
 	custom.translationContext();
 	custom.chatTranslationWithoutPremium();
 	custom.autoTranslateChats();
+	custom.instantViewTranslation();
 	custom.proxySubscription();
 	custom.proxyNotes();
 	custom.pauseProxyOnVpn();

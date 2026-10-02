@@ -27,6 +27,8 @@ set(serein_sources
     serein/features/regdate/model/estimate.cpp
     serein/adapters/openssl/aes_gcm_cipher.cpp
     serein/features/ghost/hooks.cpp
+    serein/features/instant_view/hooks.cpp
+    serein/features/instant_view/translation.cpp
     serein/features/ghost/read_until_here.cpp
     serein/features/ghost/story_tip.cpp
     serein/app/ghost_read.cpp

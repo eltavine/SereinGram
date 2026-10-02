@@ -46,6 +46,14 @@ rpl::producer<bool> AutoTranslateChatsValue(gsl::not_null<Main::Session*> sessio
 	return ForAccount(session).Value(Serein::ServiceSettings::kAutoTranslateChats);
 }
 
+bool InstantViewTranslation() {
+	return ForDevice().Get(Serein::ServiceSettings::kInstantViewTranslation);
+}
+
+rpl::producer<bool> InstantViewTranslationValue() {
+	return ForDevice().Value(Serein::ServiceSettings::kInstantViewTranslation);
+}
+
 QString ProxySubscription() {
 	return ForDevice().Get(Serein::ServiceSettings::kProxySubscription);
 }

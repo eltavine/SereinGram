@@ -30,6 +30,7 @@ message ServicesSettings {
     scope: SCOPE_ACCOUNT
     custom_ui: true
   }];
+  optional bool instant_view_translation = 12 [(serein.options.v1.field) = {custom_ui: true}];
   optional string proxy_subscription = 3 [
     (serein.options.v1.field) = {
       title: "lng_serein_proxy_subscription"

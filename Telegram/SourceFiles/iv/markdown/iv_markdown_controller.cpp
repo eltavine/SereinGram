@@ -17,6 +17,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "iv/iv_search_controller.h"
 #include "iv/iv_zoom_controls.h"
 #include "lang/lang_keys.h"
+#include "serein/hooks/iv.h"
 #include "ui/layers/layer_manager.h"
 #include "ui/layers/show.h"
 #include "ui/widgets/buttons.h"
@@ -964,6 +965,7 @@ void Controller::showMenu() {
 			}),
 			&st::menuIconShare);
 	}
+	Serein::Hooks::Iv::FillMenu(_menu.get(), _options.currentPageId);
 
 	if (hasOpenSource || canShare()) {
 		_menu->addSeparator();

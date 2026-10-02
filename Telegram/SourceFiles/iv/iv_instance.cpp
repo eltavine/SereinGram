@@ -33,6 +33,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "main/main_session.h"
 #include "main/session/session_show.h"
 #include "media/view/media_view_open_common.h"
+#include "serein/hooks/iv.h"
 #include "storage/storage_account.h"
 #include "ui/toast/toast.h"
 #include "ui/basic_click_handlers.h"
@@ -426,10 +427,16 @@ Shown::Shown(
 , _openChannel(std::move(openChannel))
 , _joinChannel(std::move(joinChannel)) {
 	prepare(data, hash);
+	Serein::Hooks::Iv::OnPageRefresh(_session, _lifetime, [=](
+			not_null<Data*> page) {
+		if (_id == page->id()) {
+			update(page);
+		}
+	});
 }
 
 void Shown::prepare(not_null<Data*> data, const QString &hash) {
-	const auto richPage = data->richPage();
+	const auto richPage = Serein::Hooks::Iv::DisplayedPage(_session, data);
 	const auto id = data->id();
 	const auto page = _session->data().webpage(data->pageId());
 
@@ -637,7 +644,7 @@ void Shown::moveTo(not_null<Data*> data, QString hash) {
 }
 
 void Shown::update(not_null<Data*> data) {
-	const auto richPage = data->richPage();
+	const auto richPage = Serein::Hooks::Iv::DisplayedPage(_session, data);
 	const auto id = data->id();
 	const auto page = _session->data().webpage(data->pageId());
 

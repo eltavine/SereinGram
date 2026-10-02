@@ -703,6 +703,13 @@ const auto kMeta = BuildHelper({
 		.keywords = { u"translate"_q, u"automatic"_q, u"chat"_q },
 	});
 	builder.addDividerText(tr::lng_serein_auto_translate_chats_about());
+	AddToggle(builder, {
+		.option = &ServiceSettings::kInstantViewTranslation,
+		.title = tr::lng_serein_instant_view_translation,
+		.id = u"serein/services/instant-view-translation"_q,
+		.keywords = { u"translate"_q, u"Instant View"_q, u"article"_q },
+	});
+	builder.addDividerText(tr::lng_serein_instant_view_translation_about());
 	AddNetworkSettings(builder);
 	AddToggle(builder, {
 		.option = &ServiceSettings::kAndroidWebApps,

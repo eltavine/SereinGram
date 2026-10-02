@@ -101,6 +101,17 @@
       "app": true,
       "libraries": true
     },
+    "serein/features/instant_view/": {
+      "own": [
+        "serein/features/instant_view/",
+        "serein/core/",
+        "serein/schema/",
+        "serein/ports/",
+        "serein/hooks/"
+      ],
+      "app": true,
+      "libraries": true
+    },
     "serein/display/": {
       "own": [
         "serein/display/",

@@ -22,6 +22,8 @@ namespace Serein::Hooks::ServiceSettings {
 [[nodiscard]] rpl::producer<bool> ChatTranslationWithoutPremiumValue();
 [[nodiscard]] bool AutoTranslateChats(gsl::not_null<Main::Session*> session);
 [[nodiscard]] rpl::producer<bool> AutoTranslateChatsValue(gsl::not_null<Main::Session*> session);
+[[nodiscard]] bool InstantViewTranslation();
+[[nodiscard]] rpl::producer<bool> InstantViewTranslationValue();
 [[nodiscard]] QString ProxySubscription();
 [[nodiscard]] rpl::producer<QString> ProxySubscriptionValue();
 [[nodiscard]] QByteArray ProxyNotes();
