@@ -284,4 +284,13 @@ message ComposeSettings {
       "send"
     ]
   }];
+  optional bool owner_send_as = 37 [(serein.options.v1.field) = {
+    keywords: [
+      "anonymous",
+      "send as",
+      "owner"
+    ]
+    note: "lng_serein_owner_send_as_note"
+    refresh: [REFRESH_COMPOSE_BUTTONS]
+  }];
 }

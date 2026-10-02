@@ -82,6 +82,8 @@
 "lng_serein_forwarding" = "转发";
 "lng_serein_sending" = "发送";
 "lng_serein_send_silently" = "总是静音发送";
+"lng_serein_owner_send_as" = "在我创建的群组中快速切换匿名";
+"lng_serein_owner_send_as_note" = "在你创建的超级群组中，“以…身份发送”菜单会同时列出群组本身和你的账号，可以在以群组身份匿名发言和以自己身份发言之间快速切换；聊天下次刷新该列表时生效。";
 "lng_serein_forward_before_comment" = "先发送转发内容，再发送附言";
 "lng_serein_media" = "媒体与贴纸";
 "lng_serein_sticker_scale" = "贴纸大小";

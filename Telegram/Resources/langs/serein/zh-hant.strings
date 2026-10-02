@@ -82,6 +82,8 @@
 "lng_serein_forwarding" = "轉傳";
 "lng_serein_sending" = "傳送";
 "lng_serein_send_silently" = "總是靜音傳送";
+"lng_serein_owner_send_as" = "在我建立的群組中快速切換匿名";
+"lng_serein_owner_send_as_note" = "在你建立的超級群組中，「以…身分傳送」選單會同時列出群組本身與你的帳號，可在以群組身分匿名發言和以自己身分發言之間快速切換；聊天下次重新整理該列表時生效。";
 "lng_serein_forward_before_comment" = "先傳送轉傳內容，再傳送附言";
 "lng_serein_media" = "媒體與貼圖";
 "lng_serein_sticker_scale" = "貼圖大小";

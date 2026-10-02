@@ -294,4 +294,12 @@ rpl::producer<bool> SendSilentlyValue() {
 	return ForDevice().Value(Serein::Compose::kSendSilently);
 }
 
+bool OwnerSendAs() {
+	return ForDevice().Get(Serein::Compose::kOwnerSendAs);
+}
+
+rpl::producer<bool> OwnerSendAsValue() {
+	return ForDevice().Value(Serein::Compose::kOwnerSendAs);
+}
+
 } // namespace Serein::Hooks::Compose

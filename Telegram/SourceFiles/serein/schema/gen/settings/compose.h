@@ -277,6 +277,13 @@ inline constexpr auto kSendSilently = Option<bool>{
 	Category::Compose,
 	"lng_serein_send_silently",
 	0 };
+inline constexpr auto kOwnerSendAs = Option<bool>{
+	"serein.ownerSendAs",
+	Scope::Device,
+	false,
+	Category::Compose,
+	"lng_serein_owner_send_as",
+	static_cast<unsigned>(Flag::RefreshComposeButtons) };
 
 inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kHideAttachButton));
@@ -315,6 +322,7 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kConfirmPrivateCall));
 	Expects(registry.Add(kForwardBeforeComment));
 	Expects(registry.Add(kSendSilently));
+	Expects(registry.Add(kOwnerSendAs));
 }
 
 } // namespace Serein::Compose
