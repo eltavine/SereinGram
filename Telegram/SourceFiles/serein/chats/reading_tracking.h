@@ -6,8 +6,8 @@ namespace Window {
 class SessionController;
 } // namespace Window
 
-namespace Serein::App {
+namespace Serein::Chats {
 
 void TrackReadingPositions(gsl::not_null<Window::SessionController*> window);
 
-} // namespace Serein::App
+} // namespace Serein::Chats

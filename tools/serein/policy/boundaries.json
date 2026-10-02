@@ -112,6 +112,18 @@
       "app": true,
       "libraries": true
     },
+    "serein/features/updates/": {
+      "own": [
+        "serein/features/updates/",
+        "serein/core/",
+        "serein/schema/",
+        "serein/ports/",
+        "serein/hooks/",
+        "serein/adapters/qtnetwork/"
+      ],
+      "app": true,
+      "libraries": true
+    },
     "serein/display/": {
       "own": [
         "serein/display/",

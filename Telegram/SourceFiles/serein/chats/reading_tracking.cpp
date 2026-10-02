@@ -1,4 +1,4 @@
-#include "serein/app/reading_positions.h"
+#include "serein/chats/reading_tracking.h"
 
 #include "serein/chats/options.h"
 #include "serein/chats/reading_positions.h"
@@ -13,7 +13,7 @@
 #include "main/main_session.h"
 #include "window/window_session_controller.h"
 
-namespace Serein::App {
+namespace Serein::Chats {
 namespace {
 
 void SavePosition(
@@ -57,7 +57,7 @@ void TrackReadingPositions(gsl::not_null<Window::SessionController*> window) {
 	});
 }
 
-} // namespace Serein::App
+} // namespace Serein::Chats
 
 namespace Serein {
 

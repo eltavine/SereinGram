@@ -1,4 +1,4 @@
-#include "serein/app/updates.h"
+#include "serein/features/updates/checker.h"
 #include "serein/adapters/qtnetwork/manager.h"
 
 #include "serein/core/build_flags.h"
@@ -16,7 +16,7 @@
 #include <QtNetwork/QNetworkReply>
 #include <QtNetwork/QNetworkRequest>
 
-namespace Serein::App {
+namespace Serein::Updates {
 namespace {
 
 constexpr auto kFirstCheckDelay = 30 * 1000;
@@ -89,4 +89,4 @@ void StartUpdateChecks() {
 	}
 }
 
-} // namespace Serein::App
+} // namespace Serein::Updates

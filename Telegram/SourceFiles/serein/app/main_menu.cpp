@@ -1,6 +1,6 @@
 #include "serein/hooks/interface/main_menu.h"
 
-#include "serein/app/recent_chats.h"
+#include "serein/chats/recent_tracking.h"
 #include "serein/hooks/ghost.h"
 #include "serein/schema/gen/settings/interface.h"
 #include "lang/lang_keys.h"
@@ -26,7 +26,7 @@ void FillMainMenu(
 		tr::lng_serein_recent_chats(),
 		{ &st::menuIconTimer }
 	)->setClickedCallback([=] {
-		App::ShowRecentChats(controller);
+		Serein::Chats::ShowRecentChats(controller);
 	});
 }
 

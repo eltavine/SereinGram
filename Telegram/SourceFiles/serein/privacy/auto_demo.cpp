@@ -1,4 +1,4 @@
-#include "serein/app/auto_demo.h"
+#include "serein/privacy/auto_demo.h"
 
 #include "serein/privacy/options.h"
 #include "serein/privacy/recorders.h"
@@ -11,7 +11,7 @@
 #include <QtCore/QPointer>
 #include <QtCore/QTimer>
 
-namespace Serein::App {
+namespace Serein::Privacy {
 namespace {
 
 constexpr auto kCheckInterval = 5 * 1000;
@@ -86,4 +86,4 @@ void StartAutoDemoMode() {
 	new AutoDemo(&Core::App());
 }
 
-} // namespace Serein::App
+} // namespace Serein::Privacy

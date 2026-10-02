@@ -1,4 +1,4 @@
-#include "serein/app/recent_chats.h"
+#include "serein/chats/recent_tracking.h"
 
 #include "serein/chats/options.h"
 #include "serein/chats/recent.h"
@@ -11,7 +11,7 @@
 #include "main/main_session.h"
 #include "window/window_session_controller.h"
 
-namespace Serein::App {
+namespace Serein::Chats {
 namespace {
 
 class RecentController final : public PeerListController {
@@ -88,4 +88,4 @@ void ShowRecentChats(gsl::not_null<Window::SessionController*> window) {
 		}));
 }
 
-} // namespace Serein::App
+} // namespace Serein::Chats

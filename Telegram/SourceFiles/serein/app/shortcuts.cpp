@@ -1,6 +1,6 @@
 #include "serein/app/shortcuts.h"
 
-#include "serein/app/recent_chats.h"
+#include "serein/chats/recent_tracking.h"
 
 #include "serein/features/ghost/model/policy.h"
 #include "serein/privacy/options.h"
@@ -50,7 +50,7 @@ bool ShowRecent() {
 	if (!controller) {
 		return false;
 	}
-	ShowRecentChats(controller);
+	Chats::ShowRecentChats(controller);
 	return true;
 }
 

@@ -31,20 +31,20 @@ set(serein_sources
     serein/features/instant_view/translation.cpp
     serein/features/ghost/read_until_here.cpp
     serein/features/ghost/story_tip.cpp
-    serein/app/ghost_read.cpp
+    serein/features/ghost/read_receipts.cpp
     serein/features/history/entities.cpp
     serein/features/history/menu.cpp
-    serein/app/history_expiry.cpp
-    serein/app/history_fade.cpp
-    serein/app/history_restore.cpp
+    serein/features/history/expiry.cpp
+    serein/features/history/fade.cpp
+    serein/features/history/restore.cpp
     serein/app/lifecycle.cpp
     serein/app/main_menu.cpp
     serein/app/message_menu.cpp
     serein/app/compose_field.cpp
     serein/app/modules.cpp
     serein/app/peer_menu.cpp
-    serein/app/recent_chats.cpp
-    serein/app/send_options.cpp
+    serein/chats/recent_tracking.cpp
+    serein/features/ghost/send_options.cpp
     serein/app/shortcuts.cpp
     serein/app/sticker_set_menu.cpp
     serein/app/user_lookup.cpp
@@ -52,9 +52,9 @@ set(serein_sources
     serein/features/history/restored_message.cpp
     serein/features/history/viewer.cpp
     serein/app/tray_menu.cpp
-    serein/app/updates.cpp
+    serein/features/updates/checker.cpp
     serein/app/ghost_menu.cpp
-    serein/app/ghost_send.cpp
+    serein/features/ghost/send.cpp
     serein/display/peer_id.cpp
     serein/display/view_refresher.cpp
     serein/interface/main_menu.cpp
@@ -73,7 +73,7 @@ set(serein_sources
     serein/chats/quick_actions.cpp
     serein/chats/chat_cache.cpp
     serein/chats/local_pins.cpp
-    serein/app/reading_positions.cpp
+    serein/chats/reading_tracking.cpp
     serein/chats/managed_folders.cpp
     serein/chats/shown_filters.cpp
     serein/chats/shown_order.cpp
@@ -83,7 +83,7 @@ set(serein_sources
     serein/settings/rows.cpp
     serein/settings/ghost_exceptions.cpp
     serein/settings/subpages.cpp
-    serein/app/auto_demo.cpp
+    serein/privacy/auto_demo.cpp
     serein/admin/delete_mine.cpp
     serein/admin/unblock_all.cpp
     serein/admin/upgrade.cpp
