@@ -1,8 +1,8 @@
 #include "serein/features/history/viewer.h"
 
+#include "serein/features/history/backend.h"
 #include "serein/features/history/bubbles.h"
-
-#include "serein/hooks/history.h"
+#include "serein/features/history/capture.h"
 #include "serein/ports/history_store.h"
 #include "base/unixtime.h"
 #include "core/file_utilities.h"
@@ -21,6 +21,8 @@
 #include "styles/style_layers.h"
 #include "styles/style_serein.h"
 
+#include <QtCore/QDir>
+#include <QtCore/QFile>
 #include <QtCore/QFileInfo>
 #include <QtGui/QImage>
 
@@ -34,7 +36,7 @@ constexpr auto kSavedChatsLimit = 200;
 		not_null<Main::Session*> session,
 		PeerId peer,
 		int limit) {
-	const auto store = Hooks::HistoryStoreFor(session);
+	const auto store = StoreFor(session);
 	if (!store) {
 		return {};
 	}
@@ -72,8 +74,30 @@ constexpr auto kSavedChatsLimit = 200;
 		&& suffix != u"webp"_q) {
 		return QImage();
 	}
-	const auto bytes = Hooks::CachedMediaBytes(session, record);
+	const auto bytes = CachedMediaBytes(session, record);
 	return bytes ? QImage::fromData(*bytes) : QImage();
+}
+
+[[nodiscard]] bool OpenCachedMedia(
+		not_null<Main::Session*> session,
+		const History::Record &record) {
+	const auto name = SafeFileName(record.cachedMediaName);
+	if (name.isEmpty()) {
+		return false;
+	}
+	const auto bytes = CachedMediaBytes(session, record);
+	const auto folder = QDir::temp().filePath(u"SereinGram"_q);
+	const auto path = QDir(folder).filePath(name);
+	auto file = QFile(path);
+	if (!bytes
+		|| !QDir().mkpath(folder)
+		|| !file.open(QIODevice::WriteOnly)
+		|| file.write(*bytes) != bytes->size()) {
+		return false;
+	}
+	file.close();
+	File::Launch(path);
+	return true;
 }
 
 void AddPreview(
@@ -146,7 +170,7 @@ void ShowDeletedMessages(
 				open->setClickedCallback([=] { File::Launch(path); });
 			} else if (!record.cachedMediaName.isEmpty()) {
 				const auto openMedia = [=] {
-					if (!Hooks::OpenCachedMedia(session, record)) {
+					if (!OpenCachedMedia(session, record)) {
 						box->uiShow()->showToast(
 							tr::lng_serein_history_media_missing(tr::now));
 					}
@@ -174,7 +198,7 @@ void ShowDeletedMessages(
 
 void ShowSavedChats(gsl::not_null<Window::SessionController*> controller) {
 	const auto session = &controller->session();
-	const auto store = Hooks::HistoryStoreFor(session);
+	const auto store = StoreFor(session);
 	const auto peers = store
 		? store->peersWithDeleted(kSavedChatsLimit)
 		: std::vector<qint64>();
@@ -217,7 +241,7 @@ void ConfirmClearHistory(
 			? tr::lng_serein_history_clear_chat_sure()
 			: tr::lng_serein_history_clear_all_sure()),
 		.confirmed = [=](Fn<void()> &&close) {
-			const auto cleared = Hooks::ClearHistory(session, peerId);
+			const auto cleared = ClearHistory(session, peerId);
 			close();
 			controller->uiShow()->showToast(cleared
 				? tr::lng_serein_history_cleared(tr::now)

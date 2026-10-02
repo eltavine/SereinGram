@@ -1,8 +1,11 @@
 #include "serein/app/modules.h"
 
+#include "serein/app/history_storage.h"
 #include "serein/app/message_menu.h"
 #include "serein/chats/reading_tracking.h"
 #include "serein/chats/recent_tracking.h"
+#include "serein/features/history/backend.h"
+#include "serein/features/history/recording.h"
 #include "serein/features/updates/checker.h"
 #include "serein/privacy/auto_demo.h"
 #include "serein/filters/subscription.h"
@@ -10,7 +13,6 @@
 #include "serein/app/shortcuts.h"
 
 #include "serein/hooks/chats/sort.h"
-#include "serein/hooks/history.h"
 #include "serein/hooks/interface/roundness.h"
 #include "serein/hooks/interface/text.h"
 #include "serein/interface/app_icon.h"
@@ -30,8 +32,13 @@ constexpr auto kModules = std::array{
 	Module{ "interface.roundness", Interface::StartRoundness },
 	Module{ "interface.text", Interface::StartUiText },
 	Module{ "interface.app_icon", Interface::StartAppIcon },
-	Module{ "history.retention", nullptr, Hooks::PruneHistory },
-	Module{ "history.removed_chats", nullptr, Hooks::WatchRemovedChats },
+	Module{ "history.storage", RegisterHistoryStorage },
+	Module{ "history.retention", nullptr, HistoryFeature::PruneHistory },
+	Module{
+		"history.removed_chats",
+		nullptr,
+		HistoryFeature::WatchRemovedChats,
+	},
 	Module{ "updates.check", Updates::StartUpdateChecks },
 	Module{ "chats.sorting", nullptr, Chats::WatchSorting },
 	Module{ "app.shortcuts", StartShortcuts },

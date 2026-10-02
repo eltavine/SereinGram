@@ -38,6 +38,9 @@ set(serein_sources
     serein/features/history/expiry.cpp
     serein/features/history/fade.cpp
     serein/features/history/restore.cpp
+    serein/features/history/backend.cpp
+    serein/features/history/capture.cpp
+    serein/features/history/recording.cpp
     serein/app/lifecycle.cpp
     serein/app/main_menu.cpp
     serein/app/message_menu.cpp
@@ -205,7 +208,7 @@ if (TARGET Qt6::Sql)
     message(STATUS "Serein: Qt Sql found, message history enabled.")
     nice_target_sources(Telegram ${src_loc} PRIVATE
         serein/adapters/qtsql/history_store.cpp
-        serein/app/history_hooks.cpp
+        serein/app/history_storage.cpp
     )
     target_link_libraries(Telegram PRIVATE Qt6::Sql)
     if (TARGET Qt6::QSQLiteDriverPlugin)
@@ -214,7 +217,7 @@ if (TARGET Qt6::Sql)
     endif()
 else()
     message(STATUS "Serein: Qt Sql not found, message history disabled.")
-    nice_target_sources(Telegram ${src_loc} PRIVATE serein/app/history_hooks_disabled.cpp)
+    nice_target_sources(Telegram ${src_loc} PRIVATE serein/app/history_storage_disabled.cpp)
 endif()
 
 if (APPLE AND NOT DESKTOP_APP_DISABLE_SWIFT6)

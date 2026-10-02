@@ -99,9 +99,9 @@ namespace Serein::Hooks {
 | HIST 删除 | `data/data_session.cpp` 的 `processMessagesDeleted`、`processNonChannelMessagesDeleted` | `OnMessagesDeleted` |
 | HIST 编辑 | `history/history_item.cpp` 的 `applyEdition` | `OnBeforeEdition` |
 
-已接入：在线状态（`api/api_updates.cpp`）与输入状态（`api/api_send_progress.cpp`，群通话的“正在说话”不受影响），各为一行条件；服务器删除（`data/data_session.cpp` 两处）与编辑前快照（`history/history_item.cpp`），实现位于组合根 `serein/app/`。已读类请求被拦截时，上游本地状态仍需按“已读”推进，否则未读计数与重试逻辑会卡住；这一点在 GHOST 模块的实现与测试中单独验证。
+已接入：在线状态（`api/api_updates.cpp`）与输入状态（`api/api_send_progress.cpp`，群通话的“正在说话”不受影响），各为一行条件；服务器删除（`data/data_session.cpp` 两处）与编辑前快照（`history/history_item.cpp`），实现位于 `serein/features/history/recording.cpp`；组合根 `serein/app/history_storage.cpp` 只把 Qt SQL 与 AES-GCM 适配器登记为历史存储，构建中没有 Qt SQL 时登记空实现，历史功能随之保持关闭。已读类请求被拦截时，上游本地状态仍需按“已读”推进，否则未读计数与重试逻辑会卡住；这一点在 GHOST 模块的实现与测试中单独验证。
 
-门面的三种来源：设置选项的取值与订阅函数由 proto 生成到 `serein/hooks/gen/<页>.h`；面向上游的薄接口头文件位于 `serein/hooks/<领域>/`，只允许前置声明与库头文件，可脱离应用代码单独通过语法检查（参数或返回值是上游嵌套类型时，门面声明为函数模板，由实现文件对该类型显式实例化，例如 `ApplyInfoOptions(Data &, ...)` 与 `TranscriptionOverride<Entry>(item)`；只需填充上游私有结构而不读取其他成员时，模板直接写在门面头文件里，由上游传入自身类型，例如 `ModerateDefaults<ModerateMessagesBoxOptions>()` 与 `PrependCustomDoh(attempts, Type::Mozilla)`）；其余一次性挂钩（幽灵、历史、定时发送）位于 `serein/hooks/*.h`，实现放在组合根 `serein/app/`。应用启动只有一个挂钩 `Serein::Hooks::OnApplicationStarted()`：组合根的模块表 `serein/app/modules.cpp` 为每个模块登记“应用启动”“会话启动”和“窗口启动”回调（窗口启动由 `SessionController` 构造函数中的 `Serein::Hooks::OnWindowStarted` 分发），会话跟踪统一订阅各账号的 `sessionValue()`，功能模块不再各自挂接上游。消息菜单的定制按菜单项文字识别上游动作，文字在每次打开菜单时按当前语言计算；只有文字与其他菜单项重复或由自绘控件显示的项（保存图片、带自动删除倒计时的删除、表情包按钮）在上游保留显式标签。
+门面的三种来源：设置选项的取值与订阅函数由 proto 生成到 `serein/hooks/gen/<页>.h`；面向上游的薄接口头文件位于 `serein/hooks/<领域>/`，只允许前置声明与库头文件，可脱离应用代码单独通过语法检查（参数或返回值是上游嵌套类型时，门面声明为函数模板，由实现文件对该类型显式实例化，例如 `ApplyInfoOptions(Data &, ...)` 与 `TranscriptionOverride<Entry>(item)`；只需填充上游私有结构而不读取其他成员时，模板直接写在门面头文件里，由上游传入自身类型，例如 `ModerateDefaults<ModerateMessagesBoxOptions>()` 与 `PrependCustomDoh(attempts, Type::Mozilla)`）；其余一次性挂钩（幽灵、历史、定时发送）位于 `serein/hooks/*.h`，实现放在对应的功能目录，例如 `features/ghost/hooks.cpp` 与 `features/history/recording.cpp`；只供 Serein 内部使用的函数不放进门面。应用启动只有一个挂钩 `Serein::Hooks::OnApplicationStarted()`：组合根的模块表 `serein/app/modules.cpp` 为每个模块登记“应用启动”“会话启动”和“窗口启动”回调（窗口启动由 `SessionController` 构造函数中的 `Serein::Hooks::OnWindowStarted` 分发），会话跟踪统一订阅各账号的 `sessionValue()`，功能模块不再各自挂接上游。消息菜单的定制按菜单项文字识别上游动作，文字在每次打开菜单时按当前语言计算；只有文字与其他菜单项重复或由自绘控件显示的项（保存图片、带自动删除倒计时的删除、表情包按钮）在上游保留显式标签。
 
 上游侵入由 `tools/serein/upstream_budget.py` 与上游合并基线比较，CI 报告当前数值；长期目标是上游源码文件不超过 90 个、新增行不超过 900 行（不含品牌与构建文件），途径是把品牌改动与多处小挂钩合并到门面。
 
@@ -142,7 +142,7 @@ message MessagesSettings {
 | 设备设置 | 上游 `Core::Settings` 的偏好 KV，每个页面一个键 `serein.<页面>` | schema 的 JSON |
 | 账号设置 | 上游 `Storage::Account` 的偏好 KV | schema 的 JSON |
 | 凭据 | macOS Keychain、Windows 凭据管理器；其他平台为用本地密钥加密的 `tdata/serein_credentials`（ADR-0004 修订）。端口为 `ports/credentials.h`，三种实现位于 `adapters/credentials/`，由 CMake 按平台三选一；`services/credentials.cpp` 只校验账号与密钥，核心测试用内存实现覆盖 | 不进偏好、不导出 |
-| 消息历史 | 账号数据目录下 `serein/history.sqlite3`，Qt SQL + SQLite | 元数据列 + 加密载荷（`HistoryRecord` 的 JSON，含原始 TL 与 layer） |
+| 消息历史 | 账号数据目录下 `serein_history.sqlite3`，Qt SQL + SQLite | 元数据列 + 加密载荷（`HistoryRecord` 的 JSON，含原始 TL 与 layer） |
 
 历史库用 `PRAGMA user_version` 管理迁移；每个格式版本在 `serein/tests/fixtures/history/vN/` 保留不可变样本，测试必须能读取所有受支持版本并拒绝未知版本。
 

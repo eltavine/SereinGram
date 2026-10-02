@@ -20,7 +20,7 @@ SG-HIST 需要按账号保存已删除消息与编辑历史，并支持按对话
 
 采用 B，并对载荷加密：
 
-- 每个账号一个数据库文件，位于该账号的数据目录 `serein/history.sqlite3`。
+- 每个账号一个数据库文件，位于该账号的数据目录 `serein_history.sqlite3`。
 - 明文列只保留查询所需的元数据：对话 ID、消息 ID、版本号、类型（删除、编辑）、时间。
 - 载荷是 `serein.history.v1.HistoryRecord` 的 JSON（含原始 TL 字节与 API layer），用由账号本地密钥派生的密钥加密后写入。
 - 渲染时若 layer 与当前一致，用上游的消息构造路径还原原始消息，完整支持所有 Telegram 消息类型；layer 不一致时退回记录中的文本、实体与媒体摘要。
@@ -28,7 +28,7 @@ SG-HIST 需要按账号保存已删除消息与编辑历史，并支持按对话
 
 验证门槛：在三平台 CI 中确认 `Qt6::Sql` 与 SQLite 静态插件可用。任一平台不可用时，改用方案 C 中的 SQLite3 Multiple Ciphers，并以子模块方式接入。
 
-实施记录：端口 `serein/ports/history_store.h`（存储与加密接口）和适配器 `serein/adapters/qtsql/history_store.*` 已实现，Homebrew Qt 6.11.2 与 CI 的 Linux 核心测试覆盖保存、分页、版本、裁剪、损坏行与新版本 schema 拒绝。主构建只在找到 `Qt6::Sql` 时给 `test_serein` 编译并运行存储测试，配置日志会打印结果；主程序在 SG-HIST 接入前不链接 Qt SQL。
+实施记录：端口 `serein/ports/history_store.h`（存储与加密接口）和适配器 `serein/adapters/qtsql/history_store.*` 已实现，Homebrew Qt 6.11.2 与 CI 的 Linux 核心测试覆盖保存、分页、版本、裁剪、损坏行与新版本 schema 拒绝。主构建只在找到 `Qt6::Sql` 时给 `test_serein` 编译并运行存储测试，配置日志会打印结果。主程序找到 `Qt6::Sql` 时链接它，由组合根 `serein/app/history_storage.cpp` 把适配器登记为历史存储；`features/history` 只依赖端口，没有 Qt SQL 的构建中历史功能保持关闭。
 
 ## 后果
 
