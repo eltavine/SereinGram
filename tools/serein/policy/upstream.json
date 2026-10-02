@@ -15,7 +15,9 @@
     "Telegram/Resources/serein/",
     "crowdin.yml",
     "packaging/",
-    "Telegram/ThirdParty/doctest"
+    "Telegram/ThirdParty/doctest",
+    "flake.nix",
+    "flake.lock"
   ],
   "own_include_prefixes": [
     "serein/"

@@ -26,6 +26,7 @@ TEXT_PATTERNS = (
     "proto/**/*",
     "tools/serein/**/*",
     "packaging/**/*",
+    "flake.nix",
     "docs/serein/**/*",
     ".github/workflows/serein-*.yml",
     "lib/xdg/io.github.eltavine.SereinGram.*",
