@@ -116,11 +116,12 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_denoise_voice_messages" = "Reduce background noise in voice messages";
 "lng_serein_denoise_voice_messages_note" = "Recorded voice messages pass through the RNNoise noise suppressor that group calls use. It runs on this device; turning it on affects the next recording.";
 "lng_serein_story_posting" = "Post stories from this device";
-"lng_serein_story_posting_note" = "Adds “New story” to the main menu, “Post story” to the menu of channels you can post to, and “Edit story” to the menu of stories you can edit, for the caption and who can see it. Photos are placed on a 9:16 canvas; videos up to 60 seconds are uploaded unchanged.";
+"lng_serein_story_posting_note" = "Adds “New story” to the main menu and “Post story” to the menu of channels you can post to. In the story viewer menu, “Edit story” changes the caption and audience of stories you can edit, and “Repost to my story” shares public stories of others. Photos are placed on a 9:16 canvas; videos up to 60 seconds are uploaded unchanged.";
 "lng_serein_story_new" = "New story";
 "lng_serein_story_post_channel" = "Post story";
 "lng_serein_story_edit" = "Edit story";
 "lng_serein_story_edited" = "Story updated.";
+"lng_serein_story_repost" = "Repost to my story";
 "lng_serein_story_posting_as" = "Posting as {name}";
 "lng_serein_story_change" = "Choose another file";
 "lng_serein_story_audience" = "Who can see it";

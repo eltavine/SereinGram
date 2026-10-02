@@ -119,6 +119,18 @@ void Publisher::start(
 	});
 }
 
+void Publisher::repost(
+		Post &&post,
+		const MTPInputMedia &media,
+		Callbacks &&callbacks) {
+	if (_post) {
+		return;
+	}
+	_post = std::move(post);
+	_callbacks = std::move(callbacks);
+	send(media);
+}
+
 void Publisher::composed(QImage canvas, QByteArray jpeg) {
 	if (!_post) {
 		return;
@@ -236,12 +248,14 @@ void Publisher::send(const MTPInputMedia &media) {
 		_session,
 		caption.entities,
 		Api::ConvertOption::SkipLocal);
+	const auto &repost = post.repost;
 	using Flag = MTPstories_SendStory::Flag;
 	const auto flags = (caption.text.isEmpty() ? Flag() : Flag::f_caption)
 		| (entities.v.isEmpty() ? Flag() : Flag::f_entities)
 		| (post.pinned ? Flag::f_pinned : Flag())
 		| (post.protect ? Flag::f_noforwards : Flag())
-		| ((post.period != kDefaultPeriod) ? Flag::f_period : Flag());
+		| ((post.period != kDefaultPeriod) ? Flag::f_period : Flag())
+		| (repost ? Flag::f_fwd_from_id : Flag());
 	_requestId = _session->api().request(MTPstories_SendStory(
 		MTP_flags(flags),
 		post.peer->input(),
@@ -252,8 +266,8 @@ void Publisher::send(const MTPInputMedia &media) {
 		PrivacyRules(_session, post.rules),
 		MTP_long(base::RandomValue<uint64>()),
 		MTP_int(post.period),
-		MTPInputPeer(),
-		MTPint(),
+		repost ? repost->from->input() : MTPInputPeer(),
+		MTP_int(repost ? repost->story : 0),
 		MTPVector<MTPint>(),
 		MTPInputDocument()
 	)).done([=](const MTPUpdates &result) {

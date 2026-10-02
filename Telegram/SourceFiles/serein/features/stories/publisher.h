@@ -22,6 +22,11 @@ struct PreparedFile;
 
 namespace Serein::Stories {
 
+struct Repost {
+	not_null<PeerData*> from;
+	StoryId story = 0;
+};
+
 struct Post {
 	not_null<PeerData*> peer;
 	TextWithTags caption;
@@ -29,6 +34,7 @@ struct Post {
 	int period = kDefaultPeriod;
 	bool pinned = true;
 	bool protect = false;
+	std::optional<Repost> repost;
 };
 
 enum class Stage {
@@ -51,6 +57,10 @@ public:
 	void start(
 		Post &&post,
 		const Ui::PreparedFile &file,
+		Callbacks &&callbacks);
+	void repost(
+		Post &&post,
+		const MTPInputMedia &media,
 		Callbacks &&callbacks);
 
 private:

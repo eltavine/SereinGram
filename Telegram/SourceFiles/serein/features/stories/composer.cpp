@@ -8,12 +8,20 @@
 #include "chat_helpers/compose/compose_show.h"
 #include "core/application.h"
 #include "core/file_utilities.h"
+#include "data/data_document.h"
+#include "data/data_document_media.h"
+#include "data/data_file_origin.h"
 #include "data/data_peer.h"
+#include "data/data_photo.h"
+#include "data/data_photo_media.h"
+#include "data/data_story.h"
+#include "data/data_user.h"
 #include "lang/lang_keys.h"
 #include "main/main_session.h"
 #include "mtproto/mtproto_response.h"
 #include "storage/storage_media_prepare.h"
 #include "ui/chat/attach/attach_prepare.h"
+#include "ui/image/image.h"
 #include "ui/layers/generic_box.h"
 #include "ui/painter.h"
 #include "ui/vertical_list.h"
@@ -50,6 +58,21 @@ struct ComposerState {
 	Publisher publisher;
 };
 
+struct PostControls {
+	not_null<Ui::InputField*> caption;
+	not_null<Ui::Checkbox*> pinned;
+	not_null<Ui::Checkbox*> screenshots;
+	not_null<Ui::SlideWrap<Ui::FlatLabel>*> status;
+};
+
+struct RepostSource {
+	not_null<PeerData*> from;
+	StoryId story = 0;
+	MTPInputMedia media;
+	std::shared_ptr<Data::PhotoMedia> photo;
+	std::shared_ptr<Data::DocumentMedia> document;
+};
+
 [[nodiscard]] QString StageText(Stage stage, float64 value) {
 	switch (stage) {
 	case Stage::Preparing:
@@ -73,22 +96,35 @@ struct ComposerState {
 	return video && (video->duration > kMaxVideoSeconds * crl::time(1000));
 }
 
-[[nodiscard]] QImage RenderPreview(const Ui::PreparedFile &file) {
-	auto source = file.preview;
-	if (source.isNull() && file.information) {
-		using Image = Ui::PreparedFileInformation::Image;
-		using Video = Ui::PreparedFileInformation::Video;
-		const auto &media = file.information->media;
-		if (const auto image = std::get_if<Image>(&media)) {
-			source = image->data;
-		} else if (const auto video = std::get_if<Video>(&media)) {
-			source = video->thumbnail;
-		}
-	}
+[[nodiscard]] QImage RenderPreview(const QImage &source) {
 	const auto ratio = style::DevicePixelRatio();
 	auto result = ComposeCanvas(source, st::sereinStoryPreviewSize * ratio);
 	result.setDevicePixelRatio(ratio);
 	return result;
+}
+
+[[nodiscard]] QImage PreviewSource(const Ui::PreparedFile &file) {
+	if (!file.preview.isNull() || !file.information) {
+		return file.preview;
+	}
+	using Image = Ui::PreparedFileInformation::Image;
+	using Video = Ui::PreparedFileInformation::Video;
+	const auto &media = file.information->media;
+	if (const auto image = std::get_if<Image>(&media)) {
+		return image->data;
+	} else if (const auto video = std::get_if<Video>(&media)) {
+		return video->thumbnail;
+	}
+	return QImage();
+}
+
+[[nodiscard]] QImage PreviewSource(const RepostSource &source) {
+	const auto image = source.photo
+		? source.photo->image(Data::PhotoSize::Large)
+		: source.document
+		? source.document->thumbnail()
+		: nullptr;
+	return image ? image->original() : QImage();
 }
 
 void ChooseFile(
@@ -158,22 +194,9 @@ void AddPeriodSection(
 	});
 }
 
-void ComposerBox(
+[[nodiscard]] not_null<Ui::RpWidget*> AddPreview(
 		not_null<Ui::GenericBox*> box,
-		std::shared_ptr<ChatHelpers::Show> show,
-		not_null<PeerData*> peer,
-		Ui::PreparedFile file) {
-	const auto session = &show->session();
-	const auto state = box->lifetime().make_state<ComposerState>(session);
-	box->setTitle(tr::lng_serein_story_new());
-	box->setWidth(st::boxWideWidth);
-	if (!peer->isSelf()) {
-		box->addRow(object_ptr<Ui::FlatLabel>(
-			box,
-			tr::lng_serein_story_posting_as(tr::now, lt_name, peer->name()),
-			st::boxDividerLabel));
-	}
-
+		not_null<ComposerState*> state) {
 	const auto preview = box->addRow(
 		object_ptr<Ui::RpWidget>(box),
 		style::al_top);
@@ -187,29 +210,22 @@ void ComposerBox(
 			st::roundRadiusLarge,
 			st::roundRadiusLarge);
 		p.setClipPath(path);
+		p.fillRect(preview->rect(), Qt::black);
 		p.drawImage(preview->rect(), state->preview);
 	}, preview->lifetime());
-	const auto setFile = [=](Ui::PreparedFile chosen) {
-		state->preview = RenderPreview(chosen);
-		state->file.emplace(std::move(chosen));
-		preview->update();
-	};
-	setFile(std::move(file));
-	const auto change = box->addRow(
-		object_ptr<Ui::LinkButton>(box, tr::lng_serein_story_change(tr::now)),
-		style::al_top);
-	change->setClickedCallback([=] {
-		if (!state->posting) {
-			ChooseFile(show, crl::guard(box, setFile));
-		}
-	});
+	return preview;
+}
 
+[[nodiscard]] PostControls AddPostControls(
+		not_null<Ui::GenericBox*> box,
+		std::shared_ptr<ChatHelpers::Show> show,
+		not_null<PeerData*> peer,
+		not_null<ComposerState*> state) {
 	const auto caption = AddCaptionField(box, show);
-
 	if (peer->isSelf()) {
 		AddAudienceSection(box->verticalLayout(), show, &state->audience);
 	}
-	if (session->premium()) {
+	if (show->session().premium()) {
 		AddPeriodSection(box, state);
 	}
 	Ui::AddSkip(box->verticalLayout());
@@ -226,44 +242,173 @@ void ComposerBox(
 			box,
 			object_ptr<Ui::FlatLabel>(box, QString(), st::boxDividerLabel)));
 	status->hide(anim::type::instant);
+	return { caption, pinned, screenshots, status };
+}
 
-	const auto post = [=] {
+[[nodiscard]] std::optional<Post> CollectPost(
+		not_null<Ui::GenericBox*> box,
+		not_null<PeerData*> peer,
+		not_null<ComposerState*> state,
+		const PostControls &controls) {
+	auto rules = peer->isSelf()
+		? AudienceRulesFor(state->audience.current())
+		: AudienceRules(Audience::Everyone, {});
+	if (rules.empty()) {
+		box->showToast(tr::lng_serein_story_need_people(tr::now));
+		return std::nullopt;
+	}
+	const auto premium = peer->session().premium();
+	return Post{
+		.peer = peer,
+		.caption = controls.caption->getTextWithAppliedMarkdown(),
+		.rules = std::move(rules),
+		.period = EffectivePeriod(state->period, premium),
+		.pinned = controls.pinned->checked(),
+		.protect = !controls.screenshots->checked(),
+	};
+}
+
+[[nodiscard]] Publisher::Callbacks PostCallbacks(
+		not_null<Ui::GenericBox*> box,
+		std::shared_ptr<ChatHelpers::Show> show,
+		not_null<ComposerState*> state,
+		const PostControls &controls) {
+	const auto status = controls.status;
+	return {
+		.progress = [=](Stage stage, float64 value) {
+			status->entity()->setText(StageText(stage, value));
+		},
+		.done = [=] {
+			show->showToast(tr::lng_serein_story_posted(tr::now));
+			box->closeBox();
+		},
+		.fail = [=](const QString &type) {
+			state->posting = false;
+			status->hide(anim::type::normal);
+			box->showToast(ErrorText(type));
+		},
+	};
+}
+
+void ComposerBox(
+		not_null<Ui::GenericBox*> box,
+		std::shared_ptr<ChatHelpers::Show> show,
+		not_null<PeerData*> peer,
+		Ui::PreparedFile file) {
+	const auto state = box->lifetime().make_state<ComposerState>(
+		&show->session());
+	box->setTitle(tr::lng_serein_story_new());
+	box->setWidth(st::boxWideWidth);
+	if (!peer->isSelf()) {
+		box->addRow(object_ptr<Ui::FlatLabel>(
+			box,
+			tr::lng_serein_story_posting_as(tr::now, lt_name, peer->name()),
+			st::boxDividerLabel));
+	}
+	const auto preview = AddPreview(box, state);
+	const auto setFile = [=](Ui::PreparedFile chosen) {
+		state->preview = RenderPreview(PreviewSource(chosen));
+		state->file.emplace(std::move(chosen));
+		preview->update();
+	};
+	setFile(std::move(file));
+	const auto change = box->addRow(
+		object_ptr<Ui::LinkButton>(box, tr::lng_serein_story_change(tr::now)),
+		style::al_top);
+	change->setClickedCallback([=] {
+		if (!state->posting) {
+			ChooseFile(show, crl::guard(box, setFile));
+		}
+	});
+	const auto controls = AddPostControls(box, show, peer, state);
+	box->addButton(tr::lng_serein_story_post(), [=] {
 		if (state->posting || !state->file) {
 			return;
 		}
-		auto rules = peer->isSelf()
-			? AudienceRulesFor(state->audience.current())
-			: AudienceRules(Audience::Everyone, {});
-		if (rules.empty()) {
-			box->showToast(tr::lng_serein_story_need_people(tr::now));
+		auto post = CollectPost(box, peer, state, controls);
+		if (!post) {
 			return;
 		}
 		state->posting = true;
-		status->show(anim::type::normal);
-		state->publisher.start({
-			.peer = peer,
-			.caption = caption->getTextWithAppliedMarkdown(),
-			.rules = std::move(rules),
-			.period = EffectivePeriod(state->period, session->premium()),
-			.pinned = pinned->checked(),
-			.protect = !screenshots->checked(),
-		}, *state->file, {
-			.progress = [=](Stage stage, float64 value) {
-				status->entity()->setText(StageText(stage, value));
-			},
-			.done = [=] {
-				show->showToast(tr::lng_serein_story_posted(tr::now));
-				box->closeBox();
-			},
-			.fail = [=](const QString &type) {
-				state->posting = false;
-				status->hide(anim::type::normal);
-				box->showToast(ErrorText(type));
-			},
-		});
-	};
-	box->addButton(tr::lng_serein_story_post(), post);
+		controls.status->show(anim::type::normal);
+		state->publisher.start(
+			std::move(*post),
+			*state->file,
+			PostCallbacks(box, show, state, controls));
+	});
 	box->addButton(tr::lng_cancel(), [=] { box->closeBox(); });
+}
+
+void RepostBox(
+		not_null<Ui::GenericBox*> box,
+		std::shared_ptr<ChatHelpers::Show> show,
+		RepostSource source) {
+	const auto session = &show->session();
+	const auto peer = not_null<PeerData*>(session->user());
+	const auto state = box->lifetime().make_state<ComposerState>(session);
+	box->setTitle(tr::lng_serein_story_repost());
+	box->setWidth(st::boxWideWidth);
+	const auto preview = AddPreview(box, state);
+	const auto refresh = [=] {
+		if (!state->preview.isNull()) {
+			return;
+		}
+		if (const auto frame = PreviewSource(source); !frame.isNull()) {
+			state->preview = RenderPreview(frame);
+			preview->update();
+		}
+	};
+	refresh();
+	session->downloaderTaskFinished(
+	) | rpl::on_next(refresh, preview->lifetime());
+	const auto controls = AddPostControls(box, show, peer, state);
+	box->addButton(tr::lng_serein_story_post(), [=] {
+		if (state->posting) {
+			return;
+		}
+		auto post = CollectPost(box, peer, state, controls);
+		if (!post) {
+			return;
+		}
+		post->repost = Repost{ source.from, source.story };
+		state->posting = true;
+		controls.status->show(anim::type::normal);
+		state->publisher.repost(
+			std::move(*post),
+			source.media,
+			PostCallbacks(box, show, state, controls));
+	});
+	box->addButton(tr::lng_cancel(), [=] { box->closeBox(); });
+}
+
+[[nodiscard]] std::optional<RepostSource> MakeRepostSource(
+		not_null<Data::Story*> story) {
+	const auto peer = story->peer();
+	const auto origin = Data::FileOrigin(
+		Data::FileOriginStory{ peer->id, story->id() });
+	auto result = RepostSource{ .from = peer, .story = story->id() };
+	if (const auto photo = story->photo()) {
+		result.media = MTP_inputMediaPhoto(
+			MTP_flags(0),
+			photo->mtpInput(),
+			MTPint(),
+			MTPInputDocument());
+		result.photo = photo->createMediaView();
+		result.photo->wanted(Data::PhotoSize::Large, origin);
+	} else if (const auto document = story->document()) {
+		result.media = MTP_inputMediaDocument(
+			MTP_flags(0),
+			document->mtpInput(),
+			MTPInputPhoto(),
+			MTPint(),
+			MTPint(),
+			MTPstring());
+		result.document = document->createMediaView();
+		result.document->thumbnailWanted(origin);
+	} else {
+		return std::nullopt;
+	}
+	return result;
 }
 
 } // namespace
@@ -277,6 +422,24 @@ void StartPosting(
 		ChooseFile(show, [=](Ui::PreparedFile file) {
 			show->showBox(Box(ComposerBox, show, peer, std::move(file)));
 		});
+	}).fail([=](const MTP::Error &error) {
+		if (!MTP::IgnoreError(error)) {
+			show->showToast(ErrorText(error.type()));
+		}
+	}).handleFloodErrors().send();
+}
+
+void StartRepost(
+		std::shared_ptr<ChatHelpers::Show> show,
+		not_null<Data::Story*> story) {
+	const auto source = MakeRepostSource(story);
+	if (!source) {
+		return;
+	}
+	show->session().api().request(MTPstories_CanSendStory(
+		MTP_inputPeerSelf()
+	)).done([=] {
+		show->showBox(Box(RepostBox, show, *source));
 	}).fail([=](const MTP::Error &error) {
 		if (!MTP::IgnoreError(error)) {
 			show->showToast(ErrorText(error.type()));
