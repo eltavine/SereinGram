@@ -7,6 +7,9 @@
 "lng_serein_tray_icon_text" = "SereinGram 仍在這裡執行。你可以在設定中變更此行為。";
 "lng_serein_settings" = "SereinGram";
 "lng_serein_source_code" = "原始碼";
+"lng_serein_licenses" = "第三方授權";
+"lng_serein_licenses_about" = "SereinGram 基於以 GPLv3 授權的 Telegram Desktop，並包含以下第三方函式庫與資料：";
+"lng_serein_licenses_view" = "檢視授權";
 "lng_serein_settings_note" = "SereinGram 設定預設遵循 Telegram 原有行為，除非選項另有說明，否則只影響本機顯示。";
 "lng_serein_interface" = "介面";
 "lng_serein_roundness_and_shapes" = "圓角與形狀";

@@ -39,6 +39,7 @@ Nagram 的品牌政策要求分支使用不同品牌并替换 Nagram 名称与�
 | SG-BRAND-03 | 应用 ID、数据目录、便携目录、Windows AppUserModelID、安装器 ID 与通知激活器 GUID | D | Implemented | P0 |
 | SG-BRAND-04 | 源码、发布与问题反馈链接指向 `eltavine/SereinGram` | D | Implemented | P0 |
 | SG-BRAND-05 | 代码更名：`nagram` → `serein`（目录、命名空间、文案键、存储键、CMake、测试目标、工作流） | D | Implemented | P0 |
+| SG-BRAND-06 | 第三方许可声明（SereinGram 设置首页“第三方许可”：列出随程序分发的 OpenCC、marisa-trie、darts-clone、RapidJSON、quirc 与注册日期数据的名称、许可与地址，许可全文作为 Qt 资源打包，可在程序内查看；文本直接取自子模块中的许可文件，RapidJSON 的子集不含许可文件，以其头文件中的版权声明补齐 MIT 文本） | D | Implemented | P1 |
 
 ## CORE 基础设施
 
