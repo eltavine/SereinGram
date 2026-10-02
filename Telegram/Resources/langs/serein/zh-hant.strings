@@ -112,9 +112,11 @@
 "lng_serein_denoise_voice_messages" = "降低語音訊息的背景雜音";
 "lng_serein_denoise_voice_messages_note" = "錄製的語音訊息會經過群組通話所用的 RNNoise 降噪處理，處理在本裝置上進行；變更後從下一次錄音開始生效。";
 "lng_serein_story_posting" = "在本裝置發布動態";
-"lng_serein_story_posting_note" = "在主選單加入「發布動態」，並在你可以發布動態的頻道選單中加入「發布動態」。圖片會放到 9:16 畫布上，60 秒以內的影片按原樣上傳。";
+"lng_serein_story_posting_note" = "在主選單加入「發布動態」，在你可以發布動態的頻道選單中加入「發布動態」，並在你可以編輯的動態選單中加入「編輯動態」，用於修改說明和可見範圍。圖片會放到 9:16 畫布上，60 秒以內的影片按原樣上傳。";
 "lng_serein_story_new" = "發布動態";
 "lng_serein_story_post_channel" = "發布動態";
+"lng_serein_story_edit" = "編輯動態";
+"lng_serein_story_edited" = "動態已更新。";
 "lng_serein_story_posting_as" = "以 {name} 的身分發布";
 "lng_serein_story_change" = "換一個檔案";
 "lng_serein_story_audience" = "誰可以看";

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "data/data_msg_id.h"
+
 #include <gsl/pointers>
 
 #include <memory>
@@ -12,8 +14,9 @@ class Show;
 
 namespace Serein::Stories {
 
-void StartPosting(
+void EditStory(
 	std::shared_ptr<ChatHelpers::Show> show,
-	gsl::not_null<PeerData*> peer);
+	gsl::not_null<PeerData*> peer,
+	StoryId id);
 
 } // namespace Serein::Stories

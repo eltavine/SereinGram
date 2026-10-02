@@ -43,6 +43,34 @@ TEST_CASE("Story audience rules") {
 		"selection applies to selected people only");
 }
 
+TEST_CASE("Story audience parsing") {
+	using namespace Serein::Stories;
+	using Kind = AudienceRule::Kind;
+	const auto users = std::vector<std::uint64_t>{ 3, 5 };
+	for (const auto &[audience, people] : {
+		std::pair(Audience::Everyone, std::vector<std::uint64_t>()),
+		std::pair(Audience::Everyone, users),
+		std::pair(Audience::Contacts, users),
+		std::pair(Audience::CloseFriends, std::vector<std::uint64_t>()),
+		std::pair(Audience::Selected, users),
+	}) {
+		Require(ParseAudience(AudienceRules(audience, people))
+			== ParsedAudience{ audience, people },
+			"posted rules must read back as the same audience");
+	}
+	Require(ParseAudience({
+		{ Kind::DisallowUsers, { 1 } },
+		{ Kind::DisallowUsers, { 2 } },
+		{ Kind::AllowContacts },
+	}) == ParsedAudience{ Audience::Contacts, { 1, 2 } },
+		"split exclusion rules are merged");
+	Require(ParseAudience({
+		{ Kind::AllowUsers, { 9 } },
+		{ Kind::AllowCloseFriends },
+	}) == ParsedAudience{ Audience::CloseFriends },
+		"close friends win over other allow rules");
+}
+
 TEST_CASE("Story periods") {
 	using namespace Serein::Stories;
 	Require(PeriodChoices(false) == std::vector<int>{ kDefaultPeriod },

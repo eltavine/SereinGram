@@ -2,15 +2,14 @@
 
 #include "serein/features/stories/audience.h"
 #include "serein/features/stories/canvas.h"
+#include "serein/features/stories/common.h"
 #include "serein/features/stories/publisher.h"
 #include "apiwrap.h"
 #include "chat_helpers/compose/compose_show.h"
-#include "chat_helpers/message_field.h"
 #include "core/application.h"
 #include "core/file_utilities.h"
 #include "data/data_peer.h"
 #include "lang/lang_keys.h"
-#include "main/main_app_config.h"
 #include "main/main_session.h"
 #include "mtproto/mtproto_response.h"
 #include "storage/storage_media_prepare.h"
@@ -23,7 +22,6 @@
 #include "ui/widgets/fields/input_field.h"
 #include "ui/widgets/labels.h"
 #include "ui/wrap/slide_wrap.h"
-#include "window/window_session_controller.h"
 #include "styles/style_basic.h"
 #include "styles/style_boxes.h"
 #include "styles/style_layers.h"
@@ -38,8 +36,6 @@ namespace Serein::Stories {
 namespace {
 
 constexpr auto kHour = 3600;
-constexpr auto kCaptionLimit = 200;
-constexpr auto kPremiumCaptionLimit = 2048;
 
 struct ComposerState {
 	explicit ComposerState(not_null<Main::Session*> session)
@@ -54,24 +50,6 @@ struct ComposerState {
 	Publisher publisher;
 };
 
-[[nodiscard]] QString ErrorText(const QString &type) {
-	switch (ClassifyError(type)) {
-	case PostError::TooMany:
-		return tr::lng_serein_story_error_limit(tr::now);
-	case PostError::PremiumRequired:
-		return tr::lng_serein_story_error_premium(tr::now);
-	case PostError::BoostsRequired:
-		return tr::lng_serein_story_error_boosts(tr::now);
-	case PostError::WeeklyLimit:
-		return tr::lng_serein_story_error_weekly(tr::now);
-	case PostError::MonthlyLimit:
-		return tr::lng_serein_story_error_monthly(tr::now);
-	case PostError::Other:
-		break;
-	}
-	return type.isEmpty() ? tr::lng_attach_failed(tr::now) : type;
-}
-
 [[nodiscard]] QString StageText(Stage stage, float64 value) {
 	switch (stage) {
 	case Stage::Preparing:
@@ -85,17 +63,6 @@ struct ComposerState {
 		return tr::lng_serein_story_publishing(tr::now);
 	}
 	Unexpected("Stage in Serein::Stories::StageText.");
-}
-
-[[nodiscard]] int CaptionLimit(not_null<Main::Session*> session) {
-	const auto &config = session->appConfig();
-	return session->premium()
-		? config.get<int>(
-			u"story_caption_length_limit_premium"_q,
-			kPremiumCaptionLimit)
-		: config.get<int>(
-			u"story_caption_length_limit_default"_q,
-			kCaptionLimit);
 }
 
 [[nodiscard]] bool TooLong(const Ui::PreparedFile &file) {
@@ -125,11 +92,10 @@ struct ComposerState {
 }
 
 void ChooseFile(
-		not_null<Window::SessionController*> controller,
+		std::shared_ptr<ChatHelpers::Show> show,
 		Fn<void(Ui::PreparedFile)> chosen) {
-	const auto premium = controller->session().premium();
-	const auto callback = crl::guard(controller, [=](
-			FileDialog::OpenResult &&result) {
+	const auto premium = show->session().premium();
+	const auto callback = [=](FileDialog::OpenResult &&result) {
 		const auto check = [=](const Ui::PreparedList &list) {
 			using Type = Ui::PreparedFile::Type;
 			const auto ok = (list.files.size() == 1)
@@ -137,13 +103,12 @@ void ChooseFile(
 					|| ((list.files.front().type == Type::Video)
 						&& !list.files.front().isGifv()));
 			if (!ok) {
-				controller->showToast(
-					tr::lng_serein_story_unsupported(tr::now));
+				show->showToast(tr::lng_serein_story_unsupported(tr::now));
 			}
 			return ok;
 		};
 		const auto error = [=](tr::phrase<> text) {
-			controller->showToast(text(tr::now));
+			show->showToast(text(tr::now));
 		};
 		auto list = Storage::PreparedFileFromFilesDialog(
 			std::move(result),
@@ -156,14 +121,14 @@ void ChooseFile(
 		}
 		auto &file = list->files.front();
 		if (TooLong(file)) {
-			controller->showToast(tr::lng_serein_story_video_too_long(
+			show->showToast(tr::lng_serein_story_video_too_long(
 				tr::now,
 				lt_seconds,
 				QString::number(kMaxVideoSeconds)));
 			return;
 		}
 		chosen(std::move(file));
-	});
+	};
 	FileDialog::GetOpenPath(
 		Core::App().getFileDialogParent(),
 		tr::lng_attach_photo_or_video(tr::now),
@@ -195,10 +160,10 @@ void AddPeriodSection(
 
 void ComposerBox(
 		not_null<Ui::GenericBox*> box,
-		not_null<Window::SessionController*> controller,
+		std::shared_ptr<ChatHelpers::Show> show,
 		not_null<PeerData*> peer,
 		Ui::PreparedFile file) {
-	const auto session = &controller->session();
+	const auto session = &show->session();
 	const auto state = box->lifetime().make_state<ComposerState>(session);
 	box->setTitle(tr::lng_serein_story_new());
 	box->setWidth(st::boxWideWidth);
@@ -235,24 +200,14 @@ void ComposerBox(
 		style::al_top);
 	change->setClickedCallback([=] {
 		if (!state->posting) {
-			ChooseFile(controller, crl::guard(box, setFile));
+			ChooseFile(show, crl::guard(box, setFile));
 		}
 	});
 
-	const auto caption = box->addRow(object_ptr<Ui::InputField>(
-		box,
-		st::sereinStoryCaption,
-		Ui::InputField::Mode::MultiLine,
-		tr::lng_photo_caption()));
-	InitMessageFieldHandlers(
-		controller,
-		caption,
-		ChatHelpers::PauseReason::Layer);
-	caption->setMaxLength(CaptionLimit(session));
-	box->setFocusCallback([=] { caption->setFocusFast(); });
+	const auto caption = AddCaptionField(box, show);
 
 	if (peer->isSelf()) {
-		AddAudienceSection(box->verticalLayout(), controller, &state->audience);
+		AddAudienceSection(box->verticalLayout(), show, &state->audience);
 	}
 	if (session->premium()) {
 		AddPeriodSection(box, state);
@@ -297,7 +252,7 @@ void ComposerBox(
 				status->entity()->setText(StageText(stage, value));
 			},
 			.done = [=] {
-				controller->showToast(tr::lng_serein_story_posted(tr::now));
+				show->showToast(tr::lng_serein_story_posted(tr::now));
 				box->closeBox();
 			},
 			.fail = [=](const QString &type) {
@@ -314,20 +269,19 @@ void ComposerBox(
 } // namespace
 
 void StartPosting(
-		not_null<Window::SessionController*> controller,
+		std::shared_ptr<ChatHelpers::Show> show,
 		not_null<PeerData*> peer) {
-	controller->session().api().request(MTPstories_CanSendStory(
+	show->session().api().request(MTPstories_CanSendStory(
 		peer->input()
-	)).done(crl::guard(controller, [=] {
-		ChooseFile(controller, [=](Ui::PreparedFile file) {
-			controller->show(
-				Box(ComposerBox, controller, peer, std::move(file)));
+	)).done([=] {
+		ChooseFile(show, [=](Ui::PreparedFile file) {
+			show->showBox(Box(ComposerBox, show, peer, std::move(file)));
 		});
-	})).fail(crl::guard(controller, [=](const MTP::Error &error) {
+	}).fail([=](const MTP::Error &error) {
 		if (!MTP::IgnoreError(error)) {
-			controller->showToast(ErrorText(error.type()));
+			show->showToast(ErrorText(error.type()));
 		}
-	})).handleFloodErrors().send();
+	}).handleFloodErrors().send();
 }
 
 } // namespace Serein::Stories

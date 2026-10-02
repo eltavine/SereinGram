@@ -24,7 +24,7 @@ void FillMainMenu(
 			{ &st::menuIconStoriesSavedSection }
 		)->setClickedCallback([=] {
 			Serein::Stories::StartPosting(
-				controller,
+				controller->uiShow(),
 				controller->session().user());
 		});
 	}

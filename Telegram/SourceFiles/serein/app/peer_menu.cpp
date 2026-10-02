@@ -92,7 +92,7 @@ void FillHistoryMenu(
 		&& peer->isChannel()
 		&& peer->canPostStories()) {
 		addAction(tr::lng_serein_story_post_channel(tr::now), [=] {
-			Serein::Stories::StartPosting(controller, peer);
+			Serein::Stories::StartPosting(controller->uiShow(), peer);
 		}, &st::menuIconStoriesSavedSection);
 	}
 	if (!topic && CanSummarizeChats()) {

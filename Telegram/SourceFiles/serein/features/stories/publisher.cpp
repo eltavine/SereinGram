@@ -1,6 +1,7 @@
 #include "serein/features/stories/publisher.h"
 
 #include "serein/features/stories/canvas.h"
+#include "serein/features/stories/common.h"
 #include "api/api_common.h"
 #include "api/api_text_entities.h"
 #include "apiwrap.h"
@@ -9,13 +10,11 @@
 #include "data/data_peer.h"
 #include "data/data_photo.h"
 #include "data/data_session.h"
-#include "data/data_user.h"
 #include "main/main_session.h"
 #include "storage/file_upload.h"
 #include "storage/localimageloader.h"
 #include "ui/chat/attach/attach_prepare.h"
 #include "ui/image/image_prepare.h"
-#include "ui/text/text_entity.h"
 
 namespace Serein::Stories {
 namespace {
@@ -52,43 +51,7 @@ private:
 	return FileLoadTo(peer->id, Api::SendOptions(), FullReplyTo(), MsgId());
 }
 
-[[nodiscard]] TextWithEntities PrepareCaption(const TextWithTags &caption) {
-	auto result = TextWithEntities{
-		caption.text,
-		TextUtilities::ConvertTextTagsToEntities(caption.tags),
-	};
-	TextUtilities::PrepareForSending(
-		result,
-		TextParseLinks | TextParseMentions | TextParseHashtags);
-	TextUtilities::Trim(result);
-	return result;
-}
-
-[[nodiscard]] MTPInputPrivacyRule PrivacyRule(
-		not_null<Main::Session*> session,
-		const AudienceRule &rule) {
-	const auto users = [&] {
-		auto result = QVector<MTPInputUser>();
-		result.reserve(int(rule.users.size()));
-		for (const auto id : rule.users) {
-			result.push_back(session->data().user(UserId(id))->inputUser());
-		}
-		return MTP_vector<MTPInputUser>(std::move(result));
-	};
-	using Kind = AudienceRule::Kind;
-	switch (rule.kind) {
-	case Kind::AllowAll: return MTP_inputPrivacyValueAllowAll();
-	case Kind::AllowContacts: return MTP_inputPrivacyValueAllowContacts();
-	case Kind::AllowCloseFriends:
-		return MTP_inputPrivacyValueAllowCloseFriends();
-	case Kind::AllowUsers: return MTP_inputPrivacyValueAllowUsers(users());
-	case Kind::DisallowUsers:
-		return MTP_inputPrivacyValueDisallowUsers(users());
-	}
-	Unexpected("Rule kind in Serein::Stories::PrivacyRule.");
-}
-
-}
+} // namespace
 
 Publisher::Publisher(not_null<Main::Session*> session)
 : _session(session)
@@ -273,11 +236,6 @@ void Publisher::send(const MTPInputMedia &media) {
 		_session,
 		caption.entities,
 		Api::ConvertOption::SkipLocal);
-	auto rules = QVector<MTPInputPrivacyRule>();
-	rules.reserve(int(post.rules.size()));
-	for (const auto &rule : post.rules) {
-		rules.push_back(PrivacyRule(_session, rule));
-	}
 	using Flag = MTPstories_SendStory::Flag;
 	const auto flags = (caption.text.isEmpty() ? Flag() : Flag::f_caption)
 		| (entities.v.isEmpty() ? Flag() : Flag::f_entities)
@@ -291,7 +249,7 @@ void Publisher::send(const MTPInputMedia &media) {
 		MTPVector<MTPMediaArea>(),
 		MTP_string(caption.text),
 		entities,
-		MTP_vector<MTPInputPrivacyRule>(std::move(rules)),
+		PrivacyRules(_session, post.rules),
 		MTP_long(base::RandomValue<uint64>()),
 		MTP_int(post.period),
 		MTPInputPeer(),

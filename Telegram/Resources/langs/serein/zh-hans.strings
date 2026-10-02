@@ -112,9 +112,11 @@
 "lng_serein_denoise_voice_messages" = "降低语音消息的背景噪音";
 "lng_serein_denoise_voice_messages_note" = "录制的语音消息会经过群组通话所用的 RNNoise 降噪处理，处理在本设备上进行；更改后从下一次录音开始生效。";
 "lng_serein_story_posting" = "在本设备发布动态";
-"lng_serein_story_posting_note" = "在主菜单加入“发布动态”，并在你可以发布动态的频道菜单中加入“发布动态”。图片会放到 9:16 画布上，60 秒以内的视频按原样上传。";
+"lng_serein_story_posting_note" = "在主菜单加入“发布动态”，在你可以发布动态的频道菜单中加入“发布动态”，并在你可以编辑的动态菜单中加入“编辑动态”，用于修改说明和可见范围。图片会放到 9:16 画布上，60 秒以内的视频按原样上传。";
 "lng_serein_story_new" = "发布动态";
 "lng_serein_story_post_channel" = "发布动态";
+"lng_serein_story_edit" = "编辑动态";
+"lng_serein_story_edited" = "动态已更新。";
 "lng_serein_story_posting_as" = "以 {name} 的身份发布";
 "lng_serein_story_change" = "换一个文件";
 "lng_serein_story_audience" = "谁可以看";

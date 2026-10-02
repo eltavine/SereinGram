@@ -12,6 +12,7 @@ sereinSnapshotPreviewMinimum: 80px;
 sereinHistoryPreviewSize: size(240px, 180px);
 
 sereinStoryPreviewSize: size(135px, 240px);
+sereinMediaMenuIconEdit: icon {{ "menu/edit", mediaviewMenuFg }};
 sereinStoryCaption: InputField(defaultInputField) {
 	heightMax: 148px;
 }
