@@ -2,7 +2,7 @@
 
 #include "serein/adapters/openssl/aes_gcm_cipher.h"
 #include "serein/adapters/qtsql/history_store.h"
-#include "serein/app/history_entities.h"
+#include "serein/features/history/entities.h"
 #include "serein/features/history/deleted_marks.h"
 #include "serein/features/history/media_store.h"
 #include "serein/features/history/model/recorder.h"
@@ -126,7 +126,7 @@ struct CachedMedia {
 	const auto &text = item->originalText();
 	result.text = text.text;
 	for (const auto &entity : text.entities) {
-		const auto name = App::EntityName(entity.type());
+		const auto name = HistoryFeature::EntityName(entity.type());
 		if (!name.isEmpty() && entity.offset() >= 0 && entity.length() > 0) {
 			result.entities.push_back({
 				name,

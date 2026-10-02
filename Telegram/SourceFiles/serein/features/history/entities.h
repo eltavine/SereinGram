@@ -4,9 +4,9 @@
 
 #include <optional>
 
-namespace Serein::App {
+namespace Serein::HistoryFeature {
 
 [[nodiscard]] QString EntityName(EntityType type);
 [[nodiscard]] std::optional<EntityType> EntityTypeFromName(const QString &name);
 
-} // namespace Serein::App
+} // namespace Serein::HistoryFeature

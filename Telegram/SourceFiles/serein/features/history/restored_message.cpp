@@ -1,6 +1,6 @@
 #include "serein/features/history/restored_message.h"
 
-#include "serein/app/history_entities.h"
+#include "serein/features/history/entities.h"
 #include "data/data_peer.h"
 #include "history/history.h"
 #include "main/main_session.h"
@@ -14,7 +14,7 @@ namespace {
 	}
 	auto result = TextWithEntities{ record.text };
 	for (const auto &entity : record.entities) {
-		if (const auto type = App::EntityTypeFromName(entity.type)) {
+		if (const auto type = EntityTypeFromName(entity.type)) {
 			result.entities.push_back(EntityInText(
 				*type,
 				entity.offset,

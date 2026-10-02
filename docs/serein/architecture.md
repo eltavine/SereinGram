@@ -148,7 +148,7 @@ message MessagesSettings {
 | 守卫 | 工具 | 状态 |
 | --- | --- | --- |
 | 自有源文件 ≤ 1000 行 | `tools/serein/check_file_size.py` + `serein-guards.yml` | 已实施 |
-| 模块依赖方向 | `tools/serein/check_boundaries.py` 按 `policy/boundaries.json` 检查每个 `#include`：`schema`、`ports`、`adapters` 严格执行，其余目录适用宽松的 `serein/` 兜底规则 | 已实施 |
+| 模块依赖方向 | `tools/serein/check_boundaries.py` 按 `policy/boundaries.json` 检查每个 `#include`：`schema`、`ports`、`adapters`、`core` 与各功能的 `model` 层不得引用应用代码；`core` 只能引用自身与 `ports`，偏好存储的上游实现位于 `adapters/tdesktop`，按设备与按账号的选项实例和设置页注册总表位于组装根 `app`；`features/<名>/` 的界面层只能引用本功能、`core`、`schema`、`ports` 与 `hooks`，不得反向依赖 `app` 或其他功能；其余领域目录适用宽松的 `serein/` 兜底规则 | 已实施 |
 | 功能矩阵格式 | `tools/serein/check_features.py`：`features.md` 每行的 ID 唯一且形如 `SG-<族>-<两位序号>`，状态只能是 Planned、In Progress、Implemented、Verified，优先级 P0–P3，来源只用约定缩写 | 已实施 |
 | 门面命名空间遮蔽 | `tools/serein/check_hook_namespaces.py`：生成的门面命名空间 `Serein::Hooks::<页>` 会遮蔽同名的 `Serein::<页>`；位于 `Serein::Hooks` 内、且包含了该门面的代码，只能用 `<页>::` 访问门面里声明的函数，其余名字必须写成 `Serein::<页>::` | 已实施 |
 | 工作流静态检查 | actionlint 1.7.12（含 shellcheck）检查 `.github/workflows/serein-*.yml` 的表达式、矩阵属性、`needs` 引用、Action 输入与内嵌脚本；zizmor 1.16.3 检查工作流安全：第三方 Action 固定到提交哈希、检出不保留凭据、可复用工作流只接收需要的 Secrets、无模板注入；本地未安装 actionlint 时 `check_all.sh` 跳过并提示 | 已实施 |

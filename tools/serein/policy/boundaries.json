@@ -70,6 +70,36 @@
       "app": false,
       "libraries": true
     },
+    "serein/core/": {
+      "own": [
+        "serein/core/",
+        "serein/ports/"
+      ],
+      "app": false,
+      "libraries": true
+    },
+    "serein/features/ghost/": {
+      "own": [
+        "serein/features/ghost/",
+        "serein/core/",
+        "serein/schema/",
+        "serein/ports/",
+        "serein/hooks/"
+      ],
+      "app": true,
+      "libraries": true
+    },
+    "serein/features/history/": {
+      "own": [
+        "serein/features/history/",
+        "serein/core/",
+        "serein/schema/",
+        "serein/ports/",
+        "serein/hooks/"
+      ],
+      "app": true,
+      "libraries": true
+    },
     "serein/hooks/": {
       "own": [
         "serein/hooks/",

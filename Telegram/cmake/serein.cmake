@@ -14,9 +14,10 @@ set(serein_sources
     serein/compose/text.cpp
     serein/compose/text_replacements.cpp
     serein/compose/validators.cpp
-    serein/core/language.cpp
+    serein/app/language.cpp
     serein/core/exchange.cpp
-    serein/core/options.cpp
+    serein/app/options.cpp
+    serein/adapters/tdesktop/prefs.cpp
     serein/schema/codec.cpp
     serein/features/ghost/model/policy.cpp
     serein/features/ghost/model/exceptions.cpp
@@ -29,7 +30,7 @@ set(serein_sources
     serein/hooks/ghost.cpp
     serein/features/ghost/story_tip.cpp
     serein/app/ghost_read.cpp
-    serein/app/history_entities.cpp
+    serein/features/history/entities.cpp
     serein/app/history_expiry.cpp
     serein/app/history_fade.cpp
     serein/app/history_restore.cpp

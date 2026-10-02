@@ -1,5 +1,7 @@
 #pragma once
 
+#include "serein/ports/prefs.h"
+
 #include <QtCore/QByteArray>
 #include <QtCore/QJsonDocument>
 
@@ -20,15 +22,9 @@
 #include <type_traits>
 #include <vector>
 
-namespace Core {
-class Settings;
-} // namespace Core
 namespace Main {
 class Session;
 } // namespace Main
-namespace Storage {
-class Account;
-} // namespace Storage
 
 namespace Serein {
 
@@ -158,39 +154,6 @@ public:
 
 private:
 	std::vector<OptionInfo> _entries;
-
-};
-
-class RawPrefs {
-public:
-	virtual ~RawPrefs() = default;
-	[[nodiscard]] virtual QByteArray read(std::string_view key) = 0;
-	virtual void write(std::string_view key, const QByteArray &value) = 0;
-	virtual void clear(std::string_view key) = 0;
-
-};
-
-class DevicePrefs final : public RawPrefs {
-public:
-	explicit DevicePrefs(Core::Settings &settings);
-	[[nodiscard]] QByteArray read(std::string_view key) override;
-	void write(std::string_view key, const QByteArray &value) override;
-	void clear(std::string_view key) override;
-
-private:
-	Core::Settings &_settings;
-
-};
-
-class AccountPrefs final : public RawPrefs {
-public:
-	explicit AccountPrefs(Storage::Account &account);
-	[[nodiscard]] QByteArray read(std::string_view key) override;
-	void write(std::string_view key, const QByteArray &value) override;
-	void clear(std::string_view key) override;
-
-private:
-	Storage::Account &_account;
 
 };
 

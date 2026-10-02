@@ -1,9 +1,9 @@
-#include "serein/app/history_entities.h"
+#include "serein/features/history/entities.h"
 
 #include <array>
 #include <utility>
 
-namespace Serein::App {
+namespace Serein::HistoryFeature {
 namespace {
 
 constexpr auto kNames = std::array{
@@ -53,4 +53,4 @@ std::optional<EntityType> EntityTypeFromName(const QString &name) {
 	return std::nullopt;
 }
 
-} // namespace Serein::App
+} // namespace Serein::HistoryFeature
