@@ -118,7 +118,7 @@ jobs:
           DOCKERFILE=$(DEBUG='' LTO='' poetry run gen_dockerfile)
           echo "$DOCKERFILE" > Dockerfile
           if [ "$ARCH" = arm64 ]; then
-            sed -i 's/x86_64-unknown-linux-gnu/aarch64-unknown-linux-gnu/g' Dockerfile
+            python3 "$GITHUB_WORKSPACE/tools/serein/patch_dockerfile.py" Dockerfile
           fi
           rm -rf __pycache__
 
