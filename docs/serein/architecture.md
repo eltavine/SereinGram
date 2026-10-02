@@ -2,32 +2,19 @@
 
 本方案参考 `pingora-panel` 的 ports-and-adapters 结构：上游框架（Telegram Desktop）只出现在适配器、界面层和挂钩门面中；核心模型、用例与存储契约不依赖上游。取舍记录见 [ADR](adr/)。
 
-## 1. 现状基线（2026-09-30）
+## 1. 现状
 
-重构开始时（Nagram-qt 分支原样）：
-
-| 项目 | 数值 | 来源 |
-| --- | --- | --- |
-| 自有代码 | `Telegram/SourceFiles/nagram/` 144 个文件、13,823 行，最大文件 650 行 | `wc -l` |
-| 上游侵入（全部） | 192 个上游文件，+1,781／−539 行 | `git diff 0b4a7faa9d..HEAD`，排除自有目录与文档 |
-| 上游侵入（源码） | 123 个文件，+1,386／−339 行；最多的是 `history_widget.cpp` +87 行 | 同上，限 `Telegram/SourceFiles` |
-| 设置声明 | 手写 `Option<T>` 注册表 + 24 个手写设置页文件（3,017 行） | `nagram/core`、`nagram/settings` |
-| 结构化配置 | 过滤、链接、服务、菜单各自手写 JSON 解析与校验 | `nagram/*/model.cpp` |
-| 构建 | 只在开发者本机做过 macOS Debug 构建；三平台 CI 从未运行 | `docs/nagram/design.md` |
-
-当前（以 `tools/serein/upstream_budget.py` 与仓库统计为准）：
-
-| 项目 | 数值 |
+| 项目 | 现状与数据来源 |
 | --- | --- |
-| 自有代码 | `Telegram/SourceFiles/serein/` 307 个文件：手写 18,608 行，由 24 个 proto 生成 70 个文件、6,133 行；最大手写文件 690 行（`settings/services.cpp`） |
-| 上游侵入 | 210 个上游文件、+1,654 行；源码 140 个文件、+1,424 行；直接包含内部头文件的上游文件 0 个（初始 87 个），预算锁定为 0 |
+| 自有代码 | `Telegram/SourceFiles/serein/`；手写源文件不超过 1000 行（`tools/serein/check_file_size.py`），生成代码在 `schema/gen`、`settings/gen`、`hooks/gen` |
+| 上游侵入 | 当前数值与上限由 `tools/serein/upstream_budget.py` 输出，上限记录在 `tools/serein/policy/upstream.json`；直接包含内部头文件的上游文件锁定为 0 |
 | 设置页 | 布局、开关、数值、单选与文本行由 proto 生成；手写设置页只保留自定义控件 |
 | 结构化配置 | 链接、快捷回复、过滤、主菜单、消息菜单、服务与历史记录均由 proto3 声明，生成编解码器校验 |
-| 构建 | 三平台 CI 已接入并缓存依赖；核心测试与守卫在每次推送时运行 |
+| 构建 | 三平台工作流在 PR 中构建 Debug 应用并运行 `test_serein` 与启动冒烟测试；`serein-release.yml` 每天调用同一批工作流构建 Release 矩阵（含 Windows arm64 与 Flatpak arm64）并发布 Nightly；Arch 与 Flatpak 工作流在各自文件改动与每周定时时运行；核心测试与守卫在每次推送时运行 |
 
 上游刻意不带 protobuf 运行时：cld3 用手写头文件替代生成代码（`cmake/external/cld3`），WebRTC 以 `WEBRTC_ENABLE_PROTOBUF=0` 构建。静态 Qt 只初始化 `qtbase`、`qtimageformats`、`qtshadertools`、`qtsvg`，但没有关闭 Qt SQL，Qt 自带的 SQLite 驱动可用。
 
-## 2. 目标结构
+## 2. 目录结构
 
 ```text
 proto/                                   proto3 schema 与 Buf 配置
@@ -38,11 +25,13 @@ Telegram/SourceFiles/serein/
   schema/gen/     生成代码（提交入库，CI 校验无漂移，禁止手改）
   core/           选项读写、作用域解析、变更通知、校验、模块注册接口
   ports/          抽象端口：设备存储、账号存储、历史库、凭据、HTTP、翻译、转写、文本转换、时钟
-  adapters/       端口实现：tdesktop、qtsql、keychain、opencc、platform/{mac,win,linux}
-  hooks/          上游唯一允许包含的 serein 头文件；默认返回上游行为
-  features/<名>/  model/ 纯逻辑与状态机；ui/ 界面、菜单项、设置子页；module.cpp 注册
-  settings/       由 schema 元数据生成设置页与搜索索引
-  app/            组合根：创建适配器、注册模块、把 hooks 连到模块
+  adapters/       端口实现：tdesktop（偏好）、qtsql（历史库）、openssl（AES-GCM）、qtnetwork（共享 HTTP 客户端）、credentials/{keychain,wincred,local_file}（CMake 按平台三选一）
+  hooks/          上游唯一允许包含的 serein 头文件与生成的分发代码；默认返回上游行为
+  display/        各领域共用的展示工具（视图刷新、ID 格式化）
+  <领域>/         admin、chats、compose、filters、interface、links、media、menu、messages、network、privacy、services、snapshot
+  features/<名>/  ghost、history、instant_view、updates、stickers、regdate、stories：model/ 为不依赖上游的纯逻辑与状态机，其余是该功能的界面、菜单项与挂钩实现
+  settings/       设置界面外壳：schema 生成的设置行（settings/gen）加各页面的自定义行
+  app/            组合根：选项实例、模块表、菜单贡献者的注册顺序、需要创建适配器或跨领域组装的挂钩
   tests/          单元测试、假实现、界面场景
 ```
 
@@ -51,12 +40,13 @@ Telegram/SourceFiles/serein/
 箭头表示左侧依赖右侧：
 
 ```text
-features/*/model -> core + ports + schema
-features/*/ui    -> features/*/model + lib_ui + 上游界面 API
-features/*/module.cpp -> 本功能 model、ui + hooks 注册接口 + settings 注册接口
-settings  -> core + schema + lib_ui + 上游 Settings API
+features/*/model -> core + ports + schema（不依赖上游）
+features/<名>    -> 本功能 model + core + schema + ports + hooks + lib_ui + 上游界面 API
+settings  -> core + schema + 各领域公开接口 + lib_ui + 上游 Settings API
 adapters  -> ports + 上游 + 第三方库
-hooks     -> core（不依赖任何功能模块）
+hooks     -> core + schema + ports（不依赖任何功能模块）
+<领域>    -> core + schema + ports + hooks + display（横向依赖须在策略中逐条放行）
+menu      -> 只有贡献者注册表与显隐过滤；菜单项由各领域提供，由 app 按固定顺序注册
 app       -> 全部（只做组装）
 上游文件  -> hooks（仅此一处）
 ```
@@ -69,8 +59,8 @@ app       -> 全部（只做组装）
 | `adapters` | 把端口接到上游和第三方库 | 功能规则 |
 | `hooks` | 上游调用点的稳定签名与分发 | 功能模块 |
 | `features/*/model` | 功能规则，可单元测试 | 上游、Qt Widgets、其他功能 |
-| `features/*/ui` | 该功能的界面 | 其他功能 |
-| `settings` | 通用设置页生成 | 功能规则 |
+| `features/<名>` | 该功能的界面、菜单项与挂钩实现 | 其他功能、`app` |
+| `settings` | 设置界面外壳：生成的设置行与各页面 | `app`、`adapters` |
 | `app` | 组合根 | 业务规则 |
 
 扩展规则：
@@ -78,7 +68,7 @@ app       -> 全部（只做组装）
 1. 上游文件只允许包含 `serein/hooks/*.h`；每个挂钩在上游只占一行调用或一个条件，逻辑放在 `serein/`。品牌与构建文件是唯一例外，集中在品牌提交中。
 2. 优先使用上游已有扩展点：`rpl` 事件（`Main::Domain`、`Main::Account::sessionChanges()`、`Data::Session` 的各类变更流）、样式常量、`Settings::Section` 注册。只有这些都做不到时才新增挂钩。
 3. 功能模块之间不直接包含；共享能力放进端口或 `core` 的事件。
-4. 新功能 = 新目录 `features/<名>` + schema 字段 + `module.cpp` 注册，不修改核心流程。
+4. 新功能 = 所属领域目录或新目录 `features/<名>` + 一条边界规则 + schema 字段 + 在 `app/modules.cpp` 的模块表或菜单贡献者中注册，不修改核心流程。
 5. 生成的 schema 类型是值类型；持久化格式属于适配器。
 6. schema 只做增量演进，删除字段改为 `reserved`；`buf breaking` 强制执行。
 7. 挂钩的默认实现等于上游行为；没有模块注册处理器时，客户端行为与上游一致。
@@ -109,11 +99,13 @@ namespace Serein::Hooks {
 | HIST 删除 | `data/data_session.cpp` 的 `processMessagesDeleted`、`processNonChannelMessagesDeleted` | `OnMessagesDeleted` |
 | HIST 编辑 | `history/history_item.cpp` 的 `applyEdition` | `OnBeforeEdition` |
 
-已接入：在线状态（`api/api_updates.cpp`）与输入状态（`api/api_send_progress.cpp`，群通话的“正在说话”不受影响），各为一行条件；服务器删除（`data/data_session.cpp` 两处）与编辑前快照（`history/history_item.cpp`），实现位于组合根 `serein/app/`。已读类请求被拦截时，上游本地状态仍需按“已读”推进，否则未读计数与重试逻辑会卡住；这一点在 GHOST 模块的实现与测试中单独验证。
+已接入：在线状态（`api/api_updates.cpp`）与输入状态（`api/api_send_progress.cpp`，群通话的“正在说话”不受影响），各为一行条件；服务器删除（`data/data_session.cpp` 两处）与编辑前快照（`history/history_item.cpp`），实现位于 `serein/features/history/recording.cpp`；组合根 `serein/app/history_storage.cpp` 只把 Qt SQL 与 AES-GCM 适配器登记为历史存储，构建中没有 Qt SQL 时登记空实现，历史功能随之保持关闭。已读类请求被拦截时，上游本地状态仍需按“已读”推进，否则未读计数与重试逻辑会卡住；这一点在 GHOST 模块的实现与测试中单独验证。
 
-门面的三种来源：设置选项的取值与订阅函数由 proto 生成到 `serein/hooks/gen/<页>.h`；面向上游的薄接口头文件位于 `serein/hooks/<领域>/`，只允许前置声明与库头文件，可脱离应用代码单独通过语法检查（参数或返回值是上游嵌套类型时，门面声明为函数模板，由实现文件对该类型显式实例化，例如 `ApplyInfoOptions(Data &, ...)` 与 `TranscriptionOverride<Entry>(item)`）；其余一次性挂钩（幽灵、历史、定时发送）位于 `serein/hooks/*.h`，实现放在组合根 `serein/app/`。应用启动只有一个挂钩 `Serein::Hooks::OnApplicationStarted()`：组合根的模块表 `serein/app/modules.cpp` 为每个模块登记“应用启动”“会话启动”和“窗口启动”回调（窗口启动由 `SessionController` 构造函数中的 `Serein::Hooks::OnWindowStarted` 分发），会话跟踪统一订阅各账号的 `sessionValue()`，功能模块不再各自挂接上游。
+门面的三种来源：设置选项的取值与订阅函数由 proto 生成到 `serein/hooks/gen/<页>.h`；面向上游的薄接口头文件位于 `serein/hooks/<领域>/`，只允许前置声明与库头文件，可脱离应用代码单独通过语法检查（参数或返回值是上游嵌套类型时，门面声明为函数模板，由实现文件对该类型显式实例化，例如 `ApplyInfoOptions(Data &, ...)` 与 `TranscriptionOverride<Entry>(item)`；只需填充上游私有结构而不读取其他成员时，模板直接写在门面头文件里，由上游传入自身类型，例如 `ModerateDefaults<ModerateMessagesBoxOptions>()` 与 `PrependCustomDoh(attempts, Type::Mozilla)`）；其余一次性挂钩（幽灵、历史、定时发送）位于 `serein/hooks/*.h`，实现放在对应的功能目录，例如 `features/ghost/hooks.cpp` 与 `features/history/recording.cpp`；只供 Serein 内部使用的函数不放进门面。应用启动只有一个挂钩 `Serein::Hooks::OnApplicationStarted()`：组合根的模块表 `serein/app/modules.cpp` 为每个模块登记“应用启动”“会话启动”和“窗口启动”回调（窗口启动由 `SessionController` 构造函数中的 `Serein::Hooks::OnWindowStarted` 分发），会话跟踪统一订阅各账号的 `sessionValue()`，功能模块不再各自挂接上游。消息菜单的定制按菜单项文字识别上游动作，文字在每次打开菜单时按当前语言计算；只有文字与其他菜单项重复或由自绘控件显示的项（保存图片、带自动删除倒计时的删除、表情包按钮）在上游保留显式标签。
 
-现有 Nagram 内联挂钩（123 个上游源文件）按功能族改走门面。预算：迁移完成后上游源码文件 ≤ 90 个、新增行 ≤ 900 行（不含品牌与构建文件），由 `tools/serein/upstream_budget.py` 与上游合并基线比较并在 CI 报告。当前为 140 个源码文件、+1,424 行，尚未达到该目标，后续继续把品牌与多处小挂钩合并到门面。
+上游侵入由 `tools/serein/upstream_budget.py` 与上游合并基线比较，CI 报告当前数值；长期目标是上游源码文件不超过 90 个、新增行不超过 900 行（不含品牌与构建文件），途径是把品牌改动与多处小挂钩合并到门面。
+
+中性默认值约定：Serein 向上游界面添加的任何入口（消息、对话、资料、主菜单、托盘、贴纸包、文件夹与输入框菜单中的项目，以及新的按钮与行）都必须由默认关闭的选项控制，选项关闭时上游界面保持原样；只有出现前提本身默认关闭的入口（例如依赖消息记录的“编辑历史”）可以不另设开关，并在测试中写明理由。只影响一次同步渲染的临时行为用作用域覆盖实现，例如消息截图在 `Snapshot::Render` 期间用 `Interface::ThemeReplyColorsScope` 让回复使用主题色，而不修改全局选项。通过消息列表委托安装的挂钩必须先排除 `Context::ChatPreview`，因为对话列表预览的委托把 `listWindow()` 实现为 `Unexpected()`。
 
 ## 5. Schema 与代码生成（ADR-0002）
 
@@ -139,9 +131,9 @@ message MessagesSettings {
 - 语义：proto3 `optional` 有值表示用户显式设置；无值表示跟随 Telegram。稳定标识是字段编号与 JSON 名，删除字段必须 `reserved`。
 - 校验使用 protovalidate 的标准注解；生成器只接受其中的范围、枚举、长度约束，遇到不支持的约束直接报错。
 - 生成器 `tools/serein/codegen`（`uv run tools/serein/codegen/generate.py`）读取 `buf build` 的 JSON 映像，用 Jinja2 为每个设置页生成 `serein/schema/gen/settings/<页>.h`：类型化的 `Option<T>` 句柄、校验与 `RegisterOptions`。命名约定：常量 `k<字段名驼峰>`、存储键 `serein.<json_name>`、标题 `lng_serein_<字段名>`，只有例外才写 `cpp_name`、`title`。
-- 已迁移：界面、会话列表、消息、输入、媒体、隐私 6 个页面共 103 个选项；原 `options.h` 只转发到生成头文件。其余 8 个结构化 JSON 选项（菜单、服务、过滤、链接、别名、截图等）改用生成的编解码后再迁移。
-- 编解码：带文件选项的 proto 生成 `serein/schema/gen/<目录>/<名>.h/.cpp`（值类型、`Read`/`Write`/`Validate`、文档级 `Parse…`/`Serialize…`），手写运行时只有 `serein/schema/codec.h`。生成的 `.cpp` 列在 `serein/schema/gen/sources.cmake`，主构建与测试构建都直接引入。使用者：消息历史记录 `proto/serein/history/v1/record.proto`；链接规则 `proto/serein/config/v1/links.proto`（第一个迁移的既有配置，结构与主机名、参数、UUID 约束改由 schema 声明，`require_fields` 保持旧格式的严格性，新增测试同时在迁移前后的实现上通过）。
-- 生成代码提交入库：三平台与发行版构建不需要 Buf 或 Python 依赖；CI 运行 `buf lint`、`tools/serein/proto_breaking.sh` 与 `generate.py --check`。
+- 全部设置页的选项都由生成头文件声明；各功能目录的 `options.h` 只转发到生成头文件。
+- 编解码：带文件选项的 proto 生成 `serein/schema/gen/<目录>/<名>.h/.cpp`（值类型、`Read`/`Write`/`Validate`、文档级 `Parse…`/`Serialize…`），手写运行时只有 `serein/schema/codec.h`。生成的 `.cpp` 列在 `serein/schema/gen/sources.cmake`，主构建与测试构建都直接引入。使用者包括消息历史记录 `proto/serein/history/v1/record.proto` 与 `proto/serein/config/v1/` 下的各结构化配置；`require_fields` 让编解码器拒绝缺少字段的文档，格式变更需要提升文档版本并提供迁移。
+- 生成代码提交入库：三平台与发行版构建不需要 Buf 或 Python 依赖；CI 运行 `buf lint`、`tools/serein/proto_breaking.sh` 与 `generate.py --check`。生成器的 Python 依赖连同传递依赖与哈希锁定在 `generate.py.lock`，CI 用 `uv lock --script --check` 确认锁文件与脚本声明一致，并以 `--locked` 运行。
 
 ## 6. 存储（ADR-0003）
 
@@ -149,8 +141,8 @@ message MessagesSettings {
 | --- | --- | --- |
 | 设备设置 | 上游 `Core::Settings` 的偏好 KV，每个页面一个键 `serein.<页面>` | schema 的 JSON |
 | 账号设置 | 上游 `Storage::Account` 的偏好 KV | schema 的 JSON |
-| 凭据 | macOS Keychain、Windows 凭据管理器；其他平台为用本地密钥加密的 `tdata/serein_credentials`（ADR-0004 修订） | 不进偏好、不导出 |
-| 消息历史 | 账号数据目录下 `serein/history.sqlite3`，Qt SQL + SQLite | 元数据列 + 加密载荷（`HistoryRecord` 的 JSON，含原始 TL 与 layer） |
+| 凭据 | macOS Keychain、Windows 凭据管理器；其他平台为用本地密钥加密的 `tdata/serein_credentials`（ADR-0004 修订）。端口为 `ports/credentials.h`，三种实现位于 `adapters/credentials/`，由 CMake 按平台三选一；`services/credentials.cpp` 只校验账号与密钥，核心测试用内存实现覆盖 | 不进偏好、不导出 |
+| 消息历史 | 账号数据目录下 `serein_history.sqlite3`，Qt SQL + SQLite | 元数据列 + 加密载荷（`HistoryRecord` 的 JSON，含原始 TL 与 layer） |
 
 历史库用 `PRAGMA user_version` 管理迁移；每个格式版本在 `serein/tests/fixtures/history/vN/` 保留不可变样本，测试必须能读取所有受支持版本并拒绝未知版本。
 
@@ -159,13 +151,28 @@ message MessagesSettings {
 | 守卫 | 工具 | 状态 |
 | --- | --- | --- |
 | 自有源文件 ≤ 1000 行 | `tools/serein/check_file_size.py` + `serein-guards.yml` | 已实施 |
-| 模块依赖方向 | `tools/serein/check_boundaries.py` 按 `policy/boundaries.json` 检查每个 `#include`：`schema`、`ports`、`adapters` 严格执行；旧功能目录暂归宽松的 `serein/` 兜底规则，迁移一个收紧一个 | 已实施 |
+| 模块依赖方向 | `tools/serein/check_boundaries.py` 按 `policy/boundaries.json` 检查每个 `#include`：`schema`、`ports`、`adapters`、`core` 与各功能的 `model` 层不得引用应用代码；`core` 只能引用自身与 `ports`，偏好存储的上游实现位于 `adapters/tdesktop`，按设备与按账号的选项实例和设置页注册总表位于组装根 `app`；`features/<名>/` 的界面层只能引用本功能、`core`、`schema`、`ports` 与 `hooks`，不得反向依赖 `app` 或其他功能；`serein/` 下每个源文件都必须落在某条模块规则内，新目录没有规则即失败；领域目录只能引用自身与共享层 `core`、`schema`、`ports`、`hooks`、`display`，确需的横向依赖逐条放行并尽量精确到头文件（如 `messages` 只能引用历史功能的 `deleted_marks.h`，`snapshot` 只能引用界面的 `reply_colors.h`）；`settings` 作为设置界面外壳可引用各领域，但不得引用 `app` 与 `adapters`；只有组装根 `app` 可引用全部 | 已实施 |
 | 功能矩阵格式 | `tools/serein/check_features.py`：`features.md` 每行的 ID 唯一且形如 `SG-<族>-<两位序号>`，状态只能是 Planned、In Progress、Implemented、Verified，优先级 P0–P3，来源只用约定缩写 | 已实施 |
 | 门面命名空间遮蔽 | `tools/serein/check_hook_namespaces.py`：生成的门面命名空间 `Serein::Hooks::<页>` 会遮蔽同名的 `Serein::<页>`；位于 `Serein::Hooks` 内、且包含了该门面的代码，只能用 `<页>::` 访问门面里声明的函数，其余名字必须写成 `Serein::<页>::` | 已实施 |
-| 工作流静态检查 | actionlint 1.7.12 检查 `.github/workflows/serein-*.yml` 的表达式、矩阵属性、`needs` 引用与 Action 输入（暂不启用 shellcheck：沿用上游的构建脚本有大量引号提示）；本地未安装 actionlint 时 `check_all.sh` 跳过并提示 | 已实施 |
-| 上游侵入预算 | `tools/serein/upstream_budget.py`，与 `policy/upstream.json` 记录的上游基线比较；预算默认只降不升；新功能需要新挂钩时，在同一提交中上调并在提交说明中写明增量与理由；同时统计上游文件直接包含非门面头文件的数量（已锁定为 0） | 已实施 |
+| 工作流静态检查 | actionlint 1.7.12（含 shellcheck）检查 `.github/workflows/serein-*.yml` 的表达式、矩阵属性、`needs` 引用、Action 输入与内嵌脚本；zizmor 1.16.3 检查工作流安全：第三方 Action 固定到提交哈希、检出不保留凭据、可复用工作流只接收需要的 Secrets、无模板注入；本地未安装 actionlint 时 `check_all.sh` 跳过并提示 | 已实施 |
+| 格式与风格 | `tools/serein/check_style.py`：自有文本文件为无 BOM 的 UTF-8、只用 LF、以单个换行结尾、无行尾空白，YAML、Python、proto、JSON 与 CMake 不用制表符缩进，`tools/serein/policy/` 的 JSON 为规范格式；Serein C++ 用制表符缩进、不连续空行、`&&` 与 `\|\|` 置于续行开头、带访问区段的类在 `};` 前空一行、使用嵌套命名空间写法、类外定义不重复 `[[nodiscard]]`、注释按单行限额（多行须以 `// WHY:` 开头且不超过三行，测试目录除外），并禁用 `QStringLiteral`、`(void)` 与 `static_cast<void>`、`Q_OS_LINUX`、`NULL` 以及生产代码中的 `_DEBUG` 分支 | 已实施 |
+| Python、Shell、YAML、文档与 proto 格式 | ruff 0.16.10 格式检查与 Lint（`tools/serein/ruff.toml`）；shellcheck；yamllint 1.37.1 严格模式（`tools/serein/yamllint.yml`）；markdownlint-cli2 0.19.1（`tools/serein/serein.markdownlint-cli2.jsonc`）；`buf format --diff --exit-code` | 已实施 |
+| 静态分析 | clang-tidy 21.1.1 按 `Telegram/SourceFiles/serein/.clang-tidy` 检查核心测试工程中的全部手写 Serein 编译单元（bugprone、clang-analyzer、performance 等），由 `tools/serein/run_clang_tidy.py` 并行运行；只统计 Serein 自有位置的诊断，生成代码与上游头文件除外，无法解析的编译单元同样判为失败 | 已实施 |
+| 内存与未定义行为 | 核心测试另以 AddressSanitizer 与 UndefinedBehaviorSanitizer 构建并运行（未定义行为直接失败）；Qt 与 OpenCC 的全局对象在退出时才释放，因此关闭泄漏检测；本地 `check_all.sh` 同样运行，可用 `SEREIN_SKIP_SANITIZERS=1` 跳过 | 已实施 |
+| 内存与未定义行为 | 核心测试另以 AddressSanitizer 与 UndefinedBehaviorSanitizer 构建并运行（未定义行为直接失败）；Qt 与 OpenCC 的全局对象在退出时才释放，因此关闭泄漏检测；本地 `check_all.sh` 同样运行，可用 `SEREIN_SKIP_SANITIZERS=1` 跳过 | 已实施 |
+| 密钥扫描 | gitleaks 8.30.1 扫描每次推送或 PR 新增的主线提交（`tools/serein/gitleaks.toml` 只放行打包说明中的占位凭据） | 已实施 |
+| 桌面元数据 | `desktop-file-validate` 校验桌面入口，`appstreamcli validate` 校验 AppStream 元数据 | 已实施 |
+| 启动冒烟与安装测试 | `tools/serein/smoke_test.py`：三平台构建后以全新 `-workdir` 启动应用，要求日志出现启动行且进程在等待期后仍在运行；Linux 先用 `ldd` 确认运行库都能找到。随后测试交付的产物：Windows 解压便携包并静默安装后启动安装的程序，macOS 挂载 DMG、校验签名并从镜像启动，Linux 以 AppImage 启动，并在 Debian 12、Ubuntu 24.04 与 Fedora 43 容器中安装 `.deb` 与 `.rpm`（依赖由包声明解析），检查文件与运行库 | 已实施 |
+| 发布结构 | `tools/serein/release.py verify`：发布前的产物集合必须与 `tools/serein/policy/release_assets.json` 完全一致，并生成 `SHA256SUMS` 与 `release.json`；`release.py compat` 与基线比较，已有产物不得删除、改名或改变系统、架构与类型 | 已实施 |
+| 上游侵入预算 | `tools/serein/upstream_budget.py`，与 `policy/upstream.json` 记录的上游基线比较；预算默认只降不升；新功能需要新挂钩时，在同一提交中上调并在提交说明中写明增量与理由；同时统计上游文件直接包含非门面头文件的数量（已锁定为 0），以及 SereinGram 源文件用到的上游头文件种类数（`upstream_headers`，`--headers` 列出明细），它限定了上游接口变化可能波及的范围，新增依赖同样需要在提交中上调 | 已实施 |
 | schema 兼容 | `buf lint`；`tools/serein/proto_breaking.sh` 与推送前的提交或 PR 目标分支比较（`FILE` 级） | 已实施 |
 | 生成代码漂移 | `uv run tools/serein/codegen/generate.py --check` | 已实施 |
+| 中性默认值 | `test_serein` 的 `TestNeutralDefaults`：全部设置页的选项默认关闭、为零或为空，消息菜单中 Serein 新增的项默认隐藏，例外逐项写明理由 | 已实施 |
+| 头文件 | `tools/serein/check_includes.py`：Serein 代码中带引号的 `#include`，以及上游文件中引用 `serein/` 的 `#include`，必须指向仓库或已拉取子模块中存在的头文件，只在构建目录中生成的头文件（样式、语言键与 schema 生成物）跳过；Serein 代码不得包含平台目标缺少的系统头文件，目前为 `<filesystem>`（macOS 10.15 起才可用，改用 `QDir`、`QFileInfo`） | 已实施 |
+| 源文件登记 | `tools/serein/check_sources.py`：每个 Serein 源文件都必须登记在 `Telegram/cmake/serein.cmake` 或测试清单中，反过来已登记的路径也必须存在 | 已实施 |
+| 上游子模块指针 | `upstream_budget.py` 比较暂存区中与上游共有的子模块指针和上游基线，不一致即失败；有意保留的差异写入 `submodule_overrides` | 已实施 |
+| 打包依赖版本 | `tools/serein/check_packaging.py`：Arch PKGBUILD 与 Flatpak 清单锁定的 tdlib、tg_owt、tlottie、patches 提交与 Qt 版本必须与 `snap/snapcraft.yaml` 一致；`--update` 自动改写提交 | 已实施 |
+| 打包文件布局 | 工具自测运行 `packaging/nfpm/stage.sh`，检查 `.deb` 与 `.rpm` 需要的程序、桌面入口、元数据与各尺寸图标都能从上游路径取得 | 已实施 |
 | 三语文案一致 | `test_serein` | 已有 |
 | 核心逻辑测试（只依赖 Qt） | `tools/serein/core_tests` 独立 CMake 工程，与主构建共用 `Telegram/cmake/serein_tests.cmake` 的测试清单 | 已实施 |
 | 构建与单元测试 | `serein-{mac,win,linux}.yml` | 已有 |
@@ -178,33 +185,21 @@ cmake -S tools/serein/core_tests -B out/serein-core-tests -G Ninja \
 cmake --build out/serein-core-tests && ctest --test-dir out/serein-core-tests
 ```
 
-## 8. 迁移步骤
+## 8. 演进规则
 
-Phase 0 基础（全部 P0，每步独立提交、可回退）：
+1. 新功能先在功能矩阵登记 ID、来源与优先级；P3 或存在服务条款、平台能力风险的功能先写 ADR。
+2. 设置项在 proto 中声明并重新生成代码，默认值必须让客户端行为与上游一致，`TestNeutralDefaults` 负责检查。
+3. 逻辑放在 `features/` 或对应功能目录并配核心测试（在 `serein/tests/` 中用 doctest 的 `TEST_CASE` 自注册，并加入 `serein_tests.cmake`）；上游只通过 `serein/hooks` 中的单行调用接入，需要新挂钩时在同一提交中按增量上调侵入预算。
+4. 同步上游用 `tools/serein/upstream_sync.py`：合并后移动预算基线，并让打包配方的依赖版本跟随 snap 配方；合并后的三平台构建通过才算完成同步。
 
-1. 文档与守卫：本目录；源文件行数守卫接入 CI；边界与预算守卫先以报告模式运行。
-2. 更名：`nagram` → `serein`（目录、命名空间 `Nagram` → `Serein`、文案键 `lng_nagram_` → `lng_serein_`、存储键 `nagram.` → `serein.`、CMake、测试目标、工作流）。不迁移旧数据。
-3. 品牌：应用名、图标、应用 ID、数据目录、链接（见第 9 节待定项）。
-4. Schema：`proto/`、Buf、生成器；先让一个功能族（消息）端到端跑通，再迁移其余；随后删除手写注册表与通用设置页代码。
-5. 挂钩门面：现有内联挂钩改走 `serein/hooks`，达到第 4 节预算。
-6. 依赖替换：OpenCC 已接入；凭据存储按 ADR-0004 修订改为系统凭据库加本地加密存储；测试框架迁移暂缓（ADR-0004）。
-7. 三平台 CI 通过。
+## 9. 项目约定
 
-Phase 1（P1）：GHOST、HIST、SG-FILTER-03 之前的过滤项补验、SG-PRIV-02、SG-TRANS-03、SG-TRANS-04、SG-ACCT-02。
-
-Phase 2 与 Phase 3：按功能矩阵的 P2、P3；P3 每项先写 ADR 再实施。
-
-## 9. 维护者决定（2026-09-30）
-
-| 事项 | 决定 |
+| 事项 | 约定 |
 | --- | --- |
 | 应用 ID | `io.github.eltavine.SereinGram` |
 | 图标 | 正式图标由 [OukaroMF](https://github.com/OukaroMF/) 设计，母版 SVG 原样保存，各尺寸与平台格式均由生成脚本从母版渲染；不沿用 Nagram 或 Telegram 图标 |
-| 推送与 CI | 允许推送到 `main` 触发三平台工作流 |
-| 服务条款风险功能 | SG-HIST-09、SG-PRIV-07、SG-PRIV-08 正常纳入 |
+| 功能范围 | 包含可能与服务条款冲突的功能（SG-HIST-09、SG-PRIV-08），与其他增强一样默认关闭 |
 | proto3 方案 | 按 ADR-0002：proto3 + Buf + 自有生成器，不引入 protobuf 运行时 |
-| 本机工具链 | 允许用 Homebrew 安装 qtbase，用于本机编译不依赖上游的核心逻辑测试 |
-
-仍待提供：发布用 API 凭据（维护者在 my.telegram.org 申请，放入仓库 Secrets；未配置时 CI 使用上游公开测试凭据）。
-
-本机没有 Xcode 与 `../Libraries`，暂时无法本地构建；在准备好本地工具链（`docs/building-mac.md`）之前，编译验证依赖 CI。
+| 文案 | 英文文案 `langs/serein/serein.strings` 由 `Telegram/cmake/serein_lang.cmake` 并入上游的语言代码生成，界面代码照常使用 `tr::lng_serein_*`；生成的键查找函数再经 `tools/serein/split_lang_keys.py` 按键名首字母拆分后编译（MSVC arm64 拒绝编译单个过大的函数）；其他语言的译文按界面语言从资源中加载，缺失的键回退英文 |
+| CI 缓存 | 整个仓库共用 10 GB 的 Actions 缓存，超出后按最久未访问淘汰；默认分支是开发分支 `develop`，`main` 只接收发布合并；分支与 PR 能读取默认分支的缓存，所以只有 `develop` 上的构建（每次推送的 Debug 构建与 Nightly 的 Release 构建）写入缓存，PR 与 `main` 上的构建只读取：Windows 的依赖与 Qt 缓存在清理步骤之后保存（与上游一致），macOS 依赖缓存的键包含工具链指纹，Linux 缓存 Docker 层并只保留一份编译缓存；Windows 与 macOS 的依赖缓存同时包含 Debug 与 Release 版本，PR 与发布构建共用；发布流程中的 Windows arm64、Arch 与 Flatpak 构建不读写缓存，以免挤掉三个平台的缓存 |
+| API 凭据 | 不使用官方 Telegram 客户端凭据；构建从仓库 Secrets 的 `SEREIN_API_ID` 与 `SEREIN_API_HASH` 注入，没有密钥的 fork 与 PR 构建回退到上游为开发构建公开提供的测试凭据（`TDESKTOP_API_TEST`） |

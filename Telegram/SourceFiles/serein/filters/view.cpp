@@ -1,6 +1,8 @@
 #include "serein/hooks/filters/view.h"
 
+#include "serein/filters/hidden_messages.h"
 #include "serein/filters/model.h"
+#include "serein/filters/reveal.h"
 
 #include "data/data_peer.h"
 #include "data/data_peer_id.h"
@@ -29,6 +31,7 @@ struct Cached {
 	QString searchable;
 	QString author;
 	QString peer;
+	QString topic;
 	bool blocked = false;
 	bool outgoing = false;
 	Result result;
@@ -88,7 +91,10 @@ QString Searchable(not_null<HistoryItem*> item) {
 [[nodiscard]] Result Project(
 		HistoryItem *item,
 		const TextWithEntities &source) {
-	if (!item || item->isService() || item->sereinOriginalShown()) {
+	if (!item
+		|| item->isService()
+		|| item->sereinOriginalShown()
+		|| Revealed(item->history())) {
 		return { .text = source };
 	}
 	const auto raw = ForAccount(&item->history()->session()).Get(kRules);
@@ -121,6 +127,10 @@ QString Searchable(not_null<HistoryItem*> item) {
 	}
 	const auto peer = item->history()->peer;
 	const auto peerId = QString::number(SerializePeerId(peer->id));
+	const auto topicRoot = item->topicRootId();
+	const auto topic = (topicRoot && peer->isForum())
+		? (peerId + u':' + QString::number(topicRoot.bare))
+		: QString();
 	const auto searchable = Searchable(item);
 	const auto key = reinterpret_cast<quintptr>(item);
 	if (const auto cached = Results().object(key);
@@ -131,11 +141,12 @@ QString Searchable(not_null<HistoryItem*> item) {
 		&& cached->source.entities == source.entities
 		&& cached->searchable == searchable
 		&& cached->author == author && cached->peer == peerId
+		&& cached->topic == topic
 		&& cached->blocked == blocked && cached->outgoing == item->out()) {
 		return cached->result;
 	}
-	const auto result = Apply(raw, source, author,
-		peerId, blocked, item->out(), searchable, SharedRules(shared));
+	const auto result = Apply(raw, source, author, peerId, blocked,
+		item->out(), searchable, SharedRules(shared), topic);
 	Results().insert(key, new Cached{
 		.id = item->fullId(),
 		.config = raw,
@@ -144,6 +155,7 @@ QString Searchable(not_null<HistoryItem*> item) {
 		.searchable = searchable,
 		.author = author,
 		.peer = peerId,
+		.topic = topic,
 		.blocked = blocked,
 		.outgoing = item->out(),
 		.result = result,
@@ -153,6 +165,29 @@ QString Searchable(not_null<HistoryItem*> item) {
 			.arg(result.error, QString::number(item->id.bare)));
 	}
 	return result;
+}
+
+[[nodiscard]] bool HiddenLocally(not_null<HistoryItem*> item) {
+	const auto raw = ForAccount(&item->history()->session()).Get(
+		kHiddenMessages);
+	if (raw.isEmpty()) {
+		return false;
+	}
+	static auto cachedRaw = QString();
+	static auto cachedSet = QSet<QString>();
+	if (!raw.isSharedWith(cachedRaw)) {
+		if (raw != cachedRaw) {
+			cachedSet = HiddenMessageSet(raw);
+		}
+		cachedRaw = raw;
+	}
+	return cachedSet.contains(HiddenMessageToken(
+		SerializePeerId(item->history()->peer->id),
+		item->id.bare));
+}
+
+[[nodiscard]] TextWithEntities HiddenLocallyText() {
+	return { tr::lng_serein_message_hidden_locally(tr::now) };
 }
 
 [[nodiscard]] TextWithEntities DisplayText(const Result &result) {
@@ -167,20 +202,28 @@ QString Searchable(not_null<HistoryItem*> item) {
 namespace Serein::Hooks::Filters {
 
 bool Hidden(HistoryItem *item) {
-	return item && Serein::Filters::Project(item,
-		item->translatedTextWithLocalEntities()).hidden;
+	return item && (Serein::Filters::HiddenLocally(item)
+		|| Serein::Filters::Project(
+			item,
+			item->translatedTextWithLocalEntities()).hidden);
 }
 
 TextWithEntities DisplayText(
 		HistoryItem *item,
 		const TextWithEntities &source) {
 	using namespace Serein::Filters;
+	if (item && HiddenLocally(item)) {
+		return HiddenLocallyText();
+	}
 	return Serein::Filters::DisplayText(Project(item, source));
 }
 
 TextWithEntities ReplyText(
 		HistoryItem *quoted,
 		const TextWithEntities &text) {
+	if (quoted && Serein::Filters::HiddenLocally(quoted)) {
+		return Serein::Filters::HiddenLocallyText();
+	}
 	return Hidden(quoted)
 		? TextWithEntities{ tr::lng_serein_filter_hidden(tr::now) }
 		: text;

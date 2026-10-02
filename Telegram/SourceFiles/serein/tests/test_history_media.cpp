@@ -2,19 +2,13 @@
 #include "serein/features/history/media_store.h"
 #include "serein/features/history/model/recorder.h"
 #include "base/basic_types.h"
+#include "serein/tests/require.h"
 
+#include <doctest/doctest.h>
 #include <QtCore/QFileInfo>
 #include <QtCore/QTemporaryDir>
 
-#include <stdexcept>
-
 namespace {
-
-void Require(bool value, const char *message) {
-	if (!value) {
-		throw std::runtime_error(message);
-	}
-}
 
 class XorCipher final : public Serein::Ports::Cipher {
 public:
@@ -36,11 +30,12 @@ private:
 		}
 		return value;
 	}
+
 };
 
 } // namespace
 
-void TestCachedMedia() {
+TEST_CASE("CachedMedia") {
 	using namespace Serein;
 	using namespace Serein::HistoryFeature;
 	auto directory = QTemporaryDir();
@@ -61,9 +56,12 @@ void TestCachedMedia() {
 		&& WriteCachedMedia(cipher, orphan, bytes)
 		&& WriteCachedMedia(cipher, other, bytes),
 		"cached media written");
-	auto raw = QFile(kept);
-	Require(raw.open(QIODevice::ReadOnly) && !raw.readAll().contains("photo"),
-		"cached media stored in plain text");
+	{
+		auto raw = QFile(kept);
+		Require(raw.open(QIODevice::ReadOnly)
+			&& !raw.readAll().contains("photo"),
+			"cached media stored in plain text");
+	}
 	Require(ReadCachedMedia(cipher, kept) == bytes, "cached media read back");
 	Require(!WriteCachedMedia(cipher, kept, QByteArray())
 		&& !WriteCachedMedia(

@@ -1,0 +1,90 @@
+name: Serein Arch Linux.
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+    paths:
+      - 'packaging/arch/**'
+      - '.github/workflows/serein-arch.yml'
+  schedule:
+    - cron: '0 3 * * 1'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+
+  arch:
+    name: Arch Linux package
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    container: archlinux:base-devel
+
+    steps:
+      - name: Install the build tools.
+        run: |
+          pacman -Sy --noconfirm archlinux-keyring
+          pacman -Su --noconfirm --needed git
+
+      - name: Clone.
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+          path: SereinGram
+          fetch-depth: 0
+
+      - name: Build the package.
+        env:
+          SEREIN_API_ID: ${{ secrets.SEREIN_API_ID }}
+          SEREIN_API_HASH: ${{ secrets.SEREIN_API_HASH }}
+        run: |
+          # Without the repository secrets, build with the test-only credentials.
+          if [ -z "$SEREIN_API_ID" ]; then
+            export SEREIN_API_TEST=1
+          fi
+          useradd --create-home builder
+          echo 'builder ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/builder
+          chown -R builder SereinGram
+
+          config=/etc/makepkg.ci.conf
+          cp /etc/makepkg.conf "$config"
+          cat >> "$config" <<'EOF'
+          OPTIONS=(strip docs !libtool !staticlibs emptydirs zipman purge !debug !lto)
+          EOF
+
+          cd SereinGram/packaging/arch
+          sed -i "s|git+https://github.com/eltavine/SereinGram.git#branch=develop|git+file://$GITHUB_WORKSPACE/SereinGram#commit=$GITHUB_SHA|" PKGBUILD
+          grep -q "#commit=$GITHUB_SHA" PKGBUILD
+          sudo -u builder \
+            --preserve-env=SEREIN_API_ID,SEREIN_API_HASH,SEREIN_API_TEST \
+            makepkg --config "$config" --syncdeps --noconfirm
+
+      - name: Install and check the package.
+        run: |
+          cd SereinGram/packaging/arch
+          package=$(ls sereingram-desktop-git-*.pkg.tar.zst)
+          pacman -U --noconfirm "$package"
+          for file in \
+            usr/bin/SereinGram \
+            usr/share/applications/io.github.eltavine.SereinGram.desktop \
+            usr/share/metainfo/io.github.eltavine.SereinGram.metainfo.xml \
+            usr/share/icons/hicolor/256x256/apps/io.github.eltavine.SereinGram.png; do
+            test -f "/$file" || { echo "Missing /$file"; exit 1; }
+          done
+          if ldd /usr/bin/SereinGram | grep 'not found'; then
+            exit 1
+          fi
+
+      - name: Upload the package.
+        uses: actions/upload-artifact@v7
+        with:
+          name: SereinGram Arch Linux package
+          path: SereinGram/packaging/arch/sereingram-desktop-git-*.pkg.tar.zst
+          if-no-files-found: error

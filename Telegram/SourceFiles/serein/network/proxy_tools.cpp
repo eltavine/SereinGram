@@ -7,7 +7,7 @@
 #include "lang/lang_keys.h"
 #include "main/main_account.h"
 #include "main/main_session.h"
-#include "main/main_session_show.h"
+#include "main/session/session_show.h"
 #include "mtproto/mtproto_proxy_data.h"
 #include "mtproto/proxy_check.h"
 #include "serein/network/proxy_order.h"

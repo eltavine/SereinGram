@@ -20,6 +20,7 @@ private:
 	explicit AesGcmCipher(QByteArray key);
 
 	QByteArray _key;
+
 };
 
 } // namespace Serein::Adapters

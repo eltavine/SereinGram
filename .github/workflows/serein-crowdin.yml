@@ -1,0 +1,72 @@
+name: Serein translations.
+
+on:
+  push:
+    branches:
+      - develop
+    paths:
+      - 'Telegram/Resources/langs/serein/serein.strings'
+      - 'crowdin.yml'
+      - '.github/workflows/serein-crowdin.yml'
+  schedule:
+    - cron: '0 5 * * 1'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+
+  crowdin:
+    name: Crowdin sync
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check the Crowdin secrets.
+        id: secrets
+        env:
+          CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
+          CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
+        run: |
+          if [ -n "$CROWDIN_PROJECT_ID" ] && [ -n "$CROWDIN_PERSONAL_TOKEN" ]; then
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Crowdin is not configured; nothing to sync."
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Clone.
+        if: steps.secrets.outputs.configured == 'true'
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Sync with Crowdin.
+        if: steps.secrets.outputs.configured == 'true'
+        uses: crowdin/github-action@9c23991700c0ec5256fd41089b9d9d7d540e424e # v3.3.0
+        with:
+          config: crowdin.yml
+          upload_sources: true
+          upload_translations: false
+          download_translations: true
+          localization_branch_name: crowdin/translations
+          create_pull_request: true
+          pull_request_base_branch_name: develop
+          pull_request_title: 'chore(i18n): update SereinGram translations from Crowdin'
+          pull_request_body: >-
+            Community translations of the SereinGram strings downloaded
+            from the Crowdin project configured in crowdin.yml.
+          commit_message: |-
+            chore(i18n): update SereinGram translations from Crowdin
+
+            Download the latest community translations of the SereinGram
+            strings from the Crowdin project configured in crowdin.yml.
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
+          CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}

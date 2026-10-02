@@ -1,0 +1,99 @@
+name: Serein Flatpak.
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+    paths:
+      - 'packaging/flatpak/**'
+      - '.github/workflows/serein-flatpak.yml'
+  schedule:
+    - cron: '0 4 * * 1'
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      arch:
+        type: string
+        default: ''
+      ref:
+        type: string
+        default: ''
+    secrets:
+      SEREIN_API_ID:
+        required: false
+      SEREIN_API_HASH:
+        required: false
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-flatpak-${{ inputs.arch || 'all' }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+
+  flatpak:
+    name: Flatpak bundle (${{ matrix.arch }})
+    runs-on: ${{ matrix.arch == 'aarch64' && 'ubuntu-24.04-arm' || 'ubuntu-24.04' }}
+    timeout-minutes: 360
+    container:
+      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-51
+      options: >-
+        --privileged
+        --volume /usr/share/dotnet:/host/dotnet
+        --volume /usr/local/lib/android:/host/android
+        --volume /opt/ghc:/host/ghc
+
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: ${{ fromJSON(inputs.arch && format('["{0}"]', inputs.arch) || '["x86_64","aarch64"]') }}
+
+    env:
+      ASSET: SereinGram-linux-${{ matrix.arch == 'aarch64' && 'arm64' || 'x86_64' }}
+
+    steps:
+      - name: Free disk space.
+        run: rm -rf /host/dotnet/* /host/android/* /host/ghc/*
+
+      - name: Clone.
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+          ref: ${{ inputs.ref }}
+          submodules: recursive
+
+      - name: Provide the API credentials.
+        env:
+          SEREIN_API_ID: ${{ secrets.SEREIN_API_ID }}
+          SEREIN_API_HASH: ${{ secrets.SEREIN_API_HASH }}
+        run: |
+          file=Telegram/build/api_credentials.local.cmake
+          if [ -n "$SEREIN_API_ID" ]; then
+            printf 'set(SEREIN_API_ID %s)\nset(SEREIN_API_HASH %s)\n' \
+              "$SEREIN_API_ID" "$SEREIN_API_HASH" > "$file"
+          else
+            # Without the repository secrets, build with the test-only credentials.
+            echo 'set(TDESKTOP_API_TEST ON CACHE BOOL "" FORCE)' > "$file"
+          fi
+
+      - name: Build the bundle.
+        uses: flathub-infra/flatpak-github-actions/flatpak-builder@933e9e8ca36e85046ebca8e211f0785c6becac40 # master
+        with:
+          bundle: ${{ env.ASSET }}.flatpak
+          manifest-path: packaging/flatpak/io.github.eltavine.SereinGram.yml
+          arch: ${{ matrix.arch }}
+          upload-artifact: false
+          # WHY: the builder state is several gigabytes, and the repository
+          # cache quota would evict the platform workflows' dependency caches.
+          cache: false
+
+      - uses: actions/upload-artifact@v7
+        name: Upload artifact.
+        with:
+          name: ${{ env.ASSET }}-flatpak
+          path: ${{ env.ASSET }}.flatpak
+          if-no-files-found: error
+          retention-days: 3

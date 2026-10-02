@@ -162,6 +162,29 @@ ExchangePlan Exchange::PlanImport(
 	return result;
 }
 
+ExchangePlan Exchange::PlanReset(
+		Options &options,
+		const Registry &registry) {
+	auto result = ExchangePlan();
+	if (options._scope != Scope::Device) {
+		result.error = QString::fromLatin1("Only device settings can be reset.");
+		return result;
+	}
+	for (const auto &info : registry.All()) {
+		if (!Exportable(info)) {
+			continue;
+		}
+		const auto raw = options._prefs.read(info.key);
+		if (!raw.isEmpty()) {
+			result.changes.push_back({
+				.key = QString::fromUtf8(info.key.data(), info.key.size()),
+				.before = raw,
+			});
+		}
+	}
+	return result;
+}
+
 ExchangeApply Exchange::Apply(
 		Options &options,
 		const Registry &registry,
@@ -189,6 +212,7 @@ ExchangeApply Exchange::Apply(
 		} else {
 			options._prefs.write(info->key, change.after);
 		}
+		options._cache.erase(info->key);
 		options._invalidKeys.erase(info->key);
 	}
 	for (const auto &change : plan.changes) {

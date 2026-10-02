@@ -11,12 +11,18 @@
 
 namespace Serein::Ghost {
 
-inline const auto kToggleRows = std::array<ToggleRow, 9>{ {
+inline const auto kToggleRows = std::array<ToggleRow, 11>{ {
 	{
 		&kGhostMode,
 		tr::lng_serein_ghost_mode,
 		u"serein/ghost/ghost-mode"_q,
 		{ u"ghost"_q, u"online"_q, u"typing"_q },
+	},
+	{
+		&kGhostAllAccounts,
+		tr::lng_serein_ghost_all_accounts,
+		u"serein/ghost/ghost-all-accounts"_q,
+		{ u"ghost"_q, u"all accounts"_q, u"global"_q },
 	},
 	{
 		&kGhostHideReadReceipts,
@@ -61,6 +67,12 @@ inline const auto kToggleRows = std::array<ToggleRow, 9>{ {
 		{ u"ghost"_q, u"read"_q, u"mark as read"_q },
 	},
 	{
+		&kGhostSendSilently,
+		tr::lng_serein_ghost_send_silently,
+		u"serein/ghost/ghost-send-silently"_q,
+		{ u"ghost"_q, u"silent"_q, u"notification"_q, u"send"_q },
+	},
+	{
 		&kGhostUseScheduledMessages,
 		tr::lng_serein_ghost_use_scheduled_messages,
 		u"serein/ghost/ghost-use-scheduled-messages"_q,
@@ -68,10 +80,16 @@ inline const auto kToggleRows = std::array<ToggleRow, 9>{ {
 	},
 } };
 
+struct CustomRows {
+	CustomRow readReceiptExceptions;
+};
+
 inline void AddLayout(
-		::Settings::Builder::SectionBuilder &builder) {
+		::Settings::Builder::SectionBuilder &builder,
+		const CustomRows &custom) {
 	AddToggle(builder, kToggleRows[0]);
 	AddToggle(builder, kToggleRows[1]);
+	AddNote(builder, tr::lng_serein_ghost_all_accounts_note);
 	AddToggle(builder, kToggleRows[2]);
 	AddToggle(builder, kToggleRows[3]);
 	AddToggle(builder, kToggleRows[4]);
@@ -79,7 +97,10 @@ inline void AddLayout(
 	AddToggle(builder, kToggleRows[6]);
 	AddToggle(builder, kToggleRows[7]);
 	AddToggle(builder, kToggleRows[8]);
+	AddToggle(builder, kToggleRows[9]);
+	AddToggle(builder, kToggleRows[10]);
 	AddNote(builder, tr::lng_serein_ghost_note);
+	custom.readReceiptExceptions();
 }
 
 inline constexpr auto kSubpageTitle = &tr::lng_serein_ghost_mode;

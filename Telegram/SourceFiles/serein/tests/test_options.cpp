@@ -15,7 +15,9 @@
 #include "serein/schema/gen/settings/ghost.h"
 #include "serein/schema/gen/settings/history.h"
 #include "serein/hooks/messages/time_format.h"
+#include "serein/tests/require.h"
 
+#include <doctest/doctest.h>
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
 
@@ -42,13 +44,8 @@ public:
 	}
 
 	std::map<std::string, QByteArray> values;
-};
 
-void Require(bool condition, const char *message) {
-	if (!condition) {
-		throw std::runtime_error(message);
-	}
-}
+};
 
 [[nodiscard]] bool ValidPercent(const int &value) {
 	return value >= 0 && value <= 100;
@@ -56,7 +53,7 @@ void Require(bool condition, const char *message) {
 
 } // namespace
 
-void TestOptions() {
+TEST_CASE("Options") {
 	using namespace Serein;
 	using Menu::ActionId;
 	using Menu::Visibility;
@@ -142,7 +139,7 @@ void TestOptions() {
 	Require(registry.All().size() == 1, "registry count");
 	auto messages = Registry();
 	Messages::RegisterOptions(messages);
-	Require(messages.All().size() == 34, "message option count");
+	Require(messages.All().size() == 36, "message option count");
 	Require(Messages::kFadeDeletedMessages.fallback, "deleted messages not faded by default");
 	auto refreshCount = 0;
 	for (const auto &entry : messages.All()) {
@@ -164,7 +161,7 @@ void TestOptions() {
 		"unknown refresh option");
 	auto chats = Registry();
 	Chats::RegisterOptions(chats);
-	Require(chats.All().size() == 25, "chat option count");
+	Require(chats.All().size() == 28, "chat option count");
 	Require(!Chats::kLocalPinning.fallback
 		&& Chats::kLocalPins.scope == Scope::Account
 		&& Chats::kLocalPins.validate(QString::fromLatin1("7,9"))
@@ -178,6 +175,10 @@ void TestOptions() {
 		&& Chats::kReadingPositions.validate(QString::fromLatin1("7:150,9:200"))
 		&& !Chats::kReadingPositions.validate(QString::fromLatin1("7:0")),
 		"reading positions must be an opt-in with account scoped storage");
+	Require(Chats::kHiddenFolderIds.scope == Scope::Account
+		&& Chats::kHiddenFolderIds.validate(QString::fromLatin1("2,5"))
+		&& !Chats::kHiddenFolderIds.validate(QString::fromLatin1("5,2")),
+		"hidden folder ids");
 	Require(Chats::kManagedFolderIds.scope == Scope::Account
 		&& Chats::kManagedFolderIds.validate(QString::fromLatin1("1,3,8"))
 		&& !Chats::kManagedFolderIds.validate(QString::fromLatin1("3,1"))
@@ -200,7 +201,7 @@ void TestOptions() {
 		Flag::RefreshDialogList), "stories use widget refresh");
 	auto interface = Registry();
 	Interface::RegisterOptions(interface);
-	Require(interface.All().size() == 17, "interface option count");
+	Require(interface.All().size() == 19, "interface option count");
 	Require(!Interface::kMoreAccounts.fallback
 		&& Interface::kMoreAccounts.scope == Scope::Device,
 		"more accounts must be a device opt-in");
@@ -265,7 +266,7 @@ void TestOptions() {
 		"notification delay bounds");
 	auto compose = Registry();
 	Compose::RegisterOptions(compose);
-	Require(compose.All().size() == 31, "compose option count");
+	Require(compose.All().size() == 37, "compose option count");
 	Require(Compose::kMentionMenu.key == "serein.mentionMenu"
 		&& Compose::kMentionMenu.scope == Scope::Device
 		&& !Compose::kMentionMenu.fallback
@@ -307,14 +308,19 @@ void TestOptions() {
 			&& entry.key != Compose::kSendSilently.key
 			&& entry.key != Compose::kMentionMenu.key
 			&& entry.key != Compose::kFormatToolbar.key
-			&& entry.key != Compose::kTextReplacements.key) {
+			&& entry.key != Compose::kDraftTranslation.key
+			&& entry.key != Compose::kCaptionAboveMedia.key
+			&& entry.key != Compose::kRememberForwardOptions.key
+			&& entry.key != Compose::kLastForwardOptions.key
+			&& entry.key != Compose::kTextReplacements.key
+			&& entry.key != Compose::kLinkInlineBots.key) {
 			Require(compose.HasFlag(entry.key, Flag::RefreshComposeButtons),
 				"compose button refresh flag");
 		}
 	}
 	auto media = Registry();
 	Media::RegisterOptions(media);
-	Require(media.All().size() == 11, "media option count");
+	Require(media.All().size() == 18, "media option count");
 	Require(media.HasFlag(Media::kStickerScale.key,
 		Flag::RefreshMessageView), "sticker scale refresh flag");
 	Require(!media.HasFlag(Media::kRecentStickerLimit.key,
@@ -323,7 +329,7 @@ void TestOptions() {
 		Flag::RefreshMessageView), "video autoplay refresh flag");
 	auto privacy = Registry();
 	Privacy::RegisterOptions(privacy);
-	Require(privacy.All().size() == 10, "privacy option count");
+	Require(privacy.All().size() == 14, "privacy option count");
 	Require(!Privacy::kAutoDemoMode.fallback
 		&& Privacy::kAutoDemoMode.scope == Scope::Device
 		&& privacy.HasFlag(Privacy::kAutoDemoMode.key, Flag::Exportable),
@@ -368,15 +374,20 @@ void TestOptions() {
 	Require(!options.Set(option, 101), "invalid value accepted");
 	Require(options.Get(option) == 42, "invalid value changed storage");
 
-	prefs.values["serein.testPercent"] = "broken";
-	Require(options.Get(option) == 0, "invalid stored value fallback");
-	Require(prefs.values["serein.testPercent"] == "broken",
-		"invalid payload overwritten");
-	Require(options.invalidKeys().contains(option.key), "read error absent");
 	Require(options.Set(option, 0), "clear to default");
 	Require(!prefs.values.contains("serein.testPercent"), "default not cleared");
-	Require(options.invalidKeys().empty(), "stale read error");
+	Require(options.Get(option) == 0, "cached value not refreshed by write");
 	Require(changes == (std::vector{ 0, 42, 0 }), "clear notification");
+
+	prefs.values["serein.testPercent"] = "broken";
+	auto reloaded = Options(prefs);
+	Require(reloaded.Get(option) == 0, "invalid stored value fallback");
+	Require(prefs.values["serein.testPercent"] == "broken",
+		"invalid payload overwritten");
+	Require(reloaded.invalidKeys().contains(option.key), "read error absent");
+	Require(reloaded.Set(option, 0), "clear invalid value");
+	Require(!prefs.values.contains("serein.testPercent"), "invalid value not cleared");
+	Require(reloaded.invalidKeys().empty(), "stale read error");
 
 	const auto text = Option<QString>{
 		"serein.testText", Scope::Device, QString::fromUtf8("default"),
@@ -414,6 +425,7 @@ void TestOptions() {
 		HistorySettings::kHistoryKeepExpiredMedia.scope,
 		HistorySettings::kHistorySaveEdits.scope,
 		HistorySettings::kHistoryExcludedPeers.scope,
+		ServiceSettings::kAutoTranslateChats.scope,
 	};
 	Require(std::ranges::all_of(accountScoped, [](Scope scope) {
 		return scope == Scope::Account;
@@ -500,5 +512,14 @@ void TestOptions() {
 	Require(!Exchange::Apply(exchangeOptions, exchangeRegistry, stale).applied,
 		"stale import applied");
 	Require(exchangeOptions.Get(option) == 20, "stale import changed storage");
+	const auto reset = Exchange::PlanReset(exchangeOptions, exchangeRegistry);
+	Require(reset.error.isEmpty() && reset.changes.size() == 2,
+		"reset preview misses a changed device setting");
+	Require(Exchange::Apply(exchangeOptions, exchangeRegistry, reset).applied
+		&& exchangeOptions.Get(option) == option.fallback
+		&& exchangeOptions.Get(Menu::kMenuConfig).isEmpty(),
+		"reset did not restore the defaults");
+	Require(Exchange::PlanReset(exchangeOptions, exchangeRegistry)
+		.changes.empty(), "reset left changed settings");
 	std::cout << "PASS: Serein settings exchange" << std::endl;
 }

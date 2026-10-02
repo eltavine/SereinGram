@@ -1,11 +1,15 @@
 #include "serein/settings/interface.h"
 
+#include "serein/core/build_flags.h"
+#include "serein/interface/global_shortcut.h"
+
 #include "serein/interface/options.h"
 #include "serein/hooks/interface/main_menu.h"
 #include "serein/interface/app_icon.h"
 #include "serein/settings/gen/interface_rows.h"
 #include "serein/settings/home.h"
 #include "serein/settings/restart.h"
+#include "serein/settings/page.h"
 #include "lang/lang_keys.h"
 #include "settings/settings_builder.h"
 #include "settings/settings_common_session.h"
@@ -24,22 +28,16 @@ namespace {
 using namespace ::Settings;
 using namespace ::Settings::Builder;
 
-class InterfaceSection final : public Section<InterfaceSection> {
+class InterfaceSection final : public Page<InterfaceSection> {
 public:
-	InterfaceSection(
-		QWidget *parent,
-		not_null<Window::SessionController*> controller)
-	: Section(parent, controller) {
-		const auto content = Ui::CreateChild<Ui::VerticalLayout>(this);
-		build(content, kBuild);
-		Ui::ResizeFitChild(this, content);
-	}
+	using Page::Page;
 
 	[[nodiscard]] rpl::producer<QString> title() override {
 		return tr::lng_serein_interface();
 	}
 
 	static const SectionBuildMethod kBuild;
+
 };
 
 QString RoundnessLabel(int value) {
@@ -224,6 +222,36 @@ const auto kMeta = BuildHelper({
 			AddDelay(builder, Interface::kOtherDeviceNotificationDelay,
 				tr::lng_serein_other_device_notification_delay(),
 				u"serein/interface/other-device-notification-delay"_q);
+		},
+		.globalShortcut = [&] {
+			builder.addButton({
+				.id = u"serein/interface/global-shortcut"_q,
+				.title = tr::lng_serein_global_shortcut(),
+				.st = &st::settingsButtonNoIcon,
+				.label = ForDevice().Value(
+					Interface::kGlobalShortcut
+				) | rpl::map([](const QByteArray &value) {
+					return value.isEmpty()
+						? tr::lng_serein_config_off(tr::now)
+						: tr::lng_serein_global_shortcut_set(tr::now);
+				}),
+				.onClick = [=] {
+					controller->show(Box(Interface::GlobalShortcutBox));
+				},
+				.keywords = { u"hotkey"_q, u"shortcut"_q, u"global"_q },
+			});
+		},
+		.checkUpdates = [&] {
+			if (kSystemPackage) {
+				AddNote(builder, tr::lng_serein_updates_system_package);
+				return;
+			}
+			AddToggle(builder, {
+				.option = &Interface::kCheckUpdates,
+				.title = tr::lng_serein_check_updates,
+				.id = u"serein/interface/check-updates"_q,
+				.keywords = { u"updates"_q, u"GitHub"_q, u"version"_q },
+			});
 		},
 	});
 });

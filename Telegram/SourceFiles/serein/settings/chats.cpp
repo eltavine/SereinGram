@@ -5,6 +5,7 @@
 #include "serein/core/options.h"
 #include "serein/settings/gen/chats_rows.h"
 #include "serein/settings/home.h"
+#include "serein/settings/page.h"
 #include "data/data_chat_filters.h"
 #include "data/data_session.h"
 #include "main/main_session.h"
@@ -15,6 +16,7 @@
 #include "ui/layers/generic_box.h"
 #include "ui/widgets/buttons.h"
 #include "ui/widgets/checkbox.h"
+#include "ui/widgets/labels.h"
 #include "ui/wrap/vertical_layout.h"
 #include "window/window_session_controller.h"
 #include "styles/style_menu_icons.h"
@@ -29,22 +31,16 @@ namespace {
 using namespace ::Settings;
 using namespace ::Settings::Builder;
 
-class ChatsSection final : public Section<ChatsSection> {
+class ChatsSection final : public Page<ChatsSection> {
 public:
-	ChatsSection(
-		QWidget *parent,
-		not_null<Window::SessionController*> controller)
-	: Section(parent, controller) {
-		const auto content = Ui::CreateChild<Ui::VerticalLayout>(this);
-		build(content, kBuild);
-		Ui::ResizeFitChild(this, content);
-	}
+	using Page::Page;
 
 	[[nodiscard]] rpl::producer<QString> title() override {
 		return tr::lng_serein_chats();
 	}
 
 	static const SectionBuildMethod kBuild;
+
 };
 
 QString StartupFolderLabel(not_null<Main::Session*> session) {
@@ -99,6 +95,61 @@ void StartupFolderBox(
 	});
 }
 
+[[nodiscard]] QString HiddenFoldersLabel(not_null<Main::Session*> session) {
+	const auto value = ForAccount(session).Get(Chats::kHiddenFolderIds);
+	const auto count = value.split(u',', Qt::SkipEmptyParts).size();
+	return count
+		? QString::number(count)
+		: tr::lng_serein_config_off(tr::now);
+}
+
+void HiddenFoldersBox(
+		not_null<Ui::GenericBox*> box,
+		not_null<Main::Session*> session) {
+	box->setTitle(tr::lng_serein_hidden_folders());
+	const auto current = ForAccount(session).Get(Chats::kHiddenFolderIds)
+		.split(u',', Qt::SkipEmptyParts);
+	auto checks = std::vector<std::pair<FilterId, Ui::Checkbox*>>();
+	for (const auto &filter : session->data().chatsFilters().list()) {
+		if (!filter.id()) {
+			continue;
+		}
+		const auto check = box->addRow(object_ptr<Ui::Checkbox>(
+			box,
+			filter.title().text.text,
+			current.contains(QString::number(filter.id()))));
+		checks.emplace_back(filter.id(), check);
+	}
+	box->addRow(object_ptr<Ui::FlatLabel>(
+		box,
+		(checks.empty()
+			? tr::lng_serein_hidden_folders_empty()
+			: tr::lng_serein_hidden_folders_about()),
+		st::boxDividerLabel));
+	if (checks.empty()) {
+		box->addButton(tr::lng_close(), [=] { box->closeBox(); });
+		return;
+	}
+	box->addButton(tr::lng_settings_save(), [=] {
+		auto ids = std::vector<FilterId>();
+		for (const auto &[id, check] : checks) {
+			if (check->checked()) {
+				ids.push_back(id);
+			}
+		}
+		ranges::sort(ids);
+		auto parts = QStringList();
+		for (const auto id : ids) {
+			parts.push_back(QString::number(id));
+		}
+		Expects(ForAccount(session).Set(
+			Chats::kHiddenFolderIds,
+			parts.join(u',')));
+		box->closeBox();
+	});
+	box->addButton(tr::lng_cancel(), [=] { box->closeBox(); });
+}
+
 const auto kMeta = BuildHelper({
 	.id = ChatsSection::Id(),
 	.parentId = HomeId(),
@@ -140,6 +191,23 @@ const auto kMeta = BuildHelper({
 					}),
 				.onClick = [=] { controller->show(Box(Chats::ChatSortBox)); },
 				.keywords = { u"sort"_q, u"unread"_q, u"contacts"_q },
+			});
+		},
+		.hiddenFolderIds = [&] {
+			const auto session = &controller->session();
+			builder.addButton({
+				.id = u"serein/chats/hidden-folders"_q,
+				.title = tr::lng_serein_hidden_folders(),
+				.st = &st::settingsButtonNoIcon,
+				.label = ForAccount(session).Value(
+					Chats::kHiddenFolderIds
+				) | rpl::map([=](const QString &) {
+					return HiddenFoldersLabel(session);
+				}),
+				.onClick = [=] {
+					controller->show(Box(HiddenFoldersBox, session));
+				},
+				.keywords = { u"folder"_q, u"hide"_q, u"tabs"_q },
 			});
 		},
 	});

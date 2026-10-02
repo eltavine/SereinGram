@@ -1,4 +1,6 @@
 using "ui/widgets/widgets.style";
+using "dialogs/dialogs.style";
+using "ui/menu_icons.style";
 
 sereinSnapshotWidth: 640px;
 sereinSnapshotPadding: 16px;
@@ -8,6 +10,12 @@ sereinSnapshotPreviewHeight: 200px;
 sereinSnapshotPreviewMinimum: 80px;
 
 sereinHistoryPreviewSize: size(240px, 180px);
+
+sereinStoryPreviewSize: size(135px, 240px);
+sereinMediaMenuIconEdit: icon {{ "menu/edit", mediaviewMenuFg }};
+sereinStoryCaption: InputField(defaultInputField) {
+	heightMax: 148px;
+}
 
 sereinFormatToolbar: InnerDropdown(defaultInnerDropdown) {
 	scrollMargin: margins(4px, 4px, 4px, 4px);
@@ -38,3 +46,28 @@ sereinFormatQuoteActive: icon {{ "menu/rich/blockquote-24x24", windowActiveTextF
 sereinFormatLink: icon {{ "menu/rich/link-24x24", menuIconColor }};
 sereinFormatLinkActive: icon {{ "menu/rich/link-24x24", windowActiveTextFg }};
 sereinFormatClear: icon {{ "menu/clear", menuIconColor }};
+
+compactDialogRow: DialogRow(defaultDialogRow) {
+	height: 54px;
+	padding: margins(10px, 6px, 10px, 6px);
+	photoSize: 40px;
+	nameLeft: 62px;
+	nameTop: 6px;
+	textLeft: 62px;
+	textTop: 28px;
+}
+twoLineDialogRow: DialogRow(defaultDialogRow) {
+	height: 82px;
+}
+threeLineDialogRow: DialogRow(defaultDialogRow) {
+	height: 102px;
+}
+compactTwoLineDialogRow: DialogRow(compactDialogRow) {
+	height: 74px;
+}
+compactThreeLineDialogRow: DialogRow(compactDialogRow) {
+	height: 94px;
+}
+
+menuIconRepeat: icon {{ "menu/repeat", menuIconColor }};
+menuIconSerein: icon {{ "menu/serein", menuIconColor }};

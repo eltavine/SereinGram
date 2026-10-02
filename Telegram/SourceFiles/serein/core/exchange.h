@@ -37,10 +37,14 @@ public:
 		Options &options,
 		const Registry &registry,
 		const QByteArray &data);
+	[[nodiscard]] static ExchangePlan PlanReset(
+		Options &options,
+		const Registry &registry);
 	[[nodiscard]] static ExchangeApply Apply(
 		Options &options,
 		const Registry &registry,
 		const ExchangePlan &plan);
+
 };
 
 } // namespace Serein

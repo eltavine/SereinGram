@@ -8,7 +8,7 @@ option (serein.options.v1.file) = {cpp_namespace: "Snapshot"};
 
 // Options of the message snapshot box.
 message SnapshotConfig {
-  option (serein.options.v1.document) = {version: 1};
+  option (serein.options.v1.document) = {version: 2};
   option (serein.options.v1.codec) = {require_fields: true};
 
   bool background = 1;
@@ -16,4 +16,5 @@ message SnapshotConfig {
   bool headers = 3;
   bool reactions = 4;
   bool builtin_theme = 5;
+  bool simple_replies = 6;
 }

@@ -1,19 +1,10 @@
 #include "serein/privacy/alias_rules.h"
 #include "serein/schema/gen/config/aliases.h"
+#include "serein/tests/require.h"
 
-#include <stdexcept>
+#include <doctest/doctest.h>
 
-namespace {
-
-void Require(bool value, const char *message) {
-	if (!value) {
-		throw std::runtime_error(message);
-	}
-}
-
-} // namespace
-
-void TestAliases() {
+TEST_CASE("Aliases") {
 	using namespace Serein::Privacy;
 	const auto parsed = ParsePeerAliasesConfig(
 		R"({"version":1,"names":{"777000":"Service","42":"Friend"}})");

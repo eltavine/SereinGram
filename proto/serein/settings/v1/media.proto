@@ -16,49 +16,167 @@ message MediaSettings {
     (serein.options.v1.field) = {
       refresh: REFRESH_MESSAGE_VIEW
       default_int: 100
-      keywords: ["sticker", "size"]
+      keywords: [
+        "sticker",
+        "size"
+      ]
       choice: {suffix: "%"}
     },
-    (buf.validate.field).int32 = {in: [50, 75, 100, 125, 150, 175, 200]}
-  ];
-  optional bool hide_sticker_time = 2 [
-    (serein.options.v1.field) = {
-      keywords: ["sticker", "time"]
-      refresh: REFRESH_MESSAGE_VIEW
+    (buf.validate.field).int32 = {
+      in: [
+        50,
+        75,
+        100,
+        125,
+        150,
+        175,
+        200
+      ]
     }
   ];
+  optional bool hide_sticker_time = 2 [(serein.options.v1.field) = {
+    keywords: [
+      "sticker",
+      "time"
+    ]
+    refresh: REFRESH_MESSAGE_VIEW
+  }];
+  optional bool rounded_stickers = 13 [(serein.options.v1.field) = {
+    keywords: [
+      "sticker",
+      "rounded",
+      "corners"
+    ]
+    refresh: REFRESH_MESSAGE_VIEW
+  }];
   optional int32 recent_sticker_limit = 3 [
     (serein.options.v1.field) = {
-      keywords: ["recent", "sticker", "limit"]
+      keywords: [
+        "recent",
+        "sticker",
+        "limit"
+      ]
       number: {zero_label: "lng_serein_preview_follow"}
     },
-    (buf.validate.field).int32 = {gte: 0, lte: 200}
-  ];
-  optional bool hide_group_stickers = 4 [(serein.options.v1.field) = {
-    keywords: ["group", "sticker"]
-  }];
-  optional bool hide_recommended_stickers = 5 [(serein.options.v1.field) = {
-    keywords: ["recommended", "sticker"]
-  }];
-  optional bool hide_recommended_emoji = 6 [(serein.options.v1.field) = {
-    keywords: ["recommended", "emoji"]
-  }];
-  optional bool hide_gif_categories = 7 [(serein.options.v1.field) = {
-    keywords: ["GIF", "categories"]
-  }];
-  optional bool hide_greeting_sticker = 8 [(serein.options.v1.field) = {
-    keywords: ["greeting", "sticker"]
-  }];
-  optional bool disable_video_autoplay = 9 [
-    (serein.options.v1.field) = {
-      keywords: ["video", "autoplay"]
-      refresh: REFRESH_MESSAGE_VIEW
+    (buf.validate.field).int32 = {
+      gte: 0
+      lte: 200
     }
   ];
+  optional bool hide_group_stickers = 4 [(serein.options.v1.field) = {
+    keywords: [
+      "group",
+      "sticker"
+    ]
+  }];
+  optional bool hide_recommended_stickers = 5 [(serein.options.v1.field) = {
+    keywords: [
+      "recommended",
+      "sticker"
+    ]
+  }];
+  optional bool hide_recommended_emoji = 6 [(serein.options.v1.field) = {
+    keywords: [
+      "recommended",
+      "emoji"
+    ]
+  }];
+  optional bool hide_gif_categories = 7 [(serein.options.v1.field) = {
+    keywords: [
+      "GIF",
+      "categories"
+    ]
+  }];
+  optional bool hide_greeting_sticker = 8 [(serein.options.v1.field) = {
+    keywords: [
+      "greeting",
+      "sticker"
+    ]
+  }];
+  optional bool sticker_pack_author = 16 [(serein.options.v1.field) = {
+    keywords: [
+      "sticker",
+      "emoji",
+      "pack",
+      "author",
+      "creator"
+    ]
+  }];
+  optional string sticker_author_bot = 14 [
+    (serein.options.v1.field) = {
+      title: "lng_serein_sticker_author_bot"
+      keywords: [
+        "sticker",
+        "author",
+        "bot",
+        "lookup"
+      ]
+      note: "lng_serein_sticker_author_bot_note"
+      text: {placeholder: "lng_serein_sticker_author_bot_placeholder"}
+    },
+    (buf.validate.field).string = {
+      max_len: 33
+      pattern: "^(@?[A-Za-z][A-Za-z0-9_]{3,31})?$"
+    }
+  ];
+  optional bool disable_video_autoplay = 9 [(serein.options.v1.field) = {
+    keywords: [
+      "video",
+      "autoplay"
+    ]
+    refresh: REFRESH_MESSAGE_VIEW
+  }];
   optional bool gif_playback_controls = 10 [(serein.options.v1.field) = {
-    keywords: ["GIF", "playback", "controls"]
+    keywords: [
+      "GIF",
+      "playback",
+      "controls"
+    ]
+  }];
+  optional bool force_click_preview = 15 [(serein.options.v1.field) = {
+    keywords: [
+      "Force Click",
+      "Force Touch",
+      "trackpad",
+      "preview",
+      "haptic"
+    ]
+    note: "lng_serein_force_click_preview_note"
+  }];
+  optional bool downloads_per_chat = 17 [(serein.options.v1.field) = {
+    keywords: [
+      "download",
+      "folder",
+      "chat",
+      "channel",
+      "organize"
+    ]
+    note: "lng_serein_downloads_per_chat_note"
   }];
   optional bool mp4_file_preview = 11 [(serein.options.v1.field) = {
-    keywords: ["MP4", "file", "preview"]
+    keywords: [
+      "MP4",
+      "file",
+      "preview"
+    ]
+  }];
+  optional bool denoise_voice_messages = 12 [(serein.options.v1.field) = {
+    keywords: [
+      "noise",
+      "voice",
+      "recording",
+      "microphone"
+    ]
+    note: "lng_serein_denoise_voice_messages_note"
+  }];
+  optional bool story_posting = 18 [(serein.options.v1.field) = {
+    keywords: [
+      "story",
+      "stories",
+      "post",
+      "publish",
+      "close friends"
+    ]
+    note: "lng_serein_story_posting_note"
   }];
 }

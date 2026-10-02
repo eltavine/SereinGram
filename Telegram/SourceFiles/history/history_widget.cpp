@@ -127,6 +127,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "serein/hooks/compose/buttons.h"
 #include "serein/hooks/gen/compose.h"
 #include "serein/hooks/compose/confirm.h"
+#include "serein/hooks/compose/inline_bot.h"
 #include "serein/hooks/compose/placeholder.h"
 #include "history/view/history_view_chat_section.h"
 #include "history/view/history_view_cursor_state.h"
@@ -1496,6 +1497,11 @@ void HistoryWidget::offerRichPaste(not_null<const QMimeData*> data) {
 	const auto cursor = _field->textCursor();
 	const auto position = cursor.position();
 	const auto anchor = cursor.anchor();
+	const auto from = std::min(position, anchor);
+	const auto till = std::max(position, anchor);
+	const auto textFrom = int(_field->getTextWithTagsPart(0, from).text.size());
+	const auto textTill = int(_field->getTextWithTagsPart(0, till).text.size());
+	const auto tail = cursor.document()->characterCount() - till;
 	crl::on_main(this, [=] {
 		const auto now = _field->getTextWithTags();
 		if (now == was) {
@@ -1512,15 +1518,14 @@ void HistoryWidget::offerRichPaste(not_null<const QMimeData*> data) {
 					if (!unchanged) {
 						return;
 					}
-					const auto &markdown = decision->markdown;
-					const auto from = std::min(position, anchor);
 					_field->setTextWithTags(ChatHelpers::TextWithTagsReplaced(
 						was,
-						from,
-						std::max(position, anchor),
-						markdown));
+						textFrom,
+						textTill,
+						decision->markdown));
 					_field->setCursorPosition(
-						from + int(markdown.text.size()));
+						_field->textCursor().document()->characterCount()
+							- tail);
 					return;
 				}
 				if (unchanged) {
@@ -3205,6 +3210,7 @@ void HistoryWidget::showHistory(
 		destroyUnreadBarOnClose();
 		_sponsoredMessageBar = nullptr;
 		_pinnedBar = nullptr;
+		_hidingPinnedBar = nullptr;
 		_translateBar = nullptr;
 		_pinnedTracker = nullptr;
 		_groupCallBar = nullptr;
@@ -6738,7 +6744,8 @@ bool HistoryWidget::showRecordButton() const {
 }
 
 bool HistoryWidget::showInlineBotCancel() const {
-	return _inlineBot && !_inlineLookingUpBot;
+	return _inlineBot && !_inlineLookingUpBot
+		&& !Serein::Compose::LinkInlineBotDraft(_field);
 }
 
 bool HistoryWidget::showStopButton() const {
@@ -8171,12 +8178,13 @@ void HistoryWidget::updateControlsGeometry() {
 	}
 	const auto pinnedBarTop = requestsTop
 		+ (_requestsBar ? _requestsBar->height() : 0);
-	if (_pinnedBar) {
-		_pinnedBar->move(0, pinnedBarTop);
-		_pinnedBar->resizeToWidth(innerWidth);
+	const auto pinnedBar = visiblePinnedBar();
+	if (pinnedBar) {
+		pinnedBar->move(0, pinnedBarTop);
+		pinnedBar->resizeToWidth(innerWidth);
 	}
 	const auto sponsoredMessageBarTop = pinnedBarTop
-		+ (_pinnedBar ? _pinnedBar->height() : 0);
+		+ (pinnedBar ? pinnedBar->height() : 0);
 	if (_sponsoredMessageBar) {
 		_sponsoredMessageBar->move(0, sponsoredMessageBarTop);
 		_sponsoredMessageBar->resizeToWidth(innerWidth);
@@ -8473,8 +8481,8 @@ void HistoryWidget::updateHistoryGeometry(
 	if (_sponsoredMessageBar) {
 		newScrollHeight -= _sponsoredMessageBar->height();
 	}
-	if (_pinnedBar) {
-		newScrollHeight -= _pinnedBar->height();
+	if (const auto pinnedBar = visiblePinnedBar()) {
+		newScrollHeight -= pinnedBar->height();
 	}
 	if (_groupCallBar) {
 		newScrollHeight -= _groupCallBar->height();
@@ -8932,13 +8940,14 @@ void HistoryWidget::botCallbackSent(not_null<HistoryItem*> item) {
 }
 
 int HistoryWidget::computeMaxFieldHeight() const {
+	const auto pinnedBar = visiblePinnedBar();
 	const auto available = height()
 		- _topBar->height()
 		- (_paysStatus ? _paysStatus->bar().height() : 0)
 		- (_contactStatus ? _contactStatus->bar().height() : 0)
 		- (_businessBotStatus ? _businessBotStatus->bar().height() : 0)
 		- (_sponsoredMessageBar ? _sponsoredMessageBar->height() : 0)
-		- (_pinnedBar ? _pinnedBar->height() : 0)
+		- (pinnedBar ? pinnedBar->height() : 0)
 		- (_groupCallBar ? _groupCallBar->height() : 0)
 		- (_requestsBar ? _requestsBar->height() : 0)
 		- ((_editMsgId
@@ -9681,6 +9690,10 @@ void HistoryWidget::clearHidingPinnedBar() {
 		setGeometryWithTopMoved(geometry(), delta);
 	}
 	_hidingPinnedBar = nullptr;
+}
+
+Ui::PinnedBar *HistoryWidget::visiblePinnedBar() const {
+	return _pinnedBar ? _pinnedBar.get() : _hidingPinnedBar.get();
 }
 
 void HistoryWidget::checkMessagesTTL() {

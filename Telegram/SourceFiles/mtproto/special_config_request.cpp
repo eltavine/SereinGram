@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "mtproto/special_config_request.h"
+#include "serein/hooks/network/doh.h"
 
 #include "mtproto/details/mtproto_rsa_public_key.h"
 #include "mtproto/mtproto_dc_options.h"
@@ -231,6 +232,7 @@ SpecialConfigRequest::SpecialConfigRequest(
 				&& (attempt.type != Type::Mozilla);
 		}), _attempts.end());
 	}
+	Serein::Network::PrependCustomDoh(_attempts, Type::Mozilla);
 	ranges::reverse(_attempts); // We go from last to first.
 
 	sendNextRequest();

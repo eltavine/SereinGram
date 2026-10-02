@@ -1,18 +1,9 @@
 #include "serein/network/proxy_order.h"
+#include "serein/tests/require.h"
 
-#include <stdexcept>
+#include <doctest/doctest.h>
 
-namespace {
-
-void Require(bool value, const char *message) {
-	if (!value) {
-		throw std::runtime_error(message);
-	}
-}
-
-} // namespace
-
-void TestProxyOrder() {
+TEST_CASE("ProxyOrder") {
 	using namespace Serein::Network;
 	const auto list = std::vector<ProxyLatency>{
 		{ .ping = std::nullopt },

@@ -8,13 +8,17 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-import upstream_sync  # noqa: E402
+import upstream_sync
 
 
 def git(root, *args):
     return subprocess.run(
         ["git", "-c", "user.name=t", "-c", "user.email=t@t", *args],
-        cwd=root, capture_output=True, check=True, text=True).stdout.strip()
+        cwd=root,
+        capture_output=True,
+        check=True,
+        text=True,
+    ).stdout.strip()
 
 
 def write(root, path, text):
@@ -41,21 +45,36 @@ class UpstreamSyncTest(unittest.TestCase):
         git(self.fork, "config", "user.email", "t@t")
         self.policy = self.fork / "tools/policy/upstream.json"
         self.owned = self.fork / "tools/policy/owned.json"
-        write(self.fork, "tools/policy/owned.json", json.dumps({
-            "schema_version": 1, "max_lines": 1000,
-            "owned": ["Telegram/SourceFiles/serein/", "tools/"],
-            "extensions": [".cpp", ".json"], "filenames": [],
-        }))
-        write(self.fork, "tools/policy/upstream.json", json.dumps({
-            "schema_version": 1,
-            "upstream": f"{self.upstream}#dev",
-            "base": self.base,
-            "source_root": "Telegram/SourceFiles/",
-            "owned_extra": [],
-            "own_include_prefixes": ["serein/"],
-            "hook_include_prefixes": ["serein/hooks/"],
-            "budget": dict.fromkeys(upstream_sync.upstream_budget.BUDGET_KEYS, 100),
-        }))
+        write(
+            self.fork,
+            "tools/policy/owned.json",
+            json.dumps(
+                {
+                    "schema_version": 1,
+                    "max_lines": 1000,
+                    "owned": ["Telegram/SourceFiles/serein/", "tools/"],
+                    "extensions": [".cpp", ".json"],
+                    "filenames": [],
+                }
+            ),
+        )
+        write(
+            self.fork,
+            "tools/policy/upstream.json",
+            json.dumps(
+                {
+                    "schema_version": 1,
+                    "upstream": f"{self.upstream}#dev",
+                    "base": self.base,
+                    "source_root": "Telegram/SourceFiles/",
+                    "owned_extra": [],
+                    "own_include_prefixes": ["serein/"],
+                    "hook_include_prefixes": ["serein/hooks/"],
+                    "submodule_overrides": [],
+                    "budget": dict.fromkeys(upstream_sync.upstream_budget.BUDGET_KEYS, 100),
+                }
+            ),
+        )
         write(self.fork, "Telegram/SourceFiles/serein/x.cpp", "int x;\n")
         write(self.fork, "Telegram/SourceFiles/a.cpp", "int a; // hook\n")
         git(self.fork, "add", ".")
@@ -79,7 +98,7 @@ class UpstreamSyncTest(unittest.TestCase):
         self.assertIsNone(conflicts)
         self.assertEqual(metrics["source_files"], 1)
         self.assertEqual(json.loads(self.policy.read_text())["base"], head)
-        self.assertEqual(git(self.fork, "branch", "--show-current"), "sync/v2")
+        self.assertEqual(git(self.fork, "branch", "--show-current"), f"sync/v2-{head[:10]}")
         message = git(self.fork, "log", "-1", "--format=%B")
         self.assertTrue(message.startswith("chore(upstream): merge Telegram Desktop v2"))
         self.assertEqual(git(self.fork, "rev-parse", "HEAD^2"), head)
@@ -89,9 +108,14 @@ class UpstreamSyncTest(unittest.TestCase):
         self.upstream_commit("Telegram/SourceFiles/a.cpp", "int a2;\n", "v3")
         conflicts, metrics = self.sync("v3")
         self.assertIsNone(metrics)
-        self.assertEqual(conflicts, {
-            "serein": [], "hooks": ["Telegram/SourceFiles/a.cpp"], "upstream": [],
-        })
+        self.assertEqual(
+            conflicts,
+            {
+                "serein": [],
+                "hooks": ["Telegram/SourceFiles/a.cpp"],
+                "upstream": [],
+            },
+        )
         self.assertEqual(json.loads(self.policy.read_text())["base"], self.base)
 
     def test_submodule_pointer_conflicts_take_the_newer_commit(self):
@@ -131,6 +155,105 @@ class UpstreamSyncTest(unittest.TestCase):
         self.assertIsNotNone(metrics)
         self.assertEqual(git(self.fork, "rev-parse", "HEAD:cmake"), commits[2])
 
+    def test_clean_merge_moves_packaging_pins(self):
+        old, new = "1" * 40, "2" * 40
+
+        def snap(commit):
+            return f"parts:\n  tde2e:\n    source-commit: {commit}\n"
+
+        write(self.upstream, "snap/snapcraft.yaml", snap(old))
+        git(self.upstream, "add", ".")
+        git(self.upstream, "commit", "-q", "-m", "snap")
+        git(self.fork, "pull", "-q", "--no-rebase", "--no-edit", "origin", "dev")
+        flatpak = "packaging/flatpak/io.github.eltavine.SereinGram.yml"
+        write(self.fork, "packaging/arch/PKGBUILD", f"_td_commit={old}\n")
+        write(
+            self.fork,
+            flatpak,
+            "      - type: git\n"
+            "        url: https://github.com/tdlib/td.git\n"
+            f"        commit: {old}\n",
+        )
+        git(self.fork, "add", ".")
+        git(self.fork, "commit", "-q", "-m", "packaging")
+        self.upstream_commit("snap/snapcraft.yaml", snap(new), "v5")
+        conflicts, metrics = self.sync("v5")
+        self.assertIsNone(conflicts)
+        self.assertIsNotNone(metrics)
+        self.assertEqual((self.fork / "packaging/arch/PKGBUILD").read_text(), f"_td_commit={new}\n")
+        self.assertIn(f"commit: {new}", (self.fork / flatpak).read_text())
+        message = git(self.fork, "log", "-1", "--format=%B")
+        self.assertIn(f"tde2e {old[:10]} -> {new[:10]}", message)
+        self.assertEqual(git(self.fork, "status", "--porcelain"), "")
+
+    def test_clean_merge_checks_out_moved_submodules(self):
+        lib = Path(self._temp.name) / "moved"
+        lib.mkdir()
+        git(lib, "init", "-q", "-b", "main")
+        commits = []
+        for name in ("c1", "c2"):
+            write(lib, "f.txt", name + "\n")
+            git(lib, "add", ".")
+            git(lib, "commit", "-q", "-m", name)
+            commits.append(git(lib, "rev-parse", "HEAD"))
+        allow = ("-c", "protocol.file.allow=always")
+        git(self.upstream, *allow, "submodule", "add", "-q", str(lib), "cmake")
+        git(self.upstream / "cmake", "checkout", "-q", commits[0])
+        git(self.upstream, "add", "cmake")
+        git(self.upstream, "commit", "-q", "-m", "submodule")
+        git(self.fork, "pull", "-q", "--no-rebase", "--no-edit", "origin", "dev")
+        git(self.fork, *allow, "submodule", "update", "-q", "--init")
+        git(self.upstream / "cmake", "checkout", "-q", commits[1])
+        git(self.upstream, "commit", "-q", "-am", "bump to c2")
+        git(self.upstream, "tag", "v6")
+        conflicts, metrics = self.sync("v6")
+        self.assertIsNone(conflicts)
+        self.assertEqual(metrics["all_files"], 1)
+        self.assertEqual(git(self.fork / "cmake", "rev-parse", "HEAD"), commits[1])
+        self.assertEqual(git(self.fork, "status", "--porcelain"), "")
+
+    def test_each_sync_of_a_branch_gets_its_own_sync_branch(self):
+        write(self.upstream, "Telegram/SourceFiles/b.cpp", "int b2;\n")
+        git(self.upstream, "commit", "-q", "-am", "first")
+        self.assertIsNone(self.sync("dev")[0])
+        first = git(self.fork, "branch", "--show-current")
+        git(self.fork, "switch", "-q", "dev")
+        git(self.fork, "merge", "-q", "--ff-only", first)
+        write(self.upstream, "Telegram/SourceFiles/b.cpp", "int b3;\n")
+        git(self.upstream, "commit", "-q", "-am", "second")
+        conflicts, metrics = self.sync("dev")
+        self.assertIsNone(conflicts)
+        self.assertIsNotNone(metrics)
+        second = git(self.fork, "branch", "--show-current")
+        self.assertEqual(second, f"sync/dev-{git(self.upstream, 'rev-parse', 'HEAD')[:10]}")
+        self.assertNotEqual(first, second)
+        self.assertEqual((self.fork / "Telegram/SourceFiles/b.cpp").read_text(), "int b3;\n")
+
+    def test_merged_sync_branch_is_replaced(self):
+        head = self.upstream_commit("Telegram/SourceFiles/b.cpp", "int b3;\n", "v7")
+        git(self.fork, "branch", upstream_sync.branch_name("v7", head))
+        conflicts, metrics = self.sync("v7")
+        self.assertIsNone(conflicts)
+        self.assertIsNotNone(metrics)
+        self.assertEqual(git(self.fork, "rev-parse", "HEAD^2"), head)
+
+    def test_current_baseline_is_reported(self):
+        with self.assertRaisesRegex(upstream_sync.SyncError, "already"):
+            self.sync("dev")
+
+    def test_unmerged_sync_branch_is_kept(self):
+        head = self.upstream_commit("Telegram/SourceFiles/b.cpp", "int b3;\n", "v8")
+        branch = upstream_sync.branch_name("v8", head)
+        git(self.fork, "branch", branch)
+        git(self.fork, "switch", "-q", branch)
+        write(self.fork, "Telegram/SourceFiles/serein/y.cpp", "int y;\n")
+        git(self.fork, "add", ".")
+        git(self.fork, "commit", "-q", "-m", "unmerged")
+        git(self.fork, "switch", "-q", "dev")
+        with self.assertRaisesRegex(upstream_sync.SyncError, "does not contain"):
+            self.sync("v8")
+        self.assertEqual(git(self.fork, "rev-parse", "--abbrev-ref", "HEAD"), "dev")
+
     def test_dirty_worktree_is_refused(self):
         write(self.fork, "Telegram/SourceFiles/b.cpp", "dirty\n")
         with self.assertRaisesRegex(upstream_sync.SyncError, "uncommitted"):
@@ -145,8 +268,10 @@ class UpstreamSyncTest(unittest.TestCase):
             self.sync("other")
 
     def test_branch_names_are_sanitized(self):
-        self.assertEqual(upstream_sync.branch_name("refs/tags/v6.3 beta"),
-                         "sync/refs-tags-v6.3-beta")
+        self.assertEqual(
+            upstream_sync.branch_name("refs/tags/v6.3 beta", "0123456789abcdef"),
+            "sync/refs-tags-v6.3-beta-0123456789",
+        )
 
 
 if __name__ == "__main__":

@@ -34,6 +34,10 @@ namespace Serein::Hooks::Interface {
 [[nodiscard]] rpl::producer<int> OtherDeviceNotificationDelayValue();
 [[nodiscard]] bool CenterTopNotifications();
 [[nodiscard]] rpl::producer<bool> CenterTopNotificationsValue();
+[[nodiscard]] bool MenuShortcuts();
+[[nodiscard]] rpl::producer<bool> MenuShortcutsValue();
+[[nodiscard]] QByteArray GlobalShortcut();
+[[nodiscard]] rpl::producer<QByteArray> GlobalShortcutValue();
 [[nodiscard]] bool HalfwidthUiPunctuation();
 [[nodiscard]] rpl::producer<bool> HalfwidthUiPunctuationValue();
 [[nodiscard]] bool MoreAccounts();

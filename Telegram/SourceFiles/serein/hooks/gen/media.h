@@ -1,6 +1,7 @@
 // Generated from proto/serein/settings/v1/media.proto by tools/serein/codegen; do not edit.
 #pragma once
 
+#include <QtCore/QString>
 #include <rpl/producer.h>
 
 namespace Serein::Hooks::Media {
@@ -9,6 +10,8 @@ namespace Serein::Hooks::Media {
 [[nodiscard]] rpl::producer<int> StickerScaleValue();
 [[nodiscard]] bool HideStickerTime();
 [[nodiscard]] rpl::producer<bool> HideStickerTimeValue();
+[[nodiscard]] bool RoundedStickers();
+[[nodiscard]] rpl::producer<bool> RoundedStickersValue();
 [[nodiscard]] int RecentStickerLimit();
 [[nodiscard]] rpl::producer<int> RecentStickerLimitValue();
 [[nodiscard]] bool HideGroupStickers();
@@ -21,11 +24,23 @@ namespace Serein::Hooks::Media {
 [[nodiscard]] rpl::producer<bool> HideGifCategoriesValue();
 [[nodiscard]] bool HideGreetingSticker();
 [[nodiscard]] rpl::producer<bool> HideGreetingStickerValue();
+[[nodiscard]] bool StickerPackAuthor();
+[[nodiscard]] rpl::producer<bool> StickerPackAuthorValue();
+[[nodiscard]] QString StickerAuthorBot();
+[[nodiscard]] rpl::producer<QString> StickerAuthorBotValue();
 [[nodiscard]] bool DisableVideoAutoplay();
 [[nodiscard]] rpl::producer<bool> DisableVideoAutoplayValue();
 [[nodiscard]] bool GifPlaybackControls();
 [[nodiscard]] rpl::producer<bool> GifPlaybackControlsValue();
+[[nodiscard]] bool ForceClickPreview();
+[[nodiscard]] rpl::producer<bool> ForceClickPreviewValue();
+[[nodiscard]] bool DownloadsPerChat();
+[[nodiscard]] rpl::producer<bool> DownloadsPerChatValue();
 [[nodiscard]] bool Mp4FilePreview();
 [[nodiscard]] rpl::producer<bool> Mp4FilePreviewValue();
+[[nodiscard]] bool DenoiseVoiceMessages();
+[[nodiscard]] rpl::producer<bool> DenoiseVoiceMessagesValue();
+[[nodiscard]] bool StoryPosting();
+[[nodiscard]] rpl::producer<bool> StoryPostingValue();
 
 } // namespace Serein::Hooks::Media

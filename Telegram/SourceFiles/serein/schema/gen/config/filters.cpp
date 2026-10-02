@@ -82,7 +82,7 @@ bool Validate(
 	}
 	for (auto i = qsizetype(); i != qsizetype(value.peers.size()); ++i) {
 		const auto &item = value.peers[i];
-		if (!(Codec::Matches(item, QString::fromUtf8("^[1-9][0-9]*$")))) {
+		if (!(Codec::Matches(item, QString::fromUtf8("^[1-9][0-9]*(:[1-9][0-9]*)?$")))) {
 			return Codec::Fail(error, Codec::Item(Codec::Child(path, QLatin1StringView("peers")), i), QString::fromLatin1("violates the schema rules"));
 		}
 	}

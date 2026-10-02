@@ -34,6 +34,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "core/application.h"
 #include "apiwrap.h"
 #include "serein/hooks/ghost.h"
+#include "serein/hooks/messages/batches.h"
 
 namespace Data {
 namespace {
@@ -796,6 +797,11 @@ void Histories::deleteMessages(
 		not_null<History*> history,
 		const QVector<MTPint> &ids,
 		bool revoke) {
+	if (Serein::Hooks::SplitIds(ids, [&](const QVector<MTPint> &part) {
+		deleteMessages(history, part, revoke);
+	})) {
+		return;
+	}
 	sendRequest(history, RequestType::Delete, [=](Fn<void()> finish) {
 		const auto done = [=](const MTPmessages_AffectedMessages &result) {
 			session().api().applyAffectedMessages(history->peer, result);

@@ -2,6 +2,8 @@
 
 #include <gsl/pointers>
 
+#include <QtCore/QString>
+
 #include <optional>
 
 class History;
@@ -19,9 +21,13 @@ namespace Serein::Hooks {
 
 [[nodiscard]] bool AllowOnline(gsl::not_null<Main::Session*> session);
 [[nodiscard]] bool AllowReadReceipt(gsl::not_null<Main::Session*> session);
+[[nodiscard]] bool AllowReadReceiptIn(gsl::not_null<::History*> history);
 [[nodiscard]] bool AllowTyping(gsl::not_null<Main::Session*> session);
 [[nodiscard]] bool AllowStoryView(gsl::not_null<Main::Session*> session);
 [[nodiscard]] bool AllowViewIncrement(gsl::not_null<Main::Session*> session);
+[[nodiscard]] QString GhostStatus(
+	gsl::not_null<Main::Session*> session,
+	const QString &status);
 
 class ForcedReadReceipt final {
 public:
@@ -30,6 +36,7 @@ public:
 
 	ForcedReadReceipt(const ForcedReadReceipt &) = delete;
 	ForcedReadReceipt &operator=(const ForcedReadReceipt &) = delete;
+
 };
 
 class ExplicitReadReceipts final {

@@ -246,6 +246,22 @@ rpl::producer<int> ReadingChineseValue() {
 	return ForDevice().Value(Serein::Messages::kReadingChinese);
 }
 
+bool RaiseSelectionLimit() {
+	return ForDevice().Get(Serein::Messages::kRaiseSelectionLimit);
+}
+
+rpl::producer<bool> RaiseSelectionLimitValue() {
+	return ForDevice().Value(Serein::Messages::kRaiseSelectionLimit);
+}
+
+bool DoubleClickEditsOwn() {
+	return ForDevice().Get(Serein::Messages::kDoubleClickEditsOwn);
+}
+
+rpl::producer<bool> DoubleClickEditsOwnValue() {
+	return ForDevice().Value(Serein::Messages::kDoubleClickEditsOwn);
+}
+
 bool RevokePrivateChatDeletion() {
 	return ForDevice().Get(Serein::Messages::kRevokePrivateChatDeletion);
 }

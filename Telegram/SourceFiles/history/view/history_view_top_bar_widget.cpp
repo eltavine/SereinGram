@@ -7,6 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/history_view_top_bar_widget.h"
 #include "serein/hooks/messages/content.h"
+#include "serein/hooks/ghost.h"
 
 #include "history/history.h"
 #include "history/view/history_view_send_action.h"
@@ -405,6 +406,16 @@ void TopBarWidget::showPeerMenu() {
 	Window::FillDialogsEntryMenu(_controller, _activeChat, addAction);
 	if (_menu->empty()) {
 		closeMenu();
+	} else if (_narrowRatio > 0.) {
+		_menu->setForcedOrigin(Ui::PanelAnimation::Origin::TopLeft);
+		_menu->popup(Ui::PopupMenu::ConstrainToParentScreen(
+			_menu,
+			mapToGlobal(
+				QPoint(
+					-st::topBarMenuPosition.x()
+						- Ui::BoxShadow::ExtendFor(
+							_menu->st().shadow).left(),
+					st::topBarMenuPosition.y()))));
 	} else {
 		_menu->setForcedOrigin(Ui::PanelAnimation::Origin::TopRight);
 		_menu->popup(Ui::PopupMenu::ConstrainToParentScreen(
@@ -1263,7 +1274,19 @@ void TopBarWidget::updateControlsGeometry() {
 	}
 
 	_rightTaken = 0;
-	_menuToggle->moveToRight(_rightTaken, otherButtonsTop);
+	if (rootChatsListBar() && _activeChat.key.folder()) {
+		const auto &toggle = st::topBarMenuToggle;
+		const auto narrowLeft = (_narrowWidth - toggle.icon.width()) / 2
+			- toggle.iconPosition.x();
+		_menuToggle->moveToLeft(
+			anim::interpolate(
+				width() - _menuToggle->width(),
+				narrowLeft,
+				_narrowRatio),
+			otherButtonsTop);
+	} else {
+		_menuToggle->moveToRight(_rightTaken, otherButtonsTop);
+	}
 	if (_menuToggle->isHidden()) {
 		_rightTaken += (_menuToggle->width() - _search->width());
 	} else {
@@ -1387,7 +1410,8 @@ void TopBarWidget::updateControlsVisibility() {
 	}
 	_menuToggle->setVisible(hasMenu
 		&& !_chooseForReportReason
-		&& (_narrowRatio < 1.));
+		&& (_narrowRatio < 1.
+			|| (rootChatsListBar() && _activeChat.key.folder())));
 	_infoToggle->setVisible(hasInfo
 		&& !isOneColumn
 		&& _controller->canShowThirdSection()
@@ -1987,6 +2011,7 @@ void TopBarWidget::updateOnlineDisplay() {
 			text = channel->isMegagroup() ? tr::lng_group_status(tr::now) : tr::lng_channel_status(tr::now);
 		}
 	}
+	text = Serein::Hooks::GhostStatus(&session(), text);
 	if (_titlePeerText.toString() != text) {
 		_titlePeerText.setText(st::dialogsTextStyle, text);
 		_titlePeerTextOnline = titlePeerTextOnline;

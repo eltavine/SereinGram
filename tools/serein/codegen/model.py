@@ -57,8 +57,7 @@ class Option:
 
     @property
     def toggle(self):
-        return (self.ctype == "bool" and not self.custom_ui
-                and "Hidden" not in self.flags)
+        return self.ctype == "bool" and not self.custom_ui and "Hidden" not in self.flags
 
     @property
     def accessor(self):
@@ -82,8 +81,12 @@ class Option:
     @property
     def initializer(self):
         args = [
-            f'"{self.key}"', f"Scope::{self.scope}", self.fallback,
-            f"Category::{self.category}", f'"{self.title}"', self.flags_expression,
+            f'"{self.key}"',
+            f"Scope::{self.scope}",
+            self.fallback,
+            f"Category::{self.category}",
+            f'"{self.title}"',
+            self.flags_expression,
         ]
         lines = [f"\t{arg}," for arg in args]
         if not self.validator:
@@ -185,8 +188,10 @@ RULE_ORDER = ["const", "gte", "gt", "lte", "lt", "in", "notIn"]
 
 def int_conditions(rules, where):
     conditions = []
-    ordered = sorted(rules.items(), key=lambda item: (
-        RULE_ORDER.index(item[0]) if item[0] in RULE_ORDER else len(RULE_ORDER)))
+    ordered = sorted(
+        rules.items(),
+        key=lambda item: RULE_ORDER.index(item[0]) if item[0] in RULE_ORDER else len(RULE_ORDER),
+    )
     for name, value in ordered:
         if name in INT_RULES:
             conditions.append(f"value {INT_RULES[name]} {int(value)}")
@@ -211,8 +216,7 @@ def string_conditions(rules, where):
         elif snake == "const":
             conditions.append(f"value == QString::fromUtf8({cpp_string(value)})")
         else:
-            conditions.append(
-                f"Codec::Matches(value, QString::fromUtf8({cpp_string(value)}))")
+            conditions.append(f"Codec::Matches(value, QString::fromUtf8({cpp_string(value)}))")
     return conditions
 
 
@@ -280,13 +284,14 @@ def build_page(source, message):
     for required in ("cppNamespace", "scope", "category"):
         if not page.get(required):
             raise SchemaError(f"{where}: page option '{required}' is required")
-    options = [build_option(item, page, f"{where}.{item['name']}")
-               for item in message.get("field", [])]
+    options = [
+        build_option(item, page, f"{where}.{item['name']}") for item in message.get("field", [])
+    ]
     names = [option.cpp_name for option in options]
     if len(set(names)) != len(names):
         raise SchemaError(f"{where}: duplicate C++ names")
     custom = []
-    for item, option in zip(message.get("field", []), options):
+    for item, option in zip(message.get("field", []), options, strict=True):
         validator = item.get("options", {}).get(FIELD_EXTENSION, {}).get("validator")
         if validator and (validator, option.ctype) not in custom:
             custom.append((validator, option.ctype))
@@ -299,8 +304,7 @@ def build_page(source, message):
         header=f"settings/{stem}.h",
         options=options,
         custom_validators=custom,
-        needs_codec=any("Codec::" in line
-                        for option in options for line in option.validator),
+        needs_codec=any("Codec::" in line for option in options for line in option.validator),
         rows_header=f"{stem}_rows.h" if (layout or subpage) else "",
         stem=stem,
         rows=rows,
@@ -328,7 +332,7 @@ def build_subpage(subpage, where):
 def build_layout(message, options, stem, where):
     by_name = {option.name: option for option in options}
     rows, layout, customs = [], [], []
-    for item, option in zip(message.get("field", []), options):
+    for item, option in zip(message.get("field", []), options, strict=True):
         if "Hidden" in option.flags:
             continue
         custom = item.get("options", {}).get(FIELD_EXTENSION, {})
@@ -338,29 +342,40 @@ def build_layout(message, options, stem, where):
             for required in ("title", "id"):
                 if not section.get(required):
                     raise SchemaError(f"{place}: section '{required}' is required")
-            layout.append(LayoutItem(
-                "section", id=f"serein/{stem}/{section['id']}",
-                title=section["title"],
-                keywords=cpp_keywords(section.get("keywords", []))))
+            layout.append(
+                LayoutItem(
+                    "section",
+                    id=f"serein/{stem}/{section['id']}",
+                    title=section["title"],
+                    keywords=cpp_keywords(section.get("keywords", [])),
+                )
+            )
         if "number" in custom and not option.custom_ui:
             layout.append(number_item(item, option, custom["number"], stem, place))
         elif "choice" in custom and not option.custom_ui:
             layout.append(choice_item(item, option, custom["choice"], stem, place))
         elif "text" in custom and not option.custom_ui:
-            layout.append(text_item(
-                option, custom["text"], stem, place,
-                visible_toggle(by_name, custom.get("disabledBy", ""), option, place)))
+            layout.append(
+                text_item(
+                    option,
+                    custom["text"],
+                    stem,
+                    place,
+                    visible_toggle(by_name, custom.get("disabledBy", ""), option, place),
+                )
+            )
         elif option.toggle:
-            disabled_by = visible_toggle(
-                by_name, custom.get("disabledBy", ""), option, place)
+            disabled_by = visible_toggle(by_name, custom.get("disabledBy", ""), option, place)
             layout.append(LayoutItem("toggle", index=len(rows)))
-            rows.append(Row(
-                cpp_name=option.cpp_name,
-                title=option.title,
-                id=f"serein/{stem}/{option.name.replace('_', '-')}",
-                keywords=cpp_keywords(option.keywords),
-                disabled_by=disabled_by,
-            ))
+            rows.append(
+                Row(
+                    cpp_name=option.cpp_name,
+                    title=option.title,
+                    id=f"serein/{stem}/{option.name.replace('_', '-')}",
+                    keywords=cpp_keywords(option.keywords),
+                    disabled_by=disabled_by,
+                )
+            )
         else:
             member = camel_lower(option.name)
             customs.append(member)
@@ -384,8 +399,12 @@ def build_pages(image):
     if duplicates:
         raise SchemaError(f"duplicate storage keys: {duplicates}")
     ids = [row.id for page in pages for row in page.rows]
-    ids += [item.id for page in pages for item in page.layout
-            if item.kind in ("section", "number", "choice", "text")]
+    ids += [
+        item.id
+        for page in pages
+        for item in page.layout
+        if item.kind in ("section", "number", "choice", "text")
+    ]
     duplicates = sorted({id for id in ids if ids.count(id) > 1})
     if duplicates:
         raise SchemaError(f"duplicate settings row ids: {duplicates}")
@@ -398,8 +417,8 @@ def visible_toggle(by_name, name, option, place):
     source = by_name.get(name)
     if not source or not source.toggle or source is option:
         raise SchemaError(
-            f"{place}: disabled_by '{name}' is not a visible "
-            "boolean option of this page")
+            f"{place}: disabled_by '{name}' is not a visible boolean option of this page"
+        )
     return source.cpp_name
 
 
@@ -469,14 +488,20 @@ def choice_item(item, option, choice, stem, place):
 
 def check_titles(pages, known):
     titles = {row.title for page in pages for row in page.rows}
-    titles |= {item.title for page in pages for item in page.layout
-               if item.kind in ("section", "note", "number", "choice", "text")}
-    titles |= {label for page in pages for item in page.layout
-               for label in item.labels}
-    titles |= {label for page in pages for item in page.layout
-               for label in (item.zero_label, item.count_format, item.hint,
-                             item.placeholder)
-               if label}
+    titles |= {
+        item.title
+        for page in pages
+        for item in page.layout
+        if item.kind in ("section", "note", "number", "choice", "text")
+    }
+    titles |= {label for page in pages for item in page.layout for label in item.labels}
+    titles |= {
+        label
+        for page in pages
+        for item in page.layout
+        for label in (item.zero_label, item.count_format, item.hint, item.placeholder)
+        if label
+    }
     titles |= {page.subpage["title"] for page in pages if page.subpage}
     missing = sorted(title for title in titles if title not in known)
     if missing:

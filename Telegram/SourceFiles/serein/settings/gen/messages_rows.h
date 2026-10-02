@@ -10,7 +10,7 @@
 
 namespace Serein::Messages {
 
-inline const auto kToggleRows = std::array<ToggleRow, 31>{ {
+inline const auto kToggleRows = std::array<ToggleRow, 33>{ {
 	{
 		&kSecondsInMessages,
 		tr::lng_serein_seconds_in_messages,
@@ -177,6 +177,18 @@ inline const auto kToggleRows = std::array<ToggleRow, 31>{ {
 		{ u"reading"_q, u"spacing"_q },
 	},
 	{
+		&kRaiseSelectionLimit,
+		tr::lng_serein_raise_selection_limit,
+		u"serein/messages/raise-selection-limit"_q,
+		{ u"select"_q, u"selection"_q, u"limit"_q, u"forward"_q, u"delete"_q, u"batch"_q },
+	},
+	{
+		&kDoubleClickEditsOwn,
+		tr::lng_serein_double_click_edits_own,
+		u"serein/messages/double-click-edits-own"_q,
+		{ u"double click"_q, u"edit"_q, u"own messages"_q },
+	},
+	{
 		&kRevokePrivateChatDeletion,
 		tr::lng_serein_revoke_private_chat_deletion,
 		u"serein/messages/revoke-private-chat-deletion"_q,
@@ -282,14 +294,23 @@ inline void AddLayout(
 	custom.readingChinese();
 	AddNote(builder, tr::lng_serein_reading_chinese_note);
 	AddSection(builder, {
+		u"serein/messages/interaction"_q,
+		tr::lng_serein_interaction,
+		{ u"select"_q, u"double click"_q },
+	});
+	AddToggle(builder, kToggleRows[27]);
+	AddNote(builder, tr::lng_serein_raise_selection_limit_note);
+	AddToggle(builder, kToggleRows[28]);
+	AddNote(builder, tr::lng_serein_double_click_edits_own_note);
+	AddSection(builder, {
 		u"serein/messages/deleting"_q,
 		tr::lng_serein_deleting,
 		{ u"delete"_q, u"moderate"_q },
 	});
-	AddToggle(builder, kToggleRows[27]);
-	AddToggle(builder, kToggleRows[28]);
 	AddToggle(builder, kToggleRows[29]);
 	AddToggle(builder, kToggleRows[30]);
+	AddToggle(builder, kToggleRows[31]);
+	AddToggle(builder, kToggleRows[32]);
 	AddNote(builder, tr::lng_serein_delete_defaults_note);
 }
 

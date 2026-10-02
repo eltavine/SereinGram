@@ -10,7 +10,7 @@
 
 namespace Serein::Chats {
 
-inline const auto kToggleRows = std::array<ToggleRow, 16>{ {
+inline const auto kToggleRows = std::array<ToggleRow, 18>{ {
 	{
 		&kCompactList,
 		tr::lng_serein_compact_chat_list,
@@ -30,6 +30,12 @@ inline const auto kToggleRows = std::array<ToggleRow, 16>{ {
 		{ u"stories"_q },
 	},
 	{
+		&kSearchOwnChatsOnly,
+		tr::lng_serein_search_own_chats_only,
+		u"serein/chats/search-own-chats-only"_q,
+		{ u"search"_q, u"global"_q, u"public"_q, u"privacy"_q },
+	},
+	{
 		&kHideAllChatsFolder,
 		tr::lng_serein_hide_all_chats_folder,
 		u"serein/chats/hide-all-chats-folder"_q,
@@ -46,6 +52,12 @@ inline const auto kToggleRows = std::array<ToggleRow, 16>{ {
 		tr::lng_serein_hide_folder_unread_counters,
 		u"serein/chats/hide-folder-unread-counters"_q,
 		{ u"unread"_q, u"folders"_q },
+	},
+	{
+		&kManagedFolderFilter,
+		tr::lng_serein_managed_folder_filter,
+		u"serein/chats/managed-folder-filter"_q,
+		{ u"folder"_q, u"admin"_q, u"manage"_q, u"groups"_q, u"channels"_q },
 	},
 	{
 		&kHideSponsoredMessages,
@@ -112,6 +124,7 @@ inline const auto kToggleRows = std::array<ToggleRow, 16>{ {
 struct CustomRows {
 	CustomRow startupFolderMode;
 	CustomRow chatSort;
+	CustomRow hiddenFolderIds;
 };
 
 inline void AddLayout(
@@ -133,44 +146,49 @@ inline void AddLayout(
 	});
 	AddToggle(builder, kToggleRows[1]);
 	AddToggle(builder, kToggleRows[2]);
+	AddToggle(builder, kToggleRows[3]);
+	AddNote(builder, tr::lng_serein_search_own_chats_only_note);
 	AddSection(builder, {
 		u"serein/chats/folders"_q,
 		tr::lng_serein_folders,
 		{ u"folders"_q },
 	});
 	custom.startupFolderMode();
-	AddToggle(builder, kToggleRows[3]);
 	AddToggle(builder, kToggleRows[4]);
 	AddToggle(builder, kToggleRows[5]);
+	AddToggle(builder, kToggleRows[6]);
 	AddSection(builder, {
 		u"serein/chats/sorting"_q,
 		tr::lng_serein_sorting,
 		{ u"sort"_q, u"order"_q },
 	});
 	custom.chatSort();
+	AddToggle(builder, kToggleRows[7]);
+	AddNote(builder, tr::lng_serein_managed_folder_filter_note);
+	custom.hiddenFolderIds();
 	AddSection(builder, {
 		u"serein/chats/promotions"_q,
 		tr::lng_serein_promotions,
 		{ u"promotions"_q, u"ads"_q },
 	});
-	AddToggle(builder, kToggleRows[6]);
-	AddToggle(builder, kToggleRows[7]);
 	AddToggle(builder, kToggleRows[8]);
 	AddToggle(builder, kToggleRows[9]);
+	AddToggle(builder, kToggleRows[10]);
+	AddToggle(builder, kToggleRows[11]);
 	AddSection(builder, {
 		u"serein/chats/scroll-navigation"_q,
 		tr::lng_serein_scroll_navigation,
 		{ u"scroll"_q, u"navigation"_q },
 	});
-	AddToggle(builder, kToggleRows[10]);
-	AddToggle(builder, kToggleRows[11]);
 	AddToggle(builder, kToggleRows[12]);
-	AddNote(builder, tr::lng_serein_remember_reading_position_note);
 	AddToggle(builder, kToggleRows[13]);
-	AddNote(builder, tr::lng_serein_chat_quick_actions_note);
 	AddToggle(builder, kToggleRows[14]);
-	AddNote(builder, tr::lng_serein_management_shortcuts_note);
+	AddNote(builder, tr::lng_serein_remember_reading_position_note);
 	AddToggle(builder, kToggleRows[15]);
+	AddNote(builder, tr::lng_serein_chat_quick_actions_note);
+	AddToggle(builder, kToggleRows[16]);
+	AddNote(builder, tr::lng_serein_management_shortcuts_note);
+	AddToggle(builder, kToggleRows[17]);
 	AddNote(builder, tr::lng_serein_local_pinning_note);
 }
 

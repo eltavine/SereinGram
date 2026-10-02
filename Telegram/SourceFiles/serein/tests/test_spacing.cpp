@@ -1,19 +1,10 @@
 #include "serein/compose/spacing.h"
+#include "serein/tests/require.h"
 
-#include <stdexcept>
+#include <doctest/doctest.h>
 #include <iostream>
 
-namespace {
-
-void Require(bool condition, const char *message) {
-	if (!condition) {
-		throw std::runtime_error(message);
-	}
-}
-
-} // namespace
-
-void TestSpacing() {
+TEST_CASE("Spacing") {
 	using Serein::Compose::InsertChineseLatinSpacing;
 	const auto input = QString::fromUtf8("中文abc");
 	const auto plain = InsertChineseLatinSpacing(input,

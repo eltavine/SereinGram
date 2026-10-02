@@ -6,11 +6,11 @@ SereinGram 是基于 Telegram Desktop 的第三方桌面客户端，功能对标
 
 | 文档 | 内容 |
 | --- | --- |
-| [功能矩阵](features.md) | 功能 TODO 清单：稳定 Feature ID、来源、状态、优先级 |
+| [功能矩阵](features.md) | 功能与实现状态：稳定 Feature ID、来源、状态、优先级 |
 | [架构](architecture.md) | 模块分层、依赖方向、上游挂钩门面、schema、存储、守卫与迁移步骤 |
+| [发布约定](releases.md) | 渠道、构建矩阵、产物命名、校验文件与清单格式 |
+| [Linux 发行版](linux.md) | 七个主流发行版的安装方式、CI 安装测试与 Nix 包 |
 | [ADR](adr/) | 关键取舍与调研记录 |
-
-`docs/nagram/` 保留 Nagram 阶段的需求、手机端功能来源目录与现场验证记录，作为参考资料；与本目录冲突时以本目录为准。
 
 ## 0. 全局工程原则
 
@@ -28,15 +28,26 @@ SereinGram 是基于 Telegram Desktop 的第三方桌面客户端，功能对标
 - **目标**：实现功能矩阵中对标手机版 Nagram 与 AyuGram 的增强功能；Telegram 官方功能全部保留并随上游更新；三平台构建与发布。
 - **上游**：唯一上游是 Telegram Desktop。Nagram-qt 与 AyuGram 是功能与实现参考，不跟随其提交历史（[ADR-0001](adr/0001-upstream-and-intrusion.md)）。
 - **默认行为**：所有增强默认关闭或跟随 Telegram；全部关闭时客户端行为与上游一致。
-- **非目标**：冒充官方客户端或使用官方客户端的 API 凭据；伪造服务端权益；手机专属交互（振动、滑动手势、底栏等，排除口径见 `docs/nagram/feature-catalog.md` 末节）。
+- **非目标**：冒充官方客户端或使用官方客户端的 API 凭据；伪造服务端权益；手机专属交互（振动、滑动手势、底栏等，排除口径见[功能矩阵](features.md#明确排除)末节）。
 
 ## 2. 平台矩阵
 
 | 平台 | 产物 | 依赖准备 | 最低系统版本 |
 | --- | --- | --- | --- |
 | macOS | arm64 + x86_64 通用二进制，DMG | 上游 `prepare.py` + Xcode | 随上游 |
-| Windows | x64 安装包与便携版；arm64 随后 | 上游 `prepare.py` + MSVC | 随上游 |
-| Linux | x86_64 静态构建 tar 包（Rocky Linux 8 容器，glibc 兼容主流发行版）；发行版打包走 `DESKTOP_APP_USE_PACKAGED` | 上游 Docker 环境 | 随上游 |
+| Windows | x86_64 与 arm64 安装包、便携版 | 上游 `prepare.py` + MSVC | 随上游 |
+| Linux | x86_64 与 arm64 静态构建便携包、AppImage、`.deb` 与 `.rpm`（Rocky Linux 8 容器，glibc 2.28 及以上）；x86_64 与 arm64 Flatpak 包；Arch Linux PKGBUILD 与 Nix flake 以系统库构建；七个主流发行版的安装方式见 [Linux 发行版](linux.md) | 上游 Docker 环境；Arch、Flatpak 与 Nix 用各自的依赖 | 随上游 |
+
+Linux 发行版打包：
+
+- `packaging/nfpm/`：把静态构建打成 `.deb` 与 `.rpm`，Linux 工作流随构建产物一起生成。
+- `packaging/arch/PKGBUILD`：以系统库构建 `sereingram-desktop-git`，CI 工作流 `serein-arch.yml` 在 Arch 容器中构建并安装检查。
+- `packaging/flatpak/`：GNOME 运行时上的 Flatpak 清单，构建本地检出，CI 工作流 `serein-flatpak.yml` 生成 `.flatpak` 包。
+- `flake.nix` 与 `packaging/nix/package.nix`：基于 nixpkgs 的 telegram-desktop 配方构建，CI 工作流 `serein-nix.yml` 在 x86_64 与 aarch64 上构建并启动。
+- `snap/snapcraft.yaml`：core24 上的 Snap 配方，CI 工作流 `serein-snap.yml` 构建、安装并启动；配方不含凭据，构建时才加入。
+- `tools/serein/linux_package_test.sh`：在 Ubuntu、Debian、Linux Mint、Fedora、openSUSE 与 Arch Linux 的容器中安装软件包并检查文件与动态库。
+- 打包者必须使用自己的 API 凭据：PKGBUILD 读取环境变量 `SEREIN_API_ID` 与 `SEREIN_API_HASH`，Flatpak 读取被忽略的 `Telegram/build/api_credentials.local.cmake`，Nix 包通过 `apiId` 与 `apiHash` 参数传入，Snap 在构建用的配方副本中加入；`check_packaging.py` 拒绝在已提交的配方中写入凭据；缺少凭据时构建报错。以系统库构建时不检查 GitHub 更新，由包管理器负责更新。
+- `tools/serein/check_packaging.py` 要求两份配方锁定的依赖版本与 `snap/snapcraft.yaml` 一致。`upstream_sync.py` 合并上游后自动改写两份配方中 tdlib、tg_owt、tlottie 与 patches 的提交（也可运行 `check_packaging.py --update`）；Qt 版本变化需要新的源码包校验值，tlottie 提交变化需要重新生成 `tlottie-cargo-sources.yml`，这两项由检查报出后手动更新。
 
 ## 3. 标识与状态
 
@@ -47,14 +58,22 @@ SereinGram 是基于 Telegram Desktop 的第三方桌面客户端，功能对标
 ## 4. 发布门禁
 
 1. 三平台 CI 构建成功，`test_serein` 全部通过。
-2. 守卫全部通过：源文件行数、模块边界、上游侵入预算、`buf lint` 与 `buf breaking`、生成代码无漂移、三语文案一致、门面命名空间遮蔽、功能矩阵格式、工作流 actionlint。本地用 `tools/serein/check_all.sh` 一次运行全部守卫与核心测试。
+2. 守卫全部通过：格式与风格、Lint、静态分析、AddressSanitizer 与 UndefinedBehaviorSanitizer 下的核心测试、AddressSanitizer 与 UndefinedBehaviorSanitizer 下的核心测试、依赖与配置校验、源文件行数、模块边界、上游侵入预算、`buf lint` 与 `buf breaking`、生成代码无漂移、三语文案一致、门面命名空间遮蔽、功能矩阵格式、工作流 actionlint，以及三平台的启动冒烟测试。本地用 `tools/serein/check_all.sh` 一次运行全部守卫与核心测试。
 3. 发布说明分别列出本版本 `Verified` 与仅 `Implemented` 的功能。
-4. 发布流程：推送 `v*` 标签后，三平台工作流构建并把产物（macOS 通用 DMG、Linux x86_64 tar 包、Windows x64 便携版与安装包）上传到同一个草稿预发布 Release，维护者核对门禁后手动发布；应用内的 GitHub 更新检查只提示正式版。CI 目前只构建 Debug 配置，正式版的构建配置与签名由维护者决定。
+4. 发布流程：`serein-release.yml` 每天从 `develop` 构建 Release 配置的 Nightly，推送 `v*` 标签时构建正式版草稿；全部产物不签名、不公证，名称、校验文件与清单格式固定，约定见 [releases.md](releases.md)；应用内的 GitHub 更新检查只提示正式版。
 
 ## 5. 提交规范
 
 - 提交信息遵循 Conventional Commits（`type(scope): summary`），全部使用英文，并且必须有详细正文，说明改动的原因和内容。
 - CI 的 `Commit messages` 任务用 commitlint 与 `tools/serein/commitlint.config.mjs` 检查每次推送或 PR 新增的提交：标题不超过 72 字符，正文不少于 60 字符、每行不超过 100 字符，只允许可打印 ASCII。
 - 提交前可运行 `python3 tools/serein/check_commit_message.py <信息文件>` 做同样的检查；执行 `git config core.hooksPath tools/serein/githooks` 可在本地启用 `commit-msg` 钩子自动检查。
-- 该规则自 2026-09-30 起生效，优先于 `AGENTS.md` 中“标题一行”的约定；此前已推送的提交不改写。
+- 该规则优先于 `AGENTS.md` 中“标题一行”的约定。
 - 只检查主线（first-parent）上的提交：同步上游时检查合并提交本身，随合并进入的上游提交保持原样，不按本规范检查。
+
+## 6. 界面翻译
+
+- Telegram 自身的字符串沿用官方翻译平台与语言包；Serein 新增的字符串（`lng_serein_*`）在 `Telegram/Resources/langs/serein/`。
+- `serein.strings` 是英文源文件；译文文件名为小写语言代码，例如 `fa.strings`、`pt-br.strings`。CMake 在配置时扫描该目录生成资源清单，新增语言无需改动构建文件。
+- 运行时先按界面语言的完整代码查找译文，再退回基础语言代码；缺少的键显示英文。`zh-hans` 与 `zh-hant` 必须完整，其他语言可以只翻译一部分。
+- 核心测试校验每个译文文件：键必须存在于英文源文件，`{name}` 形式的占位符必须一致。
+- 仓库根目录的 `crowdin.yml` 把该目录接入 Crowdin；创建 Crowdin 项目后，在 GitHub Secrets 中设置 `CROWDIN_PROJECT_ID` 与 `CROWDIN_PERSONAL_TOKEN`。工作流 `serein-crowdin.yml` 在英文源文件改动推送到 develop 时上传源文件，每周一下载译文并向 develop 提交 PR，也可手动运行；未设置这两个机密时直接跳过。

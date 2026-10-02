@@ -1,5 +1,6 @@
 #include "serein/services/draft_translation.h"
 
+#include "serein/schema/gen/settings/compose.h"
 #include "serein/services/translation.h"
 #include "boxes/translate_box.h"
 #include "boxes/translate_box_content.h"
@@ -88,7 +89,7 @@ void InstallDraftTranslation(
 		std::shared_ptr<Main::SessionShow> show) {
 	const auto weak = std::weak_ptr<Main::SessionShow>(show);
 	field->addContextMenuHook([=](Ui::InputField::ContextMenuRequest request) {
-		if (field->empty()) {
+		if (field->empty() || !ForDevice().Get(Compose::kDraftTranslation)) {
 			return;
 		}
 		request.menu->addAction(tr::lng_serein_translate_draft(tr::now),

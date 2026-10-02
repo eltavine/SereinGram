@@ -3,10 +3,10 @@
 #include "serein/hooks/services/model.h"
 
 #include <QtCore/QJsonDocument>
+#include <QtCore/QObject>
 #include <QtCore/QPointer>
 #include <QtCore/QUrlQuery>
 #include <QtCore/QTimer>
-#include <QtNetwork/QNetworkAccessManager>
 
 class QNetworkReply;
 class QHttpMultiPart;
@@ -63,7 +63,7 @@ private:
 		Fn<void(ServiceResult)> &done);
 	void start(QNetworkReply *reply, Fn<void(ServiceResult)> done);
 
-	QNetworkAccessManager _network;
+	QObject _context;
 	QTimer _deadline;
 	QPointer<QNetworkReply> _reply;
 	QByteArray _body;

@@ -1,20 +1,15 @@
 #include "serein/adapters/qtsql/history_store.h"
 #include "base/basic_types.h"
+#include "serein/tests/require.h"
 
+#include <doctest/doctest.h>
 #include <QtCore/QTemporaryDir>
 #include <QtSql/QSqlDatabase>
 #include <QtSql/QSqlQuery>
 
 #include <iostream>
-#include <stdexcept>
 
 namespace {
-
-void Require(bool value, const char *message) {
-	if (!value) {
-		throw std::runtime_error(message);
-	}
-}
 
 class ReversingCipher final : public Serein::Ports::Cipher {
 public:
@@ -31,6 +26,7 @@ public:
 		std::reverse(result.begin(), result.end());
 		return result;
 	}
+
 };
 
 [[nodiscard]] Serein::History::Record Record(
@@ -50,7 +46,7 @@ public:
 
 } // namespace
 
-void TestHistoryStore() {
+TEST_CASE("HistoryStore") {
 	using namespace Serein;
 	using Kind = History::RecordKind;
 	auto directory = QTemporaryDir();
@@ -107,6 +103,24 @@ void TestHistoryStore() {
 			"only the newest records are kept");
 		Require(store->clearPeer(777) && store->deleted({ .peerId = 777 }).empty(),
 			"clearing a chat removes its records");
+	}
+	{
+		auto store = Adapters::SqlHistoryStore::Open(path, cipher);
+		Require(store != nullptr, "history store reopens for batches");
+		store->beginBatch();
+		store->beginBatch();
+		Require(store->save(Record(6, 600)) && store->save(Record(7, 700)),
+			"batched records save");
+		store->endBatch();
+		Require(store->deleted({ .peerId = 777 }).size() == 2,
+			"batched records are visible inside the batch");
+		store->endBatch();
+	}
+	{
+		auto store = Adapters::SqlHistoryStore::Open(path, cipher);
+		Require(store && store->deleted({ .peerId = 777 }).size() == 2,
+			"batched records are committed");
+		Require(store->clearPeer(777), "batched records clear");
 	}
 	{
 		auto other = ReversingCipher();

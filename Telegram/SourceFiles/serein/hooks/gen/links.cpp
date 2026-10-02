@@ -14,4 +14,12 @@ rpl::producer<QByteArray> RulesValue() {
 	return ForDevice().Value(Serein::Links::kRules);
 }
 
+bool PreviewLinkRules() {
+	return ForDevice().Get(Serein::Links::kPreviewLinkRules);
+}
+
+rpl::producer<bool> PreviewLinkRulesValue() {
+	return ForDevice().Value(Serein::Links::kPreviewLinkRules);
+}
+
 } // namespace Serein::Hooks::Links

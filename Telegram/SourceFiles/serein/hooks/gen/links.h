@@ -8,5 +8,7 @@ namespace Serein::Hooks::Links {
 
 [[nodiscard]] QByteArray Rules();
 [[nodiscard]] rpl::producer<QByteArray> RulesValue();
+[[nodiscard]] bool PreviewLinkRules();
+[[nodiscard]] rpl::producer<bool> PreviewLinkRulesValue();
 
 } // namespace Serein::Hooks::Links

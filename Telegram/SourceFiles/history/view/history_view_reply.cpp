@@ -8,6 +8,8 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "history/view/history_view_reply.h"
 #include "serein/hooks/filters/view.h"
 #include "serein/hooks/gen/interface.h"
+#include "serein/hooks/history.h"
+#include "serein/hooks/interface/reply_colors.h"
 
 #include "core/click_handler_types.h"
 #include "core/ui_integration.h"
@@ -716,7 +718,10 @@ void Reply::updateName(
 			? tr::lng_profile_loading(tr::now)
 			: fields.storyId
 			? tr::lng_deleted_story(tr::now)
-			: tr::lng_deleted_message(tr::now);
+			: Serein::Hooks::DeletedReplyText(
+				history,
+				fields.messageId.bare,
+				tr::lng_deleted_message(tr::now));
 		const auto phraseWidth = st::msgDateFont->width(_stateText);
 		_maxWidth = unavailable
 			? phraseWidth
@@ -819,7 +824,7 @@ void Reply::paint(
 	y += st::historyReplyTop;
 	const auto rect = QRect(x, y, w, _height);
 	const auto selected = context.selected();
-	const auto themeColors = Serein::Hooks::Interface::ThemeReplyColors();
+	const auto themeColors = Serein::Hooks::Interface::UseThemeReplyColors();
 	const auto backgroundEmojiId = (!themeColors && _colorPeer)
 		? _colorPeer->backgroundEmojiId()
 		: DocumentId();

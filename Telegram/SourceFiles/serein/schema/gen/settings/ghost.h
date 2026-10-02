@@ -5,12 +5,21 @@
 
 namespace Serein::Ghost {
 
+[[nodiscard]] bool ValidReadReceiptExceptions(const QString &value);
+
 inline constexpr auto kGhostMode = Option<bool>{
 	"serein.ghostMode",
 	Scope::Account,
 	false,
 	Category::Privacy,
 	"lng_serein_ghost_mode",
+	0 };
+inline constexpr auto kGhostAllAccounts = Option<bool>{
+	"serein.ghostAllAccounts",
+	Scope::Device,
+	false,
+	Category::Privacy,
+	"lng_serein_ghost_all_accounts",
 	0 };
 inline constexpr auto kGhostHideReadReceipts = Option<bool>{
 	"serein.ghostHideReadReceipts",
@@ -61,6 +70,13 @@ inline constexpr auto kGhostExplicitReadReceipts = Option<bool>{
 	Category::Privacy,
 	"lng_serein_ghost_explicit_read_receipts",
 	0 };
+inline constexpr auto kGhostSendSilently = Option<bool>{
+	"serein.ghostSendSilently",
+	Scope::Account,
+	false,
+	Category::Privacy,
+	"lng_serein_ghost_send_silently",
+	0 };
 inline constexpr auto kGhostUseScheduledMessages = Option<bool>{
 	"serein.ghostUseScheduledMessages",
 	Scope::Account,
@@ -68,9 +84,18 @@ inline constexpr auto kGhostUseScheduledMessages = Option<bool>{
 	Category::Privacy,
 	"lng_serein_ghost_use_scheduled_messages",
 	0 };
+inline const auto kReadReceiptExceptions = Option<QString>{
+	"serein.readReceiptExceptions",
+	Scope::Account,
+	QString(),
+	Category::Privacy,
+	"lng_serein_ghost_read_exceptions",
+	0,
+	&ValidReadReceiptExceptions };
 
 inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kGhostMode));
+	Expects(registry.Add(kGhostAllAccounts));
 	Expects(registry.Add(kGhostHideReadReceipts));
 	Expects(registry.Add(kGhostHideStoryViews));
 	Expects(registry.Add(kGhostHideOnline));
@@ -78,7 +103,9 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kGhostHideViewIncrements));
 	Expects(registry.Add(kGhostMarkReadAfterSending));
 	Expects(registry.Add(kGhostExplicitReadReceipts));
+	Expects(registry.Add(kGhostSendSilently));
 	Expects(registry.Add(kGhostUseScheduledMessages));
+	Expects(registry.Add(kReadReceiptExceptions));
 }
 
 } // namespace Serein::Ghost

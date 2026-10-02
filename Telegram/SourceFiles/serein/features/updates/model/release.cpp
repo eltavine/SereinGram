@@ -10,20 +10,47 @@
 #include <algorithm>
 
 namespace Serein::Updates {
+namespace {
 
-std::optional<Release> ParseLatestRelease(const QByteArray &json) {
-	const auto root = QJsonDocument::fromJson(json).object();
-	const auto tag = root.value(u"tag_name"_q).toString();
-	const auto url = QUrl(root.value(u"html_url"_q).toString(), QUrl::StrictMode);
-	if (VersionParts(tag).empty()
-		|| root.value(u"draft"_q).toBool()
-		|| root.value(u"prerelease"_q).toBool()
-		|| !url.isValid()
+[[nodiscard]] std::optional<QString> GitHubPage(const QJsonObject &release) {
+	const auto url = QUrl(
+		release.value(u"html_url"_q).toString(),
+		QUrl::StrictMode);
+	if (!url.isValid()
 		|| url.scheme() != u"https"_q
 		|| url.host() != u"github.com"_q) {
 		return std::nullopt;
 	}
-	return Release{ tag, url.toString(QUrl::FullyEncoded) };
+	return url.toString(QUrl::FullyEncoded);
+}
+
+} // namespace
+
+std::optional<Release> ParseLatestRelease(const QByteArray &json) {
+	const auto root = QJsonDocument::fromJson(json).object();
+	const auto tag = root.value(u"tag_name"_q).toString();
+	const auto url = GitHubPage(root);
+	if (VersionParts(tag).empty()
+		|| root.value(u"draft"_q).toBool()
+		|| root.value(u"prerelease"_q).toBool()
+		|| !url) {
+		return std::nullopt;
+	}
+	return Release{ tag, *url };
+}
+
+std::optional<Nightly> ParseNightlyRelease(const QByteArray &json) {
+	static const auto hash = QRegularExpression(u"\\A[0-9a-f]{40}\\z"_q);
+	const auto root = QJsonDocument::fromJson(json).object();
+	const auto commit = root.value(u"target_commitish"_q).toString();
+	const auto url = GitHubPage(root);
+	if (root.value(u"tag_name"_q).toString() != u"nightly"_q
+		|| root.value(u"draft"_q).toBool()
+		|| !hash.match(commit).hasMatch()
+		|| !url) {
+		return std::nullopt;
+	}
+	return Nightly{ commit, *url };
 }
 
 std::vector<int> VersionParts(const QString &version) {

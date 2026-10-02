@@ -26,10 +26,22 @@ message ServiceInstance {
   string id = 1 [(buf.validate.field).string.pattern = "^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$"];
   string name = 2;
   string kind = 3 [(buf.validate.field).string = {
-    in: ["translation", "transcription"]
+    in: [
+      "translation",
+      "transcription"
+    ]
   }];
   string protocol = 4 [(buf.validate.field).string = {
-    in: ["openai", "anthropic", "deepl", "deeplx", "google", "yandex", "transmart", "azure"]
+    in: [
+      "openai",
+      "anthropic",
+      "deepl",
+      "deeplx",
+      "google",
+      "yandex",
+      "transmart",
+      "azure"
+    ]
   }];
   string base_url = 5;
   string endpoint = 6;

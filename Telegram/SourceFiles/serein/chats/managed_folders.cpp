@@ -45,6 +45,7 @@ bool AllowedInFolder(
 		gsl::not_null<History*> history,
 		FilterId folderId) {
 	if (!folderId
+		|| !ForDevice().Get(kManagedFolderFilter)
 		|| !SelectedFolders(&history->session()).contains(folderId)) {
 		return true;
 	}
@@ -61,7 +62,7 @@ void AddManagedOnlyAction(
 		const Ui::Menu::MenuCallback &addAction,
 		gsl::not_null<Main::Session*> session,
 		FilterId folderId) {
-	if (!folderId) return;
+	if (!folderId || !ForDevice().Get(kManagedFolderFilter)) return;
 	const auto selected = SelectedFolders(session).contains(folderId);
 	addAction(tr::lng_serein_managed_only(tr::now), [=] {
 		auto ids = SelectedFolders(session);

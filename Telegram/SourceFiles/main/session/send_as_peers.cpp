@@ -13,6 +13,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "data/data_changes.h"
 #include "main/main_session.h"
 #include "apiwrap.h"
+#include "serein/hooks/compose/send_as.h"
 
 namespace Main {
 namespace {
@@ -172,6 +173,7 @@ void SendAsPeers::request(SendAsKey key) {
 				}
 			}
 		});
+		Serein::Compose::AddOwnerSendAs(key, parsed);
 		if (parsed.size() > 1) {
 			auto &now = _lists[key];
 			if (now != parsed) {

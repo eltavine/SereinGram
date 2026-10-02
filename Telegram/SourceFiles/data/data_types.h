@@ -11,6 +11,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "data/data_peer_id.h"
 #include "data/data_msg_id.h"
 #include "base/qt/qt_compare.h"
+#include "serein/hooks/messages/forward.h"
 
 struct AudioAlbumThumbLocation;
 class HistoryItem;
@@ -402,7 +403,7 @@ enum class ViewRemovalReason : uchar {
 
 struct ForwardDraft {
 	MessageIdsList ids;
-	ForwardOptions options = ForwardOptions::PreserveInfo;
+	ForwardOptions options = Serein::Hooks::DefaultForwardOptions<ForwardOptions>();
 
 	friend inline auto operator<=>(
 		const ForwardDraft&,
@@ -411,7 +412,7 @@ struct ForwardDraft {
 
 struct ResolvedForwardDraft {
 	HistoryItemsList items;
-	ForwardOptions options = ForwardOptions::PreserveInfo;
+	ForwardOptions options = Serein::Hooks::DefaultForwardOptions<ForwardOptions>();
 };
 
 } // namespace Data

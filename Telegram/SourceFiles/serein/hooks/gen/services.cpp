@@ -30,12 +30,44 @@ rpl::producer<bool> TranslationContextValue() {
 	return ForDevice().Value(Serein::ServiceSettings::kTranslationContext);
 }
 
+bool ChatTranslationWithoutPremium() {
+	return ForDevice().Get(Serein::ServiceSettings::kChatTranslationWithoutPremium);
+}
+
+rpl::producer<bool> ChatTranslationWithoutPremiumValue() {
+	return ForDevice().Value(Serein::ServiceSettings::kChatTranslationWithoutPremium);
+}
+
+bool AutoTranslateChats(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Get(Serein::ServiceSettings::kAutoTranslateChats);
+}
+
+rpl::producer<bool> AutoTranslateChatsValue(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Value(Serein::ServiceSettings::kAutoTranslateChats);
+}
+
+bool InstantViewTranslation() {
+	return ForDevice().Get(Serein::ServiceSettings::kInstantViewTranslation);
+}
+
+rpl::producer<bool> InstantViewTranslationValue() {
+	return ForDevice().Value(Serein::ServiceSettings::kInstantViewTranslation);
+}
+
 QString ProxySubscription() {
 	return ForDevice().Get(Serein::ServiceSettings::kProxySubscription);
 }
 
 rpl::producer<QString> ProxySubscriptionValue() {
 	return ForDevice().Value(Serein::ServiceSettings::kProxySubscription);
+}
+
+QByteArray ProxyNotes() {
+	return ForDevice().Get(Serein::ServiceSettings::kProxyNotes);
+}
+
+rpl::producer<QByteArray> ProxyNotesValue() {
+	return ForDevice().Value(Serein::ServiceSettings::kProxyNotes);
 }
 
 bool PauseProxyOnVpn() {
@@ -52,6 +84,30 @@ bool ProxyPausedByVpn() {
 
 rpl::producer<bool> ProxyPausedByVpnValue() {
 	return ForDevice().Value(Serein::ServiceSettings::kProxyPausedByVpn);
+}
+
+QString CustomDoh() {
+	return ForDevice().Get(Serein::ServiceSettings::kCustomDoh);
+}
+
+rpl::producer<QString> CustomDohValue() {
+	return ForDevice().Value(Serein::ServiceSettings::kCustomDoh);
+}
+
+bool FasterTransfers() {
+	return ForDevice().Get(Serein::ServiceSettings::kFasterTransfers);
+}
+
+rpl::producer<bool> FasterTransfersValue() {
+	return ForDevice().Value(Serein::ServiceSettings::kFasterTransfers);
+}
+
+bool AndroidWebApps() {
+	return ForDevice().Get(Serein::ServiceSettings::kAndroidWebApps);
+}
+
+rpl::producer<bool> AndroidWebAppsValue() {
+	return ForDevice().Value(Serein::ServiceSettings::kAndroidWebApps);
 }
 
 } // namespace Serein::Hooks::ServiceSettings

@@ -1,0 +1,57 @@
+# Debian and RPM packages of the portable Linux build. Run nfpm from the
+# directory that stage.sh prepared; SEREIN_VERSION is the package version.
+name: sereingram
+arch: ${SEREIN_PACKAGE_ARCH}
+platform: linux
+version: ${SEREIN_VERSION}
+version_schema: none
+release: 1
+section: net
+priority: optional
+maintainer: SereinGram contributors
+description: |-
+  Telegram Desktop based client with optional privacy and customization
+  features. Every added feature is off until it is enabled in settings.
+vendor: SereinGram
+homepage: https://github.com/eltavine/SereinGram
+license: GPL-3.0-or-later WITH OpenSSL-exception
+contents:
+  - src: ./SereinGram
+    dst: /usr/bin/SereinGram
+    file_info:
+      mode: 0755
+  - src: ./io.github.eltavine.SereinGram.desktop
+    dst: /usr/share/applications/io.github.eltavine.SereinGram.desktop
+    file_info:
+      mode: 0644
+  - src: ./io.github.eltavine.SereinGram.metainfo.xml
+    dst: /usr/share/metainfo/io.github.eltavine.SereinGram.metainfo.xml
+    file_info:
+      mode: 0644
+  - src: ./icons/
+    dst: /usr/share/icons/hicolor/
+    type: tree
+overrides:
+  deb:
+    depends:
+      - libc6 (>= 2.28)
+      - libglib2.0-0t64 | libglib2.0-0
+      - libcairo2
+      - libpango-1.0-0
+      - libpangocairo-1.0-0
+      - libpangoft2-1.0-0
+      - libfontconfig1
+      - libfreetype6
+  rpm:
+    depends:
+      - libglib-2.0.so.0()(64bit)
+      - libgio-2.0.so.0()(64bit)
+      - libgobject-2.0.so.0()(64bit)
+      - libcairo.so.2()(64bit)
+      - libpango-1.0.so.0()(64bit)
+      - libpangocairo-1.0.so.0()(64bit)
+      - libpangoft2-1.0.so.0()(64bit)
+      - libfontconfig.so.1()(64bit)
+      - libfreetype.so.6()(64bit)
+rpm:
+  group: Applications/Internet

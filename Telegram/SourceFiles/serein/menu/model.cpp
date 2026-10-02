@@ -35,8 +35,6 @@ Visibility DefaultVisibility(ActionId id) {
 		|| id == ActionId::DeletedMessages
 		|| id == ActionId::ReadUntilHere
 		|| id == ActionId::HistoryExclusion
-		|| id == ActionId::SelectRange
-		|| id == ActionId::BatchUnpin
 		|| id == ActionId::QuickRatingFirst
 		|| id == ActionId::QuickRatingSecond) {
 		return Visibility::Show;

@@ -1,0 +1,101 @@
+name: Serein Snap.
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+    paths:
+      - 'snap/**'
+      - '.github/workflows/serein-snap.yml'
+  schedule:
+    - cron: '0 1 * * 1'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+
+  snap:
+    name: Snap (x86_64)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clone.
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: Set up snapcraft and LXD.
+        run: |
+          sudo iptables -P FORWARD ACCEPT
+          sudo snap install --classic snapcraft
+          sudo usermod -aG lxd "$USER"
+          sudo lxd init --auto
+          sudo lxd waitready
+
+      - name: Free up some disk space.
+        uses: samueldr/more-space-action@97048bd0df83fb05b5257887bdbaffc848887673
+        with:
+          enable-remove-default-apt-patterns: false
+          enable-lvm-span: true
+          lvm-span-mountpoint: /var/snap/lxd/common/lxd/storage-pools/default/containers
+
+      # The recipe never carries credentials; they are added to this copy only.
+      - name: Choose the API credentials.
+        env:
+          SEREIN_API_ID: ${{ secrets.SEREIN_API_ID }}
+          SEREIN_API_HASH: ${{ secrets.SEREIN_API_HASH }}
+        run: |
+          if [ -n "$SEREIN_API_ID" ] && [ -n "$SEREIN_API_HASH" ]; then
+            set -- "-DTDESKTOP_API_ID=$SEREIN_API_ID" "-DTDESKTOP_API_HASH=$SEREIN_API_HASH"
+          else
+            echo "::notice::The repository secrets are missing; building with the test-only credentials."
+            set -- -DTDESKTOP_API_TEST=ON
+          fi
+          # Every CMake part has the same install prefix line; only the app gets the flags.
+          python3 - "$@" <<'EOF'
+          import pathlib, sys
+          path = pathlib.Path("snap/snapcraft.yaml")
+          lines = path.read_text().split("\n")
+          start = lines.index("  telegram:")
+          prefix = lines.index("      - -DCMAKE_INSTALL_PREFIX=/usr", start)
+          lines[prefix + 1:prefix + 1] = ["      - " + flag for flag in sys.argv[1:]]
+          path.write_text("\n".join(lines))
+          EOF
+          test "$(grep -c -e '-DTDESKTOP_API_' snap/snapcraft.yaml)" -eq "$#"
+
+      # The recipe takes the snap version from `git describe --tags`; the tag stays local.
+      - name: Tag the app version.
+        run: git tag -f "v$(awk '$1 == "AppVersionStr" { print $2 }' Telegram/build/version)"
+
+      - name: Snap build.
+        run: sudo -u "$USER" snap run snapcraft --verbosity=brief
+
+      - name: Install and launch the snap.
+        run: |
+          # snap-confine bind-mounts /usr/src, which the disk cleanup removed.
+          sudo mkdir -p /usr/src
+          mkdir artifact
+          mv sereingram_*.snap artifact/SereinGram-linux-x86_64.snap
+          sudo snap install --dangerous artifact/SereinGram-linux-x86_64.snap
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq xvfb >/dev/null
+          # Strictly confined snaps see the home folder, not the host /tmp.
+          mkdir -p "$HOME/smoke"
+          TMPDIR="$HOME/smoke" xvfb-run -a python3 tools/serein/smoke_test.py /snap/bin/sereingram
+
+      - uses: actions/upload-artifact@v7
+        name: Upload artifact.
+        with:
+          name: SereinGram-linux-x86_64-snap
+          path: artifact/
+          if-no-files-found: error
+          retention-days: 3

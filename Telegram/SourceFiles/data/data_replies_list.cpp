@@ -1006,7 +1006,7 @@ void RepliesList::sendReadTillRequest() {
 	const auto api = &_history->session().api();
 	api->request(base::take(_readRequestId)).cancel();
 
-	if (!Serein::Hooks::AllowReadReceipt(&_history->session())) return;
+	if (!Serein::Hooks::AllowReadReceiptIn(_history)) return;
 	_readRequestId = api->request(MTPmessages_ReadDiscussion(
 		_history->peer->input(),
 		MTP_int(_rootId),

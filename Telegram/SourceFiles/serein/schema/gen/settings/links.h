@@ -15,9 +15,17 @@ inline const auto kRules = Option<QByteArray>{
 	"lng_serein_link_rules",
 	0,
 	&Validate };
+inline constexpr auto kPreviewLinkRules = Option<bool>{
+	"serein.previewLinkRules",
+	Scope::Device,
+	false,
+	Category::Rules,
+	"lng_serein_link_previews",
+	0 };
 
 inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kRules));
+	Expects(registry.Add(kPreviewLinkRules));
 }
 
 } // namespace Serein::Links

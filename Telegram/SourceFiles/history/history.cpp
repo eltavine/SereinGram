@@ -4526,7 +4526,7 @@ void History::translateOfferFrom(LanguageId id) {
 	} else if (!_translation) {
 		_translation = std::make_unique<HistoryTranslation>(this, id);
 		using Flag = PeerData::TranslationFlag;
-		if (peer->autoTranslation()
+		if ((peer->autoTranslation() || Serein::Hooks::AutoTranslate(this))
 			&& (peer->translationFlag() == Flag::Enabled)) {
 			translateTo(Core::App().settings().translateTo());
 		}

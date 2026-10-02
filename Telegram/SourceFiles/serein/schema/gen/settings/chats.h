@@ -6,6 +6,7 @@
 namespace Serein::Chats {
 
 [[nodiscard]] bool ValidChatSort(const int &value);
+[[nodiscard]] bool ValidHiddenFolderIds(const QString &value);
 [[nodiscard]] bool ValidManagedFolderIds(const QString &value);
 [[nodiscard]] bool ValidRecentChats(const QString &value);
 [[nodiscard]] bool ValidReadingPositions(const QString &value);
@@ -42,6 +43,13 @@ inline constexpr auto kHideStories = Option<bool>{
 	false,
 	Category::Chats,
 	"lng_serein_hide_stories",
+	0 };
+inline constexpr auto kSearchOwnChatsOnly = Option<bool>{
+	"serein.searchOwnChatsOnly",
+	Scope::Device,
+	false,
+	Category::Chats,
+	"lng_serein_search_own_chats_only",
 	0 };
 inline constexpr auto kStartupFolderMode = Option<int>{
 	"serein.startupFolderMode",
@@ -105,6 +113,21 @@ inline constexpr auto kChatSort = Option<int>{
 	"lng_serein_chat_sort",
 	0,
 	&ValidChatSort };
+inline constexpr auto kManagedFolderFilter = Option<bool>{
+	"serein.managedFolderFilter",
+	Scope::Device,
+	false,
+	Category::Chats,
+	"lng_serein_managed_folder_filter",
+	static_cast<unsigned>(Flag::RequiresRestart) };
+inline const auto kHiddenFolderIds = Option<QString>{
+	"serein.hiddenFolderIds",
+	Scope::Account,
+	QString(),
+	Category::Chats,
+	"lng_serein_hidden_folders",
+	0,
+	&ValidHiddenFolderIds };
 inline const auto kManagedFolderIds = Option<QString>{
 	"serein.managedFolderIds",
 	Scope::Account,
@@ -213,6 +236,7 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kPreviewLines));
 	Expects(registry.Add(kHideSavedAndArchivedPreviews));
 	Expects(registry.Add(kHideStories));
+	Expects(registry.Add(kSearchOwnChatsOnly));
 	Expects(registry.Add(kStartupFolderMode));
 	Expects(registry.Add(kStartupFolderId));
 	Expects(registry.Add(kLastOpenedFolderId));
@@ -220,6 +244,8 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kShowArchiveInFolders));
 	Expects(registry.Add(kHideFolderUnreadCounters));
 	Expects(registry.Add(kChatSort));
+	Expects(registry.Add(kManagedFolderFilter));
+	Expects(registry.Add(kHiddenFolderIds));
 	Expects(registry.Add(kManagedFolderIds));
 	Expects(registry.Add(kHideSponsoredMessages));
 	Expects(registry.Add(kHideProxySponsor));

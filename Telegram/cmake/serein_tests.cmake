@@ -1,11 +1,13 @@
 include(${CMAKE_CURRENT_LIST_DIR}/../SourceFiles/serein/schema/gen/sources.cmake)
 
 set(serein_test_sources
+    serein/tests/test_main.cpp
     serein/tests/test_lang.cpp
     serein/tests/test_options.cpp
     serein/tests/test_spacing.cpp
     serein/tests/test_services.cpp
     serein/tests/test_updates.cpp
+    serein/tests/test_stories.cpp
     serein/tests/test_stickers.cpp
     serein/tests/test_recent_chats.cpp
     serein/tests/test_mention_query.cpp
@@ -14,10 +16,20 @@ set(serein_test_sources
     serein/tests/test_local_pins.cpp
     serein/tests/test_summary.cpp
     serein/tests/test_text_replacements.cpp
+    serein/tests/test_link_inline_bots.cpp
+    serein/tests/test_login_token.cpp
+    serein/tests/test_qr_decode.cpp
     serein/tests/test_proxy_subscription.cpp
     serein/tests/test_vpn_rules.cpp
     serein/tests/test_proxy_order.cpp
+    serein/tests/test_proxy_notes.cpp
+    serein/tests/test_hidden_messages.cpp
+    serein/tests/test_batches.cpp
+    serein/tests/test_download_names.cpp
+    serein/tests/test_shown_order.cpp
+    serein/tests/test_ghost_exceptions.cpp
     serein/tests/test_persian_calendar.cpp
+    serein/tests/test_defaults.cpp
     serein/tests/test_chinese.cpp
     serein/tests/test_aliases.cpp
     serein/tests/test_sticker_catalog.cpp
@@ -28,13 +40,22 @@ set(serein_test_sources
     serein/tests/test_codec.cpp
     serein/tests/test_ghost.cpp
     serein/tests/test_cipher.cpp
+    serein/tests/test_credentials.cpp
+    serein/tests/test_halfwidth.cpp
+    serein/tests/test_text_entities.cpp
+    serein/tests/test_id_list.cpp
+    serein/tests/test_history_entities.cpp
     serein/tests/text_entity_support.cpp
     serein/adapters/openssl/aes_gcm_cipher.cpp
     serein/features/ghost/model/policy.cpp
+    serein/features/ghost/model/exceptions.cpp
+    serein/features/history/entities.cpp
+    serein/display/text_entities.cpp
     serein/features/history/media_store.cpp
     serein/features/history/model/recorder.cpp
     serein/features/updates/model/release.cpp
     serein/features/regdate/model/estimate.cpp
+    serein/features/stories/model/post.cpp
     serein/schema/codec.cpp
     serein/chats/validators.cpp
     serein/chats/recent.cpp
@@ -49,18 +70,29 @@ set(serein_test_sources
     serein/compose/mention_query.cpp
     serein/compose/spacing.cpp
     serein/compose/text_replacements.cpp
+    serein/compose/link_inline_bots.cpp
+    serein/privacy/login_token.cpp
+    serein/privacy/qr_decode.cpp
     serein/compose/validators.cpp
     serein/core/exchange.cpp
+    serein/core/id_list.cpp
     serein/interface/main_menu_model.cpp
+    serein/interface/punctuation.cpp
     serein/menu/model.cpp
+    serein/services/credentials.cpp
     serein/services/model.cpp
     serein/services/translation_protocol.cpp
     serein/services/summary_protocol.cpp
     serein/network/proxy_subscription.cpp
     serein/network/vpn_rules.cpp
     serein/network/proxy_order.cpp
+    serein/network/proxy_notes.cpp
+    serein/media/download_names.cpp
+    serein/chats/shown_order.cpp
     serein/filters/model.cpp
+    serein/filters/hidden_messages.cpp
     serein/links/model.cpp
+    serein/snapshot/rules.cpp
 )
 list(APPEND serein_test_sources ${serein_generated_sources})
 

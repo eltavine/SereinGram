@@ -12,42 +12,79 @@ message ChatsSettings {
     category: CATEGORY_CHATS
   };
 
-  optional bool chat_list_compact = 1 [
-    (serein.options.v1.field) = {
-      section: {title: "lng_serein_chat_list" id: "list" keywords: ["list", "layout"]}
-      keywords: ["compact", "list"]
-      cpp_name: "kCompactList"
-      title: "lng_serein_compact_chat_list"
-      refresh: REFRESH_DIALOG_LIST
+  optional bool chat_list_compact = 1 [(serein.options.v1.field) = {
+    section: {
+      title: "lng_serein_chat_list"
+      id: "list"
+      keywords: [
+        "list",
+        "layout"
+      ]
     }
-  ];
+    keywords: [
+      "compact",
+      "list"
+    ]
+    cpp_name: "kCompactList"
+    title: "lng_serein_compact_chat_list"
+    refresh: REFRESH_DIALOG_LIST
+  }];
   optional int32 chat_preview_lines = 2 [
     (serein.options.v1.field) = {
       cpp_name: "kPreviewLines"
       refresh: REFRESH_DIALOG_LIST
-      keywords: ["preview", "lines"]
+      keywords: [
+        "preview",
+        "lines"
+      ]
       choice: {
-        labels: ["lng_serein_preview_follow", "lng_serein_preview_one", "lng_serein_preview_two", "lng_serein_preview_three"]
+        labels: [
+          "lng_serein_preview_follow",
+          "lng_serein_preview_one",
+          "lng_serein_preview_two",
+          "lng_serein_preview_three"
+        ]
       }
     },
-    (buf.validate.field).int32 = {gte: 0, lte: 3}
-  ];
-  optional bool hide_saved_and_archived_previews = 3 [
-    (serein.options.v1.field) = {
-      keywords: ["saved", "archive", "preview"]
-      refresh: REFRESH_DIALOG_LIST
+    (buf.validate.field).int32 = {
+      gte: 0
+      lte: 3
     }
   ];
+  optional bool hide_saved_and_archived_previews = 3 [(serein.options.v1.field) = {
+    keywords: [
+      "saved",
+      "archive",
+      "preview"
+    ]
+    refresh: REFRESH_DIALOG_LIST
+  }];
   optional bool hide_stories = 4 [(serein.options.v1.field) = {
     keywords: ["stories"]
   }];
+  optional bool search_own_chats_only = 28 [(serein.options.v1.field) = {
+    keywords: [
+      "search",
+      "global",
+      "public",
+      "privacy"
+    ]
+    note: "lng_serein_search_own_chats_only_note"
+  }];
   optional int32 startup_folder_mode = 8 [
     (serein.options.v1.field) = {
-      section: {title: "lng_serein_folders" id: "folders" keywords: ["folders"]}
+      section: {
+        title: "lng_serein_folders"
+        id: "folders"
+        keywords: ["folders"]
+      }
       title: "lng_serein_startup_folder"
       scope: SCOPE_ACCOUNT
     },
-    (buf.validate.field).int32 = {gte: 0, lte: 2}
+    (buf.validate.field).int32 = {
+      gte: 0
+      lte: 2
+    }
   ];
   optional int32 startup_folder_id = 9 [
     (serein.options.v1.field) = {
@@ -66,92 +103,169 @@ message ChatsSettings {
     (buf.validate.field).int32 = {gte: 0}
   ];
   optional bool hide_all_chats_folder = 5 [(serein.options.v1.field) = {
-    keywords: ["all chats", "folders"]
+    keywords: [
+      "all chats",
+      "folders"
+    ]
   }];
-  optional bool show_archive_in_folders = 6 [
-    (serein.options.v1.field) = {
-      keywords: ["archive", "folders"]
-      refresh: REFRESH_DIALOG_LIST
-    }
-  ];
+  optional bool show_archive_in_folders = 6 [(serein.options.v1.field) = {
+    keywords: [
+      "archive",
+      "folders"
+    ]
+    refresh: REFRESH_DIALOG_LIST
+  }];
   optional bool hide_folder_unread_counters = 7 [(serein.options.v1.field) = {
-    keywords: ["unread", "folders"]
+    keywords: [
+      "unread",
+      "folders"
+    ]
   }];
-  optional int32 chat_sort = 11 [
-    (serein.options.v1.field) = {
-      section: {title: "lng_serein_sorting" id: "sorting" keywords: ["sort", "order"]}
-      validator: "ValidChatSort"
+  optional int32 chat_sort = 11 [(serein.options.v1.field) = {
+    section: {
+      title: "lng_serein_sorting"
+      id: "sorting"
+      keywords: [
+        "sort",
+        "order"
+      ]
     }
-  ];
-  optional string managed_folder_ids = 12 [
-    (serein.options.v1.field) = {
-      hidden: true
-      title: "lng_serein_managed_only"
-      scope: SCOPE_ACCOUNT
-      validator: "ValidManagedFolderIds"
-    }
-  ];
+    validator: "ValidChatSort"
+  }];
+  optional bool managed_folder_filter = 26 [(serein.options.v1.field) = {
+    keywords: [
+      "folder",
+      "admin",
+      "manage",
+      "groups",
+      "channels"
+    ]
+    note: "lng_serein_managed_folder_filter_note"
+    restart: true
+  }];
+  optional string hidden_folder_ids = 27 [(serein.options.v1.field) = {
+    title: "lng_serein_hidden_folders"
+    keywords: [
+      "folder",
+      "hide",
+      "tabs",
+      "sidebar"
+    ]
+    scope: SCOPE_ACCOUNT
+    custom_ui: true
+    validator: "ValidHiddenFolderIds"
+  }];
+  optional string managed_folder_ids = 12 [(serein.options.v1.field) = {
+    hidden: true
+    title: "lng_serein_managed_only"
+    scope: SCOPE_ACCOUNT
+    validator: "ValidManagedFolderIds"
+  }];
   optional bool hide_sponsored_messages = 13 [(serein.options.v1.field) = {
-    section: {title: "lng_serein_promotions" id: "promotions" keywords: ["promotions", "ads"]}
-    keywords: ["sponsored", "search ads"]
+    section: {
+      title: "lng_serein_promotions"
+      id: "promotions"
+      keywords: [
+        "promotions",
+        "ads"
+      ]
+    }
+    keywords: [
+      "sponsored",
+      "search ads"
+    ]
   }];
   optional bool hide_proxy_sponsor = 14 [(serein.options.v1.field) = {
-    keywords: ["proxy", "sponsored channel"]
+    keywords: [
+      "proxy",
+      "sponsored channel"
+    ]
   }];
   optional bool hide_premium_promotions = 15 [(serein.options.v1.field) = {
-    keywords: ["Premium", "promotions"]
+    keywords: [
+      "Premium",
+      "promotions"
+    ]
   }];
   optional bool hide_birthday_suggestions = 16 [(serein.options.v1.field) = {
-    keywords: ["birthday", "suggestion"]
+    keywords: [
+      "birthday",
+      "suggestion"
+    ]
   }];
   optional bool disable_scroll_to_next_channel = 17 [(serein.options.v1.field) = {
-    section: {title: "lng_serein_scroll_navigation" id: "scroll-navigation" keywords: ["scroll", "navigation"]}
-    keywords: ["scroll", "channel"]
+    section: {
+      title: "lng_serein_scroll_navigation"
+      id: "scroll-navigation"
+      keywords: [
+        "scroll",
+        "navigation"
+      ]
+    }
+    keywords: [
+      "scroll",
+      "channel"
+    ]
   }];
   optional bool disable_scroll_to_next_topic = 18 [(serein.options.v1.field) = {
-    keywords: ["scroll", "topic"]
+    keywords: [
+      "scroll",
+      "topic"
+    ]
   }];
   optional bool remember_reading_position = 20 [(serein.options.v1.field) = {
-    keywords: ["scroll", "position", "resume"]
+    keywords: [
+      "scroll",
+      "position",
+      "resume"
+    ]
     note: "lng_serein_remember_reading_position_note"
   }];
   optional bool chat_quick_actions = 22 [(serein.options.v1.field) = {
-    keywords: ["toolbar", "search", "media", "pinned"]
+    keywords: [
+      "toolbar",
+      "search",
+      "media",
+      "pinned"
+    ]
     note: "lng_serein_chat_quick_actions_note"
   }];
   optional bool management_shortcuts = 23 [(serein.options.v1.field) = {
-    keywords: ["admin", "members", "recent actions", "group"]
+    keywords: [
+      "admin",
+      "members",
+      "recent actions",
+      "group"
+    ]
     note: "lng_serein_management_shortcuts_note"
   }];
   optional bool local_pinning = 24 [(serein.options.v1.field) = {
-    keywords: ["pin", "top", "local"]
+    keywords: [
+      "pin",
+      "top",
+      "local"
+    ]
     note: "lng_serein_local_pinning_note"
   }];
   // Serialized peer ids of recently opened chats, newest first.
-  optional string recent_chats = 19 [
-    (serein.options.v1.field) = {
-      hidden: true
-      title: "lng_serein_recent_chats"
-      scope: SCOPE_ACCOUNT
-      validator: "ValidRecentChats"
-    }
-  ];
+  optional string recent_chats = 19 [(serein.options.v1.field) = {
+    hidden: true
+    title: "lng_serein_recent_chats"
+    scope: SCOPE_ACCOUNT
+    validator: "ValidRecentChats"
+  }];
   // Serialized peer:message pairs of saved reading positions, newest first.
-  optional string reading_positions = 21 [
-    (serein.options.v1.field) = {
-      hidden: true
-      title: "lng_serein_reading_positions"
-      scope: SCOPE_ACCOUNT
-      validator: "ValidReadingPositions"
-    }
-  ];
+  optional string reading_positions = 21 [(serein.options.v1.field) = {
+    hidden: true
+    title: "lng_serein_reading_positions"
+    scope: SCOPE_ACCOUNT
+    validator: "ValidReadingPositions"
+  }];
   // Serialized peer ids of locally pinned chats, in pin order.
-  optional string local_pins = 25 [
-    (serein.options.v1.field) = {
-      hidden: true
-      title: "lng_serein_local_pins"
-      scope: SCOPE_ACCOUNT
-      validator: "ValidLocalPins"
-    }
-  ];
+  optional string local_pins = 25 [(serein.options.v1.field) = {
+    hidden: true
+    title: "lng_serein_local_pins"
+    scope: SCOPE_ACCOUNT
+    validator: "ValidLocalPins"
+  }];
 }

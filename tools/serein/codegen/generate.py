@@ -16,7 +16,6 @@ import tempfile
 from pathlib import Path
 
 import jinja2
-
 from codec_model import build_files
 from model import SchemaError, build_pages, check_titles
 
@@ -37,15 +36,12 @@ STRINGS = (
 def build_image():
     with tempfile.TemporaryDirectory() as temp:
         image = Path(temp) / "image.json"
-        subprocess.run(["buf", "build", str(PROTO), "-o", str(image)],
-                       check=True, cwd=ROOT)
+        subprocess.run(["buf", "build", str(PROTO), "-o", str(image)], check=True, cwd=ROOT)
         return json.loads(image.read_text(encoding="utf-8"))
 
 
 def cmake_list(name, sources):
-    return (f"set({name}\n"
-            + "".join(f"    {source}\n" for source in sorted(sources))
-            + ")\n")
+    return f"set({name}\n" + "".join(f"    {source}\n" for source in sorted(sources)) + ")\n"
 
 
 def string_keys():
@@ -53,7 +49,7 @@ def string_keys():
     for path in STRINGS:
         for line in path.read_text(encoding="utf-8").splitlines():
             if line.startswith('"lng_'):
-                keys.add(line[1:line.index('"', 1)].split("#")[0])
+                keys.add(line[1 : line.index('"', 1)].split("#")[0])
     return keys
 
 
@@ -71,8 +67,7 @@ def render(image, known_strings=None):
     rows = environment.get_template("settings_rows.h.j2")
     pages = build_pages(image)
     check_titles(pages, string_keys() if known_strings is None else known_strings)
-    outputs = {f"{SCHEMA}/{page.header}": settings.render(page=page)
-               for page in pages}
+    outputs = {f"{SCHEMA}/{page.header}": settings.render(page=page) for page in pages}
     hook_header = environment.get_template("hooks.h.j2")
     hook_source = environment.get_template("hooks.cpp.j2")
     sources = []
@@ -87,34 +82,45 @@ def render(image, known_strings=None):
         outputs[f"{SCHEMA}/{file.header}"] = header.render(file=file)
         outputs[f"{SCHEMA}/{file.implementation}"] = implementation.render(file=file)
         sources.append(f"serein/{SCHEMA}/{file.implementation}")
-    outputs[SOURCES] = (cmake_list("serein_generated_sources", sources)
-                        + cmake_list("serein_generated_hook_sources", hooks))
+    outputs[SOURCES] = cmake_list("serein_generated_sources", sources) + cmake_list(
+        "serein_generated_hook_sources", hooks
+    )
     return outputs
 
 
 def existing_files():
-    return {path.relative_to(OUTPUT).as_posix()
-            for folder in (SCHEMA, ROWS, HOOKS) if (OUTPUT / folder).exists()
-            for path in (OUTPUT / folder).rglob("*") if path.is_file()}
+    return {
+        path.relative_to(OUTPUT).as_posix()
+        for folder in (SCHEMA, ROWS, HOOKS)
+        if (OUTPUT / folder).exists()
+        for path in (OUTPUT / folder).rglob("*")
+        if path.is_file()
+    }
 
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--check", action="store_true",
-                        help="fail if the committed output is stale")
+    parser.add_argument(
+        "--check", action="store_true", help="fail if the committed output is stale"
+    )
     parser.add_argument("--image", help="use a prebuilt Buf JSON image")
     args = parser.parse_args(argv)
     try:
-        image = (json.loads(Path(args.image).read_text(encoding="utf-8"))
-                 if args.image else build_image())
+        image = (
+            json.loads(Path(args.image).read_text(encoding="utf-8"))
+            if args.image
+            else build_image()
+        )
         outputs = render(image)
     except (SchemaError, subprocess.CalledProcessError, OSError) as error:
         print(f"generation failed: {error}", file=sys.stderr)
         return 2
     stale = sorted(existing_files() - set(outputs))
-    changed = sorted(name for name, text in outputs.items()
-                     if not (OUTPUT / name).exists()
-                     or (OUTPUT / name).read_text(encoding="utf-8") != text)
+    changed = sorted(
+        name
+        for name, text in outputs.items()
+        if not (OUTPUT / name).exists() or (OUTPUT / name).read_text(encoding="utf-8") != text
+    )
     if args.check:
         for name in changed + stale:
             print(f"out of date: {OUTPUT.relative_to(ROOT) / name}")

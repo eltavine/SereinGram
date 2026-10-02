@@ -1,5 +1,6 @@
 #include "serein/snapshot/snapshot.h"
 #include "serein/hooks/menu/actions.h"
+#include "serein/interface/reply_colors.h"
 
 #include "core/application.h"
 #include "serein/core/options.h"
@@ -12,8 +13,6 @@
 #include "history/view/history_view_element.h"
 #include "lang/lang_keys.h"
 #include "main/main_session.h"
-
-
 #include "ui/chat/chat_style.h"
 #include "ui/chat/chat_theme.h"
 #include "ui/layers/generic_box.h"
@@ -88,10 +87,7 @@ void SnapshotBox(
 		MessageIdsList ids) {
 	box->setTitle(tr::lng_serein_snapshot());
 
-	const auto bytes = ForDevice().Get(kSettings);
-	const auto parsed = bytes.isEmpty()
-		? std::make_optional(Defaults())
-		: ParseSnapshotConfig(bytes);
+	const auto parsed = ReadStored(ForDevice().Get(kSettings));
 	if (!parsed) {
 		box->addRow(object_ptr<Ui::FlatLabel>(box,
 			tr::lng_serein_snapshot_unavailable(), st::boxLabel));
@@ -137,6 +133,7 @@ void SnapshotBox(
 		std::pair(&SnapshotConfig::date, tr::lng_serein_snapshot_date(tr::now)),
 		std::pair(&SnapshotConfig::headers, tr::lng_serein_snapshot_headers(tr::now)),
 		std::pair(&SnapshotConfig::reactions, tr::lng_serein_snapshot_reactions(tr::now)),
+		std::pair(&SnapshotConfig::simpleReplies, tr::lng_serein_snapshot_simple_replies(tr::now)),
 		std::pair(&SnapshotConfig::builtinTheme, tr::lng_serein_snapshot_builtin(tr::now)),
 	}) {
 		const auto toggle = box->addRow(object_ptr<Ui::Checkbox>(
@@ -209,16 +206,6 @@ void SnapshotBox(
 
 } // namespace
 
-SnapshotConfig Defaults() {
-	return {
-		.background = true,
-		.date = true,
-		.headers = true,
-		.reactions = true,
-		.builtinTheme = false,
-	};
-}
-
 std::variant<QImage, QString> Render(
 		not_null<Window::SessionController*> controller,
 		const MessageIdsList &ids,
@@ -229,6 +216,7 @@ std::variant<QImage, QString> Render(
 	} else if (ids.size() > kMaximumMessages) {
 		return tr::lng_serein_snapshot_limit(tr::now);
 	}
+	const auto replies = Interface::ThemeReplyColorsScope(options.simpleReplies);
 	auto delegate = SnapshotDelegate(controller,
 		options.reactions, revealSpoilers);
 	auto palette = style::palette();

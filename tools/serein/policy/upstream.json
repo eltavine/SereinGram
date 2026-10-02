@@ -1,11 +1,10 @@
 {
   "schema_version": 1,
   "upstream": "https://github.com/telegramdesktop/tdesktop.git#dev",
-  "base": "0b4a7faa9d99ba24ab4f3624cd3d7a5d38cc1ef8",
+  "base": "d8594c011756265de4385408540bd9f7c787a003",
   "source_root": "Telegram/SourceFiles/",
   "owned_extra": [
     "docs/serein/",
-    "docs/nagram/",
     "Telegram/Resources/langs/serein/",
     "Telegram/Resources/branding/",
     "Telegram/Resources/qrc/serein.qrc",
@@ -13,7 +12,13 @@
     "BRANDING.md",
     "Telegram/Resources/qrc/serein_opencc.qrc",
     "Telegram/ThirdParty/OpenCC",
-    "Telegram/Resources/serein/"
+    "Telegram/Resources/serein/",
+    "crowdin.yml",
+    "packaging/",
+    "Telegram/ThirdParty/doctest",
+    "flake.nix",
+    "flake.lock",
+    "Telegram/ThirdParty/quirc"
   ],
   "own_include_prefixes": [
     "serein/"
@@ -21,11 +26,13 @@
   "hook_include_prefixes": [
     "serein/hooks/"
   ],
+  "submodule_overrides": [],
   "budget": {
-    "all_files": 212,
-    "all_added_lines": 1616,
-    "source_files": 142,
-    "source_added_lines": 1386,
-    "direct_include_files": 0
+    "all_files": 230,
+    "all_added_lines": 1664,
+    "source_files": 161,
+    "source_added_lines": 1439,
+    "direct_include_files": 0,
+    "upstream_headers": 145
   }
 }

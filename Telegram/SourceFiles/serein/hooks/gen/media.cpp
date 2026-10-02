@@ -22,6 +22,14 @@ rpl::producer<bool> HideStickerTimeValue() {
 	return ForDevice().Value(Serein::Media::kHideStickerTime);
 }
 
+bool RoundedStickers() {
+	return ForDevice().Get(Serein::Media::kRoundedStickers);
+}
+
+rpl::producer<bool> RoundedStickersValue() {
+	return ForDevice().Value(Serein::Media::kRoundedStickers);
+}
+
 int RecentStickerLimit() {
 	return ForDevice().Get(Serein::Media::kRecentStickerLimit);
 }
@@ -70,6 +78,22 @@ rpl::producer<bool> HideGreetingStickerValue() {
 	return ForDevice().Value(Serein::Media::kHideGreetingSticker);
 }
 
+bool StickerPackAuthor() {
+	return ForDevice().Get(Serein::Media::kStickerPackAuthor);
+}
+
+rpl::producer<bool> StickerPackAuthorValue() {
+	return ForDevice().Value(Serein::Media::kStickerPackAuthor);
+}
+
+QString StickerAuthorBot() {
+	return ForDevice().Get(Serein::Media::kStickerAuthorBot);
+}
+
+rpl::producer<QString> StickerAuthorBotValue() {
+	return ForDevice().Value(Serein::Media::kStickerAuthorBot);
+}
+
 bool DisableVideoAutoplay() {
 	return ForDevice().Get(Serein::Media::kDisableVideoAutoplay);
 }
@@ -86,12 +110,44 @@ rpl::producer<bool> GifPlaybackControlsValue() {
 	return ForDevice().Value(Serein::Media::kGifPlaybackControls);
 }
 
+bool ForceClickPreview() {
+	return ForDevice().Get(Serein::Media::kForceClickPreview);
+}
+
+rpl::producer<bool> ForceClickPreviewValue() {
+	return ForDevice().Value(Serein::Media::kForceClickPreview);
+}
+
+bool DownloadsPerChat() {
+	return ForDevice().Get(Serein::Media::kDownloadsPerChat);
+}
+
+rpl::producer<bool> DownloadsPerChatValue() {
+	return ForDevice().Value(Serein::Media::kDownloadsPerChat);
+}
+
 bool Mp4FilePreview() {
 	return ForDevice().Get(Serein::Media::kMp4FilePreview);
 }
 
 rpl::producer<bool> Mp4FilePreviewValue() {
 	return ForDevice().Value(Serein::Media::kMp4FilePreview);
+}
+
+bool DenoiseVoiceMessages() {
+	return ForDevice().Get(Serein::Media::kDenoiseVoiceMessages);
+}
+
+rpl::producer<bool> DenoiseVoiceMessagesValue() {
+	return ForDevice().Value(Serein::Media::kDenoiseVoiceMessages);
+}
+
+bool StoryPosting() {
+	return ForDevice().Get(Serein::Media::kStoryPosting);
+}
+
+rpl::producer<bool> StoryPostingValue() {
+	return ForDevice().Value(Serein::Media::kStoryPosting);
 }
 
 } // namespace Serein::Hooks::Media

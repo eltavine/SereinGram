@@ -3,6 +3,9 @@
 
 Every metric is compared with the recorded upstream base commit. Budgets
 only ratchet down: lower them in the policy as hooks are consolidated.
+The upstream_headers metric counts the distinct upstream application
+headers that SereinGram sources include, which bounds the code an upstream
+API change can break.
 """
 
 import argparse
@@ -12,20 +15,32 @@ import subprocess
 import sys
 from pathlib import Path
 
-from check_file_size import PolicyError, is_owned, load_policy as load_owned_policy
+from check_file_size import PolicyError, is_owned, list_files
+from check_file_size import load_policy as load_owned_policy
 
 HERE = Path(__file__).resolve().parent
 DEFAULT_POLICY = HERE / "policy" / "upstream.json"
 DEFAULT_OWNED_POLICY = HERE / "policy" / "file_size.json"
 POLICY_KEYS = {
-    "schema_version", "upstream", "base", "source_root", "owned_extra",
-    "own_include_prefixes", "hook_include_prefixes", "budget",
+    "schema_version",
+    "upstream",
+    "base",
+    "source_root",
+    "owned_extra",
+    "own_include_prefixes",
+    "hook_include_prefixes",
+    "submodule_overrides",
+    "budget",
 }
 BUDGET_KEYS = (
-    "all_files", "all_added_lines",
-    "source_files", "source_added_lines",
+    "all_files",
+    "all_added_lines",
+    "source_files",
+    "source_added_lines",
     "direct_include_files",
+    "upstream_headers",
 )
+SOURCES = (".h", ".hpp", ".cpp", ".mm", ".m")
 INCLUDE = re.compile(r'^\s*#\s*include\s+"([^"]+)"', re.MULTILINE)
 
 
@@ -47,10 +62,16 @@ def load_policy(path):
         value = budget[key]
         if not isinstance(value, int) or isinstance(value, bool) or value < 0:
             raise PolicyError(f"budget.{key} must be a non-negative integer")
-    for key in ("owned_extra", "own_include_prefixes", "hook_include_prefixes"):
+    for key in (
+        "owned_extra",
+        "own_include_prefixes",
+        "hook_include_prefixes",
+        "submodule_overrides",
+    ):
         values = policy[key]
         if not isinstance(values, list) or not all(
-                isinstance(value, str) and value for value in values):
+            isinstance(value, str) and value for value in values
+        ):
             raise PolicyError(f"{key} must be a list of non-empty strings")
     return policy
 
@@ -58,10 +79,41 @@ def load_policy(path):
 def changed_files(root, base):
     output = subprocess.run(
         ["git", "diff", "--numstat", "--no-renames", "-z", base, "--"],
-        cwd=root, capture_output=True, check=True).stdout.decode("utf-8")
+        cwd=root,
+        capture_output=True,
+        check=True,
+    ).stdout.decode("utf-8")
     for record in filter(None, output.split("\0")):
         added, _deleted, path = record.split("\t", 2)
         yield path, 0 if added == "-" else int(added)
+
+
+def gitlinks(output, sha_field):
+    result = {}
+    for line in filter(None, output.split("\n")):
+        meta, path = line.split("\t", 1)
+        fields = meta.split()
+        if fields[0] == "160000":
+            result[path] = fields[sha_field]
+    return result
+
+
+def submodule_mismatches(root, policy):
+    def run(*args):
+        return subprocess.run(
+            ["git", *args],
+            cwd=root,
+            capture_output=True,
+            check=True,
+        ).stdout.decode("utf-8")
+
+    upstream = gitlinks(run("ls-tree", "-r", policy["base"]), 2)
+    staged = gitlinks(run("ls-files", "-s"), 1)
+    return sorted(
+        (path, staged[path], sha)
+        for path, sha in upstream.items()
+        if path in staged and staged[path] != sha and path not in policy["submodule_overrides"]
+    )
 
 
 def includes_own_header(path, policy):
@@ -75,6 +127,24 @@ def includes_own_header(path, policy):
         if own and not hook:
             return True
     return False
+
+
+def upstream_headers(root, policy):
+    root = Path(root)
+    source_root = policy["source_root"]
+    own = tuple(policy["own_include_prefixes"])
+    owned = tuple(source_root + prefix for prefix in own)
+    result = set()
+    for name in list_files(root):
+        path = root / name
+        if not name.startswith(owned) or not name.endswith(SOURCES) or "/tests/" in name:
+            continue
+        if not path.is_file():
+            continue
+        for include in INCLUDE.findall(path.read_text(encoding="utf-8", errors="replace")):
+            if not include.startswith(own) and (root / source_root / include).is_file():
+                result.add(include)
+    return sorted(result)
 
 
 def measure(root, policy, owned):
@@ -93,6 +163,7 @@ def measure(root, policy, owned):
         if includes_own_header(Path(root) / path, policy):
             metrics["direct_include_files"] += 1
             offenders.append(path)
+    metrics["upstream_headers"] = len(upstream_headers(root, policy))
     return metrics, sorted(offenders)
 
 
@@ -101,13 +172,18 @@ def main(argv=None):
     parser.add_argument("--root", default=HERE.parents[1])
     parser.add_argument("--policy", default=DEFAULT_POLICY)
     parser.add_argument("--owned-policy", default=DEFAULT_OWNED_POLICY)
-    parser.add_argument("--list", action="store_true",
-                        help="list upstream files that include non-hook headers")
+    parser.add_argument(
+        "--list", action="store_true", help="list upstream files that include non-hook headers"
+    )
+    parser.add_argument(
+        "--headers", action="store_true", help="list upstream headers that SereinGram includes"
+    )
     args = parser.parse_args(argv)
     try:
         policy = load_policy(args.policy)
         owned = load_owned_policy(args.owned_policy)["owned"]
         metrics, offenders = measure(args.root, policy, owned)
+        mismatches = submodule_mismatches(args.root, policy)
     except PolicyError as error:
         print(error, file=sys.stderr)
         return 2
@@ -124,10 +200,18 @@ def main(argv=None):
     if args.list:
         for path in offenders:
             print(f"direct include: {path}")
+    if args.headers:
+        for header in upstream_headers(args.root, policy):
+            print(f"upstream header: {header}")
+    for path, current, upstream in mismatches:
+        print(
+            f"Submodule {path} is staged at {current[:10]} but the upstream "
+            f"base has {upstream[:10]}; run 'git submodule update {path}' "
+            "or list it in submodule_overrides."
+        )
     if exceeded:
         print(f"Upstream intrusion over budget: {', '.join(exceeded)}.")
-        return 1
-    return 0
+    return 1 if (exceeded or mismatches) else 0
 
 
 if __name__ == "__main__":

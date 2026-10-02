@@ -18,6 +18,7 @@ bool Read(
 			QLatin1StringView("headers"),
 			QLatin1StringView("reactions"),
 			QLatin1StringView("builtinTheme"),
+			QLatin1StringView("simpleReplies"),
 		}, error, path)) {
 		return false;
 	} else if (!Codec::RequiredKeys(object, {
@@ -26,6 +27,7 @@ bool Read(
 			QLatin1StringView("headers"),
 			QLatin1StringView("reactions"),
 			QLatin1StringView("builtinTheme"),
+			QLatin1StringView("simpleReplies"),
 		}, error, path)) {
 		return false;
 	}
@@ -35,7 +37,8 @@ bool Read(
 		&& Codec::ReadField(object, QLatin1StringView("date"), result.date, error, path)
 		&& Codec::ReadField(object, QLatin1StringView("headers"), result.headers, error, path)
 		&& Codec::ReadField(object, QLatin1StringView("reactions"), result.reactions, error, path)
-		&& Codec::ReadField(object, QLatin1StringView("builtinTheme"), result.builtinTheme, error, path);
+		&& Codec::ReadField(object, QLatin1StringView("builtinTheme"), result.builtinTheme, error, path)
+		&& Codec::ReadField(object, QLatin1StringView("simpleReplies"), result.simpleReplies, error, path);
 }
 
 QJsonValue Write(const SnapshotConfig &value) {
@@ -45,6 +48,7 @@ QJsonValue Write(const SnapshotConfig &value) {
 	Codec::WriteField(object, QLatin1StringView("headers"), value.headers);
 	Codec::WriteField(object, QLatin1StringView("reactions"), value.reactions);
 	Codec::WriteField(object, QLatin1StringView("builtinTheme"), value.builtinTheme);
+	Codec::WriteField(object, QLatin1StringView("simpleReplies"), value.simpleReplies);
 	return object;
 }
 
@@ -63,7 +67,7 @@ std::optional<SnapshotConfig> ParseSnapshotConfig(
 	auto object = Codec::ParseObject(raw, out);
 	if (!object) {
 		return std::nullopt;
-	} else if (object->value(QLatin1StringView("version")) != QJsonValue(1)) {
+	} else if (object->value(QLatin1StringView("version")) != QJsonValue(2)) {
 		Codec::Fail(out, QString::fromLatin1("version"), QString::fromLatin1("unsupported version"));
 		return std::nullopt;
 	}
@@ -77,7 +81,7 @@ std::optional<SnapshotConfig> ParseSnapshotConfig(
 
 QByteArray SerializeSnapshotConfig(const SnapshotConfig &value) {
 	auto object = Write(value).toObject();
-	object.insert(QLatin1StringView("version"), 1);
+	object.insert(QLatin1StringView("version"), 2);
 	return Codec::Serialize(object);
 }
 

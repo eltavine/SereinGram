@@ -1,0 +1,104 @@
+name: Serein upstream sync.
+
+on:
+  schedule:
+    - cron: '0 4 * * 1'
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: Telegram Desktop tag or branch to merge.
+        default: dev
+
+concurrency:
+  group: serein-upstream
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+
+  sync:
+    name: Sync Telegram Desktop
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: write
+
+    steps:
+      - name: Clone.
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+          ref: develop
+          fetch-depth: 0
+
+      - name: Skip while a sync is under review.
+        id: open
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          open=$(gh pr list --state open --json headRefName \
+            --jq '[.[] | select(.headRefName | startswith("sync/"))] | length')
+          echo "pending=$([ "$open" -gt 0 ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+
+      - name: Merge the upstream reference.
+        id: sync
+        if: steps.open.outputs.pending == 'false'
+        env:
+          REF: ${{ inputs.ref || 'dev' }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          base=$(python3 -c 'import json; print(json.load(open("tools/serein/policy/upstream.json"))["base"])')
+          set +e
+          python3 tools/serein/upstream_sync.py "$REF" 2>&1 | tee "$RUNNER_TEMP/sync.log"
+          code=${PIPESTATUS[0]}
+          set -e
+          if [ "$code" -eq 2 ] && grep -q "the baseline already is" "$RUNNER_TEMP/sync.log"; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if [ "$code" -ne 0 ]; then
+            echo "::error::The merge needs manual conflict resolution; see the grouped files above."
+            exit "$code"
+          fi
+          {
+            echo "changed=true"
+            echo "base=$base"
+            echo "branch=$(git branch --show-current)"
+            echo "commit=$(git rev-parse HEAD^2)"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Open the pull request and start its checks.
+        if: steps.sync.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REF: ${{ inputs.ref || 'dev' }}
+          BASE: ${{ steps.sync.outputs.base }}
+          BRANCH: ${{ steps.sync.outputs.branch }}
+          COMMIT: ${{ steps.sync.outputs.commit }}
+        run: |
+          if git ls-remote --exit-code origin "refs/heads/$BRANCH" >/dev/null; then
+            echo "::notice::$BRANCH already exists."
+            exit 0
+          fi
+          git push "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" \
+            "HEAD:refs/heads/$BRANCH"
+          count=$(git rev-list --count "$BASE..$COMMIT")
+          {
+            echo "Merges Telegram Desktop \`$REF\` (${COMMIT::10}, $count commits since ${BASE::10}) into SereinGram."
+            echo
+            echo "Upstream commits:"
+            echo
+            git log --no-merges --format='- %s' "$BASE..$COMMIT" | head -100
+          } > "$RUNNER_TEMP/body.md"
+          gh pr create --base develop --head "$BRANCH" \
+            --title "chore(upstream): merge Telegram Desktop $REF ${COMMIT::10}" \
+            --body-file "$RUNNER_TEMP/body.md"
+          # Pull requests opened with this token start no workflows by themselves.
+          gh workflow run serein-guards.yml --ref "$BRANCH"
+          gh workflow run serein-linux.yml --ref "$BRANCH" -f arch=x86_64 -f config=Debug
+          gh workflow run serein-win.yml --ref "$BRANCH" -f arch=x64 -f config=Debug
+          gh workflow run serein-mac.yml --ref "$BRANCH" -f config=Debug

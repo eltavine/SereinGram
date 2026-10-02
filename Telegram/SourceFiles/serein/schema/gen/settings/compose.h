@@ -8,6 +8,7 @@ namespace Serein::Compose {
 
 [[nodiscard]] bool ValidQuickReplies(const QByteArray &value);
 [[nodiscard]] bool ValidTextReplacementsBytes(const QByteArray &value);
+[[nodiscard]] bool ValidLinkInlineBotsBytes(const QByteArray &value);
 
 inline constexpr auto kHideAttachButton = Option<bool>{
 	"serein.hideAttachButton",
@@ -153,6 +154,38 @@ inline constexpr auto kMentionMenu = Option<bool>{
 	Category::Compose,
 	"lng_serein_mention_menu",
 	0 };
+inline constexpr auto kRememberForwardOptions = Option<bool>{
+	"serein.rememberForwardOptions",
+	Scope::Device,
+	false,
+	Category::Compose,
+	"lng_serein_remember_forward_options",
+	0 };
+inline constexpr auto kLastForwardOptions = Option<int>{
+	"serein.lastForwardOptions",
+	Scope::Device,
+	0,
+	Category::Compose,
+	"lng_serein_remember_forward_options",
+	static_cast<unsigned>(Flag::Hidden),
+	[](const int &value) {
+		return (value == 0)
+			|| (((value == 0 || value == 1 || value == 2)));
+	} };
+inline constexpr auto kCaptionAboveMedia = Option<bool>{
+	"serein.captionAboveMedia",
+	Scope::Device,
+	false,
+	Category::Compose,
+	"lng_serein_caption_above_media",
+	0 };
+inline constexpr auto kDraftTranslation = Option<bool>{
+	"serein.draftTranslation",
+	Scope::Device,
+	false,
+	Category::Compose,
+	"lng_serein_draft_translation",
+	0 };
 inline constexpr auto kFormatToolbar = Option<bool>{
 	"serein.formatToolbar",
 	Scope::Device,
@@ -187,6 +220,14 @@ inline const auto kTextReplacements = Option<QByteArray>{
 	"lng_serein_text_replacements",
 	0,
 	&ValidTextReplacementsBytes };
+inline const auto kLinkInlineBots = Option<QByteArray>{
+	"serein.linkInlineBots",
+	Scope::Device,
+	QByteArray(),
+	Category::Compose,
+	"lng_serein_link_inline_bots",
+	0,
+	&ValidLinkInlineBotsBytes };
 inline constexpr auto kConfirmSticker = Option<bool>{
 	"serein.confirmSticker",
 	Scope::Device,
@@ -236,6 +277,13 @@ inline constexpr auto kSendSilently = Option<bool>{
 	Category::Compose,
 	"lng_serein_send_silently",
 	0 };
+inline constexpr auto kOwnerSendAs = Option<bool>{
+	"serein.ownerSendAs",
+	Scope::Device,
+	false,
+	Category::Compose,
+	"lng_serein_owner_send_as",
+	static_cast<unsigned>(Flag::RefreshComposeButtons) };
 
 inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kHideAttachButton));
@@ -258,10 +306,15 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kSpaceOnSend));
 	Expects(registry.Add(kSpaceOnEdit));
 	Expects(registry.Add(kMentionMenu));
+	Expects(registry.Add(kRememberForwardOptions));
+	Expects(registry.Add(kLastForwardOptions));
+	Expects(registry.Add(kCaptionAboveMedia));
+	Expects(registry.Add(kDraftTranslation));
 	Expects(registry.Add(kFormatToolbar));
 	Expects(registry.Add(kDefaultCodeLanguage));
 	Expects(registry.Add(kQuickReplies));
 	Expects(registry.Add(kTextReplacements));
+	Expects(registry.Add(kLinkInlineBots));
 	Expects(registry.Add(kConfirmSticker));
 	Expects(registry.Add(kConfirmGif));
 	Expects(registry.Add(kPreviewVoice));
@@ -269,6 +322,7 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kConfirmPrivateCall));
 	Expects(registry.Add(kForwardBeforeComment));
 	Expects(registry.Add(kSendSilently));
+	Expects(registry.Add(kOwnerSendAs));
 }
 
 } // namespace Serein::Compose

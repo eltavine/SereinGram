@@ -28,6 +28,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "core/application.h"
 #include "core/mime_type.h"
 #include "media/media_video_encode.h"
+#include "serein/hooks/network/transfer.h"
 #include "main/main_session.h"
 #include "storage/storage_account.h"
 #include "apiwrap.h"
@@ -797,7 +798,8 @@ auto Uploader::sendDocPart(not_null<Entry*> entry, uchar dcIndex)
 	const auto itemId = entry->itemId;
 	const auto alreadySent = _sentPerDcIndex[dcIndex];
 	const auto willProbablyBeSent = entry->docPartSize;
-	if (alreadySent + willProbablyBeSent > kMaxUploadPerSession) {
+	if (alreadySent + willProbablyBeSent
+		> Serein::Network::UploadSessionWindow(kMaxUploadPerSession)) {
 		return SendResult::DcIndexFull;
 	}
 
@@ -843,7 +845,8 @@ auto Uploader::sendSlicedPart(not_null<Entry*> entry, uchar dcIndex)
 	const auto itemId = entry->itemId;
 	const auto alreadySent = _sentPerDcIndex[dcIndex];
 	const auto willBeSent = entry->parts->at(entry->partsSent).size();
-	if (alreadySent + willBeSent >= kMaxUploadPerSession) {
+	if (alreadySent + willBeSent
+		>= Serein::Network::UploadSessionWindow(kMaxUploadPerSession)) {
 		return SendResult::DcIndexFull;
 	}
 

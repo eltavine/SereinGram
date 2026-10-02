@@ -3,6 +3,7 @@
 #include "serein/settings/home.h"
 #include "serein/filters/settings.h"
 #include "serein/links/settings.h"
+#include "serein/settings/page.h"
 #include "lang/lang_keys.h"
 #include "settings/settings_builder.h"
 #include "settings/settings_common_session.h"
@@ -19,21 +20,16 @@ namespace {
 using namespace ::Settings;
 using namespace ::Settings::Builder;
 
-class RulesSection final : public Section<RulesSection> {
+class RulesSection final : public Page<RulesSection> {
 public:
-	RulesSection(QWidget *parent,
-		not_null<Window::SessionController*> controller)
-	: Section(parent, controller) {
-		const auto content = Ui::CreateChild<Ui::VerticalLayout>(this);
-		build(content, kBuild);
-		Ui::ResizeFitChild(this, content);
-	}
+	using Page::Page;
 
 	[[nodiscard]] rpl::producer<QString> title() override {
 		return tr::lng_serein_rules();
 	}
 
 	static const SectionBuildMethod kBuild;
+
 };
 
 const auto kMeta = BuildHelper({

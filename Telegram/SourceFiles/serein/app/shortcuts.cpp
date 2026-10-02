@@ -1,6 +1,6 @@
 #include "serein/app/shortcuts.h"
 
-#include "serein/app/recent_chats.h"
+#include "serein/chats/recent_tracking.h"
 
 #include "serein/features/ghost/model/policy.h"
 #include "serein/privacy/options.h"
@@ -26,8 +26,8 @@ bool ToggleGhostMode() {
 		return false;
 	}
 	auto &options = ForAccount(&account.session());
-	const auto enabled = !options.Get(Ghost::kGhostMode);
-	Expects(options.Set(Ghost::kGhostMode, enabled));
+	const auto enabled = !Ghost::Enabled(options, ForDevice());
+	Expects(Ghost::SetEnabled(options, ForDevice(), enabled));
 	Announce(enabled
 		? tr::lng_serein_ghost_mode_enabled(tr::now)
 		: tr::lng_serein_ghost_mode_disabled(tr::now));
@@ -50,7 +50,7 @@ bool ShowRecent() {
 	if (!controller) {
 		return false;
 	}
-	ShowRecentChats(controller);
+	Chats::ShowRecentChats(controller);
 	return true;
 }
 

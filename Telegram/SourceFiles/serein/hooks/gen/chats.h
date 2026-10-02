@@ -19,6 +19,8 @@ namespace Serein::Hooks::Chats {
 [[nodiscard]] rpl::producer<bool> HideSavedAndArchivedPreviewsValue();
 [[nodiscard]] bool HideStories();
 [[nodiscard]] rpl::producer<bool> HideStoriesValue();
+[[nodiscard]] bool SearchOwnChatsOnly();
+[[nodiscard]] rpl::producer<bool> SearchOwnChatsOnlyValue();
 [[nodiscard]] int StartupFolderMode(gsl::not_null<Main::Session*> session);
 [[nodiscard]] rpl::producer<int> StartupFolderModeValue(gsl::not_null<Main::Session*> session);
 [[nodiscard]] int StartupFolderId(gsl::not_null<Main::Session*> session);
@@ -33,6 +35,10 @@ namespace Serein::Hooks::Chats {
 [[nodiscard]] rpl::producer<bool> HideFolderUnreadCountersValue();
 [[nodiscard]] int ChatSort();
 [[nodiscard]] rpl::producer<int> ChatSortValue();
+[[nodiscard]] bool ManagedFolderFilter();
+[[nodiscard]] rpl::producer<bool> ManagedFolderFilterValue();
+[[nodiscard]] QString HiddenFolderIds(gsl::not_null<Main::Session*> session);
+[[nodiscard]] rpl::producer<QString> HiddenFolderIdsValue(gsl::not_null<Main::Session*> session);
 [[nodiscard]] QString ManagedFolderIds(gsl::not_null<Main::Session*> session);
 [[nodiscard]] rpl::producer<QString> ManagedFolderIdsValue(gsl::not_null<Main::Session*> session);
 [[nodiscard]] bool HideSponsoredMessages();

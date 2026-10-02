@@ -18,5 +18,7 @@ namespace Serein::Hooks::Filters {
 [[nodiscard]] rpl::producer<QString> RuleSubscriptionValue();
 [[nodiscard]] QByteArray SubscribedRules();
 [[nodiscard]] rpl::producer<QByteArray> SubscribedRulesValue();
+[[nodiscard]] QString HiddenMessages(gsl::not_null<Main::Session*> session);
+[[nodiscard]] rpl::producer<QString> HiddenMessagesValue(gsl::not_null<Main::Session*> session);
 
 } // namespace Serein::Hooks::Filters

@@ -1,8 +1,8 @@
 #pragma once
 
 #include "serein/core/options.h"
-#include "serein/schema/gen/config/snapshot.h"
 #include "serein/schema/gen/settings/snapshot.h"
+#include "serein/snapshot/rules.h"
 #include "data/data_types.h"
 
 #include <QtGui/QImage>
@@ -13,8 +13,6 @@ namespace Window { class SessionController; }
 
 namespace Serein::Snapshot {
 
-[[nodiscard]] SnapshotConfig Defaults();
-[[nodiscard]] bool Validate(const QByteArray &raw);
 [[nodiscard]] std::variant<QImage, QString> Render(
 	not_null<Window::SessionController*> controller,
 	const MessageIdsList &ids,

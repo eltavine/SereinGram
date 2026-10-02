@@ -9,17 +9,24 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-import check_boundaries  # noqa: E402
+import check_boundaries
 
 POLICY = {
     "schema_version": 1,
     "source_root": "src/",
+    "owned_prefix": "serein/",
     "app_prefixes": ["styles/"],
     "modules": {
-        "serein/schema/": {"own": ["serein/schema/", "serein/core/options.h"],
-                           "app": False, "libraries": True},
-        "serein/ports/": {"own": ["serein/ports/", "serein/schema/"],
-                          "app": False, "libraries": False},
+        "serein/schema/": {
+            "own": ["serein/schema/", "serein/core/options.h"],
+            "app": False,
+            "libraries": True,
+        },
+        "serein/ports/": {
+            "own": ["serein/ports/", "serein/schema/"],
+            "app": False,
+            "libraries": False,
+        },
         "serein/": {"own": ["serein/"], "app": True, "libraries": True},
     },
 }
@@ -45,14 +52,15 @@ class CheckBoundariesTest(unittest.TestCase):
     def run_check(self):
         output = io.StringIO()
         with contextlib.redirect_stdout(output), contextlib.redirect_stderr(output):
-            code = check_boundaries.main(
-                ["--root", str(self.root), "--policy", str(self.policy)])
+            code = check_boundaries.main(["--root", str(self.root), "--policy", str(self.policy)])
         return code, output.getvalue()
 
     def test_allowed_includes_pass(self):
-        self.write("src/serein/schema/a.h",
-                   '#include "serein/schema/b.h"\n#include "serein/core/options.h"\n'
-                   '#include "base/basic_types.h"\n#include <QtCore/QString>\n')
+        self.write(
+            "src/serein/schema/a.h",
+            '#include "serein/schema/b.h"\n#include "serein/core/options.h"\n'
+            '#include "base/basic_types.h"\n#include <QtCore/QString>\n',
+        )
         self.write("src/serein/ports/p.h", '#include "serein/schema/a.h"\n')
         self.write("src/serein/chats/legacy.cpp", '#include "data/data_session.h"\n')
         code, output = self.run_check()
@@ -85,6 +93,22 @@ class CheckBoundariesTest(unittest.TestCase):
         code, output = self.run_check()
         self.assertEqual(code, 1)
         self.assertIn("may not use libraries", output)
+
+    def test_owned_files_need_a_module(self):
+        modules = {k: v for k, v in POLICY["modules"].items() if k != "serein/"}
+        self.policy.write_text(json.dumps(dict(POLICY, modules=modules)), encoding="utf-8")
+        self.write("src/serein/fresh/area.cpp", '#include "serein/schema/a.h"\n')
+        self.write("src/history/history.cpp", '#include "serein/fresh/area.h"\n')
+        code, output = self.run_check()
+        self.assertEqual(code, 1)
+        self.assertIn("serein/fresh/area.cpp: no module rule covers this file", output)
+        self.assertNotIn("history/history.cpp", output)
+
+    def test_rejects_missing_owned_prefix(self):
+        broken = {k: v for k, v in POLICY.items() if k != "owned_prefix"}
+        self.policy.write_text(json.dumps(broken), encoding="utf-8")
+        code, _ = self.run_check()
+        self.assertEqual(code, 2)
 
     def test_rejects_malformed_policy(self):
         broken = dict(POLICY, modules={"serein": {"own": [], "app": True, "libraries": True}})

@@ -9,12 +9,21 @@ namespace Serein::Hooks {
 void BindGhostToggle(
 		gsl::not_null<Ui::SettingsButton*> button,
 		gsl::not_null<Main::Session*> session) {
-	button->toggleOn(ForAccount(session).Value(Ghost::kGhostMode));
+	button->toggleOn(rpl::combine(
+		ForAccount(session).Value(Serein::Ghost::kGhostMode),
+		ForDevice().Value(Serein::Ghost::kGhostAllAccounts)
+	) | rpl::map([](bool account, bool all) {
+		return account || all;
+	}));
 	button->toggledChanges(
 	) | rpl::filter([=](bool enabled) {
-		return enabled != ForAccount(session).Get(Ghost::kGhostMode);
+		return enabled
+			!= Serein::Ghost::Enabled(ForAccount(session), ForDevice());
 	}) | rpl::on_next([=](bool enabled) {
-		Expects(ForAccount(session).Set(Ghost::kGhostMode, enabled));
+		Expects(Serein::Ghost::SetEnabled(
+			ForAccount(session),
+			ForDevice(),
+			enabled));
 	}, button->lifetime());
 }
 

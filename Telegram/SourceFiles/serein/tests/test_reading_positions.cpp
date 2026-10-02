@@ -1,20 +1,11 @@
 #include "serein/chats/reading_positions.h"
 #include "serein/chats/options.h"
 #include "base/basic_types.h"
+#include "serein/tests/require.h"
 
-#include <stdexcept>
+#include <doctest/doctest.h>
 
-namespace {
-
-void Require(bool value, const char *message) {
-	if (!value) {
-		throw std::runtime_error(message);
-	}
-}
-
-} // namespace
-
-void TestReadingPositions() {
+TEST_CASE("ReadingPositions") {
 	using namespace Serein::Chats;
 	auto value = QString();
 	value = SetReadingPosition(value, 7, 100);

@@ -66,6 +66,10 @@ namespace Serein::Hooks::Messages {
 [[nodiscard]] rpl::producer<bool> ReadingSpacingValue();
 [[nodiscard]] int ReadingChinese();
 [[nodiscard]] rpl::producer<int> ReadingChineseValue();
+[[nodiscard]] bool RaiseSelectionLimit();
+[[nodiscard]] rpl::producer<bool> RaiseSelectionLimitValue();
+[[nodiscard]] bool DoubleClickEditsOwn();
+[[nodiscard]] rpl::producer<bool> DoubleClickEditsOwnValue();
 [[nodiscard]] bool RevokePrivateChatDeletion();
 [[nodiscard]] rpl::producer<bool> RevokePrivateChatDeletionValue();
 [[nodiscard]] bool ModerateReportSpam();

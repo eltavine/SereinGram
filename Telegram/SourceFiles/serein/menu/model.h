@@ -15,7 +15,7 @@ struct Entry {
 	const char *titleKey;
 };
 
-inline constexpr auto kEntries = std::array<Entry, 33>({{
+inline constexpr auto kEntries = std::array<Entry, 35>({{
 	{ ActionId::Reply, "lng_serein_menu_reply" },
 	{ ActionId::Edit, "lng_serein_menu_edit" },
 	{ ActionId::Copy, "lng_serein_menu_copy" },
@@ -49,6 +49,8 @@ inline constexpr auto kEntries = std::array<Entry, 33>({{
 	{ ActionId::BatchUnpin, "lng_serein_menu_unpin_selected" },
 	{ ActionId::QuickRatingFirst, "lng_serein_menu_quick_rating_first" },
 	{ ActionId::QuickRatingSecond, "lng_serein_menu_quick_rating_second" },
+	{ ActionId::Reminder, "lng_serein_menu_reminder" },
+	{ ActionId::HideMessage, "lng_serein_menu_hide_message" },
 }});
 
 [[nodiscard]] Visibility DefaultVisibility(ActionId id);

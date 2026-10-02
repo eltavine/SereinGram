@@ -1,19 +1,10 @@
 #include "serein/network/vpn_rules.h"
 #include "base/basic_types.h"
+#include "serein/tests/require.h"
 
-#include <stdexcept>
+#include <doctest/doctest.h>
 
-namespace {
-
-void Require(bool value, const char *message) {
-	if (!value) {
-		throw std::runtime_error(message);
-	}
-}
-
-} // namespace
-
-void TestVpnRules() {
+TEST_CASE("VpnRules") {
 	using namespace Serein::Network;
 	using Kind = InterfaceKind;
 	const auto vpn = [](QString name, QString human, Kind kind) {

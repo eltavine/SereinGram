@@ -14,6 +14,7 @@ public:
 	[[nodiscard]] virtual QByteArray encrypt(const QByteArray &plain) = 0;
 	[[nodiscard]] virtual std::optional<QByteArray> decrypt(
 		const QByteArray &sealed) = 0;
+
 };
 
 struct HistoryQuery {
@@ -40,6 +41,11 @@ public:
 	[[nodiscard]] virtual bool clearPeer(qint64 peerId) = 0;
 	[[nodiscard]] virtual bool clearAll() = 0;
 	[[nodiscard]] virtual bool prune(qint64 recordedBefore, int keepAtMost) = 0;
+	virtual void beginBatch() {
+	}
+	virtual void endBatch() {
+	}
+
 };
 
 } // namespace Serein::Ports

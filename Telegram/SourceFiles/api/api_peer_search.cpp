@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "api/api_peer_search.h"
+#include "serein/hooks/gen/chats.h"
 
 #include "api/api_single_message_search.h"
 #include "apiwrap.h"
@@ -37,7 +38,8 @@ void PeerSearch::request(
 	_query = Api::ConvertPeerSearchQuery(query);
 	_callback = callback;
 	if (_query.isEmpty()
-		|| IsHashOrCashtagSearchQuery(_query) != HashOrCashtag::None) {
+		|| IsHashOrCashtagSearchQuery(_query) != HashOrCashtag::None
+		|| Serein::Hooks::Chats::SearchOwnChatsOnly()) {
 		finish(PeerSearchResult{});
 		return;
 	}

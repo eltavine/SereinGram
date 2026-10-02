@@ -1,0 +1,82 @@
+name: Serein Nix.
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+    paths:
+      - 'flake.nix'
+      - 'flake.lock'
+      - 'packaging/nix/**'
+      - '.github/workflows/serein-nix.yml'
+  schedule:
+    - cron: '0 2 * * 1'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+
+  nix:
+    name: Nix package (${{ matrix.system }})
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - system: x86_64-linux
+            runner: ubuntu-24.04
+          - system: aarch64-linux
+            runner: ubuntu-24.04-arm
+
+    steps:
+      - name: Free up disk space.
+        if: matrix.system == 'x86_64-linux'
+        uses: jlumbroso/free-disk-space@ceedf095f4ec1a097402bc6bd80831f2e1a6fde6
+        with:
+          tool-cache: true
+
+      - name: Clone.
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+          submodules: recursive
+
+      - name: Set up Nix.
+        uses: cachix/install-nix-action@13d8dd58da0234aa297dedd986986ccb8e7f3e24 # v31.11.1
+
+      - name: Lock the inputs.
+        run: |
+          if [ ! -f flake.lock ]; then
+            nix flake lock
+          fi
+
+      - name: Upload the lock file.
+        uses: actions/upload-artifact@v7
+        with:
+          name: flake-lock-${{ matrix.system }}
+          path: flake.lock
+          retention-days: 7
+
+      - name: Formatting.
+        run: |
+          nix fmt flake.nix packaging/nix/package.nix
+          git diff --exit-code -- flake.nix packaging/nix/package.nix
+
+      - name: Build with the test-only credentials.
+        run: nix build --print-build-logs ".#checks.${{ matrix.system }}.sereingram"
+
+      - name: Smoke test.
+        # Outside NixOS the Nix libGL finds no driver, so Qt must not try GLX.
+        env:
+          QT_XCB_GL_INTEGRATION: none
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq xvfb >/dev/null
+          xvfb-run -a python3 tools/serein/smoke_test.py result/bin/SereinGram

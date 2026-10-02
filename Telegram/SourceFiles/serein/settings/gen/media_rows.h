@@ -10,12 +10,18 @@
 
 namespace Serein::Media {
 
-inline const auto kToggleRows = std::array<ToggleRow, 9>{ {
+inline const auto kToggleRows = std::array<ToggleRow, 15>{ {
 	{
 		&kHideStickerTime,
 		tr::lng_serein_hide_sticker_time,
 		u"serein/media/hide-sticker-time"_q,
 		{ u"sticker"_q, u"time"_q },
+	},
+	{
+		&kRoundedStickers,
+		tr::lng_serein_rounded_stickers,
+		u"serein/media/rounded-stickers"_q,
+		{ u"sticker"_q, u"rounded"_q, u"corners"_q },
 	},
 	{
 		&kHideGroupStickers,
@@ -48,6 +54,12 @@ inline const auto kToggleRows = std::array<ToggleRow, 9>{ {
 		{ u"greeting"_q, u"sticker"_q },
 	},
 	{
+		&kStickerPackAuthor,
+		tr::lng_serein_sticker_pack_author,
+		u"serein/media/sticker-pack-author"_q,
+		{ u"sticker"_q, u"emoji"_q, u"pack"_q, u"author"_q, u"creator"_q },
+	},
+	{
 		&kDisableVideoAutoplay,
 		tr::lng_serein_disable_video_autoplay,
 		u"serein/media/disable-video-autoplay"_q,
@@ -60,10 +72,34 @@ inline const auto kToggleRows = std::array<ToggleRow, 9>{ {
 		{ u"GIF"_q, u"playback"_q, u"controls"_q },
 	},
 	{
+		&kForceClickPreview,
+		tr::lng_serein_force_click_preview,
+		u"serein/media/force-click-preview"_q,
+		{ u"Force Click"_q, u"Force Touch"_q, u"trackpad"_q, u"preview"_q, u"haptic"_q },
+	},
+	{
+		&kDownloadsPerChat,
+		tr::lng_serein_downloads_per_chat,
+		u"serein/media/downloads-per-chat"_q,
+		{ u"download"_q, u"folder"_q, u"chat"_q, u"channel"_q, u"organize"_q },
+	},
+	{
 		&kMp4FilePreview,
 		tr::lng_serein_mp4_file_preview,
 		u"serein/media/mp4-file-preview"_q,
 		{ u"MP4"_q, u"file"_q, u"preview"_q },
+	},
+	{
+		&kDenoiseVoiceMessages,
+		tr::lng_serein_denoise_voice_messages,
+		u"serein/media/denoise-voice-messages"_q,
+		{ u"noise"_q, u"voice"_q, u"recording"_q, u"microphone"_q },
+	},
+	{
+		&kStoryPosting,
+		tr::lng_serein_story_posting,
+		u"serein/media/story-posting"_q,
+		{ u"story"_q, u"stories"_q, u"post"_q, u"publish"_q, u"close friends"_q },
 	},
 } };
 
@@ -78,6 +114,7 @@ inline void AddLayout(
 		.suffix = u"%"_q,
 	});
 	AddToggle(builder, kToggleRows[0]);
+	AddToggle(builder, kToggleRows[1]);
 	AddNumber(builder, {
 		.option = &kRecentStickerLimit,
 		.title = tr::lng_serein_recent_sticker_limit,
@@ -87,14 +124,31 @@ inline void AddLayout(
 		.maximum = 200,
 		.zeroLabel = tr::lng_serein_preview_follow,
 	});
-	AddToggle(builder, kToggleRows[1]);
 	AddToggle(builder, kToggleRows[2]);
 	AddToggle(builder, kToggleRows[3]);
 	AddToggle(builder, kToggleRows[4]);
 	AddToggle(builder, kToggleRows[5]);
 	AddToggle(builder, kToggleRows[6]);
 	AddToggle(builder, kToggleRows[7]);
+	AddText(builder, {
+		.option = &kStickerAuthorBot,
+		.title = tr::lng_serein_sticker_author_bot,
+		.id = u"serein/media/sticker-author-bot"_q,
+		.keywords = { u"sticker"_q, u"author"_q, u"bot"_q, u"lookup"_q },
+		.placeholder = tr::lng_serein_sticker_author_bot_placeholder,
+	});
+	AddNote(builder, tr::lng_serein_sticker_author_bot_note);
 	AddToggle(builder, kToggleRows[8]);
+	AddToggle(builder, kToggleRows[9]);
+	AddToggle(builder, kToggleRows[10]);
+	AddNote(builder, tr::lng_serein_force_click_preview_note);
+	AddToggle(builder, kToggleRows[11]);
+	AddNote(builder, tr::lng_serein_downloads_per_chat_note);
+	AddToggle(builder, kToggleRows[12]);
+	AddToggle(builder, kToggleRows[13]);
+	AddNote(builder, tr::lng_serein_denoise_voice_messages_note);
+	AddToggle(builder, kToggleRows[14]);
+	AddNote(builder, tr::lng_serein_story_posting_note);
 }
 
 } // namespace Serein::Media

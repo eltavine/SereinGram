@@ -1,16 +1,11 @@
 #include "serein/schema/gen/history/record.h"
 #include "base/basic_types.h"
+#include "serein/tests/require.h"
 
+#include <doctest/doctest.h>
 #include <iostream>
-#include <stdexcept>
 
 namespace {
-
-void Require(bool value, const char *message) {
-	if (!value) {
-		throw std::runtime_error(message);
-	}
-}
 
 [[nodiscard]] Serein::History::Record Sample() {
 	using namespace Serein::History;
@@ -35,7 +30,7 @@ void Require(bool value, const char *message) {
 
 } // namespace
 
-void TestCodec() {
+TEST_CASE("Codec") {
 	using namespace Serein::History;
 	const auto raw = SerializeRecord(Sample());
 	Require(raw.contains("\"version\":1"), "document version is written");

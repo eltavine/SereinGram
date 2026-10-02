@@ -8,6 +8,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "window/window_peer_menu.h"
 #include "serein/hooks/gen/privacy.h"
 #include "serein/hooks/peer_menu.h"
+#include "serein/hooks/services/translation.h"
 
 #include "base/call_delayed.h"
 #include "menu/menu_check_item.h"
@@ -1081,7 +1082,7 @@ void Filler::addExportChat() {
 
 void Filler::addTranslate() {
 	if (_peer->translationFlag() != PeerData::TranslationFlag::Disabled
-		|| !_peer->session().premium()
+		|| !Serein::ChatTranslationAllowed(&_peer->session())
 		|| !Core::App().settings().translateChatEnabled()) {
 		return;
 	}
@@ -1897,6 +1898,12 @@ void Filler::addVideoChat() {
 }
 
 void Filler::fillContextMenuActions() {
+	const auto history = _request.key.history();
+	const auto channel = history ? history->peer->asChannel() : nullptr;
+	if (channel && !channel->amIn() && !history->inChatList()) {
+		addNewWindow(false);
+		return;
+	}
 	addNewWindow();
 	addUngroup();
 	addHidePromotion();

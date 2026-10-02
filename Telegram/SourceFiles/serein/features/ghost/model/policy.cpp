@@ -2,9 +2,9 @@
 
 namespace Serein::Ghost {
 
-Policy Read(Options &account) {
+Policy Read(Options &account, Options &device) {
 	return {
-		.enabled = account.Get(kGhostMode),
+		.enabled = Enabled(account, device),
 		.hideReadReceipts = account.Get(kGhostHideReadReceipts),
 		.hideStoryViews = account.Get(kGhostHideStoryViews),
 		.hideOnline = account.Get(kGhostHideOnline),
@@ -12,7 +12,20 @@ Policy Read(Options &account) {
 		.hideViewIncrements = account.Get(kGhostHideViewIncrements),
 		.markReadAfterSending = account.Get(kGhostMarkReadAfterSending),
 		.useScheduledMessages = account.Get(kGhostUseScheduledMessages),
+		.sendSilently = account.Get(kGhostSendSilently),
 	};
+}
+
+bool Enabled(Options &account, Options &device) {
+	return account.Get(kGhostMode) || device.Get(kGhostAllAccounts);
+}
+
+bool SetEnabled(Options &account, Options &device, bool enabled) {
+	if (enabled) {
+		return account.Set(kGhostMode, true);
+	}
+	return account.Set(kGhostMode, false)
+		&& device.Set(kGhostAllAccounts, false);
 }
 
 bool Allows(const Policy &policy, Activity activity) {
@@ -39,6 +52,10 @@ bool MarkReadAfterSending(const Policy &policy) {
 
 bool ScheduleOutgoing(const Policy &policy) {
 	return policy.enabled && policy.useScheduledMessages;
+}
+
+bool SendSilently(const Policy &policy) {
+	return policy.enabled && policy.sendSilently;
 }
 
 } // namespace Serein::Ghost

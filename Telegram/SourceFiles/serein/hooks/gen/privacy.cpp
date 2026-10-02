@@ -22,6 +22,14 @@ rpl::producer<bool> AutoDemoModeValue() {
 	return ForDevice().Value(Serein::Privacy::kAutoDemoMode);
 }
 
+bool LockSettings() {
+	return ForDevice().Get(Serein::Privacy::kLockSettings);
+}
+
+rpl::producer<bool> LockSettingsValue() {
+	return ForDevice().Value(Serein::Privacy::kLockSettings);
+}
+
 bool HideReadTime() {
 	return ForDevice().Get(Serein::Privacy::kHideReadTime);
 }
@@ -60,6 +68,30 @@ bool ShowRegistrationDate() {
 
 rpl::producer<bool> ShowRegistrationDateValue() {
 	return ForDevice().Value(Serein::Privacy::kShowRegistrationDate);
+}
+
+bool ShowContactStatus() {
+	return ForDevice().Get(Serein::Privacy::kShowContactStatus);
+}
+
+rpl::producer<bool> ShowContactStatusValue() {
+	return ForDevice().Value(Serein::Privacy::kShowContactStatus);
+}
+
+bool ShowSessionDetails() {
+	return ForDevice().Get(Serein::Privacy::kShowSessionDetails);
+}
+
+rpl::producer<bool> ShowSessionDetailsValue() {
+	return ForDevice().Value(Serein::Privacy::kShowSessionDetails);
+}
+
+bool LocalNames() {
+	return ForDevice().Get(Serein::Privacy::kLocalNames);
+}
+
+rpl::producer<bool> LocalNamesValue() {
+	return ForDevice().Value(Serein::Privacy::kLocalNames);
 }
 
 bool HideProfileGifts() {

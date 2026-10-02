@@ -1,18 +1,9 @@
 #include "serein/features/stickers/model/owner.h"
+#include "serein/tests/require.h"
 
-#include <stdexcept>
+#include <doctest/doctest.h>
 
-namespace {
-
-void Require(bool value, const char *message) {
-	if (!value) {
-		throw std::runtime_error(message);
-	}
-}
-
-} // namespace
-
-void TestStickers() {
+TEST_CASE("Stickers") {
 	using Serein::Stickers::SetOwnerId;
 	constexpr auto owner = std::uint64_t(123456789);
 	Require(SetOwnerId((owner << 32) | 0x00ABCDEFULL) == owner,

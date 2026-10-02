@@ -4,6 +4,7 @@
 #include "serein/settings/home.h"
 #include "serein/settings/gen/menu_rows.h"
 #include "serein/hooks/core/language.h"
+#include "serein/settings/page.h"
 #include "lang/lang_instance.h"
 #include "lang/lang_keys.h"
 #include "lang_auto_counts.h"
@@ -14,6 +15,7 @@
 #include "ui/wrap/vertical_layout.h"
 #include "window/window_session_controller.h"
 #include "styles/style_menu_icons.h"
+#include "styles/style_serein.h"
 #include "styles/style_settings.h"
 #include "styles/style_layers.h"
 
@@ -23,20 +25,16 @@ namespace {
 using namespace ::Settings;
 using namespace ::Settings::Builder;
 
-class MenuSection final : public Section<MenuSection> {
+class MenuSection final : public Page<MenuSection> {
 public:
-	MenuSection(QWidget *parent, not_null<Window::SessionController*> controller)
-	: Section(parent, controller) {
-		const auto content = Ui::CreateChild<Ui::VerticalLayout>(this);
-		build(content, kBuild);
-		Ui::ResizeFitChild(this, content);
-	}
+	using Page::Page;
 
 	[[nodiscard]] rpl::producer<QString> title() override {
 		return tr::lng_serein_menu();
 	}
 
 	static const SectionBuildMethod kBuild;
+
 };
 
 QString Title(Menu::ActionId id) {
@@ -95,6 +93,8 @@ const style::icon *Icon(Menu::ActionId id) {
 	case Menu::ActionId::BatchUnpin: return &st::menuIconUnpin;
 	case Menu::ActionId::QuickRatingFirst: return &st::menuIconLike;
 	case Menu::ActionId::QuickRatingSecond: return &st::menuIconReply;
+	case Menu::ActionId::Reminder: return &st::menuIconNotifications;
+	case Menu::ActionId::HideMessage: return &st::menuIconCaptionHide;
 	default: return &st::menuIconChatBubble;
 	}
 }

@@ -397,7 +397,6 @@ void AddPhotoActions(
 			tr::lng_context_attached_stickers(tr::now),
 			std::move(callback),
 			&st::menuIconStickers);
-		Serein::Menu::Tag(menu->actions().back(), Serein::Menu::ActionId::StickerPack);
 	}
 }
 
@@ -475,7 +474,6 @@ void AddDocumentActions(
 				: tr::lng_context_pack_add(tr::now)),
 			[=] { ShowStickerPackInfo(document, list); },
 			&st::menuIconStickers);
-		Serein::Menu::Tag(menu->actions().back(), Serein::Menu::ActionId::StickerPack);
 	}
 	const auto sending = item && item->isSending();
 	if (!sending && document->sticker() && !document->sticker()->set) {
@@ -511,7 +509,6 @@ void AddDocumentActions(
 			tr::lng_context_attached_stickers(tr::now),
 			std::move(callback),
 			&st::menuIconStickers);
-		Serein::Menu::Tag(menu->actions().back(), Serein::Menu::ActionId::StickerPack);
 	}
 	if (item && !list->hasCopyMediaRestriction(item)) {
 		const auto controller = list->controller();
@@ -558,7 +555,6 @@ void AddPostLinkAction(
 			: tr::lng_context_copy_post_link)(tr::now),
 		[=] { CopyPostLink(controller, itemId, context); },
 		&st::menuIconLink);
-	Serein::Menu::Tag(menu->actions().back(), Serein::Menu::ActionId::CopyLink);
 }
 
 MessageIdsList ExtractIdsList(const SelectedItems &items) {
@@ -592,7 +588,6 @@ bool AddForwardSelectedAction(
 			ExtractIdsList(request.selectedItems),
 			callback);
 	}, &st::menuIconForward);
-	Serein::Menu::Tag(menu->actions().back(), Serein::Menu::ActionId::Forward);
 	return true;
 }
 
@@ -627,7 +622,6 @@ bool AddForwardMessageAction(
 					: MessageIdsList{ 1, itemId }));
 		}
 	}, &st::menuIconForward);
-	Serein::Menu::Tag(menu->actions().back(), Serein::Menu::ActionId::Forward);
 	return true;
 }
 
@@ -878,7 +872,6 @@ bool AddReplyToMessageAction(
 			.todoItemId = todoListTaskId,
 		}, base::IsCtrlPressed());
 	}, &st::menuIconReply);
-	Serein::Menu::Tag(menu->actions().back(), Serein::Menu::ActionId::Reply);
 	return true;
 }
 
@@ -989,7 +982,6 @@ bool AddEditMessageAction(
 		}
 		list->editMessageRequestNotify(item->fullId());
 	}, &st::menuIconEdit);
-	Serein::Menu::Tag(menu->actions().back(), Serein::Menu::ActionId::Edit);
 	return true;
 }
 
@@ -1052,7 +1044,6 @@ bool AddPinMessageAction(
 					Window::UnpinMessages(controller, ids, clear);
 				}),
 				&st::menuIconUnpin);
-			Serein::Menu::Tag(menu->actions().back(), Serein::Menu::ActionId::Pin);
 			return true;
 		}
 	}
@@ -1068,7 +1059,6 @@ bool AddPinMessageAction(
 	menu->addAction(isPinned ? tr::lng_context_unpin_msg(tr::now) : tr::lng_context_pin_msg(tr::now), crl::guard(controller, [=] {
 		Window::ToggleMessagePinned(controller, pinItemId, !isPinned);
 	}), isPinned ? &st::menuIconUnpin : &st::menuIconPin);
-	Serein::Menu::Tag(menu->actions().back(), Serein::Menu::ActionId::Pin);
 	return true;
 }
 
@@ -1138,7 +1128,6 @@ bool AddDeleteSelectedAction(
 		box->setDeleteConfirmedCallback(clear);
 		request.navigation->parentController()->show(std::move(box));
 	}, &st::menuIconDelete);
-	Serein::Menu::Tag(menu->actions().back(), Serein::Menu::ActionId::Delete);
 	return true;
 }
 
@@ -1290,7 +1279,6 @@ void AddReportAction(
 		tr::lng_context_report_msg(tr::now),
 		callback,
 		&st::menuIconReport);
-	Serein::Menu::Tag(menu->actions().back(), Serein::Menu::ActionId::Report);
 }
 
 void AddBlockSenderAction(
@@ -1312,7 +1300,6 @@ void AddBlockSenderAction(
 				Box(Window::BlockSenderFromRepliesBox, controller, itemId));
 		}
 	}), &st::menuIconBlock);
-	Serein::Menu::Tag(menu->actions().back(), Serein::Menu::ActionId::BlockSender);
 }
 
 bool AddClearSelectionAction(
@@ -1325,7 +1312,6 @@ bool AddClearSelectionAction(
 	menu->addAction(tr::lng_context_clear_selection(tr::now), [=] {
 		list->cancelSelection();
 	}, &st::menuIconSelect);
-	Serein::Menu::Tag(menu->actions().back(), Serein::Menu::ActionId::Select);
 	return true;
 }
 
@@ -1355,14 +1341,12 @@ bool AddSelectMessageAction(
 			}
 		}
 	}, &st::menuIconSelect);
-	Serein::Menu::Tag(menu->actions().back(), Serein::Menu::ActionId::Select);
 	if (!request.selectedItems.empty() && list->canSelectItemsUpTo(item)) {
 		menu->addAction(tr::lng_context_select_msg_bulk(tr::now), [=] {
 			if (const auto item = owner->message(itemId)) {
 				list->selectItemsUpTo(item);
 			}
 		}, &st::menuIconSelect);
-		Serein::Menu::Tag(menu->actions().back(), Serein::Menu::ActionId::Select);
 	}
 	return true;
 }
@@ -1401,7 +1385,6 @@ bool AddViewStatisticsAction(
 	menu->addAction(tr::lng_stats_title(tr::now), crl::guard(controller, [=] {
 		controller->showSection(Info::Statistics::Make(channel, itemId, {}));
 	}), &st::menuIconStats);
-	Serein::Menu::Tag(menu->actions().back(), Serein::Menu::ActionId::Statistics);
 	return true;
 }
 
@@ -1841,7 +1824,6 @@ void FillContextMenuItems(
 		result->addAction(text, [=] {
 			list->copySelectedText();
 		}, &st::menuIconCopy);
-		Serein::Menu::Tag(result->actions().back(), Serein::Menu::ActionId::Copy);
 	}
 	if (request.overSelection
 		&& view
@@ -1857,7 +1839,6 @@ void FillContextMenuItems(
 					list->hasCopyRestrictionForSelected()));
 			}
 		}, &st::menuIconTranslate);
-		Serein::Menu::Tag(result->actions().back(), Serein::Menu::ActionId::Translate);
 	}
 
 	AddTopMessageActions(result, request, list);
@@ -1934,7 +1915,6 @@ void FillContextMenuItems(
 						}
 					}
 				}, &st::menuIconCopy);
-				Serein::Menu::Tag(result->actions().back(), Serein::Menu::ActionId::Copy);
 			}
 
 			const auto translate = mediaHasTextForCopy
@@ -1957,7 +1937,6 @@ void FillContextMenuItems(
 							list->hasCopyRestriction(view->data())));
 					}
 				}, &st::menuIconTranslate);
-				Serein::Menu::Tag(result->actions().back(), Serein::Menu::ActionId::Translate);
 			}
 		}
 	}

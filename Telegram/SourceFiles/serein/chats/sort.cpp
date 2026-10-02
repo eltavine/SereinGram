@@ -2,6 +2,7 @@
 
 #include "serein/chats/local_pins.h"
 #include "serein/chats/options.h"
+#include "serein/display/reorder_row.h"
 #include "data/data_chat_filters.h"
 #include "data/data_peer.h"
 #include "data/data_session.h"
@@ -17,13 +18,6 @@
 #include "ui/vertical_list.h"
 #include "ui/widgets/buttons.h"
 #include "ui/widgets/labels.h"
-
-#include <QtCore/QMimeData>
-#include <QtGui/QDrag>
-#include <QtGui/QDragEnterEvent>
-#include <QtGui/QDropEvent>
-#include <QtGui/QMouseEvent>
-#include <QtWidgets/QApplication>
 
 #include <algorithm>
 #include <array>
@@ -83,52 +77,6 @@ QString RuleTitle(int id) {
 	default: return tr::lng_serein_sort_contacts(tr::now);
 	}
 }
-
-class SortRow final : public Ui::SettingsButton {
-public:
-	SortRow(QWidget *parent, int id, Fn<void(int, int)> moved)
-	: Ui::SettingsButton(parent, rpl::single(RuleTitle(id)),
-		st::settingsButtonNoIcon)
-	, _id(id)
-	, _moved(std::move(moved)) {
-		setAcceptDrops(true);
-	}
-
-protected:
-	void mousePressEvent(QMouseEvent *event) override {
-		_dragStart = event->globalPosition().toPoint();
-		Ui::SettingsButton::mousePressEvent(event);
-	}
-	void mouseMoveEvent(QMouseEvent *event) override {
-		if ((event->buttons() & Qt::LeftButton)
-			&& (event->globalPosition().toPoint() - _dragStart).manhattanLength()
-				>= QApplication::startDragDistance()) {
-			const auto data = new QMimeData();
-			data->setData(kMime, QByteArray::number(_id));
-			const auto drag = new QDrag(this);
-			drag->setMimeData(data);
-			drag->exec(Qt::MoveAction);
-			return;
-		}
-		Ui::SettingsButton::mouseMoveEvent(event);
-	}
-	void dragEnterEvent(QDragEnterEvent *event) override {
-		if (event->mimeData()->hasFormat(kMime)) {
-			event->acceptProposedAction();
-		}
-	}
-	void dropEvent(QDropEvent *event) override {
-		auto valid = false;
-		const auto from = event->mimeData()->data(kMime).toInt(&valid);
-		if (valid && from != _id) _moved(from, _id);
-		event->acceptProposedAction();
-	}
-
-private:
-	int _id;
-	Fn<void(int, int)> _moved;
-	QPoint _dragStart;
-};
 
 void RefreshSorting(gsl::not_null<Main::Session*> session) {
 	auto entries = std::set<Dialogs::Entry*>();
@@ -233,28 +181,39 @@ void ChatSortBox(gsl::not_null<Ui::GenericBox*> box) {
 	state->refresh = [=] {
 		rows->clear();
 		for (const auto id : state->order) {
-			const auto row = rows->add(object_ptr<SortRow>(
-				rows, id, [=](int from, int to) {
-					const auto first = std::find(
-						state->order.begin(), state->order.end(), from);
-					const auto second = std::find(
-						state->order.begin(), state->order.end(), to);
-					if (first == state->order.end()
-						|| second == state->order.end()) return;
-					const auto fromIndex = first - state->order.begin();
-					const auto toIndex = second - state->order.begin();
-					const auto moved = state->order[fromIndex];
-					if (fromIndex < toIndex) {
-						std::move(state->order.begin() + fromIndex + 1,
-							state->order.begin() + toIndex + 1,
-							state->order.begin() + fromIndex);
-					} else {
-						std::move_backward(state->order.begin() + toIndex,
-							state->order.begin() + fromIndex,
-							state->order.begin() + fromIndex + 1);
+			const auto reorder = [=](int from, int to) {
+				const auto first = std::find(
+					state->order.begin(), state->order.end(), from);
+				const auto second = std::find(
+					state->order.begin(), state->order.end(), to);
+				if (first == state->order.end()
+					|| second == state->order.end()) return;
+				const auto fromIndex = first - state->order.begin();
+				const auto toIndex = second - state->order.begin();
+				const auto moved = state->order[fromIndex];
+				if (fromIndex < toIndex) {
+					std::move(state->order.begin() + fromIndex + 1,
+						state->order.begin() + toIndex + 1,
+						state->order.begin() + fromIndex);
+				} else {
+					std::move_backward(state->order.begin() + toIndex,
+						state->order.begin() + fromIndex,
+						state->order.begin() + fromIndex + 1);
+				}
+				state->order[toIndex] = moved;
+				InvokeQueued(box, state->refresh);
+			};
+			const auto row = rows->add(object_ptr<Display::ReorderRow>(
+				rows,
+				rpl::single(RuleTitle(id)),
+				QString::fromLatin1(kMime),
+				QByteArray::number(id),
+				[=](const QByteArray &from, const QByteArray &to) {
+					auto valid = false;
+					const auto source = from.toInt(&valid);
+					if (valid) {
+						reorder(source, to.toInt());
 					}
-					state->order[toIndex] = moved;
-					InvokeQueued(box, state->refresh);
 				}));
 			row->toggleOn(rpl::single(bool(state->enabled & (1 << id))));
 			row->toggledChanges(

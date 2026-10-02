@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "mtproto/details/mtproto_domain_resolver.h"
+#include "serein/hooks/network/doh.h"
 
 #include "base/random.h"
 #include "base/invoke_queued.h"
@@ -231,6 +232,7 @@ void DomainResolver::resolve(const AttemptKey &key) {
 
 	shuffle(0, 2);
 
+	Serein::Network::PrependCustomDoh(attempts, Type::Mozilla);
 	ranges::reverse(attempts); // We go from last to first.
 
 	_attempts.emplace(key, Attempts{ std::move(attempts) });

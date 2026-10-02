@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=SereinGram
-Comment=New era of messaging
+Comment=Feature-rich Telegram client
 TryExec=SereinGram
 Exec=SereinGram -- %U
 Icon=io.github.eltavine.SereinGram

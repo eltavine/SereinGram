@@ -2,6 +2,7 @@
 
 #include "serein/core/exchange.h"
 #include "serein/hooks/core/language.h"
+#include "serein/settings/cloud_backup.h"
 #include "serein/settings/chats.h"
 #include "serein/settings/compose.h"
 #include "serein/settings/home.h"
@@ -13,8 +14,9 @@
 #include "serein/settings/restart.h"
 #include "serein/settings/rules.h"
 #include "serein/settings/services.h"
+#include "serein/settings/page.h"
+#include "serein/display/json_files.h"
 #include "core/application.h"
-#include "core/file_utilities.h"
 #include "core/version.h"
 #include "lang/lang_instance.h"
 #include "lang/lang_keys.h"
@@ -30,10 +32,8 @@
 #include "styles/style_menu_icons.h"
 #include "styles/style_settings.h"
 
-#include <QtCore/QFile>
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
-#include <QtCore/QSaveFile>
 #include <QtGui/QClipboard>
 
 namespace Serein {
@@ -44,20 +44,16 @@ using namespace ::Settings::Builder;
 
 constexpr auto kMaximumImportBytes = 8 * 1024 * 1024;
 
-class ConfigSection final : public Section<ConfigSection> {
+class ConfigSection final : public Page<ConfigSection> {
 public:
-	ConfigSection(QWidget *parent, not_null<Window::SessionController*> controller)
-	: Section(parent, controller) {
-		const auto content = Ui::CreateChild<Ui::VerticalLayout>(this);
-		build(content, kBuild);
-		Ui::ResizeFitChild(this, content);
-	}
+	using Page::Page;
 
 	[[nodiscard]] rpl::producer<QString> title() override {
 		return tr::lng_serein_config_title();
 	}
 
 	static const SectionBuildMethod kBuild;
+
 };
 
 QString Title(const OptionInfo &info) {
@@ -152,18 +148,24 @@ void ShowModified(not_null<Window::SessionController*> controller) {
 	}));
 }
 
-void ShowImport(
+struct PlanTexts {
+	tr::phrase<> title;
+	tr::phrase<> about;
+	tr::phrase<> apply;
+	tr::phrase<> done;
+};
+
+void ShowPlan(
 		not_null<Window::SessionController*> controller,
-		const QByteArray &bytes) {
-	const auto plan = Exchange::PlanImport(
-		ForDevice(), RegisteredOptions(), bytes);
+		const ExchangePlan &plan,
+		const PlanTexts &texts) {
 	if (!plan.error.isEmpty()) {
 		controller->showToast(plan.error);
 		return;
 	}
 	controller->show(Box([=](not_null<Ui::GenericBox*> box) {
-		box->setTitle(tr::lng_serein_config_preview());
-		AddText(box, tr::lng_serein_config_import_about(tr::now));
+		box->setTitle(texts.title());
+		AddText(box, texts.about(tr::now));
 		AddText(box, tr::lng_serein_config_changes(
 			tr::now, lt_amount, QString::number(plan.changes.size())));
 		for (const auto &change : plan.changes) {
@@ -182,7 +184,7 @@ void ShowImport(
 				+ u"\n"_q + plan.skippedKeys.mid(0, 20).join('\n'));
 		}
 		if (!plan.changes.empty()) {
-			box->addButton(tr::lng_serein_config_apply(),
+			box->addButton(texts.apply(),
 				crl::guard(controller, [=] {
 					const auto result = Exchange::Apply(
 						ForDevice(), RegisteredOptions(), plan);
@@ -191,7 +193,7 @@ void ShowImport(
 						return;
 					}
 					box->closeBox();
-					controller->showToast(tr::lng_serein_config_imported(tr::now));
+					controller->showToast(texts.done(tr::now));
 					if (ranges::any_of(plan.changes, [](const ExchangeChange &change) {
 						const auto key = change.key.toUtf8();
 						const auto info = RegisteredOptions().Find(std::string_view(
@@ -207,48 +209,73 @@ void ShowImport(
 	}));
 }
 
+void ShowImport(
+		not_null<Window::SessionController*> controller,
+		const QByteArray &bytes) {
+	ShowPlan(
+		controller,
+		Exchange::PlanImport(ForDevice(), RegisteredOptions(), bytes),
+		{
+			.title = tr::lng_serein_config_preview,
+			.about = tr::lng_serein_config_import_about,
+			.apply = tr::lng_serein_config_apply,
+			.done = tr::lng_serein_config_imported,
+		});
+}
+
+void ShowReset(not_null<Window::SessionController*> controller) {
+	const auto plan = Exchange::PlanReset(ForDevice(), RegisteredOptions());
+	if (plan.error.isEmpty() && plan.changes.empty()) {
+		controller->showToast(tr::lng_serein_config_no_changes(tr::now));
+		return;
+	}
+	ShowPlan(controller, plan, {
+		.title = tr::lng_serein_config_reset,
+		.about = tr::lng_serein_config_reset_about,
+		.apply = tr::lng_serein_config_reset_apply,
+		.done = tr::lng_serein_config_reset_done,
+	});
+}
+
 void Export(not_null<Window::SessionController*> controller) {
 	const auto exported = Exchange::Export(ForDevice(), RegisteredOptions());
 	if (!exported.invalidKeys.isEmpty()) {
 		controller->showToast(tr::lng_serein_config_invalid(tr::now));
 		return;
 	}
-	FileDialog::GetWritePath(
-		Core::App().getFileDialogParent(),
-		tr::lng_serein_config_export(tr::now),
-		tr::lng_serein_config_file_filter(tr::now),
+	Display::SaveJsonFile(
 		u"serein-settings.json"_q,
-		crl::guard(controller, [=](QString &&path) {
-			if (path.isEmpty()) {
-				return;
-			}
-			auto file = QSaveFile(path);
-			if (!file.open(QIODevice::WriteOnly)
-				|| file.write(exported.data) != exported.data.size()
-				|| !file.commit()) {
-				controller->showToast(tr::lng_serein_config_write_error(tr::now));
-			} else {
-				controller->showToast(tr::lng_serein_config_exported(tr::now));
-			}
+		exported.data,
+		crl::guard(controller, [=](QString text) {
+			controller->showToast(text);
 		}));
 }
 
 void Import(not_null<Window::SessionController*> controller) {
-	FileDialog::GetOpenPath(
-		Core::App().getFileDialogParent(),
-		tr::lng_serein_config_import(tr::now),
-		tr::lng_serein_config_file_filter(tr::now),
-		crl::guard(controller, [=](FileDialog::OpenResult &&result) {
-			if (!result.paths.isEmpty()) {
-				auto file = QFile(result.paths.front());
-				if (!file.open(QIODevice::ReadOnly)) {
-					controller->showToast(tr::lng_serein_config_read_error(tr::now));
-					return;
-				}
-				ShowImport(controller, file.read(kMaximumImportBytes + 1));
-			} else if (!result.remoteContent.isEmpty()) {
-				ShowImport(controller, result.remoteContent);
-			}
+	Display::OpenJsonFile(
+		kMaximumImportBytes,
+		crl::guard(controller, [=](QByteArray bytes) {
+			ShowImport(controller, bytes);
+		}),
+		crl::guard(controller, [=](QString text) {
+			controller->showToast(text);
+		}));
+}
+
+void BackUp(not_null<Window::SessionController*> controller) {
+	const auto exported = Exchange::Export(ForDevice(), RegisteredOptions());
+	if (!exported.invalidKeys.isEmpty()) {
+		controller->showToast(tr::lng_serein_config_invalid(tr::now));
+		return;
+	}
+	BackUpToSavedMessages(controller, exported.data);
+}
+
+void Restore(not_null<Window::SessionController*> controller) {
+	RestoreFromSavedMessages(
+		controller,
+		crl::guard(controller, [=](QByteArray bytes) {
+			ShowImport(controller, bytes);
 		}));
 }
 
@@ -295,6 +322,25 @@ const auto kMeta = BuildHelper({
 		.title = tr::lng_serein_config_import(),
 		.st = &st::settingsButtonNoIcon,
 		.onClick = [=] { Import(controller); },
+	});
+	builder.addButton({
+		.id = u"serein/config/backup"_q,
+		.title = tr::lng_serein_config_backup(),
+		.st = &st::settingsButtonNoIcon,
+		.onClick = [=] { BackUp(controller); },
+	});
+	builder.addButton({
+		.id = u"serein/config/restore"_q,
+		.title = tr::lng_serein_config_restore(),
+		.st = &st::settingsButtonNoIcon,
+		.onClick = [=] { Restore(controller); },
+	});
+	builder.addDividerText(tr::lng_serein_config_backup_about());
+	builder.addButton({
+		.id = u"serein/config/reset"_q,
+		.title = tr::lng_serein_config_reset(),
+		.st = &st::settingsButtonNoIcon,
+		.onClick = [=] { ShowReset(controller); },
 	});
 	builder.addButton({
 		.id = u"serein/config/diagnostics"_q,

@@ -166,6 +166,38 @@ rpl::producer<bool> MentionMenuValue() {
 	return ForDevice().Value(Serein::Compose::kMentionMenu);
 }
 
+bool RememberForwardOptions() {
+	return ForDevice().Get(Serein::Compose::kRememberForwardOptions);
+}
+
+rpl::producer<bool> RememberForwardOptionsValue() {
+	return ForDevice().Value(Serein::Compose::kRememberForwardOptions);
+}
+
+int LastForwardOptions() {
+	return ForDevice().Get(Serein::Compose::kLastForwardOptions);
+}
+
+rpl::producer<int> LastForwardOptionsValue() {
+	return ForDevice().Value(Serein::Compose::kLastForwardOptions);
+}
+
+bool CaptionAboveMedia() {
+	return ForDevice().Get(Serein::Compose::kCaptionAboveMedia);
+}
+
+rpl::producer<bool> CaptionAboveMediaValue() {
+	return ForDevice().Value(Serein::Compose::kCaptionAboveMedia);
+}
+
+bool DraftTranslation() {
+	return ForDevice().Get(Serein::Compose::kDraftTranslation);
+}
+
+rpl::producer<bool> DraftTranslationValue() {
+	return ForDevice().Value(Serein::Compose::kDraftTranslation);
+}
+
 bool FormatToolbar() {
 	return ForDevice().Get(Serein::Compose::kFormatToolbar);
 }
@@ -196,6 +228,14 @@ QByteArray TextReplacements() {
 
 rpl::producer<QByteArray> TextReplacementsValue() {
 	return ForDevice().Value(Serein::Compose::kTextReplacements);
+}
+
+QByteArray LinkInlineBots() {
+	return ForDevice().Get(Serein::Compose::kLinkInlineBots);
+}
+
+rpl::producer<QByteArray> LinkInlineBotsValue() {
+	return ForDevice().Value(Serein::Compose::kLinkInlineBots);
 }
 
 bool ConfirmSticker() {
@@ -252,6 +292,14 @@ bool SendSilently() {
 
 rpl::producer<bool> SendSilentlyValue() {
 	return ForDevice().Value(Serein::Compose::kSendSilently);
+}
+
+bool OwnerSendAs() {
+	return ForDevice().Get(Serein::Compose::kOwnerSendAs);
+}
+
+rpl::producer<bool> OwnerSendAsValue() {
+	return ForDevice().Value(Serein::Compose::kOwnerSendAs);
 }
 
 } // namespace Serein::Hooks::Compose

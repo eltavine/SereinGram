@@ -1,8 +1,13 @@
 #include "serein/hooks/interface/main_menu.h"
 
-#include "serein/app/recent_chats.h"
+#include "serein/chats/recent_tracking.h"
+#include "serein/features/stories/composer.h"
 #include "serein/hooks/ghost.h"
+#include "serein/schema/gen/settings/interface.h"
+#include "serein/schema/gen/settings/media.h"
+#include "data/data_user.h"
 #include "lang/lang_keys.h"
+#include "main/main_session.h"
 #include "settings/settings_common.h"
 #include "ui/widgets/buttons.h"
 #include "window/window_session_controller.h"
@@ -13,6 +18,19 @@ namespace Serein::Hooks {
 void FillMainMenu(
 		gsl::not_null<Window::SessionController*> controller,
 		const MainMenuAction &addAction) {
+	if (ForDevice().Get(Serein::Media::kStoryPosting)) {
+		addAction(
+			tr::lng_serein_story_new(),
+			{ &st::menuIconStoriesSavedSection }
+		)->setClickedCallback([=] {
+			Serein::Stories::StartPosting(
+				controller->uiShow(),
+				controller->session().user());
+		});
+	}
+	if (!ForDevice().Get(Serein::Interface::kMenuShortcuts)) {
+		return;
+	}
 	BindGhostToggle(
 		addAction(tr::lng_serein_ghost_mode(), { &st::menuIconStealth }),
 		&controller->session());
@@ -22,7 +40,7 @@ void FillMainMenu(
 		tr::lng_serein_recent_chats(),
 		{ &st::menuIconTimer }
 	)->setClickedCallback([=] {
-		App::ShowRecentChats(controller);
+		Serein::Chats::ShowRecentChats(controller);
 	});
 }
 

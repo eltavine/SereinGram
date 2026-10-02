@@ -1,15 +1,10 @@
 #include "serein/messages/persian_calendar.h"
 #include "base/basic_types.h"
+#include "serein/tests/require.h"
 
-#include <stdexcept>
+#include <doctest/doctest.h>
 
 namespace {
-
-void Require(bool value, const char *message) {
-	if (!value) {
-		throw std::runtime_error(message);
-	}
-}
 
 [[nodiscard]] bool Is(
 		const QDate &date,
@@ -25,7 +20,7 @@ void Require(bool value, const char *message) {
 
 } // namespace
 
-void TestPersianCalendar() {
+TEST_CASE("PersianCalendar") {
 	using namespace Serein::Messages;
 	Require(Is(QDate(2024, 3, 20), 1403, 1, 1), "Nowruz 1403");
 	Require(Is(QDate(2024, 3, 19), 1402, 12, 29), "last day of 1402");

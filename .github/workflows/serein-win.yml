@@ -3,10 +3,8 @@ name: Serein Windows.
 on:
   push:
     branches:
-      - serein-next
+      - develop
       - main
-    tags:
-      - 'v*'
     paths-ignore:
       - 'docs/**'
       - '**.md'
@@ -26,6 +24,8 @@ on:
       - 'Telegram/configure.sh'
       - 'Telegram/Telegram.plist'
   pull_request:
+    branches:
+      - develop
     paths-ignore:
       - 'docs/**'
       - '**.md'
@@ -44,10 +44,45 @@ on:
       - 'Telegram/Telegram/**'
       - 'Telegram/configure.sh'
       - 'Telegram/Telegram.plist'
+  workflow_dispatch:
+    inputs:
+      arch:
+        type: choice
+        options: [x64, arm64]
+        default: x64
+      config:
+        type: choice
+        options: [Debug, Release]
+        default: Debug
+  workflow_call:
+    inputs:
+      arch:
+        type: string
+        default: x64
+      config:
+        type: string
+        default: Debug
+      ref:
+        type: string
+        default: ''
+      channel:
+        type: string
+        default: ''
+      no_cache:
+        type: boolean
+        default: false
+    secrets:
+      SEREIN_API_ID:
+        required: false
+      SEREIN_API_HASH:
+        required: false
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}-windows-${{ inputs.arch || 'x64' }}-${{ inputs.config || 'Debug' }}
   cancel-in-progress: false
+
+permissions:
+  contents: read
 
 jobs:
 
@@ -58,14 +93,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # arm64 returns with SG-PLAT-06 once ffmpeg n8.1.3 builds there.
-        arch: [x64]
+        arch: ${{ fromJSON(format('["{0}"]', inputs.arch || 'x64')) }}
         qt: [qt6]
-        generator: [""]
 
     env:
-      UPLOAD_ARTIFACT: "true"
-      ONLY_CACHE: "false"
+      # Not CONFIG: MSYS2's pacman-key reads that variable as its config file.
+      BUILD_CONFIG: ${{ inputs.config || 'Debug' }}
+      ASSET_ARCH: ${{ (inputs.arch || 'x64') == 'arm64' && 'arm64' || 'x86_64' }}
+      # Only these runs write caches: every branch and pull request can read the default branch's.
+      SAVE_CACHE: ${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
       PREPARE_PATH: "Telegram/build/prepare/prepare.py"
 
     defaults:
@@ -93,6 +129,14 @@ jobs:
           }
           Get-PSDrive C | Format-Table Name, Used, Free
 
+      # Release compiles exhaust commit memory with the default pagefile; x64 runners keep C: tight.
+      - name: Enlarge the pagefile.
+        uses: al-cheb/configure-pagefile-action@9b6da52fb72a3c6147c1aad2df22d8d905681adc # v1.5
+        with:
+          minimum-size: 16GB
+          maximum-size: 32GB
+          disk-root: ${{ matrix.arch == 'arm64' && 'C:' || 'D:' }}
+
       - name: Prepare directories.
         run: |
           mkdir %userprofile%\TBuild\Libraries
@@ -102,11 +146,13 @@ jobs:
 
       - name: Get repository name.
         shell: bash
-        run: echo "REPO_NAME=${GITHUB_REPOSITORY##*/}" >> $GITHUB_ENV
+        run: echo "REPO_NAME=${GITHUB_REPOSITORY##*/}" >> "$GITHUB_ENV"
 
       - name: Clone.
         uses: actions/checkout@v7
         with:
+          persist-credentials: false
+          ref: ${{ inputs.ref }}
           submodules: recursive
           path: ${{ env.TBUILD }}\${{ env.REPO_NAME }}
 
@@ -114,14 +160,14 @@ jobs:
         shell: bash
         run: |
           DOCPATH=$TBUILD/$REPO_NAME/docs/building-win.md
-          SDK="$(grep "SDK version" $DOCPATH | sed -r 's/.*\*\*(.*)\*\* SDK version.*/\1/')"
-          echo "SDK=$SDK" >> $GITHUB_ENV
+          SDK="$(grep "SDK version" "$DOCPATH" | sed -r 's/.*\*\*(.*)\*\* SDK version.*/\1/')"
+          echo "SDK=$SDK" >> "$GITHUB_ENV"
 
           sed -i '/CMAKE_${lang}_FLAGS_DEBUG_INIT/s/${_Zi}//' "$PROGRAMFILES"/CMake/share/cmake*/Modules/Platform/Windows-MSVC.cmake
 
-          echo "$(sha256sum $TBUILD/$REPO_NAME/$PREPARE_PATH | awk '{ print $1 }')" >> CACHE_KEY.txt
+          sha256sum "$TBUILD/$REPO_NAME/$PREPARE_PATH" | awk '{ print $1 }' >> CACHE_KEY.txt
           echo "$SDK" >> CACHE_KEY.txt
-          echo "CACHE_KEY=$(sha256sum CACHE_KEY.txt | awk '{ print $1 }')" >> $GITHUB_ENV
+          echo "CACHE_KEY=$(sha256sum CACHE_KEY.txt | awk '{ print $1 }')" >> "$GITHUB_ENV"
 
           echo "Configurate git for cherry-picks."
           git config --global user.email "you@example.com"
@@ -141,7 +187,7 @@ jobs:
           Remove-Item $exe -Force -ErrorAction SilentlyContinue
           if ($p.ExitCode -ne 0 -and $p.ExitCode -ne 3010) { exit $p.ExitCode }
 
-      - uses: Eden-CI/msvc-dev-cmd@master
+      - uses: Eden-CI/msvc-dev-cmd@1bd71f95d6f3d1b2b3395b335cc63bcdc90cf223 # master
         name: Native Tools Command Prompt.
         with:
           arch: ${{ matrix.arch }}
@@ -155,6 +201,7 @@ jobs:
 
       - name: ThirdParty cache.
         id: cache-third-party
+        if: ${{ !inputs.no_cache }}
         uses: actions/cache/restore@v6
         with:
           path: ${{ env.TBUILD }}\ThirdParty
@@ -163,6 +210,7 @@ jobs:
 
       - name: Libraries cache.
         id: cache-libs
+        if: ${{ !inputs.no_cache }}
         uses: actions/cache/restore@v6
         with:
           path: |
@@ -171,37 +219,83 @@ jobs:
             !${{ env.LibrariesPath }}\[qQ]t[_-]*
             ${{ env.LibrariesPath }}\cache_keys\*
             !${{ env.LibrariesPath }}\cache_keys\[qQ]t[_-]*
-          key: ${{ runner.OS }}-${{ matrix.arch }}-libs-v2-${{ env.CACHE_KEY }}
-          restore-keys: ${{ runner.OS }}-${{ matrix.arch }}-libs-v2-
+          key: ${{ runner.OS }}-${{ matrix.arch }}-libs-v4-${{ env.CACHE_KEY }}
+          restore-keys: |
+            ${{ runner.OS }}-${{ matrix.arch }}-libs-v4-
+            ${{ runner.OS }}-${{ matrix.arch }}-libs-v3-
 
       - name: Qt cache.
         id: cache-qt
+        if: ${{ !inputs.no_cache }}
         uses: actions/cache/restore@v6
         with:
           path: |
             ${{ env.LibrariesPath }}\[qQ]t[_-]*
             ${{ env.LibrariesPath }}\cache_keys\[qQ]t[_-]*
-          key: ${{ runner.OS }}-${{ matrix.arch }}-${{ matrix.qt || 'qt' }}-${{ env.CACHE_KEY }}
-          restore-keys: ${{ runner.OS }}-${{ matrix.arch }}-${{ matrix.qt || 'qt' }}-
+          key: ${{ runner.OS }}-${{ matrix.arch }}-${{ matrix.qt }}-v3-${{ env.CACHE_KEY }}
+          restore-keys: |
+            ${{ runner.OS }}-${{ matrix.arch }}-${{ matrix.qt }}-v3-
+            ${{ runner.OS }}-${{ matrix.arch }}-${{ matrix.qt }}-v2-
 
       # Remove once upstream prepare.py stops requesting mingw-w64-x86_64-diffutils.
       - name: Replace the removed MSYS2 diffutils package.
         shell: bash
         run: sed -i 's/mingw-w64-x86_64-diffutils/diffutils/' "$TBUILD/$REPO_NAME/$PREPARE_PATH"
 
+      # SereinGram sends no crash reports, so the symbol dumper and the ATL it needs stay out.
+      - name: Skip the Windows symbol dumper.
+        shell: bash
+        run: |
+          sed -i -E -e '/windows.+dump_syms/d' -e '/dump_syms\.(gyp|vcxproj)/d' "$TBUILD/$REPO_NAME/$PREPARE_PATH"
+          if grep -n 'dump_syms' "$TBUILD/$REPO_NAME/$PREPARE_PATH" | grep -iv 'mac'; then
+            echo "prepare.py still builds the Windows symbol dumper." >&2
+            exit 1
+          fi
+
+      # Debug and Release libraries, so both configurations share one cache.
       - name: Libraries.
         run: |
-          %TBUILD%\%REPO_NAME%\Telegram\build\prepare\win.bat skip-release silent ${{ matrix.qt }}
+          %TBUILD%\%REPO_NAME%\Telegram\build\prepare\win.bat silent ${{ matrix.qt }}
 
       - name: Save the ThirdParty cache.
-        if: steps.cache-third-party.outputs.cache-hit != 'true'
+        if: ${{ !inputs.no_cache && env.SAVE_CACHE == 'true' && steps.cache-third-party.outputs.cache-hit != 'true' }}
         uses: actions/cache/save@v6
         with:
           path: ${{ env.TBUILD }}\ThirdParty
           key: ${{ steps.cache-third-party.outputs.cache-primary-key }}
 
+      - name: Choose the API credentials and the release channel.
+        shell: bash
+        env:
+          SEREIN_API_ID: ${{ secrets.SEREIN_API_ID }}
+          MSVC_ARCH: ${{ matrix.arch }}
+          CHANNEL: ${{ inputs.channel }}
+          COMMIT: ${{ inputs.ref }}
+        run: |
+          # Without the repository secrets, build with the test-only credentials.
+          API=""
+          if [ -z "$SEREIN_API_ID" ]; then
+            API="-D TDESKTOP_API_TEST=ON"
+          fi
+          echo "TDESKTOP_BUILD_API=$API" >> "$GITHUB_ENV"
+          INFO=""
+          if [ -n "$CHANNEL" ]; then
+            INFO="-D SEREIN_BUILD_CHANNEL=$CHANNEL -D SEREIN_BUILD_COMMIT=$COMMIT"
+          fi
+          echo "TDESKTOP_BUILD_INFO=$INFO" >> "$GITHUB_ENV"
+          ARCH=$MSVC_ARCH
+          if [ "$ARCH" = arm64 ]; then
+            ARCH=arm
+          fi
+          echo "TDESKTOP_BUILD_ARCH=$ARCH" >> "$GITHUB_ENV"
+
+      - name: Free up some disk space.
+        shell: bash
+        run: find "$LibrariesPath" '(' '(' ! '(' -name '*.lib' -o -name '*.a' -o -name '*.exe' -o -name '*.h' -o -name '*.hpp' -o -name '*.inc' -o -name '*.cmake' -o -name '*.pc' -o -path '*/include/*' -o -path '*/objects-*' -o -path '*/cache_keys/*' -o -path '*/patches/*' -o -path '*/nv-codec-headers/*' ')' -type f ')' -o -empty ')' -delete
+
+      # Saved after the cleanup, like upstream's post-job save, to leave build trees out.
       - name: Save the libraries cache.
-        if: steps.cache-libs.outputs.cache-hit != 'true'
+        if: ${{ !inputs.no_cache && env.SAVE_CACHE == 'true' && steps.cache-libs.outputs.cache-hit != 'true' }}
         uses: actions/cache/save@v6
         with:
           path: |
@@ -213,7 +307,7 @@ jobs:
           key: ${{ steps.cache-libs.outputs.cache-primary-key }}
 
       - name: Save the Qt cache.
-        if: steps.cache-qt.outputs.cache-hit != 'true'
+        if: ${{ !inputs.no_cache && env.SAVE_CACHE == 'true' && steps.cache-qt.outputs.cache-hit != 'true' }}
         uses: actions/cache/save@v6
         with:
           path: |
@@ -221,64 +315,14 @@ jobs:
             ${{ env.LibrariesPath }}\cache_keys\[qQ]t[_-]*
           key: ${{ steps.cache-qt.outputs.cache-primary-key }}
 
-      - name: Read configuration matrix.
-        shell: bash
-        env:
-          SEREIN_API_ID: ${{ secrets.SEREIN_API_ID }}
-        run: |
-          ARTIFACT_NAME="SereinGram"
-
-          ARCH=""
-          if [ -n "${{ matrix.arch }}" ]; then
-            case "${{ matrix.arch }}" in
-              x64_x86) ARCH="x86";;
-              arm64) ARCH="arm";;
-              *) ARCH="${{ matrix.arch }}";;
-            esac
-            echo "Architecture from matrix: $ARCH"
-            ARTIFACT_NAME="${ARTIFACT_NAME} ${{ matrix.arch }}"
-          fi
-
-          if [ -n "${{ matrix.qt }}" ]; then
-            ARTIFACT_NAME="${ARTIFACT_NAME} ${{ matrix.qt }}"
-          fi
-
-          GENERATOR=""
-          if [ -n "${{ matrix.generator }}" ]; then
-            GENERATOR="-G \"${{ matrix.generator }}\""
-            echo "Generator from matrix: $GENERATOR"
-            ARTIFACT_NAME="${ARTIFACT_NAME} ${{ matrix.generator }}"
-          fi
-          echo "TDESKTOP_BUILD_GENERATOR=$GENERATOR" >> $GITHUB_ENV
-
-          [ -n "$GENERATOR" ] && ARCH=""
-          echo "TDESKTOP_BUILD_ARCH=$ARCH" >> $GITHUB_ENV
-
-          echo "TDESKTOP_BUILD_DEFINE=" >> $GITHUB_ENV
-
-          echo "ARTIFACT_NAME=$ARTIFACT_NAME" >> $GITHUB_ENV
-
-          # Without the repository secrets, build with the test-only credentials.
-          API=""
-          if [ -z "$SEREIN_API_ID" ]; then
-            API="-D TDESKTOP_API_TEST=ON"
-          fi
-          echo "TDESKTOP_BUILD_API=$API" >> $GITHUB_ENV
-
-      - name: Free up some disk space.
-        shell: bash
-        run: find $LibrariesPath '(' '(' ! '(' -name '*.lib' -o -name '*.a' -o -name '*.exe' -o -name '*.h' -o -name '*.hpp' -o -name '*.inc' -o -name '*.cmake' -o -name '*.pc' -o -path '*/include/*' -o -path '*/objects-*' -o -path '*/cache_keys/*' -o -path '*/patches/*' -o -path '*/nv-codec-headers/*' ')' -type f ')' -o -empty ')' -delete
-
       # cmake_helpers' Qt package still names zlib zlibstatic, the build makes libzs.
       - name: Provide the zlib names that the Qt package expects.
-        shell: cmd
         run: |
           if exist "%LibrariesPath%\zlib\Debug\libzsd.lib" copy /Y "%LibrariesPath%\zlib\Debug\libzsd.lib" "%LibrariesPath%\zlib\Debug\zlibstaticd.lib"
           if exist "%LibrariesPath%\zlib\Release\libzs.lib" copy /Y "%LibrariesPath%\zlib\Release\libzs.lib" "%LibrariesPath%\zlib\Release\zlibstatic.lib"
           exit /b 0
 
       - name: Serein build.
-        if: env.ONLY_CACHE == 'false'
         env:
           SEREIN_API_ID: ${{ secrets.SEREIN_API_ID }}
           SEREIN_API_HASH: ${{ secrets.SEREIN_API_HASH }}
@@ -286,67 +330,67 @@ jobs:
           cd %TBUILD%\%REPO_NAME%\Telegram
 
           call configure.bat ^
-          %TDESKTOP_BUILD_GENERATOR% ^
           %TDESKTOP_BUILD_ARCH% ^
           ${{ matrix.qt }} ^
           %TDESKTOP_BUILD_API% ^
-          -D CMAKE_CONFIGURATION_TYPES=Debug ^
+          %TDESKTOP_BUILD_INFO% ^
+          -D CMAKE_CONFIGURATION_TYPES=%BUILD_CONFIG% ^
           -D DESKTOP_APP_TEST_APPS=ON ^
           -D CMAKE_COMPILE_WARNING_AS_ERROR=ON ^
-          -D CMAKE_MSVC_DEBUG_INFORMATION_FORMAT= ^
-          %TDESKTOP_BUILD_DEFINE%
+          -D CMAKE_MSVC_DEBUG_INFORMATION_FORMAT= || exit /b 1
 
-          cmake --build ..\out --config Debug --parallel
-          ..\out\serein-tests\Debug\test_serein.exe
+          cmake --build ..\out --config %BUILD_CONFIG% --parallel || exit /b 1
+          ..\out\serein-tests\%BUILD_CONFIG%\test_serein.exe
+
+      - name: Smoke test.
+        run: |
+          cd %TBUILD%\%REPO_NAME%
+          python tools\serein\smoke_test.py out\%BUILD_CONFIG%\SereinGram.exe
 
       - name: Installer.
-        if: env.UPLOAD_ARTIFACT == 'true'
-        continue-on-error: true
         shell: pwsh
         run: |
           $root = "$env:TBUILD\$env:REPO_NAME"
           $version = (Select-String -Path "$root\Telegram\build\version" -Pattern '^AppVersionStr (.+)$').Matches[0].Groups[1].Value.Trim()
-          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" "/DMyAppVersion=$version" "/DMyAppVersionFull=$version" "/DReleasePath=$root\out\Debug" "/DMyBuildTarget=win64" "$root\Telegram\build\setup.iss"
+          $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path $iscc)) {
+            choco install innosetup --no-progress -y
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
+          & $iscc "/DMyAppVersion=$version" "/DMyAppVersionFull=$version" "/DReleasePath=$root\out\$env:BUILD_CONFIG" "/DMyBuildTarget=${{ matrix.arch == 'arm64' && 'winarm' || 'win64' }}" "$root\Telegram\build\setup.iss"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-      - name: Move artifact.
-        if: env.UPLOAD_ARTIFACT == 'true'
+      - name: Name the artifacts.
+        shell: pwsh
         run: |
-          set OUT=%TBUILD%\%REPO_NAME%\out\Debug
-          mkdir artifact
-          move %OUT%\SereinGram.exe artifact/
-          if exist %OUT%\tsetup-x64.*.exe move %OUT%\tsetup-x64.*.exe artifact/
+          $out = "$env:TBUILD\$env:REPO_NAME\out\$env:BUILD_CONFIG"
+          $base = "SereinGram-windows-$env:ASSET_ARCH"
+          New-Item -ItemType Directory -Force -Path artifact, portable\SereinGram | Out-Null
+          Copy-Item "$out\SereinGram.exe" portable\SereinGram\
+          Compress-Archive -Path portable\SereinGram -DestinationPath "artifact\$base-portable.zip"
+          $setup = @(Get-ChildItem "$out\tsetup-*.exe")
+          if ($setup.Count -ne 1) { throw "Expected one installer, found $($setup.Count)." }
+          Move-Item $setup[0].FullName "artifact\$base-setup.exe"
+          Get-ChildItem artifact
+
+      - name: Package integration test.
+        shell: pwsh
+        run: |
+          $base = "artifact\SereinGram-windows-$env:ASSET_ARCH"
+          $portable = Join-Path $env:RUNNER_TEMP 'portable-check'
+          Expand-Archive "$base-portable.zip" -DestinationPath $portable
+          if (-not (Test-Path "$portable\SereinGram\SereinGram.exe")) { throw 'The portable archive lacks SereinGram.exe.' }
+          $target = Join-Path $env:RUNNER_TEMP 'SereinGramInstall'
+          $install = Start-Process -FilePath "$base-setup.exe" -Wait -PassThru `
+            -ArgumentList '/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', '/SP-', "/DIR=$target"
+          if ($install.ExitCode -ne 0) { throw "The installer exited with code $($install.ExitCode)." }
+          python "$env:TBUILD\$env:REPO_NAME\tools\serein\smoke_test.py" "$target\SereinGram.exe"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
       - uses: actions/upload-artifact@v7
         name: Upload artifact.
-        if: env.UPLOAD_ARTIFACT == 'true'
         with:
-          name: ${{ env.ARTIFACT_NAME }}
+          name: SereinGram-windows-${{ env.ASSET_ARCH }}
           path: artifact\
-          retention-days: 1
-
-  release:
-    name: Attach to release
-    needs: windows
-    if: startsWith(github.ref, 'refs/tags/v')
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/download-artifact@v8
-        with:
-          path: dist
-          merge-multiple: true
-      - name: Name assets.
-        run: |
-          mv dist/SereinGram.exe dist/SereinGram-windows-x64-portable.exe
-          for setup in dist/tsetup-x64.*.exe; do
-            if [ -e "$setup" ]; then
-              mv "$setup" dist/SereinGram-windows-x64-setup.exe
-            fi
-          done
-      - uses: softprops/action-gh-release@v3
-        with:
-          draft: true
-          prerelease: true
-          fail_on_unmatched_files: true
-          files: dist/*
+          if-no-files-found: error
+          retention-days: 3

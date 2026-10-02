@@ -52,8 +52,6 @@ parts:
     cmake-parameters:
       - -DCMAKE_BUILD_TYPE=Release
       - -DCMAKE_INSTALL_PREFIX=/usr
-      - -DTDESKTOP_API_ID=611335
-      - -DTDESKTOP_API_HASH=d524b414d21f4d37f08684c1df41ac9c
     override-pull: |
       craftctl default
 
@@ -122,7 +120,7 @@ parts:
   patches:
     source: https://github.com/desktop-app/patches.git
     source-depth: 1
-    source-commit: 593bd3c5ab2ce3294306426ffd1f01c5502caec8
+    source-commit: ebcd707f1763651089e3e7220ddd4f97cbcf87e0
     plugin: nil
     override-pull: |
       craftctl default
@@ -163,7 +161,7 @@ parts:
   ffmpeg:
     source: https://github.com/FFmpeg/FFmpeg.git
     source-depth: 1
-    source-branch: n8.1.3
+    source-branch: n6.1.6
     plugin: autotools
     build-packages:
       - nasm
@@ -506,7 +504,7 @@ parts:
   webrtc:
     source: https://github.com/desktop-app/tg_owt.git
     source-depth: 1
-    source-commit: 9826d0e27894a575a63d4b15b2acf8e749e3da67
+    source-commit: e2d0e88d1bde6cc600da5dc92581dc97e4c1e685
     plugin: cmake
     build-packages:
       - libopenh264-dev

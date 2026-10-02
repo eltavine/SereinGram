@@ -46,14 +46,18 @@ message FilterRule {
   bool case_insensitive = 6;
   bool reversed = 7;
   string action = 8 [(buf.validate.field).string = {
-    in: ["mask", "replace", "hide"]
+    in: [
+      "mask",
+      "replace",
+      "hide"
+    ]
   }];
-  // Serialized peer ids the rule is limited to; empty applies everywhere.
+  // Serialized peer ids or peer:topic pairs the rule is limited to; empty applies everywhere.
   repeated string peers = 9 [(buf.validate.field).repeated = {
     max_items: 100
     unique: true
     items: {
-      string: {pattern: "^[1-9][0-9]*$"}
+      string: {pattern: "^[1-9][0-9]*(:[1-9][0-9]*)?$"}
     }
   }];
 }

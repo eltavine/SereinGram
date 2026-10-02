@@ -12,40 +12,105 @@ message GhostSettings {
     subpage: {
       title: "lng_serein_ghost_mode"
       icon: "menuIconStealth"
-      keywords: ["ghost", "stealth", "online", "read"]
+      keywords: [
+        "ghost",
+        "stealth",
+        "online",
+        "read"
+      ]
     }
   };
 
   optional bool ghost_mode = 1 [(serein.options.v1.field) = {
-    keywords: ["ghost", "online", "typing"]
+    keywords: [
+      "ghost",
+      "online",
+      "typing"
+    ]
+  }];
+  optional bool ghost_all_accounts = 10 [(serein.options.v1.field) = {
+    scope: SCOPE_DEVICE
+    keywords: [
+      "ghost",
+      "all accounts",
+      "global"
+    ]
+    note: "lng_serein_ghost_all_accounts_note"
   }];
   optional bool ghost_hide_read_receipts = 2 [(serein.options.v1.field) = {
     default_bool: true
-    keywords: ["ghost", "read", "receipts"]
+    keywords: [
+      "ghost",
+      "read",
+      "receipts"
+    ]
   }];
   optional bool ghost_hide_story_views = 3 [(serein.options.v1.field) = {
     default_bool: true
-    keywords: ["ghost", "stories"]
+    keywords: [
+      "ghost",
+      "stories"
+    ]
   }];
   optional bool ghost_hide_online = 4 [(serein.options.v1.field) = {
     default_bool: true
-    keywords: ["ghost", "online"]
+    keywords: [
+      "ghost",
+      "online"
+    ]
   }];
   optional bool ghost_hide_typing = 5 [(serein.options.v1.field) = {
     default_bool: true
-    keywords: ["ghost", "typing"]
+    keywords: [
+      "ghost",
+      "typing"
+    ]
   }];
   optional bool ghost_hide_view_increments = 6 [(serein.options.v1.field) = {
-    keywords: ["ghost", "views"]
+    keywords: [
+      "ghost",
+      "views"
+    ]
   }];
   optional bool ghost_mark_read_after_sending = 7 [(serein.options.v1.field) = {
-    keywords: ["ghost", "read", "send"]
+    keywords: [
+      "ghost",
+      "read",
+      "send"
+    ]
   }];
   optional bool ghost_explicit_read_receipts = 9 [(serein.options.v1.field) = {
-    keywords: ["ghost", "read", "mark as read"]
+    keywords: [
+      "ghost",
+      "read",
+      "mark as read"
+    ]
+  }];
+  optional bool ghost_send_silently = 12 [(serein.options.v1.field) = {
+    keywords: [
+      "ghost",
+      "silent",
+      "notification",
+      "send"
+    ]
   }];
   optional bool ghost_use_scheduled_messages = 8 [(serein.options.v1.field) = {
-    keywords: ["ghost", "scheduled", "send"]
+    keywords: [
+      "ghost",
+      "scheduled",
+      "send"
+    ]
     note: "lng_serein_ghost_note"
+  }];
+  optional string read_receipt_exceptions = 11 [(serein.options.v1.field) = {
+    title: "lng_serein_ghost_read_exceptions"
+    keywords: [
+      "ghost",
+      "read",
+      "receipts",
+      "exceptions"
+    ]
+    custom_ui: true
+    validator: "ValidReadReceiptExceptions"
   }];
 }

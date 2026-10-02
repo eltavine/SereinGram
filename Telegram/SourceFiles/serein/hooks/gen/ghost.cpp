@@ -14,6 +14,14 @@ rpl::producer<bool> GhostModeValue(gsl::not_null<Main::Session*> session) {
 	return ForAccount(session).Value(Serein::Ghost::kGhostMode);
 }
 
+bool GhostAllAccounts() {
+	return ForDevice().Get(Serein::Ghost::kGhostAllAccounts);
+}
+
+rpl::producer<bool> GhostAllAccountsValue() {
+	return ForDevice().Value(Serein::Ghost::kGhostAllAccounts);
+}
+
 bool GhostHideReadReceipts(gsl::not_null<Main::Session*> session) {
 	return ForAccount(session).Get(Serein::Ghost::kGhostHideReadReceipts);
 }
@@ -70,12 +78,28 @@ rpl::producer<bool> GhostExplicitReadReceiptsValue(gsl::not_null<Main::Session*>
 	return ForAccount(session).Value(Serein::Ghost::kGhostExplicitReadReceipts);
 }
 
+bool GhostSendSilently(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Get(Serein::Ghost::kGhostSendSilently);
+}
+
+rpl::producer<bool> GhostSendSilentlyValue(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Value(Serein::Ghost::kGhostSendSilently);
+}
+
 bool GhostUseScheduledMessages(gsl::not_null<Main::Session*> session) {
 	return ForAccount(session).Get(Serein::Ghost::kGhostUseScheduledMessages);
 }
 
 rpl::producer<bool> GhostUseScheduledMessagesValue(gsl::not_null<Main::Session*> session) {
 	return ForAccount(session).Value(Serein::Ghost::kGhostUseScheduledMessages);
+}
+
+QString ReadReceiptExceptions(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Get(Serein::Ghost::kReadReceiptExceptions);
+}
+
+rpl::producer<QString> ReadReceiptExceptionsValue(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Value(Serein::Ghost::kReadReceiptExceptions);
 }
 
 } // namespace Serein::Hooks::Ghost

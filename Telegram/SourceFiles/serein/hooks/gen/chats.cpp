@@ -38,6 +38,14 @@ rpl::producer<bool> HideStoriesValue() {
 	return ForDevice().Value(Serein::Chats::kHideStories);
 }
 
+bool SearchOwnChatsOnly() {
+	return ForDevice().Get(Serein::Chats::kSearchOwnChatsOnly);
+}
+
+rpl::producer<bool> SearchOwnChatsOnlyValue() {
+	return ForDevice().Value(Serein::Chats::kSearchOwnChatsOnly);
+}
+
 int StartupFolderMode(gsl::not_null<Main::Session*> session) {
 	return ForAccount(session).Get(Serein::Chats::kStartupFolderMode);
 }
@@ -92,6 +100,22 @@ int ChatSort() {
 
 rpl::producer<int> ChatSortValue() {
 	return ForDevice().Value(Serein::Chats::kChatSort);
+}
+
+bool ManagedFolderFilter() {
+	return ForDevice().Get(Serein::Chats::kManagedFolderFilter);
+}
+
+rpl::producer<bool> ManagedFolderFilterValue() {
+	return ForDevice().Value(Serein::Chats::kManagedFolderFilter);
+}
+
+QString HiddenFolderIds(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Get(Serein::Chats::kHiddenFolderIds);
+}
+
+rpl::producer<QString> HiddenFolderIdsValue(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Value(Serein::Chats::kHiddenFolderIds);
 }
 
 QString ManagedFolderIds(gsl::not_null<Main::Session*> session) {

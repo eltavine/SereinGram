@@ -3,10 +3,8 @@ name: Serein Linux.
 on:
   push:
     branches:
-      - serein-next
+      - develop
       - main
-    tags:
-      - 'v*'
     paths-ignore:
       - 'docs/**'
       - '**.md'
@@ -26,6 +24,8 @@ on:
       - 'Telegram/configure.bat'
       - 'Telegram/Telegram.plist'
   pull_request:
+    branches:
+      - develop
     paths-ignore:
       - 'docs/**'
       - '**.md'
@@ -44,44 +44,86 @@ on:
       - 'Telegram/Telegram/**'
       - 'Telegram/configure.bat'
       - 'Telegram/Telegram.plist'
+  workflow_dispatch:
+    inputs:
+      arch:
+        type: choice
+        options: [x86_64, arm64]
+        default: x86_64
+      config:
+        type: choice
+        options: [Debug, Release]
+        default: Release
+  workflow_call:
+    inputs:
+      arch:
+        type: string
+        default: x86_64
+      config:
+        type: string
+        default: Debug
+      ref:
+        type: string
+        default: ''
+      channel:
+        type: string
+        default: ''
+    secrets:
+      SEREIN_API_ID:
+        required: false
+      SEREIN_API_HASH:
+        required: false
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}-linux-${{ inputs.arch || 'x86_64' }}-${{ inputs.config || 'Debug' }}
   cancel-in-progress: false
+
+permissions:
+  contents: read
 
 jobs:
 
   linux:
-    name: Rocky Linux 8
-    runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        defines:
-          - ""
+    name: ${{ inputs.arch == 'arm64' && 'Rocky Linux 8 (arm64)' || 'Rocky Linux 8' }}
+    runs-on: ${{ inputs.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
+    permissions:
+      contents: read
+      actions: write
 
     env:
-      UPLOAD_ARTIFACT: "true"
-      ONLY_CACHE: "false"
+      CONFIG: ${{ inputs.config || 'Debug' }}
+      ARCH: ${{ inputs.arch || 'x86_64' }}
+      KEY_ARCH: ${{ inputs.arch == 'arm64' && 'arm64-' || '' }}
+      # Only these runs write caches: every branch and pull request can read the default branch's.
+      SAVE_CACHE: ${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
       IMAGE_TAG: tdesktop:centos_env
 
     steps:
       - name: Clone.
         uses: actions/checkout@v7
         with:
+          persist-credentials: false
+          ref: ${{ inputs.ref }}
           submodules: recursive
 
       - name: First set up.
         run: |
           sudo apt update
           curl -sSL https://install.python-poetry.org | python3 -
-          curl -sSL https://github.com/ccache/ccache/releases/download/v4.13.6/ccache-4.13.6-linux-x86_64-glibc.tar.xz \
-          | sudo tar xJ -C /usr/local/bin --strip-components=1 ccache-4.13.6-linux-x86_64-glibc/ccache
-          echo "CCACHE_DIR=$RUNNER_TEMP/.tdesktop-cache" >> $GITHUB_ENV
+          if [ "$ARCH" = x86_64 ]; then
+            curl -sSL https://github.com/ccache/ccache/releases/download/v4.13.6/ccache-4.13.6-linux-x86_64-glibc.tar.xz \
+            | sudo tar xJ -C /usr/local/bin --strip-components=1 ccache-4.13.6-linux-x86_64-glibc/ccache
+          else
+            sudo apt-get install -y ccache
+          fi
+          echo "CCACHE_DIR=$RUNNER_TEMP/.tdesktop-cache" >> "$GITHUB_ENV"
           cd Telegram/build/docker/centos_env
           poetry install
-          DOCKERFILE=$(DEBUG= LTO= poetry run gen_dockerfile)
+          DOCKERFILE=$(DEBUG='' LTO='' poetry run gen_dockerfile)
           echo "$DOCKERFILE" > Dockerfile
+          if [ "$ARCH" = arm64 ]; then
+            python3 "$GITHUB_WORKSPACE/tools/serein/patch_dockerfile.py" Dockerfile
+          fi
           rm -rf __pycache__
 
       - name: Free up some disk space.
@@ -91,7 +133,7 @@ jobs:
 
       - name: Set up Docker Buildx.
         id: setup-buildx
-        uses: docker/setup-buildx-action@v4
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
 
       - name: Libraries cache.
         id: cache-libs
@@ -100,8 +142,8 @@ jobs:
           path: |
             ${{ runner.temp }}/.buildx-cache
             ${{ runner.temp }}/.mount-cache
-          key: ${{ runner.OS }}-libs-${{ hashFiles('Telegram/build/docker/centos_env/**') }}
-          restore-keys: ${{ runner.OS }}-libs-
+          key: ${{ runner.OS }}-${{ env.KEY_ARCH }}libs-v2-${{ hashFiles('Telegram/build/docker/centos_env/**') }}
+          restore-keys: ${{ runner.OS }}-${{ env.KEY_ARCH }}libs-
 
       - name: Restore Docker cache mounts.
         uses: reproducible-containers/buildkit-cache-dance@5422eac04292c961a382e0f584ea0f03ad9da723
@@ -112,21 +154,25 @@ jobs:
           skip-extraction: ${{ steps.cache-libs.outputs.cache-hit }}
 
       - name: Libraries.
-        uses: docker/build-push-action@v7
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         with:
           context: Telegram/build/docker/centos_env
-          load: ${{ env.ONLY_CACHE == 'false' }}
+          load: true
           tags: ${{ env.IMAGE_TAG }}
           cache-from: type=local,src=${{ runner.temp }}/.buildx-cache
           cache-to: type=local,dest=${{ runner.temp }}/.buildx-cache-new,mode=max
 
       - name: Move cache.
         run: |
-          rm -rf ${{ runner.temp }}/.buildx-cache
-          mv ${{ runner.temp }}/.buildx-cache{-new,}
+          rm -rf "${{ runner.temp }}/.buildx-cache"
+          mv "${{ runner.temp }}/.buildx-cache-new" "${{ runner.temp }}/.buildx-cache"
+
+      # Set after the image: as a build argument it would change every commit's image cache.
+      - name: Pin the source date.
+        run: echo "SOURCE_DATE_EPOCH=$(git log -1 --format=%ct)" >> "$GITHUB_ENV"
 
       - name: Save the libraries cache.
-        if: steps.cache-libs.outputs.cache-hit != 'true'
+        if: env.SAVE_CACHE == 'true' && steps.cache-libs.outputs.cache-hit != 'true'
         uses: actions/cache/save@v6
         with:
           path: |
@@ -136,135 +182,198 @@ jobs:
 
       - name: Restore Telegram Desktop cache.
         id: cache-tdesktop
-        if: env.ONLY_CACHE == 'false'
         uses: actions/cache/restore@v6
         with:
           path: ${{ env.CCACHE_DIR }}
-          key: ${{ runner.OS }}-tdesktop-${{ matrix.defines || 'null' }}-${{ github.run_id }}
-          restore-keys: ${{ runner.OS }}-tdesktop-${{ matrix.defines || 'null' }}-
+          key: ${{ runner.OS }}-tdesktop-${{ env.KEY_ARCH }}${{ env.CONFIG }}-${{ github.run_id }}
+          restore-keys: ${{ runner.OS }}-tdesktop-${{ env.KEY_ARCH }}${{ env.CONFIG }}-
 
       - name: Serein build.
-        if: env.ONLY_CACHE == 'false'
         env:
           SEREIN_API_ID: ${{ secrets.SEREIN_API_ID }}
           SEREIN_API_HASH: ${{ secrets.SEREIN_API_HASH }}
+          CHANNEL: ${{ inputs.channel }}
+          COMMIT: ${{ inputs.ref }}
         run: |
           # Without the repository secrets, build with the test-only credentials.
-          API=""
+          API=()
           if [ -z "$SEREIN_API_ID" ]; then
-            API="-D TDESKTOP_API_TEST=ON"
+            API=(-D TDESKTOP_API_TEST=ON)
           fi
-
-          DEFINE=""
-          if [ -n "${{ matrix.defines }}" ]; then
-            DEFINE="-D ${{ matrix.defines }}=ON"
-            echo Define from matrix: $DEFINE
-            echo "ARTIFACT_NAME=SereinGram ${{ matrix.defines }}" >> $GITHUB_ENV
+          if [ "$CONFIG" = Debug ]; then
+            FLAGS=(-D CMAKE_C_FLAGS_DEBUG="-O0 -fpch-preprocess"
+              -D CMAKE_CXX_FLAGS_DEBUG="-O0 -fpch-preprocess")
           else
-            echo "ARTIFACT_NAME=SereinGram" >> $GITHUB_ENV
+            FLAGS=(-D CMAKE_C_FLAGS_RELEASE="-O2 -DNDEBUG -fpch-preprocess"
+              -D CMAKE_CXX_FLAGS_RELEASE="-O2 -DNDEBUG -fpch-preprocess")
+          fi
+          # Upstream code assumes the signed char of every other target, and
+          # GCC reports inlined std::shared_ptr destructors as dangling on arm64.
+          if [ "$ARCH" = arm64 ]; then
+            FLAGS+=(-D CMAKE_C_FLAGS=-fsigned-char
+              -D "CMAKE_CXX_FLAGS=-fsigned-char -Wno-error=dangling-pointer")
+          fi
+          if [ -n "$CHANNEL" ]; then
+            FLAGS+=(-D SEREIN_BUILD_CHANNEL="$CHANNEL" -D SEREIN_BUILD_COMMIT="$COMMIT")
           fi
 
           ccache -z
 
           docker run --rm \
-          -u $(id -u) \
-          -v $PWD:/usr/src/tdesktop \
-          -v ${{ env.CCACHE_DIR }}:/var/cache/ccache \
-          -e CONFIG=Debug \
+          -u "$(id -u)" \
+          -v "$PWD:/usr/src/tdesktop" \
+          -v "$CCACHE_DIR:/var/cache/ccache" \
+          -e CONFIG \
           -e KEEP_GOING=1 \
           -e SEREIN_API_ID \
           -e SEREIN_API_HASH \
+          -e SOURCE_DATE_EPOCH \
           -e CCACHE_SLOPPINESS=pch_defines,time_macros \
-          $IMAGE_TAG \
+          "$IMAGE_TAG" \
           env -u CCACHE_DISABLE /usr/src/tdesktop/Telegram/build/docker/centos_env/build.sh \
-          -D CMAKE_CONFIGURATION_TYPES=Debug \
+          -D CMAKE_CONFIGURATION_TYPES="$CONFIG" \
           -D DESKTOP_APP_TEST_APPS=ON \
-          -D CMAKE_C_FLAGS_DEBUG="-O0 -fpch-preprocess" \
-          -D CMAKE_CXX_FLAGS_DEBUG="-O0 -fpch-preprocess" \
           -D CMAKE_COMPILE_WARNING_AS_ERROR=ON \
-          $API \
-          $DEFINE
+          "${FLAGS[@]}" \
+          "${API[@]}"
 
           docker run --rm \
-          -u $(id -u) \
-          -v $PWD:/usr/src/tdesktop \
-          $IMAGE_TAG \
-          /usr/src/tdesktop/out/serein-tests/Debug/test_serein
+          -u "$(id -u)" \
+          -v "$PWD:/usr/src/tdesktop" \
+          "$IMAGE_TAG" \
+          "/usr/src/tdesktop/out/serein-tests/$CONFIG/test_serein"
 
       - name: Count ccache misses.
         id: ccache-stats
-        if: "!cancelled() && env.ONLY_CACHE == 'false'"
+        if: "!cancelled()"
         run: |
           MISSES=$(ccache --print-stats | sed -n 's/^cache_miss\t//p' | head -1)
           case "$MISSES" in (*[!0-9]*|'') MISSES=0;; esac
-          echo "misses=$MISSES" >> $GITHUB_OUTPUT
+          echo "misses=$MISSES" >> "$GITHUB_OUTPUT"
           echo "ccache misses this run: $MISSES"
+          ccache --print-stats | grep -E '^(cache_size_kibibyte|files_in_cache)\b' || true
 
       - name: Trim Telegram Desktop cache.
         if: >
           !cancelled()
-            && env.ONLY_CACHE == 'false'
-            && github.ref_name == github.event.repository.default_branch
+            && env.SAVE_CACHE == 'true'
             && fromJSON(steps.ccache-stats.outputs.misses) > 300
         run: ccache --evict-older-than 1d
 
       - name: Save Telegram Desktop cache.
+        id: save-tdesktop
         if: >
           !cancelled()
-            && env.ONLY_CACHE == 'false'
-            && github.ref_name == github.event.repository.default_branch
+            && env.SAVE_CACHE == 'true'
             && fromJSON(steps.ccache-stats.outputs.misses) > 300
         uses: actions/cache/save@v6
         with:
           path: ${{ env.CCACHE_DIR }}
           key: ${{ steps.cache-tdesktop.outputs.cache-primary-key }}
 
-      - name: Check.
-        if: env.ONLY_CACHE == 'false'
+      # Keeping one compiler cache per configuration leaves the platform caches inside the quota.
+      - name: Drop older Telegram Desktop caches.
+        if: steps.save-tdesktop.outcome == 'success'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          KEEP: ${{ steps.cache-tdesktop.outputs.cache-primary-key }}
+          PREFIX: ${{ runner.OS }}-tdesktop-${{ env.KEY_ARCH }}${{ env.CONFIG }}-
         run: |
-          filePath="out/Debug/SereinGram"
-          if test -f "$filePath"; then
-            echo "Build successfully done! :)"
+          gh cache list -R "$GITHUB_REPOSITORY" --key "$PREFIX" --limit 100 \
+            --json key --jq '.[].key' \
+          | { grep -vxF "$KEEP" || true; } \
+          | while read -r key; do
+            gh cache delete "$key" -R "$GITHUB_REPOSITORY"
+          done
 
-            size=$(stat -c %s "$filePath")
-            echo "File size of ${filePath}: ${size} Bytes."
-          else
-            echo "Build error, output file does not exist."
+      - name: Runtime libraries resolve.
+        run: |
+          binary="out/$CONFIG/SereinGram"
+          echo "File size of $binary: $(stat -c %s "$binary") bytes."
+          if ldd "$binary" | grep 'not found'; then
+            echo "The binary needs libraries the system does not have." >&2
             exit 1
           fi
 
-      - name: Move artifact.
-        if: env.UPLOAD_ARTIFACT == 'true'
+      - name: Smoke test.
         run: |
-          cd out/Debug
-          mkdir artifact
-          tar -czf artifact/SereinGram.tar.gz SereinGram
+          sudo apt-get install -y xvfb
+          xvfb-run -a python3 tools/serein/smoke_test.py "out/$CONFIG/SereinGram"
+
+      - name: Portable archive.
+        run: |
+          mkdir -p artifact "$RUNNER_TEMP/portable/SereinGram"
+          install -m755 "out/$CONFIG/SereinGram" "$RUNNER_TEMP/portable/SereinGram/"
+          tar --sort=name --owner=0 --group=0 --numeric-owner \
+            --mtime="@$SOURCE_DATE_EPOCH" -C "$RUNNER_TEMP/portable" \
+            -cJf "artifact/SereinGram-linux-$ARCH.tar.xz" SereinGram
+
+      - name: AppImage.
+        env:
+          APPIMAGE_ARCH: ${{ inputs.arch == 'arm64' && 'aarch64' || 'x86_64' }}
+          APPIMAGETOOL_SHA256: ${{ inputs.arch == 'arm64' && 'f0837e7448a0c1e4e650a93bb3e85802546e60654ef287576f46c71c126a9158' || 'ed4ce84f0d9caff66f50bcca6ff6f35aae54ce8135408b3fa33abfc3cb384eb0' }}
+          RUNTIME_SHA256: ${{ inputs.arch == 'arm64' && '00cbdfcf917cc6c0ff6d3347d59e0ca1f7f45a6df1a428a0d6d8a78664d87444' || '2fca8b443c92510f1483a883f60061ad09b46b978b2631c807cd873a47ec260d' }}
+        run: |
+          tool="$RUNNER_TEMP/appimagetool"
+          runtime="$RUNNER_TEMP/runtime-$APPIMAGE_ARCH"
+          curl -sSfL -o "$tool" \
+            "https://github.com/AppImage/appimagetool/releases/download/1.9.1/appimagetool-$APPIMAGE_ARCH.AppImage"
+          curl -sSfL -o "$runtime" \
+            "https://github.com/AppImage/type2-runtime/releases/download/20251108/runtime-$APPIMAGE_ARCH"
+          echo "$APPIMAGETOOL_SHA256  $tool" | sha256sum -c -
+          echo "$RUNTIME_SHA256  $runtime" | sha256sum -c -
+          chmod +x "$tool"
+          app="$RUNNER_TEMP/SereinGram.AppDir"
+          install -Dm755 "out/$CONFIG/SereinGram" "$app/usr/bin/SereinGram"
+          install -Dm644 Telegram/Resources/art/icon256.png \
+            "$app/io.github.eltavine.SereinGram.png"
+          sed '/^DBusActivatable=/d' lib/xdg/io.github.eltavine.SereinGram.desktop \
+            > "$app/io.github.eltavine.SereinGram.desktop"
+          ln -s usr/bin/SereinGram "$app/AppRun"
+          output="artifact/SereinGram-linux-$ARCH.AppImage"
+          ARCH=$APPIMAGE_ARCH "$tool" --appimage-extract-and-run --runtime-file "$runtime" \
+            "$app" "$output"
+
+      - name: Debian and RPM packages.
+        env:
+          NFPM_ASSET: ${{ inputs.arch == 'arm64' && 'Linux_arm64' || 'Linux_x86_64' }}
+          NFPM_SHA256: ${{ inputs.arch == 'arm64' && '1c0f5f2999b9a974bfb04fdb0cc3306096de530ac5dbb25d739cc5f5219c919c' || '0660ca602b2d2d2ae4781a06c692b3eeb9d437ffea05b831d76e41f4a3188783' }}
+          SEREIN_PACKAGE_ARCH: ${{ inputs.arch == 'arm64' && 'arm64' || 'amd64' }}
+        run: |
+          archive="$RUNNER_TEMP/nfpm.tar.gz"
+          curl -sSfL -o "$archive" \
+            "https://github.com/goreleaser/nfpm/releases/download/v2.47.0/nfpm_2.47.0_$NFPM_ASSET.tar.gz"
+          echo "$NFPM_SHA256  $archive" | sha256sum -c -
+          tar -xzf "$archive" -C "$RUNNER_TEMP" nfpm
+          stage="$RUNNER_TEMP/packages"
+          packaging/nfpm/stage.sh "out/$CONFIG/SereinGram" \
+            lib/xdg/io.github.eltavine.SereinGram.metainfo.xml "$stage"
+          version=$(sed -n 's/^AppVersionStrSmall *//p' Telegram/build/version)
+          if [[ "$GITHUB_REF" != refs/tags/* ]]; then
+            version="$version+g$(git rev-parse --short=7 HEAD)"
+          fi
+          for packager in deb rpm; do
+            (cd "$stage" && SEREIN_VERSION="$version" "$RUNNER_TEMP/nfpm" package \
+              --config "$GITHUB_WORKSPACE/packaging/nfpm/nfpm.yaml" \
+              --packager "$packager" \
+              --target "$GITHUB_WORKSPACE/artifact/SereinGram-linux-$ARCH.$packager")
+          done
+          ls -l artifact
+
+      - name: AppImage integration test.
+        env:
+          APPIMAGE_EXTRACT_AND_RUN: 1
+        run: xvfb-run -a python3 tools/serein/smoke_test.py "artifact/SereinGram-linux-$ARCH.AppImage"
+
+      # The packages must install with their declared dependencies on clean systems.
+      - name: Package integration test.
+        run: tools/serein/linux_package_test.sh artifact "$ARCH"
+
       - uses: actions/upload-artifact@v7
-        if: env.UPLOAD_ARTIFACT == 'true'
         name: Upload artifact.
         with:
-          name: ${{ env.ARTIFACT_NAME }}
-          path: out/Debug/artifact/
-          retention-days: 1
-
-  release:
-    name: Attach to release
-    needs: linux
-    if: startsWith(github.ref, 'refs/tags/v')
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/download-artifact@v8
-        with:
-          path: dist
-          merge-multiple: true
-      - name: Name assets.
-        run: |
-          mv dist/SereinGram.tar.gz dist/SereinGram-linux-x86_64.tar.gz
-      - uses: softprops/action-gh-release@v3
-        with:
-          draft: true
-          prerelease: true
-          fail_on_unmatched_files: true
-          files: dist/*
+          name: SereinGram-linux-${{ env.ARCH }}
+          path: artifact/
+          if-no-files-found: error
+          retention-days: 3

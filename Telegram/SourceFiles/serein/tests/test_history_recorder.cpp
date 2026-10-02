@@ -1,19 +1,14 @@
 #include "serein/adapters/qtsql/history_store.h"
 #include "serein/features/history/model/recorder.h"
 #include "base/basic_types.h"
+#include "serein/tests/require.h"
 
+#include <doctest/doctest.h>
 #include <QtCore/QTemporaryDir>
 
 #include <iostream>
-#include <stdexcept>
 
 namespace {
-
-void Require(bool value, const char *message) {
-	if (!value) {
-		throw std::runtime_error(message);
-	}
-}
 
 class PlainCipher final : public Serein::Ports::Cipher {
 public:
@@ -23,6 +18,7 @@ public:
 	std::optional<QByteArray> decrypt(const QByteArray &sealed) override {
 		return sealed;
 	}
+
 };
 
 [[nodiscard]] Serein::HistoryFeature::Snapshot Message(qint64 id, bool bot = false) {
@@ -38,7 +34,7 @@ public:
 
 } // namespace
 
-void TestHistoryRecorder() {
+TEST_CASE("HistoryRecorder") {
 	using namespace Serein;
 	using namespace Serein::HistoryFeature;
 	auto directory = QTemporaryDir();
@@ -92,7 +88,7 @@ void TestHistoryRecorder() {
 		&& versions[1].recordedAt == now,
 		"edits get increasing revisions and timestamps");
 
-	now += 3 * 86400;
+	now += 3 * qint64(86400);
 	policy.retentionDays = 2;
 	Require(recorder.prune(policy), "pruning succeeds");
 	Require(store->deleted({ .peerId = 555 }).empty() && store->versions(555, 3).empty(),

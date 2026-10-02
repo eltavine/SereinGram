@@ -9,13 +9,17 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-import upstream_budget  # noqa: E402
+import upstream_budget
 
 
 def git(root, *args):
     return subprocess.run(
         ["git", "-c", "user.name=t", "-c", "user.email=t@t", *args],
-        cwd=root, capture_output=True, check=True, text=True).stdout.strip()
+        cwd=root,
+        capture_output=True,
+        check=True,
+        text=True,
+    ).stdout.strip()
 
 
 class UpstreamBudgetTest(unittest.TestCase):
@@ -32,13 +36,18 @@ class UpstreamBudgetTest(unittest.TestCase):
         self._policies = tempfile.TemporaryDirectory()
         policies = Path(self._policies.name)
         self.owned = policies / "owned.json"
-        self.owned.write_text(json.dumps({
-            "schema_version": 1,
-            "max_lines": 1000,
-            "owned": ["Telegram/SourceFiles/serein/"],
-            "extensions": [".cpp"],
-            "filenames": [],
-        }), encoding="utf-8")
+        self.owned.write_text(
+            json.dumps(
+                {
+                    "schema_version": 1,
+                    "max_lines": 1000,
+                    "owned": ["Telegram/SourceFiles/serein/"],
+                    "extensions": [".cpp"],
+                    "filenames": [],
+                }
+            ),
+            encoding="utf-8",
+        )
         self.policy = policies / "upstream.json"
 
     def tearDown(self):
@@ -50,36 +59,46 @@ class UpstreamBudgetTest(unittest.TestCase):
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(text, encoding="utf-8")
 
-    def write_policy(self, **budget):
+    def write_policy(self, overrides=(), **budget):
+        overrides = list(overrides)
         values = dict.fromkeys(upstream_budget.BUDGET_KEYS, 100)
         values.update(budget)
-        self.policy.write_text(json.dumps({
-            "schema_version": 1,
-            "upstream": "test",
-            "base": self.base,
-            "source_root": "Telegram/SourceFiles/",
-            "owned_extra": ["docs/"],
-            "own_include_prefixes": ["serein/"],
-            "hook_include_prefixes": ["serein/hooks/"],
-            "budget": values,
-        }), encoding="utf-8")
+        self.policy.write_text(
+            json.dumps(
+                {
+                    "schema_version": 1,
+                    "upstream": "test",
+                    "base": self.base,
+                    "source_root": "Telegram/SourceFiles/",
+                    "owned_extra": ["docs/"],
+                    "own_include_prefixes": ["serein/"],
+                    "hook_include_prefixes": ["serein/hooks/"],
+                    "submodule_overrides": overrides,
+                    "budget": values,
+                }
+            ),
+            encoding="utf-8",
+        )
 
     def run_budget(self, *extra):
         output = io.StringIO()
         with contextlib.redirect_stdout(output), contextlib.redirect_stderr(output):
-            code = upstream_budget.main([
-                "--root", str(self.root),
-                "--policy", str(self.policy),
-                "--owned-policy", str(self.owned),
-                *extra,
-            ])
+            code = upstream_budget.main(
+                [
+                    "--root",
+                    str(self.root),
+                    "--policy",
+                    str(self.policy),
+                    "--owned-policy",
+                    str(self.owned),
+                    *extra,
+                ]
+            )
         return code, output.getvalue()
 
     def change_tree(self):
-        self.write("Telegram/SourceFiles/a.cpp",
-                   'int a;\n#include "serein/features/x.h"\nint c;\n')
-        self.write("Telegram/SourceFiles/b.cpp",
-                   'int b;\n#include "serein/hooks/ghost.h"\n')
+        self.write("Telegram/SourceFiles/a.cpp", 'int a;\n#include "serein/features/x.h"\nint c;\n')
+        self.write("Telegram/SourceFiles/b.cpp", 'int b;\n#include "serein/hooks/ghost.h"\n')
         self.write("Telegram/SourceFiles/serein/own.cpp", "int own;\n" * 50)
         self.write("docs/notes.md", "notes\n")
         self.write("lib/x.txt", "x\ny\n")
@@ -91,15 +110,45 @@ class UpstreamBudgetTest(unittest.TestCase):
         self.write_policy()
         policy = upstream_budget.load_policy(self.policy)
         metrics, offenders = upstream_budget.measure(
-            self.root, policy, ["Telegram/SourceFiles/serein/"])
-        self.assertEqual(metrics, {
-            "all_files": 3,
-            "all_added_lines": 4,
-            "source_files": 2,
-            "source_added_lines": 3,
-            "direct_include_files": 1,
-        })
+            self.root, policy, ["Telegram/SourceFiles/serein/"]
+        )
+        self.assertEqual(
+            metrics,
+            {
+                "all_files": 3,
+                "all_added_lines": 4,
+                "source_files": 2,
+                "source_added_lines": 3,
+                "direct_include_files": 1,
+                "upstream_headers": 0,
+            },
+        )
         self.assertEqual(offenders, ["Telegram/SourceFiles/a.cpp"])
+
+    def test_counts_upstream_headers_used_by_serein(self):
+        self.write("Telegram/SourceFiles/data/data_session.h", "")
+        self.write("Telegram/SourceFiles/history/history.h", "")
+        self.write(
+            "Telegram/SourceFiles/serein/feature.cpp",
+            '#include "serein/core/options.h"\n'
+            '#include "data/data_session.h"\n'
+            '#include "base/basic_types.h"\n'
+            "#include <QtCore/QString>\n",
+        )
+        self.write("Telegram/SourceFiles/serein/view.h", '#include "data/data_session.h"\n')
+        self.write("Telegram/SourceFiles/serein/tests/t.cpp", '#include "history/history.h"\n')
+        git(self.root, "add", ".")
+        git(self.root, "commit", "-q", "-m", "serein")
+        self.write_policy(upstream_headers=1)
+        code, output = self.run_budget("--headers")
+        self.assertEqual(code, 0, output)
+        self.assertIn("upstream_headers            1 / 1", output)
+        self.assertIn("upstream header: data/data_session.h", output)
+        self.assertNotIn("history/history.h", output)
+        self.write_policy(upstream_headers=0)
+        code, output = self.run_budget()
+        self.assertEqual(code, 1)
+        self.assertIn("over budget: upstream_headers", output)
 
     def test_passes_within_budget(self):
         self.change_tree()
@@ -114,6 +163,26 @@ class UpstreamBudgetTest(unittest.TestCase):
         code, output = self.run_budget()
         self.assertEqual(code, 1)
         self.assertIn("source_files, direct_include_files", output)
+
+    def link(self, path, sha):
+        git(self.root, "update-index", "--add", "--cacheinfo", f"160000,{sha},{path}")
+
+    def test_reports_submodule_behind_upstream(self):
+        upstream = "1" * 40
+        self.link("deps/lib", upstream)
+        git(self.root, "commit", "-q", "-m", "add submodule")
+        self.base = git(self.root, "rev-parse", "HEAD")
+        self.link("deps/lib", "2" * 40)
+        self.link("deps/own", "3" * 40)
+        self.write_policy()
+        code, output = self.run_budget()
+        self.assertEqual(code, 1, output)
+        self.assertIn("Submodule deps/lib is staged at 2222222222", output)
+        self.assertIn("upstream base has 1111111111", output)
+        self.assertNotIn("deps/own", output)
+        self.write_policy(overrides=["deps/lib"])
+        code, output = self.run_budget()
+        self.assertEqual(code, 0, output)
 
     def test_rejects_short_base(self):
         self.write_policy()

@@ -47,6 +47,14 @@ namespace Serein::Hooks::Compose {
 [[nodiscard]] rpl::producer<bool> SpaceOnEditValue();
 [[nodiscard]] bool MentionMenu();
 [[nodiscard]] rpl::producer<bool> MentionMenuValue();
+[[nodiscard]] bool RememberForwardOptions();
+[[nodiscard]] rpl::producer<bool> RememberForwardOptionsValue();
+[[nodiscard]] int LastForwardOptions();
+[[nodiscard]] rpl::producer<int> LastForwardOptionsValue();
+[[nodiscard]] bool CaptionAboveMedia();
+[[nodiscard]] rpl::producer<bool> CaptionAboveMediaValue();
+[[nodiscard]] bool DraftTranslation();
+[[nodiscard]] rpl::producer<bool> DraftTranslationValue();
 [[nodiscard]] bool FormatToolbar();
 [[nodiscard]] rpl::producer<bool> FormatToolbarValue();
 [[nodiscard]] QString DefaultCodeLanguage();
@@ -55,6 +63,8 @@ namespace Serein::Hooks::Compose {
 [[nodiscard]] rpl::producer<QByteArray> QuickRepliesValue();
 [[nodiscard]] QByteArray TextReplacements();
 [[nodiscard]] rpl::producer<QByteArray> TextReplacementsValue();
+[[nodiscard]] QByteArray LinkInlineBots();
+[[nodiscard]] rpl::producer<QByteArray> LinkInlineBotsValue();
 [[nodiscard]] bool ConfirmSticker();
 [[nodiscard]] rpl::producer<bool> ConfirmStickerValue();
 [[nodiscard]] bool ConfirmGif();
@@ -69,5 +79,7 @@ namespace Serein::Hooks::Compose {
 [[nodiscard]] rpl::producer<bool> ForwardBeforeCommentValue();
 [[nodiscard]] bool SendSilently();
 [[nodiscard]] rpl::producer<bool> SendSilentlyValue();
+[[nodiscard]] bool OwnerSendAs();
+[[nodiscard]] rpl::producer<bool> OwnerSendAsValue();
 
 } // namespace Serein::Hooks::Compose

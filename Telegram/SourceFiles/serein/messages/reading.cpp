@@ -1,7 +1,9 @@
 #include "serein/hooks/messages/reading.h"
 
 #include "serein/hooks/compose/text.h"
+#include "serein/display/text_entities.h"
 #include "serein/messages/chinese.h"
+#include "serein/messages/chinese_warmup.h"
 #include "logs.h"
 #include "settings.h"
 #include "ui/text/text_utilities.h"
@@ -10,32 +12,10 @@
 #include <QtCore/QFile>
 
 #include <algorithm>
+#include <mutex>
 
 namespace Serein::Messages {
 namespace {
-
-bool Protected(EntityType type) {
-	switch (type) {
-	case EntityType::Url:
-	case EntityType::CustomUrl:
-	case EntityType::Email:
-	case EntityType::Hashtag:
-	case EntityType::Cashtag:
-	case EntityType::Mention:
-	case EntityType::MentionName:
-	case EntityType::CustomEmoji:
-	case EntityType::BotCommand:
-	case EntityType::MediaTimestamp:
-	case EntityType::Phone:
-	case EntityType::BankCard:
-	case EntityType::Code:
-	case EntityType::Pre:
-	case EntityType::FormattedDate:
-		return true;
-	default:
-		return false;
-	}
-}
 
 [[nodiscard]] QString DictionaryDirectory() {
 	const auto directory = cWorkingDir() + u"tdata/serein/opencc-1.4.2"_q;
@@ -54,24 +34,40 @@ bool Protected(EntityType type) {
 	return directory;
 }
 
-[[nodiscard]] const ChineseConverter *Converter(bool traditional) {
-	static auto loaded = std::array<bool, 2>();
-	static auto converters = std::array<std::unique_ptr<ChineseConverter>, 2>();
+using Converters = std::array<std::unique_ptr<ChineseConverter>, 2>;
+
+[[nodiscard]] Converters &LoadedConverters() {
+	static auto result = Converters();
+	return result;
+}
+
+void LoadConverter(bool traditional) {
+	static auto loaded = std::array<std::once_flag, 2>();
 	const auto index = traditional ? 1 : 0;
-	if (!loaded[index]) {
-		loaded[index] = true;
+	std::call_once(loaded[index], [&] {
 		const auto directory = DictionaryDirectory();
-		converters[index] = directory.isEmpty()
+		auto &converter = LoadedConverters()[index];
+		converter = directory.isEmpty()
 			? nullptr
 			: ChineseConverter::Load(directory, traditional);
-		if (!converters[index]) {
+		if (!converter) {
 			LOG(("Serein Chinese conversion: OpenCC could not be loaded."));
 		}
-	}
-	return converters[index].get();
+	});
+}
+
+[[nodiscard]] const ChineseConverter *Converter(bool traditional) {
+	LoadConverter(traditional);
+	return LoadedConverters()[traditional ? 1 : 0].get();
 }
 
 } // namespace
+
+void WarmUpChineseConversion(bool traditional) {
+	crl::async([=] {
+		LoadConverter(traditional);
+	});
+}
 
 std::optional<TextWithEntities> ConvertChinese(
 		const TextWithEntities &source,
@@ -87,7 +83,7 @@ std::optional<TextWithEntities> ConvertChinese(
 			if (!entity.validForText(length)) {
 				return false;
 			}
-			if (Protected(entity.type())) {
+			if (Display::VerbatimEntity(entity.type())) {
 				std::fill(protectedPositions.begin() + entity.offset(),
 					protectedPositions.begin() + entity.offset() + entity.length(), true);
 			}

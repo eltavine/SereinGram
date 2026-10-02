@@ -1,4 +1,5 @@
 #include "serein/filters/subscription.h"
+#include "serein/adapters/qtnetwork/manager.h"
 
 #include "serein/filters/model.h"
 #include "core/application.h"
@@ -6,9 +7,6 @@
 #include "ui/layers/show.h"
 
 #include <QtCore/QTimer>
-#include <QtNetwork/QNetworkAccessManager>
-#include <QtNetwork/QNetworkReply>
-#include <QtNetwork/QNetworkRequest>
 
 namespace Serein::Filters {
 namespace {
@@ -46,21 +44,16 @@ void UpdateRuleSubscription(std::shared_ptr<Ui::Show> show) {
 		Notify(show, tr::lng_serein_filter_subscription_missing(tr::now));
 		return;
 	}
-	const auto network = new QNetworkAccessManager(&Core::App());
-	auto request = QNetworkRequest(url);
-	request.setRawHeader("User-Agent", "SereinGram");
-	request.setTransferTimeout(kRequestTimeout);
-	const auto reply = network->get(request);
-	QObject::connect(reply, &QNetworkReply::finished, network, [=] {
-		reply->deleteLater();
-		network->deleteLater();
-		const auto body = reply->read(kMaximumSize + 1);
-		if (reply->error() != QNetworkReply::NoError
-			|| body.size() > kMaximumSize) {
+	Adapters::Download({
+		.url = url,
+		.maximumSize = kMaximumSize,
+		.timeout = kRequestTimeout,
+	}, [=](std::optional<QByteArray> body) {
+		if (!body) {
 			Notify(show, tr::lng_serein_filter_subscription_failed(tr::now));
 			return;
 		}
-		Store(show, body);
+		Store(show, *body);
 	});
 }
 

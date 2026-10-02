@@ -1,5 +1,6 @@
 #include "serein/settings/home.h"
 #include "serein/settings/interface.h"
+#include "serein/settings/licenses.h"
 #include "serein/settings/messages.h"
 #include "serein/settings/menu.h"
 #include "serein/settings/chats.h"
@@ -9,6 +10,7 @@
 #include "serein/settings/privacy.h"
 #include "serein/settings/services.h"
 #include "serein/settings/rules.h"
+#include "serein/settings/page.h"
 
 #include "boxes/about_box.h"
 #include "core/click_handler_types.h"
@@ -19,6 +21,7 @@
 #include "ui/vertical_list.h"
 #include "window/window_session_controller.h"
 #include "styles/style_menu_icons.h"
+#include "styles/style_serein.h"
 
 namespace Serein {
 namespace {
@@ -26,20 +29,16 @@ namespace {
 using namespace ::Settings;
 using namespace ::Settings::Builder;
 
-class Home final : public Section<Home> {
+class Home final : public Page<Home> {
 public:
-	Home(QWidget *parent, not_null<Window::SessionController*> controller)
-	: Section(parent, controller) {
-		const auto content = Ui::CreateChild<Ui::VerticalLayout>(this);
-		build(content, kBuild);
-		Ui::ResizeFitChild(this, content);
-	}
+	using Page::Page;
 
 	[[nodiscard]] rpl::producer<QString> title() override {
 		return tr::lng_serein_settings();
 	}
 
 	static const SectionBuildMethod kBuild;
+
 };
 
 const auto kMeta = BuildHelper({
@@ -59,6 +58,16 @@ const auto kMeta = BuildHelper({
 		.icon = { &st::menuIconLink },
 		.onClick = [] {
 			UrlClickHandler::Open(u"https://github.com/eltavine/SereinGram"_q);
+		},
+	});
+	const auto controller = builder.controller();
+	builder.addButton({
+		.title = tr::lng_serein_licenses(),
+		.icon = { &st::menuIconInfo },
+		.onClick = [=] {
+			if (controller) {
+				ShowLicenses(controller);
+			}
 		},
 	});
 	builder.addSectionButton({

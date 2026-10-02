@@ -13,12 +13,14 @@ namespace Serein::Links {
 
 struct CustomRows {
 	CustomRow linkRules;
+	CustomRow previewLinkRules;
 };
 
 inline void AddLayout(
 		::Settings::Builder::SectionBuilder &builder,
 		const CustomRows &custom) {
 	custom.linkRules();
+	custom.previewLinkRules();
 }
 
 } // namespace Serein::Links

@@ -20,7 +20,7 @@
 | --- | --- | --- |
 | A. Google protobuf C++ 运行时 | 最成熟；运行时反射可读取自定义选项；标准 JSON 映射 | 新增 protobuf 与 abseil 两个重依赖；与 WebRTC 的 abseil 冲突；改动三处上游构建脚本 |
 | B. Qt Protobuf（qtgrpc） | Qt 官方；生成 Qt 类型；有 JSON 序列化 | 需在 Qt 构建中加入 qtgrpc，生成器还需主机端 libprotoc；运行时读不到自定义选项，设置页元数据仍需另一套生成 |
-| C. FlatBuffers | 头文件运行时；自带演进检查 | 不是 proto3，Buf 不支持；与维护者现有的 Buf 工具链不一致 |
+| C. FlatBuffers | 头文件运行时；自带演进检查 | 不是 proto3，Buf 不支持；与项目采用的 Buf 工具链不一致 |
 | D. proto3 + Buf + protovalidate 注解 + 本地 protoc 插件生成 Qt C++，无运行时库 | 零新增运行时依赖；生成代码的形状贴合项目（Qt 类型、`rpl`、上游偏好 KV）；Buf 负责 lint、breaking 与生成编排 | 需要维护生成器与 JSON 编解码模板 |
 
 ## 决定

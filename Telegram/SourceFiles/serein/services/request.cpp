@@ -1,11 +1,13 @@
 #include "serein/services/request.h"
 
 #include "lang/lang_keys.h"
+#include "serein/adapters/qtnetwork/manager.h"
 #include "serein/services/credentials.h"
 #include "serein/services/translation_protocol.h"
 
 #include <QtCore/QJsonDocument>
 #include <QtNetwork/QHttpMultiPart>
+#include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QNetworkReply>
 #include <QtNetwork/QNetworkRequest>
 
@@ -43,7 +45,7 @@ QString ServiceErrorText(ServiceError error, int status) {
 
 ServiceRequest::ServiceRequest() {
 	_deadline.setSingleShot(true);
-	QObject::connect(&_deadline, &QTimer::timeout, &_network, [=] {
+	QObject::connect(&_deadline, &QTimer::timeout, &_context, [=] {
 		if (_reply) {
 			_reply->abort();
 		}
@@ -58,7 +60,7 @@ void ServiceRequest::cancel() {
 	_deadline.stop();
 	if (const auto reply = _reply.data()) {
 		_reply.clear();
-		QObject::disconnect(reply, nullptr, &_network, nullptr);
+		QObject::disconnect(reply, nullptr, &_context, nullptr);
 		reply->abort();
 		reply->deleteLater();
 	}
@@ -115,7 +117,7 @@ void ServiceRequest::json(
 		request->setUrl(url);
 	}
 	request->setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-	start(_network.post(*request, bytes), std::move(done));
+	start(Adapters::SharedNetwork().post(*request, bytes), std::move(done));
 }
 
 void ServiceRequest::translate(
@@ -140,7 +142,7 @@ void ServiceRequest::translate(
 	request->setHeader(
 		QNetworkRequest::ContentTypeHeader,
 		"application/x-www-form-urlencoded");
-	start(_network.post(*request, *call.form), std::move(done));
+	start(Adapters::SharedNetwork().post(*request, *call.form), std::move(done));
 }
 
 void ServiceRequest::models(
@@ -158,7 +160,7 @@ void ServiceRequest::models(
 	auto catalog = service;
 	catalog.endpoint = u"models"_q;
 	request->setUrl(ServiceEndpoint(catalog));
-	start(_network.get(*request), std::move(done));
+	start(Adapters::SharedNetwork().get(*request), std::move(done));
 }
 
 void ServiceRequest::audio(
@@ -211,7 +213,7 @@ void ServiceRequest::audio(
 	file.setHeader(QNetworkRequest::ContentTypeHeader, "application/octet-stream");
 	file.setBody(bytes);
 	multipart->append(file);
-	const auto reply = _network.post(*request, multipart);
+	const auto reply = Adapters::SharedNetwork().post(*request, multipart);
 	multipart->setParent(reply);
 	start(reply, std::move(done));
 }
@@ -229,8 +231,8 @@ void ServiceRequest::start(QNetworkReply *reply, Fn<void(ServiceResult)> done) {
 			reply->abort();
 		}
 	};
-	QObject::connect(reply, &QNetworkReply::readyRead, &_network, read);
-	QObject::connect(reply, &QNetworkReply::finished, &_network,
+	QObject::connect(reply, &QNetworkReply::readyRead, &_context, read);
+	QObject::connect(reply, &QNetworkReply::finished, &_context,
 		[=, done = std::move(done)]() mutable {
 			_deadline.stop();
 			const auto status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();

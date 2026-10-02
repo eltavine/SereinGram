@@ -1,0 +1,16 @@
+Checks: >-
+  -*,
+  bugprone-*,
+  -bugprone-easily-swappable-parameters,
+  -bugprone-narrowing-conversions,
+  clang-analyzer-*,
+  misc-misplaced-const,
+  misc-redundant-expression,
+  modernize-use-nullptr,
+  modernize-use-override,
+  performance-*,
+  -performance-enum-size,
+  readability-duplicate-include,
+  readability-misleading-indentation
+HeaderFilterRegex: '.*/SourceFiles/serein/.*'
+ExcludeHeaderFilterRegex: '.*/gen/.*'

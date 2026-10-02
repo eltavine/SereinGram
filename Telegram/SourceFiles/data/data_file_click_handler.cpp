@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "data/data_file_click_handler.h"
+#include "serein/hooks/media/downloads.h"
 
 #include "core/click_handler_types.h"
 #include "core/file_utilities.h"
@@ -101,7 +102,7 @@ void DocumentSaveClickHandler::Save(
 		const auto filepath = data->filepath(true);
 		const auto fileinfo = QFileInfo(filepath);
 		const auto filedir = filepath.isEmpty()
-			? QDir()
+			? Serein::Hooks::Media::ChatDownloadDirectory(data, origin)
 			: fileinfo.dir();
 		const auto filename = filepath.isEmpty()
 			? QString()

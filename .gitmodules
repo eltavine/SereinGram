@@ -106,3 +106,9 @@
 [submodule "Telegram/ThirdParty/OpenCC"]
 	path = Telegram/ThirdParty/OpenCC
 	url = https://github.com/BYVoid/OpenCC.git
+[submodule "Telegram/ThirdParty/doctest"]
+	path = Telegram/ThirdParty/doctest
+	url = https://github.com/doctest/doctest.git
+[submodule "Telegram/ThirdParty/quirc"]
+	path = Telegram/ThirdParty/quirc
+	url = https://github.com/dlbeer/quirc.git

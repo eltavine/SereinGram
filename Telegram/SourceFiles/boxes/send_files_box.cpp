@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "boxes/send_files_box.h"
+#include "serein/hooks/gen/compose.h"
 
 #include "lang/lang_keys.h"
 #include "storage/localimageloader.h"
@@ -708,6 +709,7 @@ SendFilesBox::SendFilesBox(QWidget*, SendFilesBoxDescriptor &&descriptor)
 , _inner(
 	_scroll->setOwnedWidget(
 		object_ptr<Ui::VerticalLayout>(_scroll.data()))) {
+	_invertCaption = Serein::Hooks::Compose::CaptionAboveMedia();
 	setReplyTo(descriptor.replyTo);
 	enqueueNextPrepare();
 }

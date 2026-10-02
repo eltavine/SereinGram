@@ -35,6 +35,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "history/history_item_helpers.h"
 #include "history/view/controls/history_view_forward_panel.h"
 #include "serein/hooks/gen/compose.h"
+#include "serein/hooks/messages/forward.h"
 #include "history/view/history_view_element.h"
 #include "history/view/history_view_context_menu.h" // CopyPostLink.
 #include "settings/sections/settings_premium.h"
@@ -370,6 +371,7 @@ void ShareBox::prepare() {
 			_descriptor.session,
 			[this](FilterId id) {
 				_inner->applyChatFilter(id);
+				searchByUsername(true);
 				scrollToY(0);
 			},
 			Window::GifPauseReason::Layer,
@@ -760,6 +762,9 @@ void ShareBox::submit(Api::SendOptions options) {
 			: _forwardOptions.dropNames
 			? Data::ForwardOptions::NoSenderNames
 			: Data::ForwardOptions::PreserveInfo;
+		Serein::Hooks::RememberForwardOptions(
+			int(forwardOptions),
+			_descriptor.forwardOptions.show);
 		onstack(
 			std::move(threads),
 			checkPaid,
@@ -885,6 +890,20 @@ ShareBox::Inner::Inner(
 		_defaultChatsIndexed->peerNameChanged(
 			update.peer,
 			update.oldFirstLetters);
+	}, lifetime());
+
+	_descriptor.session->data().dialogsRowReplacements(
+	) | rpl::on_next([=](Data::Session::DialogsRowReplacement r) {
+		for (auto i = begin(_filtered); i != end(_filtered);) {
+			if (*i != r.old) {
+				++i;
+			} else if (r.now) {
+				*i = r.now;
+				++i;
+			} else {
+				i = _filtered.erase(i);
+			}
+		}
 	}, lifetime());
 
 	_descriptor.session->downloaderTaskFinished(
@@ -1667,6 +1686,17 @@ void ShareBox::Inner::applyChatFilter(FilterId id) {
 		};
 		const auto &data = _descriptor.session->data();
 		addList(data.chatsFilters().chatsList(id)->indexed());
+	}
+	if (!_filter.isEmpty()) {
+		// Rows in _filtered may belong to the just destroyed list.
+		_filtered = _chatsIndexed->filtered(
+			_filter.split(' ', Qt::SkipEmptyParts));
+
+		// Global results are deduplicated against the list, refill them.
+		_byUsernameFiltered.clear();
+		d_byUsernameFiltered.clear();
+		setActive(-1);
+		refresh();
 	}
 	update();
 }

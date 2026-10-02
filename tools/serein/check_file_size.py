@@ -35,7 +35,8 @@ def load_policy(path):
     for key in ("owned", "extensions", "filenames"):
         values = policy[key]
         if not isinstance(values, list) or not all(
-                isinstance(value, str) and value for value in values):
+            isinstance(value, str) and value for value in values
+        ):
             raise PolicyError(f"{key} must be a list of non-empty strings")
     if not policy["owned"]:
         raise PolicyError("owned must not be empty")
@@ -45,7 +46,10 @@ def load_policy(path):
 def list_files(root):
     result = subprocess.run(
         ["git", "ls-files", "-z", "--cached", "--others", "--exclude-standard"],
-        cwd=root, capture_output=True, check=True)
+        cwd=root,
+        capture_output=True,
+        check=True,
+    )
     names = result.stdout.decode("utf-8").split("\0")
     return sorted({name for name in names if name})
 
@@ -112,8 +116,10 @@ def main(argv=None):
         print(f"{len(violations)} owned source file(s) exceed {limit} lines.")
         return 1
     largest = max(checked, default=(0, "none"))
-    print(f"Checked {len(checked)} owned source files; "
-          f"largest is {largest[1]} with {largest[0]} lines (limit {limit}).")
+    print(
+        f"Checked {len(checked)} owned source files; "
+        f"largest is {largest[1]} with {largest[0]} lines (limit {limit})."
+    )
     return 0
 
 

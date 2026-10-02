@@ -7,6 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/controls/history_view_webpage_processor.h"
 #include "serein/hooks/gen/compose.h"
+#include "serein/hooks/links/preview.h"
 
 #include "base/unixtime.h"
 #include "data/data_chat_participant_status.h"
@@ -157,7 +158,7 @@ void WebpageResolver::request(const QString &link, bool force) {
 	_requestId = _api.request(
 		MTPmessages_GetWebPagePreview(
 			MTP_flags(0),
-			MTP_string(link),
+			MTP_string(Serein::Hooks::Links::PreviewLink(link)),
 			MTPVector<MTPMessageEntity>()
 	)).done([=](
 			const MTPmessages_WebPagePreview &result,

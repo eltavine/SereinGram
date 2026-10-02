@@ -13,7 +13,13 @@ struct Release {
 	QString url;
 };
 
+struct Nightly {
+	QString commit;
+	QString url;
+};
+
 [[nodiscard]] std::optional<Release> ParseLatestRelease(const QByteArray &json);
+[[nodiscard]] std::optional<Nightly> ParseNightlyRelease(const QByteArray &json);
 [[nodiscard]] std::vector<int> VersionParts(const QString &version);
 [[nodiscard]] bool IsNewer(const QString &candidate, const QString &current);
 

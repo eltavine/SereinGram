@@ -3,8 +3,12 @@ name: Serein guards.
 on:
   push:
     branches:
+      - develop
       - main
   pull_request:
+    branches:
+      - develop
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -18,18 +22,44 @@ jobs:
     steps:
       - name: Clone.
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Set up Buf.
-        uses: bufbuild/buf-action@v1
+        uses: bufbuild/buf-action@8c6a16e16f12ba20b6470afa9c2ba9b5ba8c97c3 # v1.5.0
         with:
           setup_only: true
           version: 1.72.0
 
       - name: Set up uv.
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6.8.0
 
       - name: Tool self-tests.
         run: uv run --with jinja2==3.1.6 python -m unittest discover -s tools/serein/tests -v
+
+      - name: Owned files follow the formatting and style rules.
+        run: python3 tools/serein/check_style.py
+
+      - name: Python tools are formatted and pass ruff.
+        run: |
+          uvx ruff@0.16.10 format --check tools/serein
+          uvx ruff@0.16.10 check tools/serein
+
+      - name: Shell scripts pass shellcheck.
+        run: |
+          git ls-files -z 'tools/serein/*.sh' 'packaging/**/*.sh' tools/serein/githooks/commit-msg \
+          | xargs -0 shellcheck
+
+      - name: YAML passes yamllint.
+        run: |
+          git ls-files -z '.github/workflows/serein-*.yml' 'packaging/**/*.yml' 'packaging/**/*.yaml' \
+            crowdin.yml tools/serein/yamllint.yml \
+          | xargs -0 uvx yamllint@1.37.1 --strict -c tools/serein/yamllint.yml
+
+      - name: Documentation passes markdownlint.
+        run: |
+          npx --yes markdownlint-cli2@0.19.1 --config tools/serein/serein.markdownlint-cli2.jsonc \
+            'docs/serein/**/*.md' BRANDING.md README.md
 
       - name: Owned source files stay within 1000 lines.
         run: python3 tools/serein/check_file_size.py
@@ -43,43 +73,81 @@ jobs:
       - name: Hook code does not reach shadowed page namespaces.
         run: python3 tools/serein/check_hook_namespaces.py
 
-      - name: Workflows pass actionlint.
+      - name: Every Serein source is registered in CMake.
+        run: python3 tools/serein/check_sources.py
+
+      - name: Packaging pins the upstream dependency revisions.
+        run: python3 tools/serein/check_packaging.py
+
+      - name: Desktop entry and AppStream metadata validate.
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y desktop-file-utils appstream
+          desktop-file-validate lib/xdg/io.github.eltavine.SereinGram.desktop
+          appstreamcli validate --no-net --explain lib/xdg/io.github.eltavine.SereinGram.metainfo.xml
+
+      - name: Fetch the libraries Serein includes from.
+        run: |
+          mapfile -t libs < <(git config --file .gitmodules --get-regexp 'path' \
+            | awk '{print $2}' | grep '^Telegram/lib_')
+          git submodule update --init --depth 1 Telegram/ThirdParty/OpenCC "${libs[@]}"
+
+      - name: Includes name existing headers.
+        run: python3 tools/serein/check_includes.py
+
+      - name: Workflows pass actionlint and zizmor.
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           bash <(curl -sSfL https://raw.githubusercontent.com/rhysd/actionlint/v1.7.12/scripts/download-actionlint.bash) 1.7.12
-          ./actionlint -shellcheck= .github/workflows/serein-*.yml
+          ./actionlint .github/workflows/serein-*.yml
+          uvx zizmor@1.16.3 .github/workflows/serein-*.yml
 
       - name: Fetch comparison baselines.
         env:
-          SCHEMA_BASELINE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+          EVENT_BASELINE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
         run: |
           base=$(python3 -c "import json; print(json.load(open('tools/serein/policy/upstream.json'))['base'])")
           git fetch --no-tags --depth=1 origin "$base"
-          if [[ ! "$SCHEMA_BASELINE" =~ ^0+$ ]]; then
-            git fetch --no-tags --depth=1 origin "$SCHEMA_BASELINE" || true
+          # New branches and force pushes have no reachable previous commit.
+          baseline="$EVENT_BASELINE"
+          if [[ "$baseline" =~ ^0+$ ]] \
+            || ! git fetch --no-tags --depth=1 origin "$baseline" \
+            || ! git cat-file -e "$baseline^{commit}"; then
+            git fetch --no-tags --depth=2 origin "$GITHUB_SHA"
+            baseline=$(git rev-parse HEAD~1)
           fi
+          echo "SCHEMA_BASELINE=$baseline" >> "$GITHUB_ENV"
 
       - name: Upstream intrusion stays within budget.
         run: python3 tools/serein/upstream_budget.py --list
 
-      - name: Schema lint.
-        run: buf lint proto
+      - name: Schema lint and formatting.
+        run: |
+          buf lint proto
+          buf format --diff --exit-code proto
 
       - name: Schema stays compatible.
-        env:
-          SCHEMA_BASELINE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
         run: tools/serein/proto_breaking.sh "$SCHEMA_BASELINE"
 
+      - name: Release asset names stay compatible.
+        run: python3 tools/serein/release.py compat --baseline "$SCHEMA_BASELINE"
+
+      - name: Code generator dependencies are locked.
+        run: uv lock --script tools/serein/codegen/generate.py --check
+
       - name: Generated code matches the schema.
-        run: uv run tools/serein/codegen/generate.py --check
+        run: uv run --locked tools/serein/codegen/generate.py --check
 
   commits:
-    name: Commit messages
+    name: Commit messages and secrets
     runs-on: ubuntu-latest
 
     steps:
       - name: Clone.
         uses: actions/checkout@v7
         with:
+          persist-credentials: false
           fetch-depth: 200
 
       - name: Set up Node.
@@ -88,19 +156,23 @@ jobs:
           node-version: 22
 
       - name: Install commitlint.
-        run: npm install --no-save --no-package-lock @commitlint/cli@19 @commitlint/config-conventional@19
+        run: npm install --no-save --no-package-lock @commitlint/cli@19.8.1 @commitlint/config-conventional@19.8.1
 
-      - name: New commits follow Conventional Commits in English.
+      - name: Commit range.
         env:
           FROM: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
           TO: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
         run: |
-          if [[ "$FROM" =~ ^0+$ ]]; then
+          if [[ "$FROM" =~ ^0+$ ]] || ! git cat-file -e "$FROM^{commit}"; then
             FROM="$TO~1"
           fi
+          echo "RANGE=$FROM..$TO" >> "$GITHUB_ENV"
+
+      - name: New commits follow Conventional Commits in English.
+        run: |
           # Upstream commits arrive through merges; only our mainline is linted.
           failed=0
-          for sha in $(git rev-list --first-parent --reverse "$FROM..$TO"); do
+          for sha in $(git rev-list --first-parent --reverse "$RANGE"); do
             echo "Checking $(git log -1 --format='%h %s' "$sha")"
             git log -1 --format=%B "$sha" \
               | npx commitlint --config tools/serein/commitlint.config.mjs --verbose \
@@ -108,38 +180,104 @@ jobs:
           done
           exit "$failed"
 
+      - name: New commits carry no secrets.
+        env:
+          GITLEAKS_SHA256: 551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb
+        run: |
+          archive="$RUNNER_TEMP/gitleaks.tar.gz"
+          curl -sSfL -o "$archive" \
+            https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz
+          echo "$GITLEAKS_SHA256  $archive" | sha256sum -c -
+          tar -xzf "$archive" -C "$RUNNER_TEMP" gitleaks
+          "$RUNNER_TEMP/gitleaks" git --config tools/serein/gitleaks.toml \
+            --log-opts="--first-parent $RANGE" --redact --no-banner .
+
   core-tests:
-    name: Core tests (Qt only)
+    name: Core tests and static analysis
     runs-on: ubuntu-latest
 
     steps:
       - name: Clone.
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Fetch the submodules the core needs.
         run: |
           git submodule update --init --depth 1 \
             Telegram/lib_base Telegram/lib_crl Telegram/lib_rpl Telegram/lib_ui \
             Telegram/ThirdParty/GSL Telegram/ThirdParty/range-v3 Telegram/ThirdParty/expected \
-            Telegram/ThirdParty/OpenCC
+            Telegram/ThirdParty/OpenCC Telegram/ThirdParty/doctest \
+            Telegram/ThirdParty/quirc Telegram/ThirdParty/QR
 
       - name: Install OpenSSL headers.
         run: sudo apt-get update && sudo apt-get install -y libssl-dev
 
       - name: Set up Qt.
-        uses: jurplel/install-qt-action@v4
+        uses: jurplel/install-qt-action@a9c63c7c123f3069cff414e7e482d95dfa9d8125 # v4.4.1
         with:
           version: 6.11.2
           cache: true
+
+      - name: Set up uv.
+        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6.8.0
 
       # Same warnings as the Linux platform build, which fails on any of them.
       - name: Build.
         run: |
           cmake -S tools/serein/core_tests -B out/serein-core-tests \
             -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
             -DCMAKE_COMPILE_WARNING_AS_ERROR=ON \
             -DCMAKE_CXX_FLAGS="-Wall -Wextra -Wno-unused-parameter -Wno-switch -Wno-maybe-uninitialized -Wno-missing-field-initializers -Wno-sign-compare -Wno-deprecated -Wno-array-bounds -Wno-free-nonheap-object -Wno-stringop-overflow"
-          cmake --build out/serein-core-tests --parallel
+          cmake --build out/serein-core-tests --parallel "$(nproc)"
 
       - name: Test.
         run: ctest --test-dir out/serein-core-tests --output-on-failure
+
+      - name: Static analysis.
+        run: |
+          python3 tools/serein/run_clang_tidy.py -p out/serein-core-tests \
+            --clang-tidy "uvx --from clang-tidy==21.1.1 clang-tidy" --jobs "$(nproc)"
+
+  sanitizers:
+    name: Core tests with sanitizers
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clone.
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Fetch the submodules the core needs.
+        run: |
+          git submodule update --init --depth 1 \
+            Telegram/lib_base Telegram/lib_crl Telegram/lib_rpl Telegram/lib_ui \
+            Telegram/ThirdParty/GSL Telegram/ThirdParty/range-v3 Telegram/ThirdParty/expected \
+            Telegram/ThirdParty/OpenCC Telegram/ThirdParty/doctest \
+            Telegram/ThirdParty/quirc Telegram/ThirdParty/QR
+
+      - name: Install OpenSSL headers.
+        run: sudo apt-get update && sudo apt-get install -y libssl-dev
+
+      - name: Set up Qt.
+        uses: jurplel/install-qt-action@a9c63c7c123f3069cff414e7e482d95dfa9d8125 # v4.4.1
+        with:
+          version: 6.11.2
+          cache: true
+
+      - name: Build with AddressSanitizer and UndefinedBehaviorSanitizer.
+        run: |
+          cmake -S tools/serein/core_tests -B out/serein-core-sanitize \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_CXX_FLAGS="-fsanitize=address,undefined -fno-omit-frame-pointer -fno-sanitize-recover=undefined" \
+            -DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address,undefined"
+          cmake --build out/serein-core-sanitize --parallel "$(nproc)"
+
+      # Qt and OpenCC keep global objects until exit, which LeakSanitizer reports.
+      - name: Test.
+        env:
+          ASAN_OPTIONS: detect_leaks=0:abort_on_error=1
+          UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1
+        run: out/serein-core-sanitize/test_serein

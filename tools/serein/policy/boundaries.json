@@ -1,6 +1,7 @@
 {
   "schema_version": 1,
   "source_root": "Telegram/SourceFiles/",
+  "owned_prefix": "serein/",
   "app_prefixes": [
     "styles/"
   ],
@@ -34,6 +35,7 @@
       "own": [
         "serein/features/ghost/model/",
         "serein/core/options.h",
+        "serein/core/id_list.h",
         "serein/schema/"
       ],
       "app": false,
@@ -70,24 +72,295 @@
       "app": false,
       "libraries": true
     },
-    "serein/hooks/": {
+    "serein/features/stories/model/": {
       "own": [
-        "serein/hooks/",
-        "serein/features/",
-        "serein/core/",
-        "serein/schema/"
+        "serein/features/stories/model/"
       ],
       "app": false,
       "libraries": true
     },
-    "serein/tests/": {
+    "serein/core/": {
+      "own": [
+        "serein/core/",
+        "serein/ports/"
+      ],
+      "app": false,
+      "libraries": true
+    },
+    "serein/features/ghost/": {
+      "own": [
+        "serein/features/ghost/",
+        "serein/core/",
+        "serein/schema/",
+        "serein/ports/",
+        "serein/hooks/"
+      ],
+      "app": true,
+      "libraries": true
+    },
+    "serein/features/history/": {
+      "own": [
+        "serein/features/history/",
+        "serein/core/",
+        "serein/schema/",
+        "serein/ports/",
+        "serein/hooks/"
+      ],
+      "app": true,
+      "libraries": true
+    },
+    "serein/features/instant_view/": {
+      "own": [
+        "serein/features/instant_view/",
+        "serein/core/",
+        "serein/schema/",
+        "serein/ports/",
+        "serein/hooks/"
+      ],
+      "app": true,
+      "libraries": true
+    },
+    "serein/features/updates/": {
+      "own": [
+        "serein/features/updates/",
+        "serein/core/",
+        "serein/schema/",
+        "serein/ports/",
+        "serein/hooks/",
+        "serein/adapters/qtnetwork/"
+      ],
+      "app": true,
+      "libraries": true
+    },
+    "serein/features/stories/": {
+      "own": [
+        "serein/features/stories/",
+        "serein/core/",
+        "serein/schema/",
+        "serein/ports/",
+        "serein/hooks/"
+      ],
+      "app": true,
+      "libraries": true
+    },
+    "serein/display/": {
+      "own": [
+        "serein/display/",
+        "serein/core/",
+        "serein/schema/",
+        "serein/ports/",
+        "serein/hooks/"
+      ],
+      "app": true,
+      "libraries": true
+    },
+    "serein/admin/": {
+      "own": [
+        "serein/admin/",
+        "serein/core/",
+        "serein/schema/",
+        "serein/ports/",
+        "serein/hooks/",
+        "serein/display/"
+      ],
+      "app": true,
+      "libraries": true
+    },
+    "serein/chats/": {
+      "own": [
+        "serein/chats/",
+        "serein/core/",
+        "serein/schema/",
+        "serein/ports/",
+        "serein/hooks/",
+        "serein/display/"
+      ],
+      "app": true,
+      "libraries": true
+    },
+    "serein/compose/": {
+      "own": [
+        "serein/compose/",
+        "serein/core/",
+        "serein/schema/",
+        "serein/ports/",
+        "serein/hooks/",
+        "serein/display/"
+      ],
+      "app": true,
+      "libraries": true
+    },
+    "serein/filters/": {
+      "own": [
+        "serein/filters/",
+        "serein/core/",
+        "serein/schema/",
+        "serein/ports/",
+        "serein/hooks/",
+        "serein/display/",
+        "serein/adapters/qtnetwork/"
+      ],
+      "app": true,
+      "libraries": true
+    },
+    "serein/interface/": {
+      "own": [
+        "serein/interface/",
+        "serein/core/",
+        "serein/schema/",
+        "serein/ports/",
+        "serein/hooks/",
+        "serein/display/"
+      ],
+      "app": true,
+      "libraries": true
+    },
+    "serein/links/": {
+      "own": [
+        "serein/links/",
+        "serein/core/",
+        "serein/schema/",
+        "serein/ports/",
+        "serein/hooks/",
+        "serein/display/"
+      ],
+      "app": true,
+      "libraries": true
+    },
+    "serein/media/": {
+      "own": [
+        "serein/media/",
+        "serein/core/",
+        "serein/schema/",
+        "serein/ports/",
+        "serein/hooks/",
+        "serein/display/"
+      ],
+      "app": true,
+      "libraries": true
+    },
+    "serein/menu/": {
+      "own": [
+        "serein/menu/",
+        "serein/core/",
+        "serein/schema/",
+        "serein/ports/",
+        "serein/hooks/",
+        "serein/display/",
+        "serein/features/stickers/model/"
+      ],
+      "app": true,
+      "libraries": true
+    },
+    "serein/messages/": {
+      "own": [
+        "serein/messages/",
+        "serein/core/",
+        "serein/schema/",
+        "serein/ports/",
+        "serein/hooks/",
+        "serein/display/",
+        "serein/features/history/deleted_marks.h"
+      ],
+      "app": true,
+      "libraries": true
+    },
+    "serein/network/": {
+      "own": [
+        "serein/network/",
+        "serein/core/",
+        "serein/schema/",
+        "serein/ports/",
+        "serein/hooks/",
+        "serein/display/",
+        "serein/adapters/qtnetwork/"
+      ],
+      "app": true,
+      "libraries": true
+    },
+    "serein/privacy/": {
+      "own": [
+        "serein/privacy/",
+        "serein/core/",
+        "serein/schema/",
+        "serein/ports/",
+        "serein/hooks/",
+        "serein/display/",
+        "serein/features/regdate/model/"
+      ],
+      "app": true,
+      "libraries": true
+    },
+    "serein/services/": {
+      "own": [
+        "serein/services/",
+        "serein/core/",
+        "serein/schema/",
+        "serein/ports/",
+        "serein/hooks/",
+        "serein/display/",
+        "serein/adapters/qtnetwork/"
+      ],
+      "app": true,
+      "libraries": true
+    },
+    "serein/snapshot/": {
+      "own": [
+        "serein/snapshot/",
+        "serein/core/",
+        "serein/schema/",
+        "serein/ports/",
+        "serein/hooks/",
+        "serein/display/",
+        "serein/interface/reply_colors.h"
+      ],
+      "app": true,
+      "libraries": true
+    },
+    "serein/settings/": {
+      "own": [
+        "serein/settings/",
+        "serein/core/",
+        "serein/schema/",
+        "serein/ports/",
+        "serein/hooks/",
+        "serein/display/",
+        "serein/admin/",
+        "serein/chats/",
+        "serein/compose/",
+        "serein/features/ghost/model/",
+        "serein/features/history/",
+        "serein/filters/",
+        "serein/interface/",
+        "serein/links/",
+        "serein/media/",
+        "serein/menu/",
+        "serein/messages/",
+        "serein/network/",
+        "serein/privacy/",
+        "serein/services/"
+      ],
+      "app": true,
+      "libraries": true
+    },
+    "serein/hooks/": {
+      "own": [
+        "serein/hooks/",
+        "serein/core/",
+        "serein/schema/",
+        "serein/ports/"
+      ],
+      "app": false,
+      "libraries": true
+    },
+    "serein/app/": {
       "own": [
         "serein/"
       ],
       "app": true,
       "libraries": true
     },
-    "serein/": {
+    "serein/tests/": {
       "own": [
         "serein/"
       ],

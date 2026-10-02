@@ -1,4 +1,5 @@
 #include "serein/network/proxy_import.h"
+#include "serein/adapters/qtnetwork/manager.h"
 
 #include "serein/hooks/services/model.h"
 #include "serein/network/proxy_subscription.h"
@@ -8,10 +9,6 @@
 #include "lang/lang_keys.h"
 #include "storage/localstorage.h"
 #include "ui/layers/show.h"
-
-#include <QtNetwork/QNetworkAccessManager>
-#include <QtNetwork/QNetworkReply>
-#include <QtNetwork/QNetworkRequest>
 
 namespace Serein::Network {
 namespace {
@@ -56,22 +53,17 @@ void UpdateProxySubscription(std::shared_ptr<Ui::Show> show) {
 		show->showToast(tr::lng_serein_proxy_subscription_invalid(tr::now));
 		return;
 	}
-	const auto network = new QNetworkAccessManager(&Core::App());
-	auto request = QNetworkRequest(url);
-	request.setRawHeader("User-Agent", "SereinGram");
-	request.setTransferTimeout(kRequestTimeout);
-	const auto reply = network->get(request);
-	QObject::connect(reply, &QNetworkReply::finished, network, [=] {
-		reply->deleteLater();
-		network->deleteLater();
-		const auto body = reply->read(kSubscriptionMaximumSize + 1);
-		if (reply->error() != QNetworkReply::NoError
-			|| body.size() > kSubscriptionMaximumSize) {
+	Adapters::Download({
+		.url = url,
+		.maximumSize = kSubscriptionMaximumSize,
+		.timeout = kRequestTimeout,
+	}, [=](std::optional<QByteArray> body) {
+		if (!body) {
 			show->showToast(tr::lng_serein_proxy_subscription_failed(
 				tr::now));
 			return;
 		}
-		Import(show, body);
+		Import(show, *body);
 	});
 }
 

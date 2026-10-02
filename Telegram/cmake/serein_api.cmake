@@ -8,12 +8,14 @@ set(serein_api_local ${CMAKE_CURRENT_SOURCE_DIR}/build/api_credentials.local.cma
 if (EXISTS ${serein_api_local})
     include(${serein_api_local})
 endif()
-if (DEFINED ENV{SEREIN_API_ID} AND NOT "$ENV{SEREIN_API_ID}" STREQUAL "")
-    set(SEREIN_API_ID "$ENV{SEREIN_API_ID}")
-endif()
-if (DEFINED ENV{SEREIN_API_HASH} AND NOT "$ENV{SEREIN_API_HASH}" STREQUAL "")
-    set(SEREIN_API_HASH "$ENV{SEREIN_API_HASH}")
-endif()
+# Nested because -Wuninitialized flags $ENV{} of unset variables behind DEFINED.
+foreach (serein_api_var SEREIN_API_ID SEREIN_API_HASH)
+    if (DEFINED ENV{${serein_api_var}})
+        if (NOT "$ENV{${serein_api_var}}" STREQUAL "")
+            set(${serein_api_var} "$ENV{${serein_api_var}}")
+        endif()
+    endif()
+endforeach()
 
 if (NOT TDESKTOP_API_TEST
     AND (NOT TDESKTOP_API_ID OR TDESKTOP_API_ID STREQUAL "0" OR SEREIN_API_FROM_LOCAL)
@@ -29,7 +31,7 @@ if (NOT TDESKTOP_API_TEST
     set(TDESKTOP_API_ID ${SEREIN_API_ID} CACHE STRING "Provide 'api_id' for the Telegram API access." FORCE)
     set(TDESKTOP_API_HASH ${SEREIN_API_HASH} CACHE STRING "Provide 'api_hash' for the Telegram API access." FORCE)
     set(SEREIN_API_FROM_LOCAL ON CACHE INTERNAL "api_id and api_hash were taken from SEREIN_API_*.")
-    message(STATUS "Serein: using api_id ${SEREIN_API_ID} from the environment or local credentials file.")
+    message(STATUS "Serein: using api_id and api_hash from the environment or local credentials file.")
 endif()
 
 # SereinGram updates through GitHub Releases, never Telegram's update channel.

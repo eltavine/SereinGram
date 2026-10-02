@@ -118,6 +118,22 @@ rpl::producer<bool> CenterTopNotificationsValue() {
 	return ForDevice().Value(Serein::Interface::kCenterTopNotifications);
 }
 
+bool MenuShortcuts() {
+	return ForDevice().Get(Serein::Interface::kMenuShortcuts);
+}
+
+rpl::producer<bool> MenuShortcutsValue() {
+	return ForDevice().Value(Serein::Interface::kMenuShortcuts);
+}
+
+QByteArray GlobalShortcut() {
+	return ForDevice().Get(Serein::Interface::kGlobalShortcut);
+}
+
+rpl::producer<QByteArray> GlobalShortcutValue() {
+	return ForDevice().Value(Serein::Interface::kGlobalShortcut);
+}
+
 bool HalfwidthUiPunctuation() {
 	return ForDevice().Get(Serein::Interface::kHalfwidthUiPunctuation);
 }

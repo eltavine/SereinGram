@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "settings/sections/settings_active_sessions.h"
+#include "serein/hooks/privacy/sessions.h"
 
 #include "settings/settings_common_session.h"
 
@@ -460,6 +461,7 @@ void SessionInfoBox(
 		tr::lng_sessions_system(),
 		data.system,
 		st::menuIconInfo);
+	Serein::Privacy::AddSessionDetails(container, data);
 	AddSessionInfoRow(
 		container,
 		tr::lng_sessions_ip(),

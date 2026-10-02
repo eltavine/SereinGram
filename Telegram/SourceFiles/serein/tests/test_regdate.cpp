@@ -1,20 +1,10 @@
 #include "serein/features/regdate/model/estimate.h"
+#include "serein/tests/require.h"
 
+#include <doctest/doctest.h>
 #include <QtCore/QFile>
 
-#include <stdexcept>
-
-namespace {
-
-void Require(bool value, const char *message) {
-	if (!value) {
-		throw std::runtime_error(message);
-	}
-}
-
-} // namespace
-
-void TestRegistrationDate() {
+TEST_CASE("RegistrationDate") {
 	using namespace Serein::RegistrationDate;
 	const auto points = ParsePoints(
 		R"([[200,"2020-01-11"],[0,"2020-01-01"],[100,"2020-01-03"]])");

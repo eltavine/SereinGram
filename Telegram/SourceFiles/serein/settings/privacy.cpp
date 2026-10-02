@@ -2,11 +2,13 @@
 
 #include "serein/admin/unblock_all.h"
 #include "serein/privacy/options.h"
+#include "serein/privacy/qr_scan.h"
 #include "serein/settings/gen/ghost_rows.h"
 #include "serein/settings/gen/history_rows.h"
 #include "serein/settings/gen/privacy_rows.h"
 #include "serein/settings/home.h"
 #include "serein/settings/subpages.h"
+#include "serein/settings/page.h"
 #include "lang/lang_keys.h"
 #include "main/main_session.h"
 #include "main/main_session_settings.h"
@@ -27,20 +29,16 @@ namespace {
 using namespace ::Settings;
 using namespace ::Settings::Builder;
 
-class PrivacySection final : public Section<PrivacySection> {
+class PrivacySection final : public Page<PrivacySection> {
 public:
-	PrivacySection(QWidget *parent, not_null<Window::SessionController*> controller)
-	: Section(parent, controller) {
-		const auto content = Ui::CreateChild<Ui::VerticalLayout>(this);
-		build(content, kBuild);
-		Ui::ResizeFitChild(this, content);
-	}
+	using Page::Page;
 
 	[[nodiscard]] rpl::producer<QString> title() override {
 		return tr::lng_serein_privacy();
 	}
 
 	static const SectionBuildMethod kBuild;
+
 };
 
 const auto kMeta = BuildHelper({
@@ -68,6 +66,18 @@ const auto kMeta = BuildHelper({
 	}
 	Privacy::AddLayout(builder);
 	const auto controller = builder.controller();
+	builder.addButton({
+		.id = u"serein/privacy/qr-scan"_q,
+		.title = tr::lng_serein_qr_scan(),
+		.st = &st::settingsButtonNoIcon,
+		.onClick = [=] {
+			if (controller) {
+				Privacy::ShowQrScanner(controller);
+			}
+		},
+		.keywords = { u"QR"_q, u"login"_q, u"scan"_q },
+	});
+	builder.addDividerText(tr::lng_serein_qr_scan_about());
 	builder.addButton({
 		.id = u"serein/privacy/unblock-all"_q,
 		.title = tr::lng_serein_unblock_all(),
