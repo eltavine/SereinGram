@@ -357,21 +357,7 @@ jobs:
 
       # The packages must install with their declared dependencies on clean systems.
       - name: Package integration test.
-        run: |
-          check='test -x /usr/bin/SereinGram
-            test -f /usr/share/applications/io.github.eltavine.SereinGram.desktop
-            test -f /usr/share/metainfo/io.github.eltavine.SereinGram.metainfo.xml
-            test -f /usr/share/icons/hicolor/256x256/apps/io.github.eltavine.SereinGram.png
-            if ldd /usr/bin/SereinGram | grep "not found"; then exit 1; fi'
-          for image in debian:12-slim ubuntu:24.04; do
-            docker run --rm -v "$PWD/artifact:/artifact:ro" "$image" bash -euo pipefail -c "
-              apt-get update -qq
-              apt-get install -y -qq --no-install-recommends /artifact/SereinGram-linux-$ARCH.deb >/dev/null
-              $check"
-          done
-          docker run --rm -v "$PWD/artifact:/artifact:ro" fedora:43 bash -euo pipefail -c "
-            dnf install -y -q /artifact/SereinGram-linux-$ARCH.rpm
-            $check"
+        run: tools/serein/linux_package_test.sh artifact "$ARCH"
 
       - uses: actions/upload-artifact@v7
         name: Upload artifact.
