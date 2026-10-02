@@ -4,8 +4,8 @@
 Run from the repository root on a clean worktree:
     python3 tools/serein/upstream_sync.py v6.3.0
 
-A clean merge is committed on a sync/<ref> branch with the upstream budget
-baseline moved to the merged ref. Submodule pointer conflicts resolve to the
+A clean merge is committed on a sync/<ref>-<commit> branch with the upstream
+budget baseline moved to the merged ref. Submodule pointer conflicts resolve to the
 side whose commit contains the other. On other conflicts the merge is left in
 progress and the conflicted files are grouped by who owns them.
 """
@@ -39,8 +39,9 @@ def git(root, *args, check=True, stdin=None):
     return result
 
 
-def branch_name(ref):
-    return "sync/" + re.sub(r"[^A-Za-z0-9._-]+", "-", ref).strip("-")
+def branch_name(ref, commit):
+    slug = re.sub(r"[^A-Za-z0-9._-]+", "-", ref).strip("-")
+    return f"sync/{slug}-{commit[:10]}"
 
 
 def classify(conflicts, owned, hooked):
@@ -171,7 +172,7 @@ def sync(root, ref, policy_path, owned_policy_path, url=None):
     }
     links = changed_gitlinks(root, old, new)
     init_submodules(root, links)
-    branch = branch_name(ref)
+    branch = branch_name(ref, new)
     if (
         git(root, "rev-parse", "-q", "--verify", f"refs/heads/{branch}", check=False).returncode
         == 0
@@ -220,7 +221,8 @@ def main(argv=None):
             for path in paths:
                 print(f"{group:<9} {path}")
         return 1
-    print(f"Merged {args.ref} on {branch_name(args.ref)}.")
+    branch = git(args.root, "branch", "--show-current").stdout.strip()
+    print(f"Merged {args.ref} on {branch}.")
     for key, value in metrics.items():
         print(f"{key:<22} {value}")
     print("Run the guards and push the branch so the platform CI can verify it.")

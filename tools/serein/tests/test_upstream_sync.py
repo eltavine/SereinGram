@@ -98,7 +98,7 @@ class UpstreamSyncTest(unittest.TestCase):
         self.assertIsNone(conflicts)
         self.assertEqual(metrics["source_files"], 1)
         self.assertEqual(json.loads(self.policy.read_text())["base"], head)
-        self.assertEqual(git(self.fork, "branch", "--show-current"), "sync/v2")
+        self.assertEqual(git(self.fork, "branch", "--show-current"), f"sync/v2-{head[:10]}")
         message = git(self.fork, "log", "-1", "--format=%B")
         self.assertTrue(message.startswith("chore(upstream): merge Telegram Desktop v2"))
         self.assertEqual(git(self.fork, "rev-parse", "HEAD^2"), head)
@@ -212,31 +212,44 @@ class UpstreamSyncTest(unittest.TestCase):
         self.assertEqual(git(self.fork / "cmake", "rev-parse", "HEAD"), commits[1])
         self.assertEqual(git(self.fork, "status", "--porcelain"), "")
 
-    def test_merged_sync_branch_is_replaced(self):
+    def test_each_sync_of_a_branch_gets_its_own_sync_branch(self):
         write(self.upstream, "Telegram/SourceFiles/b.cpp", "int b2;\n")
         git(self.upstream, "commit", "-q", "-am", "first")
         self.assertIsNone(self.sync("dev")[0])
+        first = git(self.fork, "branch", "--show-current")
         git(self.fork, "switch", "-q", "dev")
-        git(self.fork, "merge", "-q", "--ff-only", "sync/dev")
+        git(self.fork, "merge", "-q", "--ff-only", first)
         write(self.upstream, "Telegram/SourceFiles/b.cpp", "int b3;\n")
         git(self.upstream, "commit", "-q", "-am", "second")
         conflicts, metrics = self.sync("dev")
         self.assertIsNone(conflicts)
         self.assertIsNotNone(metrics)
+        second = git(self.fork, "branch", "--show-current")
+        self.assertEqual(second, f"sync/dev-{git(self.upstream, 'rev-parse', 'HEAD')[:10]}")
+        self.assertNotEqual(first, second)
         self.assertEqual((self.fork / "Telegram/SourceFiles/b.cpp").read_text(), "int b3;\n")
+
+    def test_merged_sync_branch_is_replaced(self):
+        head = self.upstream_commit("Telegram/SourceFiles/b.cpp", "int b3;\n", "v7")
+        git(self.fork, "branch", upstream_sync.branch_name("v7", head))
+        conflicts, metrics = self.sync("v7")
+        self.assertIsNone(conflicts)
+        self.assertIsNotNone(metrics)
+        self.assertEqual(git(self.fork, "rev-parse", "HEAD^2"), head)
 
     def test_current_baseline_is_reported(self):
         with self.assertRaisesRegex(upstream_sync.SyncError, "already"):
             self.sync("dev")
 
     def test_unmerged_sync_branch_is_kept(self):
-        git(self.fork, "branch", "sync/v8")
-        git(self.fork, "switch", "-q", "sync/v8")
+        head = self.upstream_commit("Telegram/SourceFiles/b.cpp", "int b3;\n", "v8")
+        branch = upstream_sync.branch_name("v8", head)
+        git(self.fork, "branch", branch)
+        git(self.fork, "switch", "-q", branch)
         write(self.fork, "Telegram/SourceFiles/serein/y.cpp", "int y;\n")
         git(self.fork, "add", ".")
         git(self.fork, "commit", "-q", "-m", "unmerged")
         git(self.fork, "switch", "-q", "dev")
-        self.upstream_commit("Telegram/SourceFiles/b.cpp", "int b3;\n", "v8")
         with self.assertRaisesRegex(upstream_sync.SyncError, "does not contain"):
             self.sync("v8")
         self.assertEqual(git(self.fork, "rev-parse", "--abbrev-ref", "HEAD"), "dev")
@@ -256,7 +269,8 @@ class UpstreamSyncTest(unittest.TestCase):
 
     def test_branch_names_are_sanitized(self):
         self.assertEqual(
-            upstream_sync.branch_name("refs/tags/v6.3 beta"), "sync/refs-tags-v6.3-beta"
+            upstream_sync.branch_name("refs/tags/v6.3 beta", "0123456789abcdef"),
+            "sync/refs-tags-v6.3-beta-0123456789",
         )
 
 
