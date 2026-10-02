@@ -19,6 +19,8 @@ FLATPAK_SOURCES = {
     "patches": "https://github.com/desktop-app/patches.git",
 }
 PKGBUILD_COMMIT = re.compile(r"^_td_commit=([0-9a-f]{40})$", re.M)
+RECIPES = (SNAP, PKGBUILD, FLATPAK, "packaging/nix/package.nix", "flake.nix")
+LITERAL_CREDENTIALS = re.compile(r"TDESKTOP_API_(?:ID|HASH)(?::STRING)?=\s*[0-9a-f]")
 QT_ARCHIVE = re.compile(r"/qt-everywhere-src-([0-9.]+)\.tar\.xz$", re.M)
 
 
@@ -64,6 +66,10 @@ def problems(root):
                     f"{SNAP} builds tde2e from {expected[:10]}; update "
                     "_td_commit."
                 )
+    for path in RECIPES:
+        recipe = root / path
+        if recipe.exists() and LITERAL_CREDENTIALS.search(recipe.read_text(encoding="utf-8")):
+            result.append(f"{path} sets Telegram API credentials; packagers pass their own.")
     tag = snap_value(snap, "qt", "source-tag")
     archive = QT_ARCHIVE.search(flatpak)
     if not tag or not archive:

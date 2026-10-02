@@ -74,6 +74,16 @@ class CheckPackagingTest(unittest.TestCase):
             ],
         )
 
+    def test_rejects_credentials_in_recipes(self):
+        snap = self.root / check_packaging.SNAP
+        snap.write_text(snap.read_text() + "      - -DTDESKTOP_API_ID=12345\n", encoding="utf-8")
+        nix = self.root / "packaging/nix/package.nix"
+        nix.parent.mkdir(parents=True, exist_ok=True)
+        nix.write_text('(lib.cmakeFeature "TDESKTOP_API_ID" (toString apiId))\n', encoding="utf-8")
+        found = check_packaging.problems(self.root)
+        self.assertEqual(len(found), 1, found)
+        self.assertIn("snap/snapcraft.yaml sets Telegram API credentials", found[0])
+
     def test_update_moves_stale_pins(self):
         self.write(td=STALE, patches_second=STALE)
         self.assertEqual(
