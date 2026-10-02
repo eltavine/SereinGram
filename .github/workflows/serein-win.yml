@@ -84,7 +84,8 @@ jobs:
         qt: [qt6]
 
     env:
-      CONFIG: ${{ inputs.config || 'Debug' }}
+      # Not CONFIG: MSYS2's pacman-key reads that variable as its config file.
+      BUILD_CONFIG: ${{ inputs.config || 'Debug' }}
       ASSET_ARCH: ${{ (inputs.arch || 'x64') == 'arm64' && 'arm64' || 'x86_64' }}
       # Only these runs write caches: every branch and pull request can read the default branch's.
       SAVE_CACHE: ${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
@@ -304,18 +305,18 @@ jobs:
           %TDESKTOP_BUILD_ARCH% ^
           ${{ matrix.qt }} ^
           %TDESKTOP_BUILD_API% ^
-          -D CMAKE_CONFIGURATION_TYPES=%CONFIG% ^
+          -D CMAKE_CONFIGURATION_TYPES=%BUILD_CONFIG% ^
           -D DESKTOP_APP_TEST_APPS=ON ^
           -D CMAKE_COMPILE_WARNING_AS_ERROR=ON ^
           -D CMAKE_MSVC_DEBUG_INFORMATION_FORMAT= || exit /b 1
 
-          cmake --build ..\out --config %CONFIG% --parallel || exit /b 1
-          ..\out\serein-tests\%CONFIG%\test_serein.exe
+          cmake --build ..\out --config %BUILD_CONFIG% --parallel || exit /b 1
+          ..\out\serein-tests\%BUILD_CONFIG%\test_serein.exe
 
       - name: Smoke test.
         run: |
           cd %TBUILD%\%REPO_NAME%
-          python tools\serein\smoke_test.py out\%CONFIG%\SereinGram.exe
+          python tools\serein\smoke_test.py out\%BUILD_CONFIG%\SereinGram.exe
 
       - name: Installer.
         shell: pwsh
@@ -327,13 +328,13 @@ jobs:
             choco install innosetup --no-progress -y
             if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           }
-          & $iscc "/DMyAppVersion=$version" "/DMyAppVersionFull=$version" "/DReleasePath=$root\out\$env:CONFIG" "/DMyBuildTarget=${{ matrix.arch == 'arm64' && 'winarm' || 'win64' }}" "$root\Telegram\build\setup.iss"
+          & $iscc "/DMyAppVersion=$version" "/DMyAppVersionFull=$version" "/DReleasePath=$root\out\$env:BUILD_CONFIG" "/DMyBuildTarget=${{ matrix.arch == 'arm64' && 'winarm' || 'win64' }}" "$root\Telegram\build\setup.iss"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Name the artifacts.
         shell: pwsh
         run: |
-          $out = "$env:TBUILD\$env:REPO_NAME\out\$env:CONFIG"
+          $out = "$env:TBUILD\$env:REPO_NAME\out\$env:BUILD_CONFIG"
           $base = "SereinGram-windows-$env:ASSET_ARCH"
           New-Item -ItemType Directory -Force -Path artifact, portable\SereinGram | Out-Null
           Copy-Item "$out\SereinGram.exe" portable\SereinGram\
