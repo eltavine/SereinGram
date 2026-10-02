@@ -3,8 +3,11 @@ name: Serein guards.
 on:
   push:
     branches:
+      - develop
       - main
   pull_request:
+    branches:
+      - develop
 
 permissions:
   contents: read
@@ -101,13 +104,19 @@ jobs:
 
       - name: Fetch comparison baselines.
         env:
-          SCHEMA_BASELINE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+          EVENT_BASELINE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
         run: |
           base=$(python3 -c "import json; print(json.load(open('tools/serein/policy/upstream.json'))['base'])")
           git fetch --no-tags --depth=1 origin "$base"
-          if [[ ! "$SCHEMA_BASELINE" =~ ^0+$ ]]; then
-            git fetch --no-tags --depth=1 origin "$SCHEMA_BASELINE" || true
+          # New branches and force pushes have no reachable previous commit.
+          baseline="$EVENT_BASELINE"
+          if [[ "$baseline" =~ ^0+$ ]] \
+            || ! git fetch --no-tags --depth=1 origin "$baseline" \
+            || ! git cat-file -e "$baseline^{commit}"; then
+            git fetch --no-tags --depth=2 origin "$GITHUB_SHA"
+            baseline=$(git rev-parse HEAD~1)
           fi
+          echo "SCHEMA_BASELINE=$baseline" >> "$GITHUB_ENV"
 
       - name: Upstream intrusion stays within budget.
         run: python3 tools/serein/upstream_budget.py --list
@@ -118,13 +127,9 @@ jobs:
           buf format --diff --exit-code proto
 
       - name: Schema stays compatible.
-        env:
-          SCHEMA_BASELINE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
         run: tools/serein/proto_breaking.sh "$SCHEMA_BASELINE"
 
       - name: Release asset names stay compatible.
-        env:
-          SCHEMA_BASELINE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
         run: python3 tools/serein/release.py compat --baseline "$SCHEMA_BASELINE"
 
       - name: Code generator dependencies are locked.
@@ -157,7 +162,7 @@ jobs:
           FROM: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
           TO: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
         run: |
-          if [[ "$FROM" =~ ^0+$ ]]; then
+          if [[ "$FROM" =~ ^0+$ ]] || ! git cat-file -e "$FROM^{commit}"; then
             FROM="$TO~1"
           fi
           echo "RANGE=$FROM..$TO" >> "$GITHUB_ENV"

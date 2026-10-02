@@ -199,5 +199,5 @@ cmake --build out/serein-core-tests && ctest --test-dir out/serein-core-tests
 | 功能范围 | 包含可能与服务条款冲突的功能（SG-HIST-09、SG-PRIV-08），与其他增强一样默认关闭 |
 | proto3 方案 | 按 ADR-0002：proto3 + Buf + 自有生成器，不引入 protobuf 运行时 |
 | 文案 | 英文文案 `langs/serein/serein.strings` 由 `Telegram/cmake/serein_lang.cmake` 并入上游的语言代码生成，界面代码照常使用 `tr::lng_serein_*`；生成的键查找函数再经 `tools/serein/split_lang_keys.py` 按键名首字母拆分后编译（MSVC arm64 拒绝编译单个过大的函数）；其他语言的译文按界面语言从资源中加载，缺失的键回退英文 |
-| CI 缓存 | 整个仓库共用 10 GB 的 Actions 缓存，超出后按最久未访问淘汰；分支与 PR 只能读取本身和默认分支的缓存，所以只有 PR 构建与默认分支上的构建写入缓存，其他分支上的发布构建只读取：Windows 的依赖与 Qt 缓存在清理步骤之后保存（与上游一致），macOS 依赖缓存的键包含工具链指纹，Linux 缓存 Docker 层并只保留一份编译缓存；Windows 与 macOS 的依赖缓存同时包含 Debug 与 Release 版本，PR 与发布构建共用；发布流程中的 Windows arm64、Arch 与 Flatpak 构建不读写缓存，以免挤掉三个平台的缓存 |
+| CI 缓存 | 整个仓库共用 10 GB 的 Actions 缓存，超出后按最久未访问淘汰；默认分支是开发分支 `develop`，`main` 只接收发布合并；分支与 PR 能读取默认分支的缓存，所以只有 `develop` 上的构建（每次推送的 Debug 构建与 Nightly 的 Release 构建）写入缓存，PR 与 `main` 上的构建只读取：Windows 的依赖与 Qt 缓存在清理步骤之后保存（与上游一致），macOS 依赖缓存的键包含工具链指纹，Linux 缓存 Docker 层并只保留一份编译缓存；Windows 与 macOS 的依赖缓存同时包含 Debug 与 Release 版本，PR 与发布构建共用；发布流程中的 Windows arm64、Arch 与 Flatpak 构建不读写缓存，以免挤掉三个平台的缓存 |
 | API 凭据 | 不使用官方 Telegram 客户端凭据；构建从仓库 Secrets 的 `SEREIN_API_ID` 与 `SEREIN_API_HASH` 注入，没有密钥的 fork 与 PR 构建回退到上游为开发构建公开提供的测试凭据（`TDESKTOP_API_TEST`） |

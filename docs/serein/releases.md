@@ -15,7 +15,7 @@
 - 最新正式版：`https://github.com/eltavine/SereinGram/releases/latest/download/<产物名>`
 - 指定版本：`https://github.com/eltavine/SereinGram/releases/download/vX.Y.Z/<产物名>`
 
-定时触发只在默认分支上生效，因此 `serein-release.yml` 进入 `main` 后 Nightly 才会按时自动运行；在此之前可在 Actions 页面对 `develop` 手动运行。
+默认分支是 `develop`，定时触发直接运行其中的 `serein-release.yml`；也可以在 Actions 页面手动运行。`main` 只接收发布合并，受分支规则保护。
 
 ## 2. 产物
 
