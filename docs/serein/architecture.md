@@ -158,7 +158,7 @@ message MessagesSettings {
 | 密钥扫描 | gitleaks 8.30.1 扫描每次推送或 PR 新增的主线提交（`tools/serein/gitleaks.toml` 只放行打包说明中的占位凭据） | 已实施 |
 | 桌面元数据 | `desktop-file-validate` 校验桌面入口，`appstreamcli validate` 校验 AppStream 元数据 | 已实施 |
 | 启动冒烟与安装测试 | `tools/serein/smoke_test.py`：三平台构建后以全新 `-workdir` 启动应用，要求日志出现启动行且进程在等待期后仍在运行；Linux 先用 `ldd` 确认运行库都能找到。随后测试交付的产物：Windows 解压便携包并静默安装后启动安装的程序，macOS 挂载 DMG、校验签名并从镜像启动，Linux 以 AppImage 启动，并在 Debian 12、Ubuntu 24.04 与 Fedora 43 容器中安装 `.deb` 与 `.rpm`（依赖由包声明解析），检查文件与运行库 | 已实施 |
-| 发布结构 | `tools/serein/release.py verify`：发布前的产物集合必须与 `tools/serein/policy/release_assets.json` 完全一致，并生成 `SHA256SUMS` 与 `release.json` | 已实施 |
+| 发布结构 | `tools/serein/release.py verify`：发布前的产物集合必须与 `tools/serein/policy/release_assets.json` 完全一致，并生成 `SHA256SUMS` 与 `release.json`；`release.py compat` 与基线比较，已有产物不得删除、改名或改变系统、架构与类型 | 已实施 |
 | 上游侵入预算 | `tools/serein/upstream_budget.py`，与 `policy/upstream.json` 记录的上游基线比较；预算默认只降不升；新功能需要新挂钩时，在同一提交中上调并在提交说明中写明增量与理由；同时统计上游文件直接包含非门面头文件的数量（已锁定为 0） | 已实施 |
 | schema 兼容 | `buf lint`；`tools/serein/proto_breaking.sh` 与推送前的提交或 PR 目标分支比较（`FILE` 级） | 已实施 |
 | 生成代码漂移 | `uv run tools/serein/codegen/generate.py --check` | 已实施 |

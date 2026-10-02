@@ -122,6 +122,11 @@ jobs:
           SCHEMA_BASELINE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
         run: tools/serein/proto_breaking.sh "$SCHEMA_BASELINE"
 
+      - name: Release asset names stay compatible.
+        env:
+          SCHEMA_BASELINE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+        run: python3 tools/serein/release.py compat --baseline "$SCHEMA_BASELINE"
+
       - name: Generated code matches the schema.
         run: uv run tools/serein/codegen/generate.py --check
 

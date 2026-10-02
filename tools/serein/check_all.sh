@@ -30,6 +30,7 @@ if cmake --build "$warnings" 2>&1 | grep -E 'SourceFiles/serein/.*warning:'; the
 fi
 (cd proto && buf lint && buf format --diff --exit-code)
 bash tools/serein/proto_breaking.sh "$baseline"
+python3 tools/serein/release.py compat --baseline "$baseline"
 uv run --quiet tools/serein/codegen/generate.py --check
 uv run --quiet --with jinja2==3.1.6 python -m unittest discover -s tools/serein/tests
 python3 tools/serein/check_style.py

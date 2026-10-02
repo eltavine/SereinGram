@@ -16,6 +16,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
 POLICY = HERE / "policy" / "release_assets.json"
+POLICY_PATH = "tools/serein/policy/release_assets.json"
 CHECKSUMS = "SHA256SUMS"
 MANIFEST = "release.json"
 UPSTREAM = "https://github.com/telegramdesktop/tdesktop"
@@ -75,6 +76,30 @@ def verify(directory, assets):
     present = {path.name for path in Path(directory).iterdir() if path.is_file()}
     expected = {asset["name"] for asset in assets}
     return sorted(expected - present), sorted(present - expected)
+
+
+def compatibility(old_assets, new_assets):
+    current = {asset["name"]: asset for asset in new_assets}
+    problems = []
+    for asset in old_assets:
+        if asset["name"] not in current:
+            problems.append(f"{asset['name']}: a published asset cannot be removed or renamed")
+        elif current[asset["name"]] != asset:
+            problems.append(f"{asset['name']}: the os, arch and kind of an asset cannot change")
+    return problems
+
+
+def baseline_assets(root, ref):
+    result = subprocess.run(
+        ["git", "show", f"{ref}:{POLICY_PATH}"],
+        cwd=root,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        return None
+    return json.loads(result.stdout)["assets"]
 
 
 def sha256(path):
@@ -270,6 +295,20 @@ def notes(commits, assets, info):
     return "\n".join(lines) + "\n"
 
 
+def check_compatibility(root, ref, assets):
+    old = None if re.fullmatch(r"0+", ref) else baseline_assets(root, ref)
+    if old is None:
+        print(f"No release asset list at {ref}; nothing to compare.")
+        return 0
+    problems = compatibility(old, assets)
+    for problem in problems:
+        print(problem, file=sys.stderr)
+    if problems:
+        return 1
+    print(f"The {len(old)} release assets of {ref} are all kept.")
+    return 0
+
+
 def write(text, output):
     if output:
         Path(output).write_text(text, encoding="utf-8", newline="\n")
@@ -311,9 +350,14 @@ def main(argv=None):
     command = commands.add_parser("notes")
     command.add_argument("-o", "--output")
     add_info_arguments(command, previous=True)
+    command = commands.add_parser("compat")
+    command.add_argument("--baseline", required=True)
+    command.add_argument("--root", default=str(ROOT))
     args = parser.parse_args(argv)
     try:
         assets = load_assets(args.assets)
+        if args.command == "compat":
+            return check_compatibility(args.root, args.baseline, assets)
         if args.command == "verify":
             missing, unexpected = verify(args.directory, assets)
             for name in missing:

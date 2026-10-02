@@ -70,6 +70,38 @@ class AssetsTest(unittest.TestCase):
                 release.load_assets(path)
 
 
+DEB_ASSET = {
+    "name": "SereinGram-linux-x86_64.deb",
+    "os": "linux",
+    "arch": "x86_64",
+    "kind": "deb",
+}
+
+
+class CompatibilityTest(unittest.TestCase):
+    def test_allows_added_assets(self):
+        extra = dict(DEB_ASSET, name="SereinGram-linux-arm64.deb", arch="arm64")
+        self.assertEqual(release.compatibility([DEB_ASSET], [DEB_ASSET, extra]), [])
+
+    def test_rejects_removed_or_changed_assets(self):
+        self.assertTrue(release.compatibility([DEB_ASSET], [])[0].endswith("renamed"))
+        changed = dict(DEB_ASSET, kind="rpm")
+        self.assertIn("cannot change", release.compatibility([DEB_ASSET], [changed])[0])
+
+    def test_compares_with_a_git_baseline(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            git(root, "init", "-q")
+            policy = root / release.POLICY_PATH
+            policy.parent.mkdir(parents=True)
+            policy.write_text(json.dumps({"schema_version": 1, "assets": [DEB_ASSET]}))
+            git(root, "add", ".")
+            git(root, "commit", "-q", message="chore: assets")
+            self.assertEqual(release.check_compatibility(root, "HEAD", [DEB_ASSET]), 0)
+            self.assertEqual(release.check_compatibility(root, "HEAD", []), 1)
+            self.assertEqual(release.check_compatibility(root, "0" * 40, []), 0)
+
+
 class FilesTest(unittest.TestCase):
     def setUp(self):
         self._temp = tempfile.TemporaryDirectory()
