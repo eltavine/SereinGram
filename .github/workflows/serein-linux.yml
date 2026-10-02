@@ -108,7 +108,15 @@ jobs:
 
       - name: First set up.
         run: |
-          sudo apt update
+          for attempt in 1 2 3; do
+            if sudo apt-get update -o Acquire::Retries=3; then
+              break
+            elif [ "$attempt" = 3 ]; then
+              echo "::warning::apt-get update kept failing; installing from the existing package lists."
+            else
+              sleep 60
+            fi
+          done
           curl -sSL https://install.python-poetry.org | python3 -
           if [ "$ARCH" = x86_64 ]; then
             curl -sSL https://github.com/ccache/ccache/releases/download/v4.13.6/ccache-4.13.6-linux-x86_64-glibc.tar.xz \
