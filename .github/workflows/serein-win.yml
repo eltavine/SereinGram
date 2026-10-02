@@ -55,6 +55,9 @@ on:
       ref:
         type: string
         default: ''
+      channel:
+        type: string
+        default: ''
       no_cache:
         type: boolean
         default: false
@@ -243,11 +246,13 @@ jobs:
           path: ${{ env.TBUILD }}\ThirdParty
           key: ${{ steps.cache-third-party.outputs.cache-primary-key }}
 
-      - name: Choose the API credentials.
+      - name: Choose the API credentials and the release channel.
         shell: bash
         env:
           SEREIN_API_ID: ${{ secrets.SEREIN_API_ID }}
           MSVC_ARCH: ${{ matrix.arch }}
+          CHANNEL: ${{ inputs.channel }}
+          COMMIT: ${{ inputs.ref }}
         run: |
           # Without the repository secrets, build with the test-only credentials.
           API=""
@@ -255,6 +260,11 @@ jobs:
             API="-D TDESKTOP_API_TEST=ON"
           fi
           echo "TDESKTOP_BUILD_API=$API" >> "$GITHUB_ENV"
+          INFO=""
+          if [ -n "$CHANNEL" ]; then
+            INFO="-D SEREIN_BUILD_CHANNEL=$CHANNEL -D SEREIN_BUILD_COMMIT=$COMMIT"
+          fi
+          echo "TDESKTOP_BUILD_INFO=$INFO" >> "$GITHUB_ENV"
           ARCH=$MSVC_ARCH
           if [ "$ARCH" = arm64 ]; then
             ARCH=arm
@@ -305,6 +315,7 @@ jobs:
           %TDESKTOP_BUILD_ARCH% ^
           ${{ matrix.qt }} ^
           %TDESKTOP_BUILD_API% ^
+          %TDESKTOP_BUILD_INFO% ^
           -D CMAKE_CONFIGURATION_TYPES=%BUILD_CONFIG% ^
           -D DESKTOP_APP_TEST_APPS=ON ^
           -D CMAKE_COMPILE_WARNING_AS_ERROR=ON ^

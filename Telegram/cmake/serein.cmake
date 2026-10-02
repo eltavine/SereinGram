@@ -307,6 +307,32 @@ if (DESKTOP_APP_USE_PACKAGED)
     target_compile_definitions(Telegram PRIVATE SEREIN_SYSTEM_PACKAGE)
 endif()
 
+set(SEREIN_BUILD_CHANNEL "" CACHE STRING
+    "Release channel of a published build: nightly or release")
+set(SEREIN_BUILD_COMMIT "" CACHE STRING
+    "Full hash of the commit a published build is made from")
+string(LENGTH "${SEREIN_BUILD_COMMIT}" serein_commit_length)
+if (NOT SEREIN_BUILD_CHANNEL MATCHES "^(nightly|release)?$")
+    message(FATAL_ERROR "SEREIN_BUILD_CHANNEL must be empty, nightly or release.")
+elseif (NOT SEREIN_BUILD_COMMIT MATCHES "^[0-9a-f]*$"
+    OR NOT serein_commit_length MATCHES "^(0|40)$")
+    message(FATAL_ERROR "SEREIN_BUILD_COMMIT must be empty or a full commit hash.")
+endif()
+# The values live in one generated source, so a new commit recompiles nothing else.
+file(CONFIGURE
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/serein_build_info.cpp
+    CONTENT [[#include "serein/core/build_info.h"
+
+namespace Serein {
+
+const char kBuildChannel[] = "@SEREIN_BUILD_CHANNEL@";
+const char kBuildCommit[] = "@SEREIN_BUILD_COMMIT@";
+
+} // namespace Serein
+]]
+    @ONLY)
+target_sources(Telegram PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/serein_build_info.cpp)
+
 if (WIN32)
     target_link_libraries(Telegram PRIVATE Dnsapi)
 endif()

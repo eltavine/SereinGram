@@ -102,6 +102,7 @@ jobs:
       arch: x64
       config: Release
       ref: ${{ needs.plan.outputs.commit }}
+      channel: ${{ needs.plan.outputs.channel }}
 
   windows-arm64:
     name: Windows arm64
@@ -115,6 +116,7 @@ jobs:
       arch: arm64
       config: Release
       ref: ${{ needs.plan.outputs.commit }}
+      channel: ${{ needs.plan.outputs.channel }}
       no_cache: true
 
   macos:
@@ -128,6 +130,7 @@ jobs:
     with:
       config: Release
       ref: ${{ needs.plan.outputs.commit }}
+      channel: ${{ needs.plan.outputs.channel }}
 
   linux:
     name: Linux x86_64
@@ -143,6 +146,7 @@ jobs:
     with:
       config: Release
       ref: ${{ needs.plan.outputs.commit }}
+      channel: ${{ needs.plan.outputs.channel }}
 
   linux-arm64:
     name: Linux arm64
@@ -159,6 +163,7 @@ jobs:
       arch: arm64
       config: Release
       ref: ${{ needs.plan.outputs.commit }}
+      channel: ${{ needs.plan.outputs.channel }}
 
   flatpak:
     name: Flatpak
