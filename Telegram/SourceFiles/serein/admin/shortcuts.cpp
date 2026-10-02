@@ -1,6 +1,6 @@
 #include "serein/admin/shortcuts.h"
 
-#include "serein/chats/options.h"
+#include "serein/schema/gen/settings/chats.h"
 #include "boxes/peers/edit_participants_box.h"
 #include "data/data_channel.h"
 #include "data/data_chat.h"

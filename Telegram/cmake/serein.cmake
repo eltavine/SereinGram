@@ -4,7 +4,6 @@ set(serein_sources
     serein/chats/promotions.cpp
     serein/compose/buttons.cpp
     serein/compose/confirm.cpp
-    serein/compose/field_menu.cpp
     serein/compose/format_toolbar.cpp
     serein/compose/forward_options.cpp
     serein/compose/mention.cpp
@@ -27,7 +26,7 @@ set(serein_sources
     serein/features/updates/model/release.cpp
     serein/features/regdate/model/estimate.cpp
     serein/adapters/openssl/aes_gcm_cipher.cpp
-    serein/hooks/ghost.cpp
+    serein/features/ghost/hooks.cpp
     serein/features/ghost/read_until_here.cpp
     serein/features/ghost/story_tip.cpp
     serein/app/ghost_read.cpp
@@ -39,6 +38,7 @@ set(serein_sources
     serein/app/lifecycle.cpp
     serein/app/main_menu.cpp
     serein/app/message_menu.cpp
+    serein/app/compose_field.cpp
     serein/app/modules.cpp
     serein/app/peer_menu.cpp
     serein/app/recent_chats.cpp

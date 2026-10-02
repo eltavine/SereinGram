@@ -25,8 +25,10 @@ Telegram/SourceFiles/serein/
   schema/gen/     生成代码（提交入库，CI 校验无漂移，禁止手改）
   core/           选项读写、作用域解析、变更通知、校验、模块注册接口
   ports/          抽象端口：设备存储、账号存储、历史库、凭据、HTTP、翻译、转写、文本转换、时钟
-  adapters/       端口实现：tdesktop、qtsql、keychain、opencc、platform/{mac,win,linux}
-  hooks/          上游唯一允许包含的 serein 头文件；默认返回上游行为
+  adapters/       端口实现：tdesktop（偏好）、qtsql（历史库）、openssl（AES-GCM）、qtnetwork（共享 HTTP 客户端）、credentials/{keychain,wincred,local_file}（CMake 按平台三选一）
+  hooks/          上游唯一允许包含的 serein 头文件与生成的分发代码；默认返回上游行为
+  display/        各领域共用的展示工具（视图刷新、ID 格式化）
+  <领域>/         admin、chats、compose、filters、interface、links、media、menu、messages、network、privacy、services、snapshot
   features/<名>/  model/ 纯逻辑与状态机；ui/ 界面、菜单项、设置子页；module.cpp 注册
   settings/       由 schema 元数据生成设置页与搜索索引
   app/            组合根：创建适配器、注册模块、把 hooks 连到模块
@@ -41,9 +43,11 @@ Telegram/SourceFiles/serein/
 features/*/model -> core + ports + schema
 features/*/ui    -> features/*/model + lib_ui + 上游界面 API
 features/*/module.cpp -> 本功能 model、ui + hooks 注册接口 + settings 注册接口
-settings  -> core + schema + lib_ui + 上游 Settings API
+settings  -> core + schema + 各领域公开接口 + lib_ui + 上游 Settings API
 adapters  -> ports + 上游 + 第三方库
-hooks     -> core（不依赖任何功能模块）
+hooks     -> core + schema + ports（不依赖任何功能模块）
+<领域>    -> core + schema + ports + hooks + display（横向依赖须在策略中逐条放行）
+menu      -> 只有贡献者注册表与显隐过滤；菜单项由各领域提供，由 app 按固定顺序注册
 app       -> 全部（只做组装）
 上游文件  -> hooks（仅此一处）
 ```
@@ -148,7 +152,7 @@ message MessagesSettings {
 | 守卫 | 工具 | 状态 |
 | --- | --- | --- |
 | 自有源文件 ≤ 1000 行 | `tools/serein/check_file_size.py` + `serein-guards.yml` | 已实施 |
-| 模块依赖方向 | `tools/serein/check_boundaries.py` 按 `policy/boundaries.json` 检查每个 `#include`：`schema`、`ports`、`adapters`、`core` 与各功能的 `model` 层不得引用应用代码；`core` 只能引用自身与 `ports`，偏好存储的上游实现位于 `adapters/tdesktop`，按设备与按账号的选项实例和设置页注册总表位于组装根 `app`；`features/<名>/` 的界面层只能引用本功能、`core`、`schema`、`ports` 与 `hooks`，不得反向依赖 `app` 或其他功能；其余领域目录适用宽松的 `serein/` 兜底规则 | 已实施 |
+| 模块依赖方向 | `tools/serein/check_boundaries.py` 按 `policy/boundaries.json` 检查每个 `#include`：`schema`、`ports`、`adapters`、`core` 与各功能的 `model` 层不得引用应用代码；`core` 只能引用自身与 `ports`，偏好存储的上游实现位于 `adapters/tdesktop`，按设备与按账号的选项实例和设置页注册总表位于组装根 `app`；`features/<名>/` 的界面层只能引用本功能、`core`、`schema`、`ports` 与 `hooks`，不得反向依赖 `app` 或其他功能；`serein/` 下每个源文件都必须落在某条模块规则内，新目录没有规则即失败；领域目录只能引用自身与共享层 `core`、`schema`、`ports`、`hooks`、`display`，确需的横向依赖逐条放行并尽量精确到头文件（如 `messages` 只能引用历史功能的 `deleted_marks.h`，`snapshot` 只能引用界面的 `reply_colors.h`）；`settings` 作为设置界面外壳可引用各领域，但不得引用 `app` 与 `adapters`；只有组装根 `app` 可引用全部 | 已实施 |
 | 功能矩阵格式 | `tools/serein/check_features.py`：`features.md` 每行的 ID 唯一且形如 `SG-<族>-<两位序号>`，状态只能是 Planned、In Progress、Implemented、Verified，优先级 P0–P3，来源只用约定缩写 | 已实施 |
 | 门面命名空间遮蔽 | `tools/serein/check_hook_namespaces.py`：生成的门面命名空间 `Serein::Hooks::<页>` 会遮蔽同名的 `Serein::<页>`；位于 `Serein::Hooks` 内、且包含了该门面的代码，只能用 `<页>::` 访问门面里声明的函数，其余名字必须写成 `Serein::<页>::` | 已实施 |
 | 工作流静态检查 | actionlint 1.7.12（含 shellcheck）检查 `.github/workflows/serein-*.yml` 的表达式、矩阵属性、`needs` 引用、Action 输入与内嵌脚本；zizmor 1.16.3 检查工作流安全：第三方 Action 固定到提交哈希、检出不保留凭据、可复用工作流只接收需要的 Secrets、无模板注入；本地未安装 actionlint 时 `check_all.sh` 跳过并提示 | 已实施 |

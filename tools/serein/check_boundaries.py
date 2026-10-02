@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Fail when a SereinGram module includes something its layer may not know.
 
-Each owned file belongs to the module with the longest matching prefix.
+Each owned file belongs to the module with the longest matching prefix, and
+every file under the owned prefix must belong to some module.
 Quoted includes resolve to another owned module, an upstream application
 header (a file under the source root, or an app prefix such as generated
 styles) or a desktop-app library header (everything else).
@@ -17,7 +18,7 @@ from check_file_size import PolicyError, list_files
 
 HERE = Path(__file__).resolve().parent
 DEFAULT_POLICY = HERE / "policy" / "boundaries.json"
-POLICY_KEYS = {"schema_version", "source_root", "app_prefixes", "modules"}
+POLICY_KEYS = {"schema_version", "source_root", "owned_prefix", "app_prefixes", "modules"}
 MODULE_KEYS = {"own", "app", "libraries"}
 INCLUDE = re.compile(r'^\s*#\s*include\s+"([^"]+)"', re.MULTILINE)
 SOURCES = (".h", ".hpp", ".cpp", ".mm", ".m")
@@ -32,6 +33,9 @@ def load_policy(path):
         raise PolicyError(f"policy {path} must have exactly {sorted(POLICY_KEYS)}")
     if policy["schema_version"] != 1:
         raise PolicyError(f"unsupported policy schema {policy['schema_version']}")
+    owned = policy["owned_prefix"]
+    if not isinstance(owned, str) or not owned.endswith("/"):
+        raise PolicyError("owned_prefix must be a directory ending with /")
     modules = policy["modules"]
     if not isinstance(modules, dict) or not modules:
         raise PolicyError("modules must be a non-empty object")
@@ -77,7 +81,11 @@ def find_violations(root, policy):
         relative = name[len(source_root) :]
         module = module_of(relative, modules)
         full = Path(root) / name
-        if module is None or not full.is_file():
+        if not full.is_file():
+            continue
+        if module is None:
+            if relative.startswith(policy["owned_prefix"]):
+                violations.append((relative, None, "no module rule covers this file"))
             continue
         checked += 1
         rules = modules[module]
@@ -108,7 +116,10 @@ def main(argv=None):
         print(f"cannot read sources: {error}", file=sys.stderr)
         return 2
     for path, include, reason in violations:
-        print(f'{path}: includes "{include}": {reason}')
+        if include is None:
+            print(f"{path}: {reason}")
+        else:
+            print(f'{path}: includes "{include}": {reason}')
     if violations:
         print(f"{len(violations)} module boundary violation(s).")
         return 1

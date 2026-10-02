@@ -14,6 +14,7 @@ import check_boundaries
 POLICY = {
     "schema_version": 1,
     "source_root": "src/",
+    "owned_prefix": "serein/",
     "app_prefixes": ["styles/"],
     "modules": {
         "serein/schema/": {
@@ -92,6 +93,22 @@ class CheckBoundariesTest(unittest.TestCase):
         code, output = self.run_check()
         self.assertEqual(code, 1)
         self.assertIn("may not use libraries", output)
+
+    def test_owned_files_need_a_module(self):
+        modules = {k: v for k, v in POLICY["modules"].items() if k != "serein/"}
+        self.policy.write_text(json.dumps(dict(POLICY, modules=modules)), encoding="utf-8")
+        self.write("src/serein/fresh/area.cpp", '#include "serein/schema/a.h"\n')
+        self.write("src/history/history.cpp", '#include "serein/fresh/area.h"\n')
+        code, output = self.run_check()
+        self.assertEqual(code, 1)
+        self.assertIn("serein/fresh/area.cpp: no module rule covers this file", output)
+        self.assertNotIn("history/history.cpp", output)
+
+    def test_rejects_missing_owned_prefix(self):
+        broken = {k: v for k, v in POLICY.items() if k != "owned_prefix"}
+        self.policy.write_text(json.dumps(broken), encoding="utf-8")
+        code, _ = self.run_check()
+        self.assertEqual(code, 2)
 
     def test_rejects_malformed_policy(self):
         broken = dict(POLICY, modules={"serein": {"own": [], "app": True, "libraries": True}})
