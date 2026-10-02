@@ -14,7 +14,7 @@
 
 上游刻意不带 protobuf 运行时：cld3 用手写头文件替代生成代码（`cmake/external/cld3`），WebRTC 以 `WEBRTC_ENABLE_PROTOBUF=0` 构建。静态 Qt 只初始化 `qtbase`、`qtimageformats`、`qtshadertools`、`qtsvg`，但没有关闭 Qt SQL，Qt 自带的 SQLite 驱动可用。
 
-## 2. 目标结构
+## 2. 目录结构
 
 ```text
 proto/                                   proto3 schema 与 Buf 配置
@@ -29,9 +29,9 @@ Telegram/SourceFiles/serein/
   hooks/          上游唯一允许包含的 serein 头文件与生成的分发代码；默认返回上游行为
   display/        各领域共用的展示工具（视图刷新、ID 格式化）
   <领域>/         admin、chats、compose、filters、interface、links、media、menu、messages、network、privacy、services、snapshot
-  features/<名>/  model/ 纯逻辑与状态机；ui/ 界面、菜单项、设置子页；module.cpp 注册
-  settings/       由 schema 元数据生成设置页与搜索索引
-  app/            组合根：创建适配器、注册模块、把 hooks 连到模块
+  features/<名>/  ghost、history、instant_view、updates、stickers、regdate：model/ 为不依赖上游的纯逻辑与状态机，其余是该功能的界面、菜单项与挂钩实现
+  settings/       设置界面外壳：schema 生成的设置行（settings/gen）加各页面的自定义行
+  app/            组合根：选项实例、模块表、菜单贡献者的注册顺序、需要创建适配器或跨领域组装的挂钩
   tests/          单元测试、假实现、界面场景
 ```
 
@@ -40,9 +40,8 @@ Telegram/SourceFiles/serein/
 箭头表示左侧依赖右侧：
 
 ```text
-features/*/model -> core + ports + schema
-features/*/ui    -> features/*/model + lib_ui + 上游界面 API
-features/*/module.cpp -> 本功能 model、ui + hooks 注册接口 + settings 注册接口
+features/*/model -> core + ports + schema（不依赖上游）
+features/<名>    -> 本功能 model + core + schema + ports + hooks + lib_ui + 上游界面 API
 settings  -> core + schema + 各领域公开接口 + lib_ui + 上游 Settings API
 adapters  -> ports + 上游 + 第三方库
 hooks     -> core + schema + ports（不依赖任何功能模块）
@@ -60,8 +59,8 @@ app       -> 全部（只做组装）
 | `adapters` | 把端口接到上游和第三方库 | 功能规则 |
 | `hooks` | 上游调用点的稳定签名与分发 | 功能模块 |
 | `features/*/model` | 功能规则，可单元测试 | 上游、Qt Widgets、其他功能 |
-| `features/*/ui` | 该功能的界面 | 其他功能 |
-| `settings` | 通用设置页生成 | 功能规则 |
+| `features/<名>` | 该功能的界面、菜单项与挂钩实现 | 其他功能、`app` |
+| `settings` | 设置界面外壳：生成的设置行与各页面 | `app`、`adapters` |
 | `app` | 组合根 | 业务规则 |
 
 扩展规则：
@@ -69,7 +68,7 @@ app       -> 全部（只做组装）
 1. 上游文件只允许包含 `serein/hooks/*.h`；每个挂钩在上游只占一行调用或一个条件，逻辑放在 `serein/`。品牌与构建文件是唯一例外，集中在品牌提交中。
 2. 优先使用上游已有扩展点：`rpl` 事件（`Main::Domain`、`Main::Account::sessionChanges()`、`Data::Session` 的各类变更流）、样式常量、`Settings::Section` 注册。只有这些都做不到时才新增挂钩。
 3. 功能模块之间不直接包含；共享能力放进端口或 `core` 的事件。
-4. 新功能 = 新目录 `features/<名>` + schema 字段 + `module.cpp` 注册，不修改核心流程。
+4. 新功能 = 所属领域目录或新目录 `features/<名>` + 一条边界规则 + schema 字段 + 在 `app/modules.cpp` 的模块表或菜单贡献者中注册，不修改核心流程。
 5. 生成的 schema 类型是值类型；持久化格式属于适配器。
 6. schema 只做增量演进，删除字段改为 `reserved`；`buf breaking` 强制执行。
 7. 挂钩的默认实现等于上游行为；没有模块注册处理器时，客户端行为与上游一致。
