@@ -188,6 +188,14 @@ jobs:
             -srcfolder "$REPO_NAME/out/$CONFIG/SereinGram.app" \
             -ov -format UDZO artifact/SereinGram-macos-universal.dmg
 
+      - name: Disk image integration test.
+        run: |
+          mount=$(mktemp -d)
+          hdiutil attach -nobrowse -readonly -mountpoint "$mount" artifact/SereinGram-macos-universal.dmg
+          codesign --verify --deep --strict "$mount/SereinGram.app"
+          python3 "$REPO_NAME/tools/serein/smoke_test.py" "$mount/SereinGram.app/Contents/MacOS/SereinGram"
+          hdiutil detach "$mount"
+
       - uses: actions/upload-artifact@v7
         name: Upload artifact.
         with:

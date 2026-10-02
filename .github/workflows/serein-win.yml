@@ -341,6 +341,20 @@ jobs:
           Move-Item $setup[0].FullName "artifact\$base-setup.exe"
           Get-ChildItem artifact
 
+      - name: Package integration test.
+        shell: pwsh
+        run: |
+          $base = "artifact\SereinGram-windows-$env:ASSET_ARCH"
+          $portable = Join-Path $env:RUNNER_TEMP 'portable-check'
+          Expand-Archive "$base-portable.zip" -DestinationPath $portable
+          if (-not (Test-Path "$portable\SereinGram\SereinGram.exe")) { throw 'The portable archive lacks SereinGram.exe.' }
+          $target = Join-Path $env:RUNNER_TEMP 'SereinGramInstall'
+          $install = Start-Process -FilePath "$base-setup.exe" -Wait -PassThru `
+            -ArgumentList '/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', '/SP-', "/DIR=$target"
+          if ($install.ExitCode -ne 0) { throw "The installer exited with code $($install.ExitCode)." }
+          python "$env:TBUILD\$env:REPO_NAME\tools\serein\smoke_test.py" "$target\SereinGram.exe"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
       - uses: actions/upload-artifact@v7
         name: Upload artifact.
         with:

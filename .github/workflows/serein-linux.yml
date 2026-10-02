@@ -316,6 +316,29 @@ jobs:
           done
           ls -l artifact
 
+      - name: AppImage integration test.
+        env:
+          APPIMAGE_EXTRACT_AND_RUN: 1
+        run: xvfb-run -a python3 tools/serein/smoke_test.py artifact/SereinGram-linux-x86_64.AppImage
+
+      # The packages must install with their declared dependencies on clean systems.
+      - name: Package integration test.
+        run: |
+          check='test -x /usr/bin/SereinGram
+            test -f /usr/share/applications/io.github.eltavine.SereinGram.desktop
+            test -f /usr/share/metainfo/io.github.eltavine.SereinGram.metainfo.xml
+            test -f /usr/share/icons/hicolor/256x256/apps/io.github.eltavine.SereinGram.png
+            if ldd /usr/bin/SereinGram | grep "not found"; then exit 1; fi'
+          for image in debian:12-slim ubuntu:24.04; do
+            docker run --rm -v "$PWD/artifact:/artifact:ro" "$image" bash -euo pipefail -c "
+              apt-get update -qq
+              apt-get install -y -qq --no-install-recommends /artifact/SereinGram-linux-x86_64.deb >/dev/null
+              $check"
+          done
+          docker run --rm -v "$PWD/artifact:/artifact:ro" fedora:43 bash -euo pipefail -c "
+            dnf install -y -q /artifact/SereinGram-linux-x86_64.rpm
+            $check"
+
       - uses: actions/upload-artifact@v7
         name: Upload artifact.
         with:

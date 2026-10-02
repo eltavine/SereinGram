@@ -31,5 +31,27 @@ contents:
   - src: ./icons/
     dst: /usr/share/icons/hicolor/
     type: tree
+overrides:
+  deb:
+    depends:
+      - libc6 (>= 2.28)
+      - libglib2.0-0t64 | libglib2.0-0
+      - libcairo2
+      - libpango-1.0-0
+      - libpangocairo-1.0-0
+      - libpangoft2-1.0-0
+      - libfontconfig1
+      - libfreetype6
+  rpm:
+    depends:
+      - libglib-2.0.so.0()(64bit)
+      - libgio-2.0.so.0()(64bit)
+      - libgobject-2.0.so.0()(64bit)
+      - libcairo.so.2()(64bit)
+      - libpango-1.0.so.0()(64bit)
+      - libpangocairo-1.0.so.0()(64bit)
+      - libpangoft2-1.0.so.0()(64bit)
+      - libfontconfig.so.1()(64bit)
+      - libfreetype.so.6()(64bit)
 rpm:
   group: Applications/Internet
