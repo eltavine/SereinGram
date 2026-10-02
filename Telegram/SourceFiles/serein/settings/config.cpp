@@ -2,6 +2,7 @@
 
 #include "serein/core/exchange.h"
 #include "serein/hooks/core/language.h"
+#include "serein/settings/cloud_backup.h"
 #include "serein/settings/chats.h"
 #include "serein/settings/compose.h"
 #include "serein/settings/home.h"
@@ -261,6 +262,23 @@ void Import(not_null<Window::SessionController*> controller) {
 		}));
 }
 
+void BackUp(not_null<Window::SessionController*> controller) {
+	const auto exported = Exchange::Export(ForDevice(), RegisteredOptions());
+	if (!exported.invalidKeys.isEmpty()) {
+		controller->showToast(tr::lng_serein_config_invalid(tr::now));
+		return;
+	}
+	BackUpToSavedMessages(controller, exported.data);
+}
+
+void Restore(not_null<Window::SessionController*> controller) {
+	RestoreFromSavedMessages(
+		controller,
+		crl::guard(controller, [=](QByteArray bytes) {
+			ShowImport(controller, bytes);
+		}));
+}
+
 void CopyDiagnostics(not_null<Window::SessionController*> controller) {
 	const auto &registry = RegisteredOptions();
 	const auto exported = Exchange::Export(ForDevice(), registry);
@@ -305,6 +323,19 @@ const auto kMeta = BuildHelper({
 		.st = &st::settingsButtonNoIcon,
 		.onClick = [=] { Import(controller); },
 	});
+	builder.addButton({
+		.id = u"serein/config/backup"_q,
+		.title = tr::lng_serein_config_backup(),
+		.st = &st::settingsButtonNoIcon,
+		.onClick = [=] { BackUp(controller); },
+	});
+	builder.addButton({
+		.id = u"serein/config/restore"_q,
+		.title = tr::lng_serein_config_restore(),
+		.st = &st::settingsButtonNoIcon,
+		.onClick = [=] { Restore(controller); },
+	});
+	builder.addDividerText(tr::lng_serein_config_backup_about());
 	builder.addButton({
 		.id = u"serein/config/reset"_q,
 		.title = tr::lng_serein_config_reset(),

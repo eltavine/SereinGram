@@ -642,6 +642,13 @@
 "lng_serein_alias_changed" = "本地名称已变化，请重新打开此窗口。";
 "lng_serein_config_export" = "导出配置";
 "lng_serein_config_import" = "导入配置";
+"lng_serein_config_backup" = "备份到收藏夹";
+"lng_serein_config_restore" = "从收藏夹恢复";
+"lng_serein_config_backup_about" = "备份会以本设备设置文件的形式发送到你的收藏夹，其他设备可以从中恢复；恢复时先列出变化再应用。保存在系统凭据库中的密钥不包含在内。";
+"lng_serein_config_backup_done" = "设置文件正在发送到收藏夹。";
+"lng_serein_config_backup_failed" = "无法生成设置文件。";
+"lng_serein_config_restore_none" = "收藏夹中没有找到 SereinGram 设置备份。";
+"lng_serein_config_restore_failed" = "无法下载设置备份。";
 "lng_serein_config_import_about" = "仅应用下列修改，文件中未列出的设置保持当前值。较长文本在预览中省略，导入时保留完整内容。";
 "lng_serein_config_imported" = "配置已导入。";
 "lng_serein_config_exported" = "配置已导出。";

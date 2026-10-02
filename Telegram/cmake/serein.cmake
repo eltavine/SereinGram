@@ -154,6 +154,7 @@ set(serein_sources
     serein/settings/rules.cpp
     serein/settings/chats.cpp
     serein/settings/compose.cpp
+    serein/settings/cloud_backup.cpp
     serein/settings/config.cpp
     serein/settings/media.cpp
     serein/settings/menu.cpp

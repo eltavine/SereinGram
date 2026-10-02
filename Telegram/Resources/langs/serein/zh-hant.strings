@@ -642,6 +642,13 @@
 "lng_serein_alias_changed" = "本機名稱已變更，請重新開啟此視窗。";
 "lng_serein_config_export" = "匯出設定";
 "lng_serein_config_import" = "匯入設定";
+"lng_serein_config_backup" = "備份到儲存的訊息";
+"lng_serein_config_restore" = "從儲存的訊息還原";
+"lng_serein_config_backup_about" = "備份會以本裝置設定檔的形式傳送到你的儲存的訊息，其他裝置可以從中還原；還原時先列出變更再套用。儲存在系統憑證庫中的金鑰不包含在內。";
+"lng_serein_config_backup_done" = "設定檔正在傳送到儲存的訊息。";
+"lng_serein_config_backup_failed" = "無法產生設定檔。";
+"lng_serein_config_restore_none" = "儲存的訊息中沒有找到 SereinGram 設定備份。";
+"lng_serein_config_restore_failed" = "無法下載設定備份。";
 "lng_serein_config_import_about" = "僅套用下列修改，檔案中未列出的設定保持目前值。較長文字在預覽中省略，匯入時保留完整內容。";
 "lng_serein_config_imported" = "設定已匯入。";
 "lng_serein_config_exported" = "設定已匯出。";

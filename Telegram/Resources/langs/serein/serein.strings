@@ -646,6 +646,13 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_alias_changed" = "The local name changed. Reopen this dialog and try again.";
 "lng_serein_config_export" = "Export configuration";
 "lng_serein_config_import" = "Import configuration";
+"lng_serein_config_backup" = "Back up to Saved Messages";
+"lng_serein_config_restore" = "Restore from Saved Messages";
+"lng_serein_config_backup_about" = "A backup is sent to your Saved Messages as a settings file of this device, so another device can restore it. Restoring lists the changes before applying them. Keys kept in the system credential store are not included.";
+"lng_serein_config_backup_done" = "The settings file is being sent to Saved Messages.";
+"lng_serein_config_backup_failed" = "Could not prepare the settings file.";
+"lng_serein_config_restore_none" = "No SereinGram settings backup was found in Saved Messages.";
+"lng_serein_config_restore_failed" = "Could not download the settings backup.";
 "lng_serein_config_import_about" = "Only the listed changes will be applied. Omitted settings keep their current values. Long text is shortened in this preview; the full value will be imported.";
 "lng_serein_config_imported" = "Configuration imported.";
 "lng_serein_config_exported" = "Configuration exported.";
