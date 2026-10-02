@@ -199,7 +199,7 @@ Phase 2 与 Phase 3：按功能矩阵的 P2、P3；P3 每项先写 ADR 再实施
 | 事项 | 决定 |
 | --- | --- |
 | 应用 ID | `io.github.eltavine.SereinGram` |
-| 图标 | 先使用自有的临时占位图标，之后替换为正式图标；不沿用 Nagram 或 Telegram 图标 |
+| 图标 | 正式图标由 [OukaroMF](https://github.com/OukaroMF/) 设计，母版 SVG 原样保存，各尺寸与平台格式均由生成脚本从母版渲染；不沿用 Nagram 或 Telegram 图标 |
 | 推送与 CI | 允许推送到 `main` 触发三平台工作流 |
 | 服务条款风险功能 | SG-HIST-09、SG-PRIV-07、SG-PRIV-08 正常纳入 |
 | proto3 方案 | 按 ADR-0002：proto3 + Buf + 自有生成器，不引入 protobuf 运行时 |

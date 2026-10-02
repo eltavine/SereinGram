@@ -31,7 +31,7 @@ Nagram 的品牌政策要求分支使用不同品牌并替换 Nagram 名称与�
 | ID | 功能 | 来源 | 状态 | 优先级 |
 | --- | --- | --- | --- | --- |
 | SG-BRAND-01 | 应用名 SereinGram：可执行文件、关于页、托盘、通知、安装器文案 | D | Implemented | P0 |
-| SG-BRAND-02 | 自有图标资产，替换全部 Nagram 图标（当前为生成的临时占位图标，正式图标待定） | D | Implemented | P0 |
+| SG-BRAND-02 | 自有图标资产，替换全部 Nagram 图标（正式图标由 [OukaroMF](https://github.com/OukaroMF/) 设计，母版 `Telegram/Resources/branding/sereingram-logo.svg` 原样保存；`tools/serein/brand/generate_icons.py` 用 resvg 渲染母版，生成浅色圆角底板上的全部应用图标、Windows ICO、macOS 图标集、圆形与绿色变体，以及复用母版深色路径的单色托盘、设置入口、二维码登录与 symbolic 图标） | D | Implemented | P0 |
 | SG-BRAND-03 | 应用 ID、数据目录、便携目录、Windows AppUserModelID、安装器 ID 与通知激活器 GUID | D | Implemented | P0 |
 | SG-BRAND-04 | 源码、发布与问题反馈链接指向 `eltavine/SereinGram` | D | Implemented | P0 |
 | SG-BRAND-05 | 代码更名：`nagram` → `serein`（目录、命名空间、文案键、存储键、CMake、测试目标、工作流） | D | Implemented | P0 |
