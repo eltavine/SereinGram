@@ -179,6 +179,7 @@ set(serein_sources
     serein/network/proxy_note.cpp
     serein/network/proxy_subscription.cpp
     serein/network/proxy_tools.cpp
+    serein/network/transfer.cpp
     serein/network/vpn_proxy.cpp
     serein/network/vpn_rules.cpp
     serein/services/transcription.cpp

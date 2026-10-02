@@ -102,4 +102,12 @@ rpl::producer<bool> AndroidWebAppsValue() {
 	return ForDevice().Value(Serein::ServiceSettings::kAndroidWebApps);
 }
 
+bool FasterTransfers() {
+	return ForDevice().Get(Serein::ServiceSettings::kFasterTransfers);
+}
+
+rpl::producer<bool> FasterTransfersValue() {
+	return ForDevice().Value(Serein::ServiceSettings::kFasterTransfers);
+}
+
 } // namespace Serein::Hooks::ServiceSettings

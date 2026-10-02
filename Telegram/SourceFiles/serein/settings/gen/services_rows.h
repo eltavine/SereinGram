@@ -23,6 +23,7 @@ struct CustomRows {
 	CustomRow pauseProxyOnVpn;
 	CustomRow customDoh;
 	CustomRow androidWebApps;
+	CustomRow fasterTransfers;
 };
 
 inline void AddLayout(
@@ -39,6 +40,7 @@ inline void AddLayout(
 	custom.pauseProxyOnVpn();
 	custom.customDoh();
 	custom.androidWebApps();
+	custom.fasterTransfers();
 }
 
 } // namespace Serein::ServiceSettings

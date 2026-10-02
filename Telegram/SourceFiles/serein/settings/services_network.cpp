@@ -221,6 +221,13 @@ void AddNetworkSettings(::Settings::Builder::SectionBuilder &builder) {
 		.keywords = { u"DNS"_q, u"DoH"_q, u"censorship"_q },
 	});
 	builder.addDividerText(tr::lng_serein_custom_doh_about());
+	AddToggle(builder, {
+		.option = &ServiceSettings::kFasterTransfers,
+		.title = tr::lng_serein_faster_transfers,
+		.id = u"serein/services/faster-transfers"_q,
+		.keywords = { u"upload"_q, u"download"_q, u"speed"_q },
+	});
+	builder.addDividerText(tr::lng_serein_faster_transfers_about());
 }
 
 } // namespace Serein
