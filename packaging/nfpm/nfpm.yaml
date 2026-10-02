@@ -1,7 +1,7 @@
 # Debian and RPM packages of the portable Linux build. Run nfpm from the
 # directory that stage.sh prepared; SEREIN_VERSION is the package version.
 name: sereingram
-arch: amd64
+arch: ${SEREIN_PACKAGE_ARCH}
 platform: linux
 version: ${SEREIN_VERSION}
 version_schema: none
