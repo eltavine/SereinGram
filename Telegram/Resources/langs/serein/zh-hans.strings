@@ -732,6 +732,7 @@
 "lng_serein_details_forwarded_from" = "转发自";
 "lng_serein_details_forwarded_date" = "原始发送时间";
 "lng_serein_details_views" = "浏览次数";
+"lng_serein_details_forwards" = "转发次数";
 "lng_serein_details_sticker_set" = "贴纸包";
 "lng_serein_details_sticker_set_author" = "贴纸包作者";
 "lng_serein_sticker_set_author" = "作者";

@@ -736,6 +736,7 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_details_forwarded_from" = "Forwarded from";
 "lng_serein_details_forwarded_date" = "Originally sent";
 "lng_serein_details_views" = "Views";
+"lng_serein_details_forwards" = "Forwards";
 "lng_serein_details_sticker_set" = "Sticker set";
 "lng_serein_details_sticker_set_author" = "Sticker set author";
 "lng_serein_sticker_set_author" = "Author";

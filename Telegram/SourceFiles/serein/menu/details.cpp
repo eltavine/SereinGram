@@ -111,6 +111,11 @@ namespace {
 	if (const auto views = item->viewsCount(); views > 0) {
 		add(tr::lng_serein_details_views(tr::now), QString::number(views));
 	}
+	if (const auto counters = item->Get<HistoryMessageViews>()
+		; counters && counters->forwardsCount > 0) {
+		add(tr::lng_serein_details_forwards(tr::now),
+			QString::number(counters->forwardsCount));
+	}
 	if (const auto media = item->media()) {
 		if (const auto document = media->document()) {
 			add(tr::lng_serein_details_sticker_set(tr::now),
