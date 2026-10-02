@@ -73,6 +73,9 @@ jobs:
         run: nix build --print-build-logs ".#checks.${{ matrix.system }}.sereingram"
 
       - name: Smoke test.
+        # Outside NixOS the Nix libGL finds no driver, so Qt must not try GLX.
+        env:
+          QT_XCB_GL_INTEGRATION: none
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y -qq xvfb >/dev/null

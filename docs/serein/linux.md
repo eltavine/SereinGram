@@ -93,3 +93,5 @@ SereinGram 不使用 Telegram 官方客户端的凭据，也不把自己的发�
 也可以加入 `sereingram.overlays.default`，再使用 `pkgs.sereingram.override { ... }`。`testCredentials = true` 改用上游的测试凭据，只用于自动化检查。
 
 Nix 构建以系统库运行，不检查 GitHub 更新，由 `nix flake update` 更新。
+
+在 NixOS 以外的发行版上用 Nix 安装时，Nix 提供的 OpenGL 库找不到系统的显卡驱动，Qt 会在启动时中止。请用 [nixGL](https://github.com/nix-community/nixGL) 启动，或设置 `QT_XCB_GL_INTEGRATION=none` 改用软件渲染。CI 在 Ubuntu 运行器上做启动测试时采用后一种方式。
