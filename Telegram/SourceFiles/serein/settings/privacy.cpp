@@ -7,7 +7,7 @@
 #include "serein/settings/gen/privacy_rows.h"
 #include "serein/settings/home.h"
 #include "serein/settings/subpages.h"
-#include "serein/settings/lock.h"
+#include "serein/settings/page.h"
 #include "lang/lang_keys.h"
 #include "main/main_session.h"
 #include "main/main_session_settings.h"
@@ -28,14 +28,9 @@ namespace {
 using namespace ::Settings;
 using namespace ::Settings::Builder;
 
-class PrivacySection final : public Section<PrivacySection> {
+class PrivacySection final : public Page<PrivacySection> {
 public:
-	PrivacySection(QWidget *parent, not_null<Window::SessionController*> controller)
-	: Section(parent, controller) {
-		const auto content = Ui::CreateChild<Ui::VerticalLayout>(this);
-		Serein::GuardSettings(content, [=] { build(content, kBuild); });
-		Ui::ResizeFitChild(this, content);
-	}
+	using Page::Page;
 
 	[[nodiscard]] rpl::producer<QString> title() override {
 		return tr::lng_serein_privacy();

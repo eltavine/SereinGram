@@ -13,7 +13,7 @@
 #include "serein/settings/restart.h"
 #include "serein/settings/rules.h"
 #include "serein/settings/services.h"
-#include "serein/settings/lock.h"
+#include "serein/settings/page.h"
 #include "core/application.h"
 #include "core/file_utilities.h"
 #include "core/version.h"
@@ -45,14 +45,9 @@ using namespace ::Settings::Builder;
 
 constexpr auto kMaximumImportBytes = 8 * 1024 * 1024;
 
-class ConfigSection final : public Section<ConfigSection> {
+class ConfigSection final : public Page<ConfigSection> {
 public:
-	ConfigSection(QWidget *parent, not_null<Window::SessionController*> controller)
-	: Section(parent, controller) {
-		const auto content = Ui::CreateChild<Ui::VerticalLayout>(this);
-		Serein::GuardSettings(content, [=] { build(content, kBuild); });
-		Ui::ResizeFitChild(this, content);
-	}
+	using Page::Page;
 
 	[[nodiscard]] rpl::producer<QString> title() override {
 		return tr::lng_serein_config_title();

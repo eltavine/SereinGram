@@ -4,7 +4,7 @@
 #include "serein/settings/home.h"
 #include "serein/settings/gen/menu_rows.h"
 #include "serein/hooks/core/language.h"
-#include "serein/settings/lock.h"
+#include "serein/settings/page.h"
 #include "lang/lang_instance.h"
 #include "lang/lang_keys.h"
 #include "lang_auto_counts.h"
@@ -25,14 +25,9 @@ namespace {
 using namespace ::Settings;
 using namespace ::Settings::Builder;
 
-class MenuSection final : public Section<MenuSection> {
+class MenuSection final : public Page<MenuSection> {
 public:
-	MenuSection(QWidget *parent, not_null<Window::SessionController*> controller)
-	: Section(parent, controller) {
-		const auto content = Ui::CreateChild<Ui::VerticalLayout>(this);
-		Serein::GuardSettings(content, [=] { build(content, kBuild); });
-		Ui::ResizeFitChild(this, content);
-	}
+	using Page::Page;
 
 	[[nodiscard]] rpl::producer<QString> title() override {
 		return tr::lng_serein_menu();

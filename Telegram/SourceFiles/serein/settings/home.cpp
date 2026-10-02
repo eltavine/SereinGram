@@ -9,7 +9,7 @@
 #include "serein/settings/privacy.h"
 #include "serein/settings/services.h"
 #include "serein/settings/rules.h"
-#include "serein/settings/lock.h"
+#include "serein/settings/page.h"
 
 #include "boxes/about_box.h"
 #include "core/click_handler_types.h"
@@ -28,14 +28,9 @@ namespace {
 using namespace ::Settings;
 using namespace ::Settings::Builder;
 
-class Home final : public Section<Home> {
+class Home final : public Page<Home> {
 public:
-	Home(QWidget *parent, not_null<Window::SessionController*> controller)
-	: Section(parent, controller) {
-		const auto content = Ui::CreateChild<Ui::VerticalLayout>(this);
-		Serein::GuardSettings(content, [=] { build(content, kBuild); });
-		Ui::ResizeFitChild(this, content);
-	}
+	using Page::Page;
 
 	[[nodiscard]] rpl::producer<QString> title() override {
 		return tr::lng_serein_settings();

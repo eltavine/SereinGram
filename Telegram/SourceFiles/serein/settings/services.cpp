@@ -9,8 +9,8 @@
 #include "serein/services/request.h"
 #include "serein/services/translation_protocol.h"
 #include "serein/hooks/services/system_ai.h"
-#include "serein/settings/lock.h"
 #include "serein/settings/services_network.h"
+#include "serein/settings/page.h"
 #include "platform/platform_translate_provider.h"
 #include "settings/settings_builder.h"
 #include "settings/settings_common_session.h"
@@ -46,16 +46,9 @@ namespace {
 using namespace ::Settings;
 using namespace ::Settings::Builder;
 
-class ServicesSection final : public Section<ServicesSection> {
+class ServicesSection final : public Page<ServicesSection> {
 public:
-	ServicesSection(
-		QWidget *parent,
-		not_null<Window::SessionController*> controller)
-	: Section(parent, controller) {
-		const auto content = Ui::CreateChild<Ui::VerticalLayout>(this);
-		Serein::GuardSettings(content, [=] { build(content, kBuild); });
-		Ui::ResizeFitChild(this, content);
-	}
+	using Page::Page;
 
 	[[nodiscard]] rpl::producer<QString> title() override {
 		return tr::lng_serein_services();

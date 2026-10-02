@@ -9,7 +9,7 @@
 #include "serein/settings/gen/interface_rows.h"
 #include "serein/settings/home.h"
 #include "serein/settings/restart.h"
-#include "serein/settings/lock.h"
+#include "serein/settings/page.h"
 #include "lang/lang_keys.h"
 #include "settings/settings_builder.h"
 #include "settings/settings_common_session.h"
@@ -28,16 +28,9 @@ namespace {
 using namespace ::Settings;
 using namespace ::Settings::Builder;
 
-class InterfaceSection final : public Section<InterfaceSection> {
+class InterfaceSection final : public Page<InterfaceSection> {
 public:
-	InterfaceSection(
-		QWidget *parent,
-		not_null<Window::SessionController*> controller)
-	: Section(parent, controller) {
-		const auto content = Ui::CreateChild<Ui::VerticalLayout>(this);
-		Serein::GuardSettings(content, [=] { build(content, kBuild); });
-		Ui::ResizeFitChild(this, content);
-	}
+	using Page::Page;
 
 	[[nodiscard]] rpl::producer<QString> title() override {
 		return tr::lng_serein_interface();
