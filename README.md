@@ -7,6 +7,8 @@ Linux distributions. It is based on
 [Telegram Desktop](https://github.com/telegramdesktop/tdesktop) and inspired
 by Nagram and AyuGram.
 
+The SereinGram logo is designed by [OukaroMF](https://github.com/OukaroMF/).
+
 - [Product specification](docs/serein/README.md) ·
   [Feature matrix](docs/serein/features.md) ·
   [Architecture](docs/serein/architecture.md)
