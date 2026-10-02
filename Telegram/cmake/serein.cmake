@@ -94,6 +94,7 @@ set(serein_sources
     serein/settings/subpages.cpp
     serein/privacy/auto_demo.cpp
     serein/privacy/login_token.cpp
+    serein/privacy/qr_decode.cpp
     serein/privacy/qr_scan.cpp
     serein/admin/delete_mine.cpp
     serein/admin/unblock_all.cpp
@@ -369,10 +370,13 @@ if (DESKTOP_APP_TEST_APPS)
         message(STATUS "Serein: Qt Sql not found, history store tests skipped.")
     endif()
 
+    target_sources(test_serein PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/QR/cpp/qrcodegen.cpp)
     target_include_directories(test_serein PRIVATE
         ${src_loc}
         ${CMAKE_CURRENT_SOURCE_DIR}/lib_ui
-        ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/doctest)
+        ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/doctest
+        ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/QR/cpp)
 
     target_link_libraries(test_serein PRIVATE
         desktop-app::lib_base
@@ -380,6 +384,7 @@ if (DESKTOP_APP_TEST_APPS)
         desktop-app::external_openssl
         desktop-app::external_qt
         Serein::OpenCC
+        Serein::Quirc
     )
 
     target_compile_definitions(test_serein PRIVATE
