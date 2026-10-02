@@ -17,7 +17,8 @@
     "packaging/",
     "Telegram/ThirdParty/doctest",
     "flake.nix",
-    "flake.lock"
+    "flake.lock",
+    "Telegram/ThirdParty/quirc"
   ],
   "own_include_prefixes": [
     "serein/"
@@ -28,7 +29,7 @@
   "submodule_overrides": [],
   "budget": {
     "all_files": 230,
-    "all_added_lines": 1659,
+    "all_added_lines": 1662,
     "source_files": 161,
     "source_added_lines": 1437,
     "direct_include_files": 0,

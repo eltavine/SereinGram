@@ -109,3 +109,6 @@
 [submodule "Telegram/ThirdParty/doctest"]
 	path = Telegram/ThirdParty/doctest
 	url = https://github.com/doctest/doctest.git
+[submodule "Telegram/ThirdParty/quirc"]
+	path = Telegram/ThirdParty/quirc
+	url = https://github.com/dlbeer/quirc.git

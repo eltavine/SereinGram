@@ -627,6 +627,17 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_delete_mine_done" = "Messages deleted: {amount}";
 "lng_serein_delete_mine_none" = "No messages of yours were found in this chat.";
 "lng_serein_unblock_all" = "Unblock all users";
+"lng_serein_qr_scan" = "Scan a QR code";
+"lng_serein_qr_scan_about" = "Reads QR codes from the screen, the clipboard or an image file. A Telegram login code signs the device showing it in to this account after you confirm; other codes are shown as text, and links open after a confirmation.";
+"lng_serein_qr_from_screen" = "From the screen";
+"lng_serein_qr_from_clipboard" = "From the clipboard image";
+"lng_serein_qr_from_file" = "From an image file";
+"lng_serein_qr_none" = "No QR code was found. On macOS, reading the screen needs the Screen Recording permission.";
+"lng_serein_qr_result" = "QR code";
+"lng_serein_qr_login_sure" = "Sign the device showing this code in to your account? Only scan codes shown on your own devices: whoever shows this code gets full access to your messages.";
+"lng_serein_qr_login_confirm" = "Sign in";
+"lng_serein_qr_login_done" = "Signed in: {device}";
+"lng_serein_qr_login_expired" = "This QR code has expired or was already used. Refresh it on the other device and scan it again.";
 "lng_serein_unblock_all_sure" = "Unblock every user and chat on your blocked list? They will be able to message and call you again.";
 "lng_serein_unblock_all_confirm" = "Unblock all";
 "lng_serein_unblock_all_done" = "Unblocked: {amount}";

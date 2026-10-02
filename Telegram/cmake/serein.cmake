@@ -93,6 +93,8 @@ set(serein_sources
     serein/settings/ghost_exceptions.cpp
     serein/settings/subpages.cpp
     serein/privacy/auto_demo.cpp
+    serein/privacy/login_token.cpp
+    serein/privacy/qr_scan.cpp
     serein/admin/delete_mine.cpp
     serein/admin/unblock_all.cpp
     serein/admin/upgrade.cpp
@@ -302,6 +304,9 @@ else()
     include(${CMAKE_CURRENT_LIST_DIR}/serein_opencc.cmake)
 endif()
 target_link_libraries(Telegram PRIVATE Serein::OpenCC)
+
+include(${CMAKE_CURRENT_LIST_DIR}/serein_quirc.cmake)
+target_link_libraries(Telegram PRIVATE Serein::Quirc)
 
 if (TARGET desktop-app::external_rnnoise)
     target_link_libraries(Telegram PRIVATE desktop-app::external_rnnoise)
