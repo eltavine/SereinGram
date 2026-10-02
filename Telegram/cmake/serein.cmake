@@ -58,6 +58,7 @@ set(serein_sources
     serein/features/ghost/send.cpp
     serein/display/json_files.cpp
     serein/display/peer_id.cpp
+    serein/display/reorder_row.cpp
     serein/display/text_entities.cpp
     serein/display/view_refresher.cpp
     serein/interface/main_menu.cpp

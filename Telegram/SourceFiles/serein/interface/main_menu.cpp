@@ -1,5 +1,6 @@
 #include "serein/hooks/interface/main_menu.h"
 
+#include "serein/display/reorder_row.h"
 #include "serein/interface/options.h"
 #include "lang/lang_keys.h"
 #include "ui/layers/generic_box.h"
@@ -11,13 +12,6 @@
 #include "ui/wrap/slide_wrap.h"
 #include "ui/wrap/vertical_layout.h"
 
-#include <QtCore/QMimeData>
-#include <QtGui/QDrag>
-#include <QtGui/QDragEnterEvent>
-#include <QtGui/QDropEvent>
-#include <QtGui/QMouseEvent>
-#include <QtWidgets/QApplication>
-
 #include <algorithm>
 
 #include "styles/style_layers.h"
@@ -27,61 +21,6 @@ namespace Serein::Interface {
 namespace {
 
 constexpr auto kMenuItemMime = "application/x-serein-main-menu-item";
-
-class MenuOrderRow final : public Ui::SettingsButton {
-public:
-	MenuOrderRow(
-			QWidget *parent,
-			QString id,
-			rpl::producer<QString> title,
-			Fn<void(QString, QString)> moved)
-	: Ui::SettingsButton(parent, std::move(title), st::settingsButtonNoIcon)
-	, _id(std::move(id))
-	, _moved(std::move(moved)) {
-		setAcceptDrops(true);
-	}
-
-protected:
-	void mousePressEvent(QMouseEvent *event) override {
-		_dragStart = event->globalPosition().toPoint();
-		Ui::SettingsButton::mousePressEvent(event);
-	}
-
-	void mouseMoveEvent(QMouseEvent *event) override {
-		if ((event->buttons() & Qt::LeftButton)
-			&& (event->globalPosition().toPoint() - _dragStart).manhattanLength()
-				>= QApplication::startDragDistance()) {
-			const auto data = new QMimeData();
-			data->setData(kMenuItemMime, _id.toUtf8());
-			const auto drag = new QDrag(this);
-			drag->setMimeData(data);
-			drag->exec(Qt::MoveAction);
-			return;
-		}
-		Ui::SettingsButton::mouseMoveEvent(event);
-	}
-
-	void dragEnterEvent(QDragEnterEvent *event) override {
-		if (event->mimeData()->hasFormat(kMenuItemMime)) {
-			event->acceptProposedAction();
-		}
-	}
-
-	void dropEvent(QDropEvent *event) override {
-		const auto from = QString::fromUtf8(
-			event->mimeData()->data(kMenuItemMime));
-		if (!from.isEmpty() && from != _id) {
-			_moved(from, _id);
-		}
-		event->acceptProposedAction();
-	}
-
-private:
-	const QString _id;
-	Fn<void(QString, QString)> _moved;
-	QPoint _dragStart;
-
-};
 
 } // namespace
 
@@ -204,11 +143,14 @@ void MainMenuBox(not_null<Ui::GenericBox*> box) {
 		for (auto index = 0; index != int(state->order.size()); ++index) {
 			const auto id = state->order[index];
 			const auto hidden = contains(state->hidden, id);
-			const auto row = rows->add(object_ptr<MenuOrderRow>(
+			const auto row = rows->add(object_ptr<Display::ReorderRow>(
 				rows,
-				id,
 				rpl::single(MainMenuActionTitle(id)),
-				[=](QString from, QString to) {
+				QString::fromLatin1(kMenuItemMime),
+				id.toUtf8(),
+				[=](const QByteArray &fromId, const QByteArray &toId) {
+					const auto from = QString::fromUtf8(fromId);
+					const auto to = QString::fromUtf8(toId);
 					const auto fromIt = ranges::find(state->order, from);
 					const auto toIt = ranges::find(state->order, to);
 					if (fromIt == state->order.end()
