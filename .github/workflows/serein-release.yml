@@ -32,6 +32,7 @@ jobs:
     outputs:
       build: ${{ steps.plan.outputs.build }}
       publish: ${{ steps.plan.outputs.publish }}
+      credentials: ${{ steps.plan.outputs.credentials }}
       channel: ${{ steps.plan.outputs.channel }}
       tag: ${{ steps.plan.outputs.tag }}
       commit: ${{ steps.plan.outputs.commit }}
@@ -75,13 +76,18 @@ jobs:
               echo "::notice::The development branch has not moved since the last nightly."
             fi
           fi
+          credentials="test"
+          if [ -n "$SEREIN_API_ID" ] && [ -n "$SEREIN_API_HASH" ]; then
+            credentials="own"
+          fi
           publish=false
-          if [ "$build" = true ] && [ -n "$SEREIN_API_ID" ] && [ -n "$SEREIN_API_HASH" ]; then
+          if [ "$build" = true ] && { [ "$credentials" = own ] || [ "$channel" = nightly ]; }; then
             publish=true
           fi
           {
             echo "build=$build"
             echo "publish=$publish"
+            echo "credentials=$credentials"
             echo "channel=$channel"
             echo "tag=$tag"
             echo "commit=$commit"
@@ -179,13 +185,18 @@ jobs:
   credentials:
     name: Release credentials
     needs: plan
-    if: needs.plan.outputs.build == 'true' && needs.plan.outputs.publish != 'true'
+    if: needs.plan.outputs.build == 'true' && needs.plan.outputs.credentials != 'own'
     runs-on: ubuntu-latest
     steps:
-      - name: Require SereinGram API credentials for published builds.
+      - name: Report the missing SereinGram API credentials.
         env:
           CHANNEL: ${{ needs.plan.outputs.channel }}
+          PUBLISH: ${{ needs.plan.outputs.publish }}
         run: |
+          if [ "$PUBLISH" = true ]; then
+            echo "::warning::The SEREIN_API_ID and SEREIN_API_HASH repository secrets are not set, so this $CHANNEL is built with Telegram's test credentials and its notes say so."
+            exit 0
+          fi
           echo "::error::The SEREIN_API_ID and SEREIN_API_HASH repository secrets are not set, so this run builds with Telegram's test credentials and does not publish the $CHANNEL release."
           exit 1
 
@@ -204,6 +215,7 @@ jobs:
       PREVIOUS: ${{ needs.plan.outputs.previous }}
       SINCE: ${{ needs.plan.outputs.since }}
       DATE: ${{ needs.plan.outputs.date }}
+      CREDENTIALS: ${{ needs.plan.outputs.credentials }}
 
     steps:
       - name: Clone.
@@ -227,11 +239,15 @@ jobs:
         run: |
           info=(--repo "$GITHUB_REPOSITORY" --tag "$TAG" --channel "$CHANNEL"
             --commit "$COMMIT" --date "$DATE")
+          notice=()
+          if [ "$CREDENTIALS" = test ]; then
+            notice=(--test-credentials)
+          fi
           python3 tools/serein/release.py manifest dist "${info[@]}" \
             -o "$RUNNER_TEMP/release.json"
           python3 tools/serein/release.py checksums dist \
             -o "$RUNNER_TEMP/SHA256SUMS"
-          python3 tools/serein/release.py notes "${info[@]}" \
+          python3 tools/serein/release.py notes "${info[@]}" "${notice[@]}" \
             --previous "$PREVIOUS" --since "$SINCE" -o "$RUNNER_TEMP/notes.md"
           mv "$RUNNER_TEMP/release.json" "$RUNNER_TEMP/SHA256SUMS" dist/
           (cd dist && sha256sum -c SHA256SUMS)

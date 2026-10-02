@@ -78,7 +78,7 @@ Release 正文最上方是自动生成的变更记录：Nightly 列出自上一�
 
 ## 5. API 凭据
 
-发布的构建必须使用 SereinGram 自己的 API 凭据（仓库 Secrets `SEREIN_API_ID`、`SEREIN_API_HASH`）。缺少凭据时 `serein-release.yml` 仍完成整套构建并保留产物供内部测试，但不发布，并以“Release credentials”任务失败提示配置。
+正式版必须使用 SereinGram 自己的 API 凭据（仓库 Secrets `SEREIN_API_ID`、`SEREIN_API_HASH`）。缺少凭据时 `serein-release.yml` 仍完成整套构建并保留产物供内部测试，但不发布正式版，并以“Release credentials”任务失败提示配置。Nightly 在缺少凭据时改用 Telegram Desktop 源码中公开的测试凭据（`TDESKTOP_API_TEST`）构建并照常发布，“Release credentials”任务只给出警告；`release.py notes --test-credentials` 把 `tools/serein/credentials_notice.md` 中的中英文声明放在正文最上方，说明尚未配置开发者凭据、登录可能受限或失败，请耐心等待。配置凭据后的下一个 Nightly 不再带这段声明。
 
 ## 6. 构建矩阵与质量门禁
 

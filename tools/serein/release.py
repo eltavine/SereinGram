@@ -16,6 +16,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
 POLICY = HERE / "policy" / "release_assets.json"
+NOTICE = HERE / "credentials_notice.md"
 POLICY_PATH = "tools/serein/policy/release_assets.json"
 CHECKSUMS = "SHA256SUMS"
 MANIFEST = "release.json"
@@ -265,10 +266,16 @@ def verify_lines():
     ]
 
 
+def credentials_notice():
+    text = NOTICE.read_text(encoding="utf-8")
+    return [*text.rstrip("\n").split("\n"), ""]
+
+
 def notes(commits, assets, info):
     label = "Nightly" if info["channel"] == "nightly" else info["tag"]
     commit = info["commit"]
-    lines = [
+    lines = credentials_notice() if info.get("test_credentials") else []
+    lines += [
         f"**SereinGram {label}**, built on {info['date']} from "
         f"{commit_link(info['repo'], commit)}, based on Telegram Desktop "
         f"{info['version']}.",
@@ -328,10 +335,20 @@ def add_info_arguments(parser, previous=False):
         parser.add_argument("--since")
         parser.add_argument("--limit", type=int, default=50)
         parser.add_argument("--root", default=str(ROOT))
+        parser.add_argument("--test-credentials", action="store_true")
 
 
 def info_from(args):
-    keys = ("repo", "tag", "channel", "commit", "date", "previous", "since")
+    keys = (
+        "repo",
+        "tag",
+        "channel",
+        "commit",
+        "date",
+        "previous",
+        "since",
+        "test_credentials",
+    )
     info = {key: getattr(args, key, None) for key in keys}
     info["version"] = args.version or read_version()
     return info

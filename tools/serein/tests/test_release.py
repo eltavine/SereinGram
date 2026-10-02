@@ -210,6 +210,18 @@ class NotesTest(unittest.TestCase):
         self.assertIn("Open Anyway in System Settings > Privacy & Security", verify)
         self.assertIn("More info and Run anyway", verify)
 
+    def test_notes_announce_test_credentials_first(self):
+        text = release.notes(
+            [], release.load_assets(), dict(INFO, previous="", test_credentials=True)
+        )
+        notice = "\n".join(release.credentials_notice())
+        self.assertTrue(text.startswith(notice))
+        self.assertIn("please be patient", notice)
+        self.assertLess(text.index("please be patient"), text.index("**SereinGram"))
+        plain = release.notes([], release.load_assets(), dict(INFO, previous=""))
+        self.assertNotIn("test credentials", plain)
+        self.assertTrue(plain.startswith("**SereinGram Nightly**"))
+
     def test_first_build_takes_the_latest_commits(self):
         self.build()
         commits = release.first_parent_log(self.root, "", "HEAD", 3)
@@ -249,6 +261,38 @@ class NotesTest(unittest.TestCase):
         )
         self.assertEqual(code, 0)
         self.assertIn("**SereinGram Nightly**", output.read_text())
+        self.assertNotIn("please be patient", output.read_text())
+
+    def test_main_passes_the_test_credentials_flag(self):
+        _, head = self.build()
+        output = self.root / "notes.md"
+        code = release.main(
+            [
+                "notes",
+                "--repo",
+                "o/r",
+                "--tag",
+                "nightly",
+                "--channel",
+                "nightly",
+                "--commit",
+                head,
+                "--date",
+                "2026-10-03",
+                "--version",
+                "6.2.4",
+                "--previous",
+                self.base,
+                "--root",
+                str(self.root),
+                "--test-credentials",
+                "-o",
+                str(output),
+            ]
+        )
+        self.assertEqual(code, 0)
+        notice = "\n".join(release.credentials_notice())
+        self.assertTrue(output.read_text().startswith(notice))
 
 
 if __name__ == "__main__":
