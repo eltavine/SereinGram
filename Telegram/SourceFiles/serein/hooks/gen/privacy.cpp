@@ -70,6 +70,14 @@ rpl::producer<bool> ShowRegistrationDateValue() {
 	return ForDevice().Value(Serein::Privacy::kShowRegistrationDate);
 }
 
+bool ShowContactStatus() {
+	return ForDevice().Get(Serein::Privacy::kShowContactStatus);
+}
+
+rpl::producer<bool> ShowContactStatusValue() {
+	return ForDevice().Value(Serein::Privacy::kShowContactStatus);
+}
+
 bool ShowSessionDetails() {
 	return ForDevice().Get(Serein::Privacy::kShowSessionDetails);
 }

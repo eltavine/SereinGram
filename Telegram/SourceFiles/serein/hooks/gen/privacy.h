@@ -21,6 +21,8 @@ namespace Serein::Hooks::Privacy {
 [[nodiscard]] rpl::producer<bool> ShowProfileDcValue();
 [[nodiscard]] bool ShowRegistrationDate();
 [[nodiscard]] rpl::producer<bool> ShowRegistrationDateValue();
+[[nodiscard]] bool ShowContactStatus();
+[[nodiscard]] rpl::producer<bool> ShowContactStatusValue();
 [[nodiscard]] bool ShowSessionDetails();
 [[nodiscard]] rpl::producer<bool> ShowSessionDetailsValue();
 [[nodiscard]] bool LocalNames();

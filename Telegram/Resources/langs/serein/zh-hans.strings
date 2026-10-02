@@ -124,6 +124,11 @@
 "lng_serein_profile_registered" = "注册于";
 "lng_serein_profile_registered_about" = "约 {date}";
 "lng_serein_profile_registered_after" = "晚于 {date}";
+"lng_serein_show_contact_status" = "在资料页显示联系人关系";
+"lng_serein_contact_status_note" = "显示你联系人中的用户是否也添加了你，以 Telegram 返回的信息为准。";
+"lng_serein_profile_contact" = "联系人";
+"lng_serein_profile_contact_mutual" = "互为联系人";
+"lng_serein_profile_contact_one_way" = "仅在你的联系人中";
 "lng_serein_show_session_details" = "显示更多设备信息";
 "lng_serein_session_details_note" = "在“设置 > 设备”的设备详情中加入登录时间、API ID 以及是否为官方应用。";
 "lng_serein_session_created" = "登录时间";

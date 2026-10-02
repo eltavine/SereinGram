@@ -76,12 +76,34 @@ namespace {
 	});
 }
 
+[[nodiscard]] rpl::producer<TextWithEntities> ContactValue(
+		not_null<PeerData*> peer) {
+	const auto user = peer->asUser();
+	if (!user) {
+		return rpl::single(TextWithEntities());
+	}
+	return rpl::combine(
+		ForDevice().Value(kShowContactStatus),
+		user->flagsValue()
+	) | rpl::map([=](bool show, const auto &) {
+		using Flag = UserDataFlag;
+		const auto flags = user->flags();
+		if (!show || !(flags & Flag::Contact)) {
+			return TextWithEntities();
+		}
+		return TextWithEntities{ (flags & Flag::MutualContact)
+			? tr::lng_serein_profile_contact_mutual(tr::now)
+			: tr::lng_serein_profile_contact_one_way(tr::now) };
+	});
+}
+
 } // namespace
 
 void FillProfileRows(not_null<PeerData*> peer, const ProfileRow &add) {
 	add(tr::lng_serein_profile_id(), IdValue(peer));
 	add(tr::lng_serein_profile_dc(), DcValue(peer));
 	add(tr::lng_serein_profile_registered(), RegistrationValue(peer));
+	add(tr::lng_serein_profile_contact(), ContactValue(peer));
 }
 
 } // namespace Serein::Privacy

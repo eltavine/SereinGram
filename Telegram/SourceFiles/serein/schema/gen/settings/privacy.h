@@ -65,6 +65,13 @@ inline constexpr auto kShowRegistrationDate = Option<bool>{
 	Category::Privacy,
 	"lng_serein_show_registration_date",
 	0 };
+inline constexpr auto kShowContactStatus = Option<bool>{
+	"serein.showContactStatus",
+	Scope::Device,
+	false,
+	Category::Privacy,
+	"lng_serein_show_contact_status",
+	0 };
 inline constexpr auto kShowSessionDetails = Option<bool>{
 	"serein.showSessionDetails",
 	Scope::Device,
@@ -110,6 +117,7 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kProfileIdFormat));
 	Expects(registry.Add(kShowProfileDc));
 	Expects(registry.Add(kShowRegistrationDate));
+	Expects(registry.Add(kShowContactStatus));
 	Expects(registry.Add(kShowSessionDetails));
 	Expects(registry.Add(kLocalNames));
 	Expects(registry.Add(kHideProfileGifts));

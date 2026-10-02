@@ -10,7 +10,7 @@
 
 namespace Serein::Privacy {
 
-inline const auto kToggleRows = std::array<ToggleRow, 12>{ {
+inline const auto kToggleRows = std::array<ToggleRow, 13>{ {
 	{
 		&kDemoMode,
 		tr::lng_serein_demo_mode,
@@ -52,6 +52,12 @@ inline const auto kToggleRows = std::array<ToggleRow, 12>{ {
 		tr::lng_serein_show_registration_date,
 		u"serein/privacy/show-registration-date"_q,
 		{ u"profile"_q, u"registration"_q, u"account age"_q },
+	},
+	{
+		&kShowContactStatus,
+		tr::lng_serein_show_contact_status,
+		u"serein/privacy/show-contact-status"_q,
+		{ u"profile"_q, u"contact"_q, u"mutual contact"_q },
 	},
 	{
 		&kShowSessionDetails,
@@ -107,12 +113,14 @@ inline void AddLayout(
 	AddToggle(builder, kToggleRows[6]);
 	AddNote(builder, tr::lng_serein_registration_date_note);
 	AddToggle(builder, kToggleRows[7]);
-	AddNote(builder, tr::lng_serein_session_details_note);
+	AddNote(builder, tr::lng_serein_contact_status_note);
 	AddToggle(builder, kToggleRows[8]);
-	AddNote(builder, tr::lng_serein_local_names_note);
+	AddNote(builder, tr::lng_serein_session_details_note);
 	AddToggle(builder, kToggleRows[9]);
+	AddNote(builder, tr::lng_serein_local_names_note);
 	AddToggle(builder, kToggleRows[10]);
 	AddToggle(builder, kToggleRows[11]);
+	AddToggle(builder, kToggleRows[12]);
 	AddNote(builder, tr::lng_serein_save_protected_content_note);
 }
 
