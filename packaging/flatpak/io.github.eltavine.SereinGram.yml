@@ -223,7 +223,7 @@ modules:
         sha256: 6dcfbca271d76a6502741a2c0dc6fc98ef7dd0b7b4cfd0abcebb285a86a26f33
       - type: git
         url: https://github.com/desktop-app/patches.git
-        commit: 593bd3c5ab2ce3294306426ffd1f01c5502caec8
+        commit: ebcd707f1763651089e3e7220ddd4f97cbcf87e0
         dest: patches
       - type: shell
         commands:
@@ -273,7 +273,7 @@ modules:
         commit: 31f1b542f88e7b4be9a01e749920d857535fc715
       - type: git
         url: https://github.com/desktop-app/patches.git
-        commit: 593bd3c5ab2ce3294306426ffd1f01c5502caec8
+        commit: ebcd707f1763651089e3e7220ddd4f97cbcf87e0
         dest: patches
       - type: shell
         commands:
