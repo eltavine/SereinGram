@@ -1,11 +1,11 @@
 #include "serein/media/sticker_catalog.h"
 
 #include "serein/schema/gen/config/sticker_catalog.h"
+#include "serein/display/json_files.h"
 
 #include "apiwrap.h"
 #include "boxes/sticker_set_box.h"
 #include "core/application.h"
-#include "core/file_utilities.h"
 #include "data/data_session.h"
 #include "data/stickers/data_stickers_set.h"
 #include "lang/lang_keys.h"
@@ -16,9 +16,7 @@
 #include "ui/wrap/vertical_layout.h"
 #include "window/window_session_controller.h"
 
-#include <QtCore/QFile>
 #include <QtCore/QJsonDocument>
-#include <QtCore/QSaveFile>
 
 #include "styles/style_layers.h"
 #include "styles/style_settings.h"
@@ -302,44 +300,19 @@ void ShowStickerCatalog(not_null<Window::SessionController*> controller) {
 				box->showToast(*error);
 				return;
 			}
-			const auto bytes = SerializeStickerCatalog(
-				std::get<StickerCatalog>(current));
-			FileDialog::GetWritePath(
-				Core::App().getFileDialogParent(),
-				tr::lng_serein_config_export(tr::now),
-				tr::lng_serein_config_file_filter(tr::now),
+			Display::SaveJsonFile(
 				u"serein-stickers.json"_q,
-				crl::guard(box, [=](QString &&path) {
-					if (path.isEmpty()) {
-						return;
-					}
-					auto file = QSaveFile(path);
-					if (!file.open(QIODevice::WriteOnly)
-						|| file.write(bytes) != bytes.size()
-						|| !file.commit()) {
-						box->showToast(tr::lng_serein_config_write_error(tr::now));
-					} else {
-						box->showToast(tr::lng_serein_config_exported(tr::now));
-					}
-				}));
+				SerializeStickerCatalog(std::get<StickerCatalog>(current)),
+				crl::guard(box, [=](QString text) { box->showToast(text); }));
 		});
 		box->addButton(tr::lng_serein_config_import(), [=] {
-			FileDialog::GetOpenPath(
-				Core::App().getFileDialogParent(),
-				tr::lng_serein_config_import(tr::now),
-				tr::lng_serein_config_file_filter(tr::now),
-				crl::guard(controller, [=](FileDialog::OpenResult &&result) {
-					if (!result.paths.isEmpty()) {
-						auto file = QFile(result.paths.front());
-						if (!file.open(QIODevice::ReadOnly)) {
-							controller->showToast(
-								tr::lng_serein_config_read_error(tr::now));
-							return;
-						}
-						ImportCatalog(controller, file.read(kMaximumCatalogBytes + 1));
-					} else if (!result.remoteContent.isEmpty()) {
-						ImportCatalog(controller, result.remoteContent);
-					}
+			Display::OpenJsonFile(
+				kMaximumCatalogBytes,
+				crl::guard(controller, [=](QByteArray bytes) {
+					ImportCatalog(controller, bytes);
+				}),
+				crl::guard(controller, [=](QString text) {
+					controller->showToast(text);
 				}));
 		});
 		box->addButton(tr::lng_close(), [=] { box->closeBox(); });

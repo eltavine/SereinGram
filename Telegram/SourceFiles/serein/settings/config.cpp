@@ -14,8 +14,8 @@
 #include "serein/settings/rules.h"
 #include "serein/settings/services.h"
 #include "serein/settings/page.h"
+#include "serein/display/json_files.h"
 #include "core/application.h"
-#include "core/file_utilities.h"
 #include "core/version.h"
 #include "lang/lang_instance.h"
 #include "lang/lang_keys.h"
@@ -31,10 +31,8 @@
 #include "styles/style_menu_icons.h"
 #include "styles/style_settings.h"
 
-#include <QtCore/QFile>
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
-#include <QtCore/QSaveFile>
 #include <QtGui/QClipboard>
 
 namespace Serein {
@@ -244,42 +242,22 @@ void Export(not_null<Window::SessionController*> controller) {
 		controller->showToast(tr::lng_serein_config_invalid(tr::now));
 		return;
 	}
-	FileDialog::GetWritePath(
-		Core::App().getFileDialogParent(),
-		tr::lng_serein_config_export(tr::now),
-		tr::lng_serein_config_file_filter(tr::now),
+	Display::SaveJsonFile(
 		u"serein-settings.json"_q,
-		crl::guard(controller, [=](QString &&path) {
-			if (path.isEmpty()) {
-				return;
-			}
-			auto file = QSaveFile(path);
-			if (!file.open(QIODevice::WriteOnly)
-				|| file.write(exported.data) != exported.data.size()
-				|| !file.commit()) {
-				controller->showToast(tr::lng_serein_config_write_error(tr::now));
-			} else {
-				controller->showToast(tr::lng_serein_config_exported(tr::now));
-			}
+		exported.data,
+		crl::guard(controller, [=](QString text) {
+			controller->showToast(text);
 		}));
 }
 
 void Import(not_null<Window::SessionController*> controller) {
-	FileDialog::GetOpenPath(
-		Core::App().getFileDialogParent(),
-		tr::lng_serein_config_import(tr::now),
-		tr::lng_serein_config_file_filter(tr::now),
-		crl::guard(controller, [=](FileDialog::OpenResult &&result) {
-			if (!result.paths.isEmpty()) {
-				auto file = QFile(result.paths.front());
-				if (!file.open(QIODevice::ReadOnly)) {
-					controller->showToast(tr::lng_serein_config_read_error(tr::now));
-					return;
-				}
-				ShowImport(controller, file.read(kMaximumImportBytes + 1));
-			} else if (!result.remoteContent.isEmpty()) {
-				ShowImport(controller, result.remoteContent);
-			}
+	Display::OpenJsonFile(
+		kMaximumImportBytes,
+		crl::guard(controller, [=](QByteArray bytes) {
+			ShowImport(controller, bytes);
+		}),
+		crl::guard(controller, [=](QString text) {
+			controller->showToast(text);
 		}));
 }
 
