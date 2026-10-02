@@ -84,14 +84,16 @@ using Strings = std::map<std::string, std::string>;
 		return std::nullopt;
 	}
 	skip();
-	if (i >= line.size() || line[i++] != '=') {
+	if (i >= line.size() || line[i] != '=') {
 		return std::nullopt;
 	}
+	++i;
 	skip();
 	const auto value = quoted(true);
-	if (!value || i >= line.size() || line[i++] != ';') {
+	if (!value || i >= line.size() || line[i] != ';') {
 		return std::nullopt;
 	}
+	++i;
 	skip();
 	if (i != line.size()) {
 		return std::nullopt;

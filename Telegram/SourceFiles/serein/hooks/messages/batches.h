@@ -53,12 +53,15 @@ template <typename Draft>
 template <typename Draft, typename Done, typename Send>
 [[nodiscard]] bool SplitForward(const Draft &draft, Done &done, Send &&send) {
 	auto parts = ForwardParts(draft);
-	for (auto i = std::size_t(); i != parts.size(); ++i) {
-		send(
-			std::move(parts[i]),
-			(i + 1 == parts.size()) ? std::move(done) : Done());
+	if (parts.empty()) {
+		return false;
 	}
-	return !parts.empty();
+	const auto last = parts.size() - 1;
+	for (auto i = std::size_t(); i != last; ++i) {
+		send(std::move(parts[i]), Done());
+	}
+	send(std::move(parts[last]), std::move(done));
+	return true;
 }
 
 } // namespace Serein::Hooks

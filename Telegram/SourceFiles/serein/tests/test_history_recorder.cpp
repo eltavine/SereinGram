@@ -93,7 +93,7 @@ void TestHistoryRecorder() {
 		&& versions[1].recordedAt == now,
 		"edits get increasing revisions and timestamps");
 
-	now += 3 * 86400;
+	now += 3 * qint64(86400);
 	policy.retentionDays = 2;
 	Require(recorder.prune(policy), "pruning succeeds");
 	Require(store->deleted({ .peerId = 555 }).empty() && store->versions(555, 3).empty(),
