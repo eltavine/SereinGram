@@ -40,9 +40,10 @@ Catch2 暂缓：现有测试以 `Require` 断言与单一入口组织，已覆�
 
 ## 修订（2026-10-02）：单元测试改用 doctest
 
-核心测试改用 doctest 2.5.3（MIT），以单个头文件放在 `Telegram/ThirdParty/doctest`，只供测试目标使用：
+核心测试改用 doctest 2.5.3（MIT），以子模块 `Telegram/ThirdParty/doctest` 固定在 `v2.5.3` 标签，只供测试目标使用：
 
-- 不选 Catch2 v3：它需要单独编译的库，在 Windows 上要与上游静态运行库的设置一致，还要新增子模块；doctest 只有头文件，Flatpak、Arch 等离线构建也能编译。
+- 不选 Catch2 v3：它需要单独编译的库，在 Windows 上要与上游静态运行库的设置一致；doctest 只有头文件，不需要构建步骤。
+- 与 OpenCC 一样用子模块而不是把头文件拷进源码树，升级时移动子模块指针即可；测试目标只在启用 `DESKTOP_APP_TEST_APPS` 时构建，发行版打包不受影响。
 - 每个测试文件用 `TEST_CASE` 自注册，新增测试不再修改中央入口；`test_main.cpp` 只创建 doctest 上下文和 Qt SQL 测试需要的 `QCoreApplication`。
 - 各文件原先重复定义的 `Require` 合并为 `serein/tests/require.h`：用 doctest 断言计数，失败时报告说明与调用位置。
 - 每个用例单独报告，可用 `-tc=<名称>` 筛选；以随机顺序运行同样全部通过，用例之间没有顺序依赖。
