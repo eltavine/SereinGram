@@ -84,48 +84,47 @@ QString TranslationSelectionName(const std::optional<ServicesConfig> &config) {
 	return service ? service->name : tr::lng_serein_service_invalid(tr::now);
 }
 
-void TranslationSourceBox(not_null<Ui::GenericBox*> box) {
-	box->setTitle(tr::lng_serein_service_translation());
+struct SourceChoice {
+	QString id;
+	QString title;
+	bool disabled = false;
+};
+
+bool SourceBox(
+		not_null<Ui::GenericBox*> box,
+		ServiceKind kind,
+		std::vector<SourceChoice> choices,
+		QString ServicesConfig::*selection) {
 	const auto current = Services();
 	if (!current) {
 		box->addRow(object_ptr<Ui::FlatLabel>(
 			box, tr::lng_serein_service_invalid(), st::boxLabel));
-		return;
+		return false;
 	}
-	auto ids = QStringList{ QString(), u"telegram"_q, u"system"_q };
-	auto titles = QStringList{
-		tr::lng_serein_inherit(tr::now),
-		u"Telegram"_q,
-		tr::lng_serein_service_system(tr::now),
-	};
 	for (const auto &instance : current->instances) {
 		const auto service = ParseService(instance);
-		if (service && service->kind == ServiceKind::Translation) {
-			ids.push_back(service->id);
-			titles.push_back(service->name);
+		if (service && service->kind == kind) {
+			choices.push_back({ service->id, service->name });
 		}
 	}
-	const auto selected = std::max<qsizetype>(0, ids.indexOf(
-		current->translation));
-	const auto group = std::make_shared<Ui::RadiobuttonGroup>(selected);
-	for (auto index = 0; index != ids.size(); ++index) {
-		const auto row = box->addRow(object_ptr<Ui::Radiobutton>(
-			box, group, index, titles[index], st::settingsSendType),
-			st::settingsSendTypePadding);
-		if (index == 2 && !Platform::IsTranslateProviderAvailable()) {
-			row->setDisabled(true);
-		}
-	}
-	if (!Platform::IsTranslateProviderAvailable()) {
-		box->addRow(object_ptr<Ui::FlatLabel>(box,
-			tr::lng_serein_system_translation_unavailable(), st::boxLabel));
+	const auto i = ranges::find(
+		choices,
+		(*current).*selection,
+		&SourceChoice::id);
+	const auto group = std::make_shared<Ui::RadiobuttonGroup>(
+		(i != end(choices)) ? int(i - begin(choices)) : 0);
+	for (auto index = 0; index != int(choices.size()); ++index) {
+		box->addRow(object_ptr<Ui::Radiobutton>(
+			box, group, index, choices[index].title, st::settingsSendType),
+			st::settingsSendTypePadding
+		)->setDisabled(choices[index].disabled);
 	}
 	group->setChangedCallback([=](int value) {
 		if (!Current(box, *current)) {
 			return;
 		}
 		auto updated = *current;
-		updated.translation = ids[value];
+		updated.*selection = choices[value].id;
 		if (!SetServices(updated)) {
 			box->showToast(tr::lng_serein_service_invalid(tr::now));
 			return;
@@ -133,6 +132,21 @@ void TranslationSourceBox(not_null<Ui::GenericBox*> box) {
 		Core::App().saveSettingsDelayed();
 		box->closeBox();
 	});
+	return true;
+}
+
+void TranslationSourceBox(not_null<Ui::GenericBox*> box) {
+	box->setTitle(tr::lng_serein_service_translation());
+	const auto system = Platform::IsTranslateProviderAvailable();
+	const auto shown = SourceBox(box, ServiceKind::Translation, {
+		{ QString(), tr::lng_serein_inherit(tr::now) },
+		{ u"telegram"_q, u"Telegram"_q },
+		{ u"system"_q, tr::lng_serein_service_system(tr::now), !system },
+	}, &ServicesConfig::translation);
+	if (shown && !system) {
+		box->addRow(object_ptr<Ui::FlatLabel>(box,
+			tr::lng_serein_system_translation_unavailable(), st::boxLabel));
+	}
 }
 
 QString TranscriptionSelectionName(
@@ -150,42 +164,9 @@ QString TranscriptionSelectionName(
 
 void TranscriptionSourceBox(not_null<Ui::GenericBox*> box) {
 	box->setTitle(tr::lng_serein_service_transcription());
-	const auto current = Services();
-	if (!current) {
-		box->addRow(object_ptr<Ui::FlatLabel>(
-			box, tr::lng_serein_service_invalid(), st::boxLabel));
-		return;
-	}
-	auto ids = QStringList{ QString() };
-	auto titles = QStringList{ u"Telegram"_q };
-	for (const auto &instance : current->instances) {
-		const auto service = ParseService(instance);
-		if (service && service->kind == ServiceKind::Transcription) {
-			ids.push_back(service->id);
-			titles.push_back(service->name);
-		}
-	}
-	const auto selected = std::max<qsizetype>(0, ids.indexOf(
-		current->transcription));
-	const auto group = std::make_shared<Ui::RadiobuttonGroup>(selected);
-	for (auto index = 0; index != ids.size(); ++index) {
-		box->addRow(object_ptr<Ui::Radiobutton>(
-			box, group, index, titles[index], st::settingsSendType),
-			st::settingsSendTypePadding);
-	}
-	group->setChangedCallback([=](int value) {
-		if (!Current(box, *current)) {
-			return;
-		}
-		auto updated = *current;
-		updated.transcription = ids[value];
-		if (!SetServices(updated)) {
-			box->showToast(tr::lng_serein_service_invalid(tr::now));
-			return;
-		}
-		Core::App().saveSettingsDelayed();
-		box->closeBox();
-	});
+	SourceBox(box, ServiceKind::Transcription, {
+		{ QString(), u"Telegram"_q },
+	}, &ServicesConfig::transcription);
 }
 
 bool CredentialUsed(const ServicesConfig &config, const QString &account) {
