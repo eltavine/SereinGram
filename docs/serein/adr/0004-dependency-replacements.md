@@ -32,8 +32,8 @@
 
 决定：
 
-- macOS 与 Windows 继续使用系统凭据库（Keychain、Windows 凭据管理器），实现保持为 `serein/services/credentials.cpp` 中的少量平台调用。
-- 其他平台改用本地加密存储 `tdata/serein_credentials`：每个凭据用当前账号的本地密钥（新式 tdata 中所有账号共用的域级密钥，设置本地密码时由密码派生）派生的 AES-256-GCM 密钥单独加密（派生方式与历史库相同：对上下文 `serein-credentials-v1`、分隔字节与本地密钥做 SHA-256，本地密钥为 256 字节随机数），整体以 `QSaveFile` 原子写入。这与 Telegram 保存自身授权密钥的方式一致，凭据仍不进偏好、不随设置导出，也不依赖桌面环境。
+- macOS 与 Windows 继续使用系统凭据库（Keychain、Windows 凭据管理器），实现为 `serein/adapters/credentials/` 下按平台由 CMake 选择的 `keychain.cpp` 与 `wincred.cpp`。
+- 其他平台改用本地加密存储 `tdata/serein_credentials`（`adapters/credentials/local_file.cpp`）：每个凭据用当前账号的本地密钥（新式 tdata 中所有账号共用的域级密钥，设置本地密码时由密码派生）派生的 AES-256-GCM 密钥单独加密（派生方式与历史库相同：对上下文 `serein-credentials-v1`、分隔字节与本地密钥做 SHA-256，本地密钥为 256 字节随机数），整体以 `QSaveFile` 原子写入。这与 Telegram 保存自身授权密钥的方式一致，凭据仍不进偏好、不随设置导出，也不依赖桌面环境。
 - 未登录任何账号时读取与写入返回“不可用”；清除凭据时文件中不再有条目即删除文件。
 
 Catch2 暂缓：现有测试以 `Require` 断言与单一入口组织，已覆盖全部纯逻辑模块并在三平台 CI 运行；迁移收益不足以抵消把几十个测试文件改写成 Catch2 用例的成本，待测试规模增长后再评估。

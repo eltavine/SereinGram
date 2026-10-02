@@ -160,7 +160,6 @@ set(serein_sources
     serein/links/preview.cpp
     serein/services/translation_context.cpp
     serein/services/draft_translation.cpp
-    serein/services/credentials_local.cpp
     serein/services/summary.cpp
     serein/services/summary_protocol.cpp
     serein/network/doh.cpp
@@ -181,6 +180,14 @@ list(APPEND serein_sources
     ${serein_generated_sources}
     ${serein_generated_hook_sources}
 )
+
+if (WIN32)
+    list(APPEND serein_sources serein/adapters/credentials/wincred.cpp)
+elseif (APPLE)
+    list(APPEND serein_sources serein/adapters/credentials/keychain.cpp)
+else()
+    list(APPEND serein_sources serein/adapters/credentials/local_file.cpp)
+endif()
 
 if (serein_sources)
     nice_target_sources(Telegram ${src_loc} PRIVATE ${serein_sources})

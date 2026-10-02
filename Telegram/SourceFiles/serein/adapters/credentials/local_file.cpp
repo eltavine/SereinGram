@@ -1,4 +1,4 @@
-#include "serein/services/credentials_local.h"
+#include "serein/ports/credentials.h"
 
 #include "serein/adapters/openssl/aes_gcm_cipher.h"
 #include "core/application.h"
@@ -12,7 +12,7 @@
 #include <QtCore/QJsonObject>
 #include <QtCore/QSaveFile>
 
-namespace Serein::LocalCredentials {
+namespace Serein::Ports::SecretStore {
 namespace {
 
 constexpr auto kMaximumSize = 1024 * 1024;
@@ -21,7 +21,7 @@ constexpr auto kMaximumSize = 1024 * 1024;
 	return cWorkingDir() + u"tdata/serein_credentials"_q;
 }
 
-[[nodiscard]] std::unique_ptr<Adapters::AesGcmCipher> Cipher() {
+[[nodiscard]] std::unique_ptr<Adapters::AesGcmCipher> MakeCipher() {
 	if (!Core::IsAppLaunched()) {
 		return nullptr;
 	}
@@ -68,7 +68,7 @@ constexpr auto kMaximumSize = 1024 * 1024;
 } // namespace
 
 CredentialResult Read(const QString &account) {
-	const auto cipher = Cipher();
+	const auto cipher = MakeCipher();
 	const auto entries = Load();
 	if (!cipher || !entries) {
 		return { .error = CredentialError::Unavailable };
@@ -89,7 +89,7 @@ CredentialResult Read(const QString &account) {
 }
 
 CredentialError Write(const QString &account, const QByteArray &secret) {
-	const auto cipher = Cipher();
+	const auto cipher = MakeCipher();
 	auto entries = Load();
 	if (!cipher || !entries) {
 		return CredentialError::Unavailable;
@@ -113,4 +113,4 @@ CredentialError Remove(const QString &account) {
 	return Save(*entries) ? CredentialError::None : CredentialError::Denied;
 }
 
-} // namespace Serein::LocalCredentials
+} // namespace Serein::Ports::SecretStore

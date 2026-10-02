@@ -138,7 +138,7 @@ message MessagesSettings {
 | --- | --- | --- |
 | 设备设置 | 上游 `Core::Settings` 的偏好 KV，每个页面一个键 `serein.<页面>` | schema 的 JSON |
 | 账号设置 | 上游 `Storage::Account` 的偏好 KV | schema 的 JSON |
-| 凭据 | macOS Keychain、Windows 凭据管理器；其他平台为用本地密钥加密的 `tdata/serein_credentials`（ADR-0004 修订） | 不进偏好、不导出 |
+| 凭据 | macOS Keychain、Windows 凭据管理器；其他平台为用本地密钥加密的 `tdata/serein_credentials`（ADR-0004 修订）。端口为 `ports/credentials.h`，三种实现位于 `adapters/credentials/`，由 CMake 按平台三选一；`services/credentials.cpp` 只校验账号与密钥，核心测试用内存实现覆盖 | 不进偏好、不导出 |
 | 消息历史 | 账号数据目录下 `serein/history.sqlite3`，Qt SQL + SQLite | 元数据列 + 加密载荷（`HistoryRecord` 的 JSON，含原始 TL 与 layer） |
 
 历史库用 `PRAGMA user_version` 管理迁移；每个格式版本在 `serein/tests/fixtures/history/vN/` 保留不可变样本，测试必须能读取所有受支持版本并拒绝未知版本。

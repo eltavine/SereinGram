@@ -1,22 +1,8 @@
 #pragma once
 
-#include <QtCore/QByteArray>
-#include <QtCore/QString>
+#include "serein/ports/credentials.h"
 
 namespace Serein {
-
-enum class CredentialError {
-	None,
-	Missing,
-	Unavailable,
-	Denied,
-	Invalid,
-};
-
-struct CredentialResult {
-	QByteArray secret;
-	CredentialError error = CredentialError::None;
-};
 
 [[nodiscard]] CredentialResult ReadCredential(const QString &account);
 [[nodiscard]] CredentialError WriteCredential(

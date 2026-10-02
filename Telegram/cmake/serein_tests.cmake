@@ -35,6 +35,7 @@ set(serein_test_sources
     serein/tests/test_codec.cpp
     serein/tests/test_ghost.cpp
     serein/tests/test_cipher.cpp
+    serein/tests/test_credentials.cpp
     serein/tests/text_entity_support.cpp
     serein/adapters/openssl/aes_gcm_cipher.cpp
     serein/features/ghost/model/policy.cpp
@@ -61,6 +62,7 @@ set(serein_test_sources
     serein/core/exchange.cpp
     serein/interface/main_menu_model.cpp
     serein/menu/model.cpp
+    serein/services/credentials.cpp
     serein/services/model.cpp
     serein/services/translation_protocol.cpp
     serein/services/summary_protocol.cpp
