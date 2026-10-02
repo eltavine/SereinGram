@@ -217,6 +217,11 @@ message ComposeSettings {
     custom_ui: true
     validator: "ValidTextReplacementsBytes"
   }];
+  optional bytes link_inline_bots = 36 [(serein.options.v1.field) = {
+    title: "lng_serein_link_inline_bots"
+    custom_ui: true
+    validator: "ValidLinkInlineBotsBytes"
+  }];
   optional bool confirm_sticker = 22 [(serein.options.v1.field) = {
     section: {
       title: "lng_serein_send_confirmation"

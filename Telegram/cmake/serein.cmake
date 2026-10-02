@@ -12,6 +12,8 @@ set(serein_sources
     serein/compose/spacing.cpp
     serein/compose/text.cpp
     serein/compose/text_replacements.cpp
+    serein/compose/link_inline_bots.cpp
+    serein/compose/inline_bot.cpp
     serein/compose/validators.cpp
     serein/app/language.cpp
     serein/core/exchange.cpp

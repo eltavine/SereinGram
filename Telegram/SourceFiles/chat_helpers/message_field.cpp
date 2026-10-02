@@ -9,6 +9,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 
 #include "serein/hooks/gen/compose.h"
 #include "serein/hooks/compose/field_menu.h"
+#include "serein/hooks/compose/inline_bot.h"
 
 #include "history/history_widget.h"
 #include "history/history.h" // History::session
@@ -872,6 +873,9 @@ InlineBotQuery ParseInlineBotQuery(
 	const auto &full = field->getTextWithTags();
 	const auto &text = full.text;
 	const auto textLength = text.size();
+	if (Serein::Compose::ApplyLinkInlineBot(result, session.get(), text)) {
+		return result;
+	}
 
 	auto inlineUsernameStart = 1;
 	auto inlineUsernameLength = 0;

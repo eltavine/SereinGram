@@ -349,6 +349,9 @@
 "lng_serein_text_replacements" = "文本替换";
 "lng_serein_text_replacements_about" = "每行一条规则：文本 => 替换内容。在消息输入框中一输入该文本就会被替换，需要开启聊天设置中的“自动替换表情”。最多 100 条规则，每个触发词最多 32 个字符。";
 "lng_serein_text_replacements_invalid" = "每行都需要“=>”，触发词不能重复，长度为 1–32 个字符。";
+"lng_serein_link_inline_bots" = "链接的内联机器人";
+"lng_serein_link_inline_bots_about" = "消息草稿只有一个链接且匹配规则时，输入框上方会显示该机器人的结果，相当于在链接前输入了 @机器人；直接发送仍然发出链接本身。每行一条：@机器人 => 正则表达式。显示结果期间，链接会作为查询发送给该机器人。";
+"lng_serein_link_inline_bots_invalid" = "每行都必须是“@机器人 => 正则表达式”，且机器人用户名与表达式都有效。";
 "lng_serein_mention_menu" = "在文本菜单中显示“提及…”";
 "lng_serein_format_toolbar" = "选中文字时显示格式工具栏";
 "lng_serein_mention_create" = "提及…";

@@ -127,6 +127,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "serein/hooks/compose/buttons.h"
 #include "serein/hooks/gen/compose.h"
 #include "serein/hooks/compose/confirm.h"
+#include "serein/hooks/compose/inline_bot.h"
 #include "serein/hooks/compose/placeholder.h"
 #include "history/view/history_view_chat_section.h"
 #include "history/view/history_view_cursor_state.h"
@@ -6743,7 +6744,8 @@ bool HistoryWidget::showRecordButton() const {
 }
 
 bool HistoryWidget::showInlineBotCancel() const {
-	return _inlineBot && !_inlineLookingUpBot;
+	return _inlineBot && !_inlineLookingUpBot
+		&& !Serein::Compose::LinkInlineBotDraft(_field);
 }
 
 bool HistoryWidget::showStopButton() const {

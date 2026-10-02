@@ -88,6 +88,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "history/view/controls/history_view_suggest_options.h"
 #include "history/view/controls/history_view_ttl_button.h"
 #include "serein/hooks/compose/buttons.h"
+#include "serein/hooks/compose/inline_bot.h"
 #include "serein/hooks/gen/compose.h"
 #include "serein/hooks/compose/placeholder.h"
 #include "history/view/controls/history_view_voice_record_bar.h"
@@ -4130,7 +4131,8 @@ void ComposeControls::clearInlineBot() {
 }
 
 void ComposeControls::inlineBotChanged() {
-	const auto isInlineBot = (_inlineBot && !_inlineLookingUpBot);
+	const auto isInlineBot = (_inlineBot && !_inlineLookingUpBot)
+		&& !Serein::Compose::LinkInlineBotDraft(_field);
 	if (_isInlineBot != isInlineBot) {
 		_isInlineBot = isInlineBot;
 		updateFieldPlaceholder();

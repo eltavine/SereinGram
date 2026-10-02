@@ -197,6 +197,7 @@ struct CustomRows {
 	CustomRow defaultCodeLanguage;
 	CustomRow quickReplies;
 	CustomRow textReplacements;
+	CustomRow linkInlineBots;
 };
 
 inline void AddLayout(
@@ -252,6 +253,7 @@ inline void AddLayout(
 	custom.defaultCodeLanguage();
 	custom.quickReplies();
 	custom.textReplacements();
+	custom.linkInlineBots();
 	AddSection(builder, {
 		u"serein/compose/send-confirmation"_q,
 		tr::lng_serein_send_confirmation,

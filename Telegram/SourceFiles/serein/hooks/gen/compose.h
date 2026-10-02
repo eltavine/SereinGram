@@ -63,6 +63,8 @@ namespace Serein::Hooks::Compose {
 [[nodiscard]] rpl::producer<QByteArray> QuickRepliesValue();
 [[nodiscard]] QByteArray TextReplacements();
 [[nodiscard]] rpl::producer<QByteArray> TextReplacementsValue();
+[[nodiscard]] QByteArray LinkInlineBots();
+[[nodiscard]] rpl::producer<QByteArray> LinkInlineBotsValue();
 [[nodiscard]] bool ConfirmSticker();
 [[nodiscard]] rpl::producer<bool> ConfirmStickerValue();
 [[nodiscard]] bool ConfirmGif();

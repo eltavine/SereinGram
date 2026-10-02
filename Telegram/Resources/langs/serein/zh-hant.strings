@@ -349,6 +349,9 @@
 "lng_serein_text_replacements" = "文字替換";
 "lng_serein_text_replacements_about" = "每行一條規則：文字 => 替換內容。在訊息輸入框中一輸入該文字就會被替換，需要開啟聊天設定中的「自動替換表情」。最多 100 條規則，每個觸發詞最多 32 個字元。";
 "lng_serein_text_replacements_invalid" = "每行都需要「=>」，觸發詞不能重複，長度為 1–32 個字元。";
+"lng_serein_link_inline_bots" = "連結的內嵌機器人";
+"lng_serein_link_inline_bots_about" = "訊息草稿只有一個連結且符合規則時，輸入框上方會顯示該機器人的結果，相當於在連結前輸入了 @機器人；直接傳送仍會送出連結本身。每行一條：@機器人 => 正規表示式。顯示結果期間，連結會作為查詢傳送給該機器人。";
+"lng_serein_link_inline_bots_invalid" = "每行都必須是「@機器人 => 正規表示式」，且機器人使用者名稱與表示式都有效。";
 "lng_serein_mention_menu" = "在文字選單中顯示「提及…」";
 "lng_serein_format_toolbar" = "選取文字時顯示格式工具列";
 "lng_serein_mention_create" = "提及…";

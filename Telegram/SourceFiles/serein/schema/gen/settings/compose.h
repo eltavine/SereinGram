@@ -8,6 +8,7 @@ namespace Serein::Compose {
 
 [[nodiscard]] bool ValidQuickReplies(const QByteArray &value);
 [[nodiscard]] bool ValidTextReplacementsBytes(const QByteArray &value);
+[[nodiscard]] bool ValidLinkInlineBotsBytes(const QByteArray &value);
 
 inline constexpr auto kHideAttachButton = Option<bool>{
 	"serein.hideAttachButton",
@@ -219,6 +220,14 @@ inline const auto kTextReplacements = Option<QByteArray>{
 	"lng_serein_text_replacements",
 	0,
 	&ValidTextReplacementsBytes };
+inline const auto kLinkInlineBots = Option<QByteArray>{
+	"serein.linkInlineBots",
+	Scope::Device,
+	QByteArray(),
+	Category::Compose,
+	"lng_serein_link_inline_bots",
+	0,
+	&ValidLinkInlineBotsBytes };
 inline constexpr auto kConfirmSticker = Option<bool>{
 	"serein.confirmSticker",
 	Scope::Device,
@@ -298,6 +307,7 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kDefaultCodeLanguage));
 	Expects(registry.Add(kQuickReplies));
 	Expects(registry.Add(kTextReplacements));
+	Expects(registry.Add(kLinkInlineBots));
 	Expects(registry.Add(kConfirmSticker));
 	Expects(registry.Add(kConfirmGif));
 	Expects(registry.Add(kPreviewVoice));

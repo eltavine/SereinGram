@@ -230,6 +230,14 @@ rpl::producer<QByteArray> TextReplacementsValue() {
 	return ForDevice().Value(Serein::Compose::kTextReplacements);
 }
 
+QByteArray LinkInlineBots() {
+	return ForDevice().Get(Serein::Compose::kLinkInlineBots);
+}
+
+rpl::producer<QByteArray> LinkInlineBotsValue() {
+	return ForDevice().Value(Serein::Compose::kLinkInlineBots);
+}
+
 bool ConfirmSticker() {
 	return ForDevice().Get(Serein::Compose::kConfirmSticker);
 }

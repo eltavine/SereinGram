@@ -15,6 +15,7 @@ set(serein_test_sources
     serein/tests/test_local_pins.cpp
     serein/tests/test_summary.cpp
     serein/tests/test_text_replacements.cpp
+    serein/tests/test_link_inline_bots.cpp
     serein/tests/test_proxy_subscription.cpp
     serein/tests/test_vpn_rules.cpp
     serein/tests/test_proxy_order.cpp
@@ -65,6 +66,7 @@ set(serein_test_sources
     serein/compose/mention_query.cpp
     serein/compose/spacing.cpp
     serein/compose/text_replacements.cpp
+    serein/compose/link_inline_bots.cpp
     serein/compose/validators.cpp
     serein/core/exchange.cpp
     serein/core/id_list.cpp
