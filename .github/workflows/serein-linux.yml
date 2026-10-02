@@ -54,6 +54,9 @@ jobs:
   linux:
     name: Rocky Linux 8
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write
 
     strategy:
       matrix:
@@ -199,25 +202,45 @@ jobs:
           case "$MISSES" in (*[!0-9]*|'') MISSES=0;; esac
           echo "misses=$MISSES" >> $GITHUB_OUTPUT
           echo "ccache misses this run: $MISSES"
+          ccache --print-stats | grep -E '^(cache_size_kibibyte|files_in_cache)\b' || true
 
       - name: Trim Telegram Desktop cache.
         if: >
           !cancelled()
             && env.ONLY_CACHE == 'false'
-            && github.ref_name == github.event.repository.default_branch
+            && (github.event_name == 'pull_request'
+              || github.ref_name == github.event.repository.default_branch)
             && fromJSON(steps.ccache-stats.outputs.misses) > 300
         run: ccache --evict-older-than 1d
 
       - name: Save Telegram Desktop cache.
+        id: save-tdesktop
         if: >
           !cancelled()
             && env.ONLY_CACHE == 'false'
-            && github.ref_name == github.event.repository.default_branch
+            && (github.event_name == 'pull_request'
+              || github.ref_name == github.event.repository.default_branch)
             && fromJSON(steps.ccache-stats.outputs.misses) > 300
         uses: actions/cache/save@v6
         with:
           path: ${{ env.CCACHE_DIR }}
           key: ${{ steps.cache-tdesktop.outputs.cache-primary-key }}
+
+      # Keeping one compiler cache leaves the platform caches inside the quota.
+      - name: Drop older Telegram Desktop caches.
+        if: steps.save-tdesktop.outcome == 'success'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          KEEP: ${{ steps.cache-tdesktop.outputs.cache-primary-key }}
+          PREFIX: ${{ runner.OS }}-tdesktop-
+        run: |
+          gh cache list -R "$GITHUB_REPOSITORY" --key "$PREFIX" --limit 100 \
+            --json key --jq '.[].key' \
+          | { grep -vxF "$KEEP" || true; } \
+          | while read -r key; do
+            gh cache delete "$key" -R "$GITHUB_REPOSITORY"
+          done
 
       - name: Check.
         if: env.ONLY_CACHE == 'false'
