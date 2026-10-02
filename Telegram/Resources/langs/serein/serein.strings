@@ -116,7 +116,7 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_denoise_voice_messages" = "Reduce background noise in voice messages";
 "lng_serein_denoise_voice_messages_note" = "Recorded voice messages pass through the RNNoise noise suppressor that group calls use. It runs on this device; turning it on affects the next recording.";
 "lng_serein_story_posting" = "Post stories from this device";
-"lng_serein_story_posting_note" = "Adds “New story” to the main menu and “Post story” to the menu of channels you can post to. In the story viewer menu, “Edit story” changes the caption and audience of stories you can edit, and “Repost to my story” shares public stories of others. Photos are placed on a 9:16 canvas; videos up to 60 seconds are uploaded unchanged.";
+"lng_serein_story_posting_note" = "Adds “New story” to the main menu and “Post story” to the menu of channels you can post to. In the story viewer menu, “Edit story” changes the caption and audience of stories you can edit, and “Repost to my story” shares public stories of others. Photos are placed on a 9:16 canvas; videos up to 60 seconds are uploaded unchanged, and longer ones open the video editor to choose a part.";
 "lng_serein_story_new" = "New story";
 "lng_serein_story_post_channel" = "Post story";
 "lng_serein_story_edit" = "Edit story";
@@ -141,6 +141,7 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_story_posted" = "Story posted.";
 "lng_serein_story_need_people" = "Choose at least one person who can see this story.";
 "lng_serein_story_video_too_long" = "Story videos can be at most {seconds} seconds long.";
+"lng_serein_story_trim_hint" = "Stories can be up to {seconds} seconds long. Choose the part to post.";
 "lng_serein_story_unsupported" = "Choose a photo or a video.";
 "lng_serein_story_error_limit" = "You have reached the limit of active stories.";
 "lng_serein_story_error_premium" = "Posting more stories requires Telegram Premium.";

@@ -16,8 +16,11 @@
 #include "data/data_photo_media.h"
 #include "data/data_story.h"
 #include "data/data_user.h"
+#include "editor/video/video_editor.h"
+#include "editor/video/video_editor_layer.h"
 #include "lang/lang_keys.h"
 #include "main/main_session.h"
+#include "mainwindow.h"
 #include "mtproto/mtproto_response.h"
 #include "storage/storage_media_prepare.h"
 #include "ui/chat/attach/attach_prepare.h"
@@ -30,6 +33,7 @@
 #include "ui/widgets/fields/input_field.h"
 #include "ui/widgets/labels.h"
 #include "ui/wrap/slide_wrap.h"
+#include "window/window_session_controller.h"
 #include "styles/style_basic.h"
 #include "styles/style_boxes.h"
 #include "styles/style_layers.h"
@@ -127,6 +131,49 @@ struct RepostSource {
 	return image ? image->original() : QImage();
 }
 
+void TrimVideo(
+		std::shared_ptr<ChatHelpers::Show> show,
+		Ui::PreparedFile file,
+		Fn<void(Ui::PreparedFile)> chosen) {
+	using Video = Ui::PreparedFileInformation::Video;
+	const auto window = show->resolveWindow();
+	const auto video = file.information
+		? std::get_if<Video>(&file.information->media)
+		: nullptr;
+	const auto seconds = QString::number(kMaxVideoSeconds);
+	if (!window || !video || video->thumbnail.isNull()) {
+		show->showToast(tr::lng_serein_story_video_too_long(
+			tr::now,
+			lt_seconds,
+			seconds));
+		return;
+	}
+	auto descriptor = Editor::VideoEditorDescriptor{
+		.path = file.path,
+		.content = file.content,
+		.dimensions = video->thumbnail.size(),
+		.duration = video->duration,
+		.data = Editor::VideoEditorData{
+			.hint = tr::lng_serein_story_trim_hint(
+				tr::now,
+				lt_seconds,
+				seconds),
+			.maxDuration = kMaxVideoSeconds * crl::time(1000),
+		},
+		.initial = video->modifications,
+	};
+	const auto shared = std::make_shared<Ui::PreparedFile>(std::move(file));
+	Editor::ShowVideoEditorLayer(
+		window->widget(),
+		&window->window(),
+		std::move(descriptor),
+		[=](Editor::VideoModifications modifications) {
+			auto &media = shared->information->media;
+			std::get<Video>(media).modifications = modifications;
+			chosen(std::move(*shared));
+		});
+}
+
 void ChooseFile(
 		std::shared_ptr<ChatHelpers::Show> show,
 		Fn<void(Ui::PreparedFile)> chosen) {
@@ -157,10 +204,7 @@ void ChooseFile(
 		}
 		auto &file = list->files.front();
 		if (TooLong(file)) {
-			show->showToast(tr::lng_serein_story_video_too_long(
-				tr::now,
-				lt_seconds,
-				QString::number(kMaxVideoSeconds)));
+			TrimVideo(show, std::move(file), chosen);
 			return;
 		}
 		chosen(std::move(file));
