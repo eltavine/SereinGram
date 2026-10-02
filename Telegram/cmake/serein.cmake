@@ -61,6 +61,7 @@ set(serein_sources
     serein/interface/app_icon.cpp
     serein/interface/main_menu_model.cpp
     serein/interface/notifications.cpp
+    serein/interface/punctuation.cpp
     serein/interface/text.cpp
     serein/interface/reply_colors.cpp
     serein/interface/global_shortcut.cpp

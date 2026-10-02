@@ -44,6 +44,8 @@ void TestCodec();
 void TestGhost();
 void TestCipher();
 void TestCredentials();
+void TestHalfwidthPunctuation();
+void TestHistoryEntities();
 void TestHistoryStore();
 void TestHistoryRecorder();
 void TestCachedMedia();
@@ -219,6 +221,8 @@ int main() {
 		TestGhost();
 		TestCipher();
 		TestCredentials();
+		TestHalfwidthPunctuation();
+		TestHistoryEntities();
 #ifdef SEREIN_HAVE_QT_SQL
 		auto argc = 1;
 		char name[] = "test_serein";

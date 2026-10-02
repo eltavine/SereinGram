@@ -1,5 +1,6 @@
 #pragma once
 
+#include "base/assertion.h"
 #include "ui/text/text_entity.h"
 
 #include <optional>
