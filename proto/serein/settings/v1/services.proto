@@ -70,4 +70,8 @@ message ServicesSettings {
     ]
     custom_ui: true
   }];
+  optional bool faster_transfers = 13 [(serein.options.v1.field) = {
+    title: "lng_serein_faster_transfers"
+    custom_ui: true
+  }];
 }

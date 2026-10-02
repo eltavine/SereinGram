@@ -1,5 +1,6 @@
 #include "serein/settings/compose.h"
 
+#include "serein/compose/link_inline_bots.h"
 #include "serein/compose/options.h"
 #include "serein/compose/text_replacements.h"
 #include "serein/hooks/compose/text.h"
@@ -118,6 +119,39 @@ void TextReplacementsBox(not_null<Ui::GenericBox*> box) {
 	box->addButton(tr::lng_cancel(), [=] { box->closeBox(); });
 }
 
+void LinkInlineBotsBox(not_null<Ui::GenericBox*> box) {
+	box->setTitle(tr::lng_serein_link_inline_bots());
+	box->addRow(object_ptr<Ui::FlatLabel>(
+		box,
+		tr::lng_serein_link_inline_bots_about(),
+		st::boxLabel));
+	const auto current = Compose::ReadLinkInlineBots(
+		ForDevice().Get(Compose::kLinkInlineBots)
+	).value_or(Compose::LinkInlineBots());
+	const auto field = box->addRow(object_ptr<Ui::InputField>(
+		box,
+		st::defaultInputField,
+		Ui::InputField::Mode::MultiLine,
+		rpl::single(u"@vid => youtube\\.com/|youtu\\.be/"_q),
+		Compose::FormatLinkInlineBotLines(current)));
+	field->setMaxLength(20000);
+	box->setFocusCallback([=] { field->setFocusFast(); });
+	box->addButton(tr::lng_settings_save(), [=] {
+		const auto parsed = Compose::ParseLinkInlineBotLines(
+			field->getLastText());
+		if (!parsed) {
+			field->showError();
+			box->showToast(tr::lng_serein_link_inline_bots_invalid(tr::now));
+			return;
+		}
+		Expects(ForDevice().Set(
+			Compose::kLinkInlineBots,
+			Compose::WriteLinkInlineBots(*parsed)));
+		box->closeBox();
+	});
+	box->addButton(tr::lng_cancel(), [=] { box->closeBox(); });
+}
+
 const auto kMeta = BuildHelper({
 	.id = ComposeSection::Id(),
 	.parentId = HomeId(),
@@ -167,6 +201,25 @@ const auto kMeta = BuildHelper({
 					controller->show(Box(TextReplacementsBox));
 				},
 				.keywords = { u"replace"_q, u"shortcut"_q, u"text"_q },
+			});
+		},
+		.linkInlineBots = [&] {
+			builder.addButton({
+				.id = u"serein/compose/link-inline-bots"_q,
+				.title = tr::lng_serein_link_inline_bots(),
+				.st = &st::settingsButtonNoIcon,
+				.label = ForDevice().Value(Compose::kLinkInlineBots)
+					| rpl::map([](const QByteArray &raw) {
+						const auto rules = Compose::ReadLinkInlineBots(raw);
+						const auto count = rules ? int(rules->rules.size()) : 0;
+						return count
+							? QString::number(count)
+							: tr::lng_serein_config_off(tr::now);
+					}),
+				.onClick = [=] {
+					controller->show(Box(LinkInlineBotsBox));
+				},
+				.keywords = { u"inline"_q, u"bot"_q, u"link"_q },
 			});
 		},
 	});

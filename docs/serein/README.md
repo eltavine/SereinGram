@@ -36,7 +36,7 @@ SereinGram 是基于 Telegram Desktop 的第三方桌面客户端，功能对标
 | --- | --- | --- | --- |
 | macOS | arm64 + x86_64 通用二进制，DMG | 上游 `prepare.py` + Xcode | 随上游 |
 | Windows | x86_64 与 arm64 安装包、便携版 | 上游 `prepare.py` + MSVC | 随上游 |
-| Linux | x86_64 静态构建便携包、AppImage、`.deb` 与 `.rpm`（Rocky Linux 8 容器，glibc 2.28 及以上）；x86_64 与 arm64 Flatpak 包；Arch Linux PKGBUILD 与 Nix flake 以系统库构建；七个主流发行版的安装方式见 [Linux 发行版](linux.md) | 上游 Docker 环境；Arch、Flatpak 与 Nix 用各自的依赖 | 随上游 |
+| Linux | x86_64 与 arm64 静态构建便携包、AppImage、`.deb` 与 `.rpm`（Rocky Linux 8 容器，glibc 2.28 及以上）；x86_64 与 arm64 Flatpak 包；Arch Linux PKGBUILD 与 Nix flake 以系统库构建；七个主流发行版的安装方式见 [Linux 发行版](linux.md) | 上游 Docker 环境；Arch、Flatpak 与 Nix 用各自的依赖 | 随上游 |
 
 Linux 发行版打包：
 

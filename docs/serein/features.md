@@ -21,12 +21,12 @@
 | SG-PLAT-04 | 三平台 CI 与质量门禁（`serein-{mac,win,linux}.yml` 在 PR 中构建应用（警告即错误）、运行 `test_serein` 与启动冒烟测试并打包；`serein-guards.yml` 在每次推送与 PR 运行格式与风格检查、ruff、shellcheck、yamllint、markdownlint、`buf lint` 与 `buf format`、clang-tidy 静态分析、actionlint 与 zizmor 工作流检查、桌面入口与 AppStream 校验、打包依赖版本、模块边界、上游侵入预算、生成代码一致性、核心单元测试，以及 commitlint 与 gitleaks；任何一项失败都会让对应任务失败） | D | Implemented | P0 |
 | SG-PLAT-05 | 发行版打包：Flatpak 清单、AUR PKGBUILD、`DESKTOP_APP_USE_PACKAGED` 依赖清单（Arch Linux：`packaging/arch/PKGBUILD` 以系统库构建 `sereingram-desktop-git`，依赖清单与 Arch 官方 telegram-desktop 一致，tde2e 按 `snap/snapcraft.yaml` 锁定的 tdlib 提交现场编译，守卫 `check_packaging.py` 要求 PKGBUILD 与 Flatpak 清单锁定的 tdlib、tg_owt、tlottie、patches 提交与 Qt 版本都与 snap 配方一致；打包者通过 `SEREIN_API_ID` 与 `SEREIN_API_HASH` 提供自己的凭据，缺少时构建直接报错，绝不使用官方 Telegram 凭据；CI 工作流 `serein-arch.yml` 在 Arch 容器中用 makepkg 构建当前提交、安装后检查文件与动态库并上传包，已在 CI 中构建并安装通过；以系统库构建时不启动 GitHub 更新检查，设置页改为说明由系统包管理器更新；Flatpak：`packaging/flatpak/io.github.eltavine.SereinGram.yml` 基于 GNOME 51 运行时，依赖模块与 Flathub 的 Telegram 清单一致，构建本地检出，凭据来自被忽略的 `api_credentials.local.cmake`；CI 工作流 `serein-flatpak.yml` 构建并上传 `.flatpak` 包，已在 CI 中生成；尚未提交到 Flathub；Debian／Ubuntu 与 Fedora／openSUSE：Linux 工作流用 nFPM（`packaging/nfpm/`）把 CentOS 基线构建的同一个程序连同桌面入口、图标与 AppStream 元数据打成 `.deb` 与 `.rpm`，与 AppImage 一起上传，覆盖 glibc 2.28 及以上的主流发行版） | Ad | Implemented | P2 |
 | SG-PLAT-06 | Windows arm64 构建（发布流程以 arm64 参数调用 Windows 工作流，在原生 arm64 运行器上不读写缓存、从头构建 Debug 与 Release 依赖、Qt 与应用，生成 `SereinGram-windows-arm64-setup.exe` 与 `-portable.zip`；依赖与 Qt 在 arm64 上已从头构建成功；合并了 Serein 文案后，生成的语言键查找函数超出 MSVC arm64 的函数大小限制（C1053），构建时由 `tools/serein/split_lang_keys.py` 按键名首字母拆成多个函数，查找结果不变，待 arm64 应用构建通过） | T | In Progress | P2 |
-| SG-PLAT-07 | 独立更新检查与正式版发布（界面设置“在 GitHub 上检查更新”默认开启：启动 30 秒后及每 24 小时查询最新正式版，只接受 github.com 的发布页链接，发现新版本时提示链接，不自动下载；官方更新通道在构建中关闭；推送 `v*` 标签时 `serein-release.yml` 构建 Release 矩阵，生成变更记录、`SHA256SUMS` 与 `release.json`，创建草稿 Release，带后缀的标签标为预发布，核对后手动发布） | D | In Progress | P2 |
+| SG-PLAT-07 | 独立更新检查与正式版发布（界面设置“在 GitHub 上检查更新”默认开启：启动 30 秒后及每 24 小时检查一次：发布流程构建的 Nightly 带有渠道与构建提交（CMake 把它们写进单独生成的源文件，新提交不会让其他编译结果失效），检查滚动的 `nightly` 预发布，目标提交与自身不同即提示新的 Nightly；其他构建查询最新正式版；只接受 github.com 的发布页链接，发现新版本时提示链接，不自动下载；官方更新通道在构建中关闭；推送 `v*` 标签时 `serein-release.yml` 构建 Release 矩阵，生成变更记录、`SHA256SUMS` 与 `release.json`，创建草稿 Release，带后缀的标签标为预发布，核对后手动发布） | D | In Progress | P2 |
 | SG-PLAT-08 | API 凭据构建期注入（Secrets 或本地文件），禁止使用官方客户端凭据 | D | Implemented | P0 |
-| SG-PLAT-09 | Nightly 构建与发布（`serein-release.yml` 每天 19:00 UTC 从 `develop` 最新提交构建 Windows x86_64／arm64、macOS universal、Linux x86_64 与 Flatpak x86_64／arm64 的 Release 产物，分支未变化时跳过；滚动的 `nightly` 预发布先以草稿上传再一次替换；正文顶部是自上一个 Nightly 以来按类型分组的变更记录，下方是下载表；附 GNU 格式的 `SHA256SUMS` 与 `release.json` 清单；产物名称固定，发布前与 `tools/serein/policy/release_assets.json` 逐一核对；约定见 [releases.md](releases.md)；默认分支为 `develop`，定时触发直接使用其中的工作流；发布需要仓库 Secrets 中的 SereinGram API 凭据，缺少时只构建不发布） | D | In Progress | P1 |
-| SG-PLAT-10 | Linux arm64 构建（Flatpak 清单在原生 arm64 运行器上构建 `SereinGram-linux-arm64.flatpak`，随发布流程生成；基于 CentOS 容器的便携包与 AppImage 暂只有 x86_64） | T | In Progress | P2 |
+| SG-PLAT-09 | Nightly 构建与发布（`serein-release.yml` 每天 19:00 UTC 从 `develop` 最新提交构建 Windows x86_64／arm64、macOS universal、Linux x86_64／arm64 与 Flatpak x86_64／arm64 的 Release 产物，分支未变化时跳过；滚动的 `nightly` 预发布先以草稿上传再一次替换；正文顶部是自上一个 Nightly 以来按类型分组的变更记录，下方是下载表；附 GNU 格式的 `SHA256SUMS` 与 `release.json` 清单；产物名称固定，发布前与 `tools/serein/policy/release_assets.json` 逐一核对；约定见 [releases.md](releases.md)；默认分支为 `develop`，定时触发直接使用其中的工作流；发布需要仓库 Secrets 中的 SereinGram API 凭据，缺少时只构建不发布） | D | In Progress | P1 |
+| SG-PLAT-10 | Linux arm64 构建（Linux 工作流以 arm64 参数在原生 arm64 运行器上用同一个 Rocky Linux 8 容器构建，生成 `SereinGram-linux-arm64` 的便携包、AppImage、`.deb` 与 `.rpm`，并运行启动冒烟测试、AppImage 与软件包安装测试；发布流程同时构建 x86_64 与 arm64；Flatpak 清单另在 arm64 运行器上生成 `SereinGram-linux-arm64.flatpak`；arm64 用 `-fsigned-char` 与其他目标保持一致的 `char` 符号） | T | Implemented | P2 |
 | SG-PLAT-11 | NixOS 与 Nix（根目录 `flake.nix` 导出 `packages`、`overlays.default` 与使用测试凭据的 `checks`，支持 x86_64 与 aarch64；`packaging/nix/package.nix` 在 nixpkgs 的 telegram-desktop 之上替换源码，剔除其中的官方凭据参数，按 `apiId`/`apiHash` 传入打包者自己的凭据，缺少时构建报错，`testCredentials` 仅供自动化检查；flake 声明需要子模块，要求 Nix 2.27 起；CI 工作流 `serein-nix.yml` 检查 nixfmt 格式，从源码构建并在 Xvfb 中启动） | D | In Progress | P2 |
-| SG-PLAT-12 | 七个主流 Linux 发行版的原生安装与 CI 验证（Ubuntu、Debian、Linux Mint 用 `.deb`，Fedora、openSUSE 用 `.rpm`，Arch Linux 用 PKGBUILD 或便携版，NixOS 用 flake；`tools/serein/linux_package_test.sh` 在 Debian 12/13、Ubuntu 22.04/24.04/26.04、Linux Mint 23、Fedora 43、openSUSE Tumbleweed 与 Leap 16.1 的容器中用系统包管理器安装并检查文件与动态库，在 Arch 容器中检查便携版；支持 Snap 的发行版另有 core24 Snap 包，`serein-snap.yml` 构建、安装并启动，配方中的上游官方凭据已删除，`check_packaging.py` 拒绝任何已提交配方写入凭据；各发行版的安装命令见 [Linux 发行版](linux.md)） | D | In Progress | P1 |
+| SG-PLAT-12 | 七个主流 Linux 发行版的原生安装与 CI 验证（Ubuntu、Debian、Linux Mint 用 `.deb`，Fedora、openSUSE 用 `.rpm`，Arch Linux 用 PKGBUILD 或便携版，NixOS 用 flake；`tools/serein/linux_package_test.sh` 在 Debian 12/13、Ubuntu 22.04/24.04/26.04、Linux Mint 22.3、Fedora 43、openSUSE Tumbleweed 与 Leap 16.1 的容器中用系统包管理器安装并检查文件与动态库，在 Arch 容器中检查便携版；支持 Snap 的发行版另有 core24 Snap 包，`serein-snap.yml` 构建、安装并启动，配方中的上游官方凭据已删除，`check_packaging.py` 拒绝任何已提交配方写入凭据；各发行版的安装命令见 [Linux 发行版](linux.md)） | D | In Progress | P1 |
 
 ## BRAND 品牌与身份
 
@@ -39,6 +39,7 @@ Nagram 的品牌政策要求分支使用不同品牌并替换 Nagram 名称与�
 | SG-BRAND-03 | 应用 ID、数据目录、便携目录、Windows AppUserModelID、安装器 ID 与通知激活器 GUID | D | Implemented | P0 |
 | SG-BRAND-04 | 源码、发布与问题反馈链接指向 `eltavine/SereinGram` | D | Implemented | P0 |
 | SG-BRAND-05 | 代码更名：`nagram` → `serein`（目录、命名空间、文案键、存储键、CMake、测试目标、工作流） | D | Implemented | P0 |
+| SG-BRAND-06 | 第三方许可声明（SereinGram 设置首页“第三方许可”：列出随程序分发的 OpenCC、marisa-trie、darts-clone、RapidJSON、quirc 与注册日期数据的名称、许可与地址，许可全文作为 Qt 资源打包，可在程序内查看；文本直接取自子模块中的许可文件，RapidJSON 的子集不含许可文件，以其头文件中的版权声明补齐 MIT 文本） | D | Implemented | P1 |
 
 ## CORE 基础设施
 
@@ -51,7 +52,7 @@ Nagram 的品牌政策要求分支使用不同品牌并替换 Nagram 名称与�
 | SG-CORE-05 | 功能模块注册与生命周期（应用、会话、窗口作用域）：应用与会话作用域已由 `serein/app/modules.cpp` 模块表统一分发（对话排序已从上游窗口构造函数移到会话作用域）；窗口作用域由 `Serein::Hooks::OnWindowStarted` 分发，首个使用者是最近会话记录；主菜单条目统一由 `Serein::Hooks::FillMainMenu` 添加 | D | Implemented | P0 |
 | SG-CORE-06 | 设置页与搜索索引由 schema 元数据生成（开关、选项、数值、文本、子页）：开关行、小标题、说明、依赖开关与自定义行位置已由 proto 生成 `AddLayout`，界面、聊天、消息、写作、菜单、媒体、隐私（含幽灵与历史）七页已迁移；数值输入行（范围取自 gte/lte 规则，0 的文字与复数格式由 `number` 选项声明）已生成；单选行（按序语言键或 `in` 规则加后缀）已生成；文本行（`text` 选项声明占位语言键，未设置时行标签显示占位文字，`disabled_by` 使该行在对应开关打开时隐藏）已生成，“已编辑/已删除标记文字”已改用生成行；子页由页面选项 `subpage` 声明标题、图标与搜索关键词，生成父页上的入口按钮 `AddSubpageButton` 以及分区标题、图标常量，分区类本身沿用各页相同的手写样板；幽灵模式与“已删除与已编辑消息”已拆成隐私页下的子页 | D | Implemented | P0 |
 | SG-CORE-07 | 英文、简体、繁体内置文案与一致性检查 | Ni Na | Implemented | P0 |
-| SG-CORE-08 | 配置管理：已修改项、导出、导入差异预览、诊断信息（J01–J04）；“恢复默认设置”先列出本设备上所有已修改的可导出设置及其当前值，确认后一次恢复为默认值，按账号保存的设置不受影响 | Ni Na | Implemented | P1 |
+| SG-CORE-08 | 配置管理：已修改项、导出、导入差异预览、诊断信息（J01–J04）；“备份到收藏夹”把本设备设置的导出文件 `sereingram-settings.json` 带固定标签发送到收藏夹，“从收藏夹恢复”按标签搜索收藏夹中的文档、取最新的同名备份下载后进入同一个导入差异预览，换设备时不必重新配置，系统凭据库中的密钥不在其中；“恢复默认设置”先列出本设备上所有已修改的可导出设置及其当前值，确认后一次恢复为默认值，按账号保存的设置不受影响 | Ni Na | Implemented | P1 |
 | SG-CORE-09 | 守卫：源文件 ≤ 1000 行、模块依赖方向、上游侵入预算、生成代码漂移 | D | Implemented | P0 |
 | SG-CORE-10 | 测试：纯逻辑单元测试与 `-testagent` 界面场景（核心测试基于 doctest，每个测试文件用 `TEST_CASE` 自注册，用例单独报告并可按名称筛选） | D | Implemented | P0 |
 | SG-CORE-11 | 更多界面语言的社区翻译平台接入（Serein 字符串按界面语言加载任意 `langs/serein/<语言代码>.strings`，缺失的键回退英文，CMake 扫描目录自动生成资源清单；核心测试要求中文译文完整、其他译文的键与占位符与英文一致；`crowdin.yml` 与同步工作流 `serein-crowdin.yml` 已就绪：在 GitHub Secrets 中配置 Crowdin 项目 ID 与访问令牌后，英文源文件改动时上传，每周下载译文并向 develop 提交 PR） | Ad Na | Implemented | P3 |
@@ -120,6 +121,7 @@ Nagram 的品牌政策要求分支使用不同品牌并替换 Nagram 名称与�
 | SG-PRIV-09 | 设置锁（隐私设置“用本地密码锁定 SereinGram 设置”默认关闭，设置了上游本地密码时，打开任一 SereinGram 设置页（包括从设置搜索直达的子页）先显示密码输入，用上游 `checkPasscode` 校验，每次启动及应用被锁定后重新上锁；本地隐藏已登录账号列入明确排除） | Ni | Implemented | P3 |
 | SG-PRIV-10 | 检测到录屏软件时自动开启主播模式（隐私设置“运行直播或录屏软件时自动开启”，默认关闭：开启后每 5 秒在后台线程列出进程——Windows 用 Toolhelp 快照、macOS 用 libproc、其他平台读 `/proc/*/comm`——发现 OBS、Streamlabs、XSplit、vMix、Bandicam 等常见软件即打开主播模式，软件退出后恢复原状，期间手动改过则不再动它） | Ad | Implemented | P3 |
 | SG-PRIV-11 | 设备详情中的登录时间、API ID 与官方应用标记（隐私设置“显示更多设备信息”，默认关闭：开启后“设置 > 设备”中每个会话的详情在系统版本之后加入服务端返回的登录时间、API ID 以及是否为官方应用，便于识别第三方客户端登录的会话；数据来自上游已请求的会话列表，不额外发送请求） | Ad | Implemented | P3 |
+| SG-PRIV-12 | 扫描二维码与扫码登录（隐私设置“扫描二维码”：从全部屏幕截图、剪贴板图片或图片文件中识别二维码，解码使用固定版本的子模块 quirc 1.2（ISC 许可）；内容为 `tg://login?token=` 时先以警示样式确认“只扫描自己设备上的二维码”，再调用 `auth.acceptLoginToken` 让显示二维码的设备登录本账号，提示登录的应用与设备，二维码过期或已使用时给出说明；其他内容以文字列出，`tg://` 与网页链接经上游的隐藏链接确认后打开；macOS 识别屏幕需要屏幕录制权限，Wayland 下屏幕截图不可用时可改用剪贴板或文件） | Na | Implemented | P3 |
 
 ## APPEAR 界面与外观
 
@@ -167,7 +169,7 @@ Nagram 的品牌政策要求分支使用不同品牌并替换 Nagram 名称与�
 | SG-MSG-05 | 直接显示剧透、快速转发按钮、推荐频道、会员标识、收藏夹标签栏、对方输入状态（C19–C24） | Ad Ni | Implemented | P1 |
 | SG-MSG-06 | 阅读时中西文加空格与简繁转换（C25、C26） | Na | Implemented | P2 |
 | SG-MSG-07 | 资料页 ID、数据中心、隐藏礼物、隐藏待办入口（G05–G08） | Ad Ni Na | Implemented | P1 |
-| SG-MSG-08 | 消息详情：日期、转发来源、贴纸包与表情包作者（消息菜单“消息详情”：消息与对话、发送者 ID（Bot API 格式）、带秒的发送与编辑时间、转发来源与原始时间、浏览数、贴纸包名称与链接、贴纸包作者） | Ad Na | Implemented | P2 |
+| SG-MSG-08 | 消息详情：日期、转发来源、贴纸包与表情包作者（消息菜单“消息详情”：消息与对话、发送者 ID（Bot API 格式）、带秒的发送与编辑时间、转发来源与原始时间、浏览数与转发次数（频道消息由服务端提供）、贴纸包名称与链接、贴纸包作者） | Ad Na | Implemented | P2 |
 | SG-MSG-09 | 内联按钮回调数据查看与复制（消息菜单“按钮数据”：列出内联按钮的文字与数据，点击复制；不可打印的数据以 base64 显示；默认隐藏，可在菜单设置中开启） | Ad | Implemented | P2 |
 | SG-MSG-10 | 语音与圆形视频拖动进度（先核对上游现状）（由上游提供：语音消息 `VoiceSeekClickHandler` 与圆形视频 `VideoMessageSeek` 均支持拖动进度，核对于 2026-09-30） | Ad | Implemented | P2 |
 | SG-MSG-11 | 反应时间显示秒（反应与已读列表的时间随“消息时间显示秒”选项显示到秒） | Ad | Implemented | P3 |
@@ -188,6 +190,9 @@ Nagram 的品牌政策要求分支使用不同品牌并替换 Nagram 名称与�
 | SG-COMPOSE-07 | 静音发送策略：从不、预设、始终（“按对话”由上游的静音发送开关提供；写作页新增“总是静音发送”，在 `Api::SendAction` 的统一挂钩中生效） | Ni | Implemented | P2 |
 | SG-COMPOSE-08 | 文本替换规则（写作设置“文本替换”：每行一条“文本 => 替换内容”，最多 100 条，存为 proto 声明的配置文档；消息输入框在上游默认的即时替换之外加入这些规则，随设置变化实时生效，受上游“自动替换表情”开关控制） | Na | Implemented | P3 |
 | SG-COMPOSE-09 | 格式工具栏（输入设置“选中文字时显示格式工具栏”，默认关闭；在消息输入框、说明文字等输入框中选中文字后，选区上方浮出粗体、斜体、下划线、删除线、等宽、剧透、引用、链接与清除格式按钮，已应用的格式高亮显示；按钮按输入框允许的格式显示，行为与上游快捷键和右键“格式”菜单一致） | Ni | Implemented | P3 |
+| SG-COMPOSE-10 | 链接的内联机器人规则（写作设置“链接的内联机器人”：每行一条“@机器人 => 正则表达式”，最多 50 条，存为 proto 声明的配置文档；消息草稿只有一个不超过 256 字符、不以 @ 开头的链接且匹配规则时，上游的内联结果面板以该机器人和这个链接查询并显示结果，相当于在链接前输入 @机器人；这种由规则触发的查询不进入上游的内联模式，发送按钮、回车与 Esc 保持原样，直接发送仍发出链接本身；编辑消息时不生效；规则为空即关闭） | Na | Implemented | P2 |
+| SG-COMPOSE-11 | 群主快速切换匿名发言（写作设置“在我创建的群组中快速切换匿名”，默认关闭：在自己创建的超级群组中，上游“以…身份发送”列表在服务端返回的身份之外加入群组本身与自己的账号，列表因此至少有两项，输入框左侧出现身份按钮，可在以群组身份匿名发言与以自己身份发言之间切换；选择、保存默认身份与发送沿用上游逻辑；只影响消息的身份列表，付费回应与直播的列表不变；聊天下次刷新列表时生效） | Na | Implemented | P3 |
+| SG-COMPOSE-12 | 代码块语法高亮、输入框撤销与重做、表情与字体样式（由上游覆盖：代码块按 ```语言 由上游内置的 libprisma 高亮；输入框的撤销与重做由 Qt 标准右键菜单与快捷键提供；表情样式见 SG-MEDIA-09，主字体见 SG-APPEAR-06，双击消息的回复或回应由上游聊天设置提供，自己的消息另见 SG-MSG-13） | Na | Implemented | P3 |
 
 ## MENU 消息菜单
 
@@ -240,7 +245,9 @@ Nagram 的品牌政策要求分支使用不同品牌并替换 Nagram 名称与�
 | SG-NET-02 | 代理自动切换与 VPN 感知（上游代理设置已提供按超时自动切换；服务设置“VPN 开启时暂停代理”默认关闭，开启后每 15 秒用不发包的 UDP 连接探测发往 Telegram 数据中心的流量经过哪个网络接口，接口类型或名称表明是 VPN 隧道时关闭代理并提示，VPN 断开后恢复原代理；暂停状态持久保存，重启后仍能恢复；PPPoE 与蜂窝网卡不视为 VPN） | Na | Implemented | P3 |
 | SG-NET-03 | 代理订阅（SIP008、Clash 等），新协议只通过外部代理程序接入（服务设置“代理订阅”：填写 HTTPS 地址，“立即更新”下载后提取其中的 tg://proxy、t.me/proxy 与 t.me/socks 链接（最多 200 个，响应不超过 1 MB），经上游链接解析后只加入代理列表中尚未存在的条目并提示数量；SIP008、Clash 等其他协议需要外部代理程序，不在客户端内解析） | Na | Implemented | P3 |
 | SG-NET-04 | 自定义 DoH 与 IP 策略（服务设置“自定义 DNS-over-HTTPS 服务器”默认关闭，填写在 `/dns-query` 提供 JSON 接口的主机名后，上游查询备用配置与解析代理域名时先于 Google 与 Cloudflare 请求该服务器；钩子以模板插入上游两处请求列表，不引用上游类型；IP 策略由上游连接设置中的“尝试通过 IPv6 连接”提供） | Na | Implemented | P3 |
+| SG-NET-05 | 上传与下载加速（服务设置“加快上传与下载”，默认关闭。上游按请求耗时自适应：下载把每个数据中心的连接从 1 条逐步增加到 8 条、每条连接的在途窗口从 4 个分片增加到 16 个，上传在请求都较快时逐步增加连接、每条连接最多 1 MB 在途；延迟高的网络（例如经远程代理）中请求很难被判为快速，连接数与窗口长期停在起点。开启后下载一开始就使用 4 条连接与最大窗口，上传每条连接最多 4 MB 在途，上限与按耗时增减连接的规则不变；服务器仍按账号限速） | Na | Implemented | P2 |
 | SG-NET-06 | 以 Android 客户端身份打开小程序（服务设置“以 Android 客户端身份打开小程序”，默认关闭；开启后申请小程序、主应用、附件菜单与入群验证小程序时向服务器报告 Android 平台，小程序据此提供移动端的功能与布局，JS 桥保持不变） | Aa | Implemented | P3 |
+| SG-NET-07 | 数据中心状态（服务设置“数据中心状态”：并发测量 DC1–DC5 的响应时间，用上游的 MTProto 连接组件逐个连接并读取握手往返时间，10 秒内无响应记为不可用；选用 SOCKS5、HTTP 或 MTProto 代理时经该代理测量，未用代理或代理为 Web 类型时直连测量，窗口顶部注明测量方式；标出当前账号所在的数据中心，可重新检测；可用、不可用与检测中的文字沿用上游代理列表的翻译） | Na | Implemented | P3 |
 
 ## ACCT 账号
 
@@ -302,5 +309,8 @@ Nagram 的品牌政策要求分支使用不同品牌并替换 Nagram 名称与�
 - 本地隐藏已登录账号：需要同时改动上游的账号列表、托盘菜单、切换快捷键、通知与未读计数，侵入面过大。
 - 本地 Premium 外观（原 SG-PRIV-07）：只改变本机显示、不带来任何权益，容易与真实状态混淆；有实际用处的客户端能力（如非 Premium 用户翻译整段对话）已单独实现。
 - 自定义等宽字体与 Material 风格开关动画（原 SG-APPEAR-11）：两者都由 lib_ui 绘制且没有公开接口，只能修改子模块。
-- 上传、下载性能档位（原 SG-NET-05）：服务端按账号限速，客户端加大并发收效有限，还可能触发限流。
 - 跨设备同步已读状态与消息历史（原 SG-SYNC-01）：需要自建服务端与账号体系，超出客户端的范围。
+- 按账号设置本地密码：上游的本地密码作用于整个应用，按账号锁定需要改动账号切换、通知、托盘与未读计数等多处上游代码，侵入面过大。
+- 内置 WebSocket 代理：需要在客户端内实现经 Telegram 网页端点的 WebSocket 传输与本地 SOCKS5 转发，静态构建的 Qt 不含 WebSockets 模块；外部的 tg-ws-proxy 等工具配合上游的 SOCKS5 代理设置可达到同样效果。
+- 会话导出与导入：导出的授权密钥等同于账号凭据，一旦泄露即可被直接登录。
+- Liquid Glass 色调、推送服务选择：分别是 iOS 与 Android 的系统特性，桌面端没有对应能力。

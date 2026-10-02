@@ -48,6 +48,9 @@ on:
       ref:
         type: string
         default: ''
+      channel:
+        type: string
+        default: ''
     secrets:
       SEREIN_API_ID:
         required: false
@@ -149,6 +152,8 @@ jobs:
         env:
           SEREIN_API_ID: ${{ secrets.SEREIN_API_ID }}
           SEREIN_API_HASH: ${{ secrets.SEREIN_API_HASH }}
+          CHANNEL: ${{ inputs.channel }}
+          COMMIT: ${{ inputs.ref }}
         run: |
           cd "$REPO_NAME/Telegram"
 
@@ -157,20 +162,25 @@ jobs:
           if [ -z "$SEREIN_API_ID" ]; then
             API=(-D TDESKTOP_API_TEST=ON)
           fi
+          INFO=()
+          if [ -n "$CHANNEL" ]; then
+            INFO=(-D SEREIN_BUILD_CHANNEL="$CHANNEL" -D SEREIN_BUILD_COMMIT="$COMMIT")
+          fi
 
           ./configure.sh \
             -D CMAKE_CONFIGURATION_TYPES="$CONFIG" \
             -D DESKTOP_APP_TEST_APPS=ON \
             -D CMAKE_COMPILE_WARNING_AS_ERROR=ON \
             -D CMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED=NO \
-            "${API[@]}"
+            "${API[@]}" \
+            "${INFO[@]}"
 
           cmake --build ../out --config "$CONFIG" --parallel
           "../out/serein-tests/$CONFIG/test_serein"
 
       # WHY: Apple silicon only starts code with a signature; an ad-hoc one
-      # needs no certificate and lets a downloaded copy open after Control-
-      # click, where a bundle without any signature is reported as damaged.
+      # needs no certificate and lets users allow a downloaded copy in Privacy
+      # & Security, where a bundle without any signature is reported as damaged.
       - name: Ad-hoc signature.
         run: |
           app="$REPO_NAME/out/$CONFIG/SereinGram.app"

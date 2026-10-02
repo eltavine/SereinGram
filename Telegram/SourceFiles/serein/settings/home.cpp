@@ -1,5 +1,6 @@
 #include "serein/settings/home.h"
 #include "serein/settings/interface.h"
+#include "serein/settings/licenses.h"
 #include "serein/settings/messages.h"
 #include "serein/settings/menu.h"
 #include "serein/settings/chats.h"
@@ -57,6 +58,16 @@ const auto kMeta = BuildHelper({
 		.icon = { &st::menuIconLink },
 		.onClick = [] {
 			UrlClickHandler::Open(u"https://github.com/eltavine/SereinGram"_q);
+		},
+	});
+	const auto controller = builder.controller();
+	builder.addButton({
+		.title = tr::lng_serein_licenses(),
+		.icon = { &st::menuIconInfo },
+		.onClick = [=] {
+			if (controller) {
+				ShowLicenses(controller);
+			}
 		},
 	});
 	builder.addSectionButton({

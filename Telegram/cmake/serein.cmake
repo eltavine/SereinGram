@@ -12,6 +12,8 @@ set(serein_sources
     serein/compose/spacing.cpp
     serein/compose/text.cpp
     serein/compose/text_replacements.cpp
+    serein/compose/link_inline_bots.cpp
+    serein/compose/inline_bot.cpp
     serein/compose/validators.cpp
     serein/app/language.cpp
     serein/core/exchange.cpp
@@ -38,6 +40,9 @@ set(serein_sources
     serein/features/history/expiry.cpp
     serein/features/history/fade.cpp
     serein/features/history/restore.cpp
+    serein/features/history/backend.cpp
+    serein/features/history/capture.cpp
+    serein/features/history/recording.cpp
     serein/app/lifecycle.cpp
     serein/app/main_menu.cpp
     serein/app/message_menu.cpp
@@ -88,6 +93,8 @@ set(serein_sources
     serein/settings/ghost_exceptions.cpp
     serein/settings/subpages.cpp
     serein/privacy/auto_demo.cpp
+    serein/privacy/login_token.cpp
+    serein/privacy/qr_scan.cpp
     serein/admin/delete_mine.cpp
     serein/admin/unblock_all.cpp
     serein/admin/upgrade.cpp
@@ -145,10 +152,12 @@ set(serein_sources
     serein/privacy/alias_model.cpp
     serein/privacy/alias_rules.cpp
     serein/settings/home.cpp
+    serein/settings/licenses.cpp
     serein/settings/lock.cpp
     serein/settings/rules.cpp
     serein/settings/chats.cpp
     serein/settings/compose.cpp
+    serein/settings/cloud_backup.cpp
     serein/settings/config.cpp
     serein/settings/media.cpp
     serein/settings/menu.cpp
@@ -169,6 +178,7 @@ set(serein_sources
     serein/services/draft_translation.cpp
     serein/services/summary.cpp
     serein/services/summary_protocol.cpp
+    serein/network/dc_status.cpp
     serein/network/doh.cpp
     serein/network/proxy_import.cpp
     serein/network/proxy_order.cpp
@@ -176,6 +186,7 @@ set(serein_sources
     serein/network/proxy_note.cpp
     serein/network/proxy_subscription.cpp
     serein/network/proxy_tools.cpp
+    serein/network/transfer.cpp
     serein/network/vpn_proxy.cpp
     serein/network/vpn_rules.cpp
     serein/services/transcription.cpp
@@ -205,7 +216,7 @@ if (TARGET Qt6::Sql)
     message(STATUS "Serein: Qt Sql found, message history enabled.")
     nice_target_sources(Telegram ${src_loc} PRIVATE
         serein/adapters/qtsql/history_store.cpp
-        serein/app/history_hooks.cpp
+        serein/app/history_storage.cpp
     )
     target_link_libraries(Telegram PRIVATE Qt6::Sql)
     if (TARGET Qt6::QSQLiteDriverPlugin)
@@ -214,7 +225,7 @@ if (TARGET Qt6::Sql)
     endif()
 else()
     message(STATUS "Serein: Qt Sql not found, message history disabled.")
-    nice_target_sources(Telegram ${src_loc} PRIVATE serein/app/history_hooks_disabled.cpp)
+    nice_target_sources(Telegram ${src_loc} PRIVATE serein/app/history_storage_disabled.cpp)
 endif()
 
 if (APPLE AND NOT DESKTOP_APP_DISABLE_SWIFT6)
@@ -295,6 +306,9 @@ else()
 endif()
 target_link_libraries(Telegram PRIVATE Serein::OpenCC)
 
+include(${CMAKE_CURRENT_LIST_DIR}/serein_quirc.cmake)
+target_link_libraries(Telegram PRIVATE Serein::Quirc)
+
 if (TARGET desktop-app::external_rnnoise)
     target_link_libraries(Telegram PRIVATE desktop-app::external_rnnoise)
     target_compile_definitions(Telegram PRIVATE SEREIN_HAVE_RNNOISE)
@@ -303,6 +317,32 @@ endif()
 if (DESKTOP_APP_USE_PACKAGED)
     target_compile_definitions(Telegram PRIVATE SEREIN_SYSTEM_PACKAGE)
 endif()
+
+set(SEREIN_BUILD_CHANNEL "" CACHE STRING
+    "Release channel of a published build: nightly or release")
+set(SEREIN_BUILD_COMMIT "" CACHE STRING
+    "Full hash of the commit a published build is made from")
+string(LENGTH "${SEREIN_BUILD_COMMIT}" serein_commit_length)
+if (NOT SEREIN_BUILD_CHANNEL MATCHES "^(nightly|release)?$")
+    message(FATAL_ERROR "SEREIN_BUILD_CHANNEL must be empty, nightly or release.")
+elseif (NOT SEREIN_BUILD_COMMIT MATCHES "^[0-9a-f]*$"
+    OR NOT serein_commit_length MATCHES "^(0|40)$")
+    message(FATAL_ERROR "SEREIN_BUILD_COMMIT must be empty or a full commit hash.")
+endif()
+# The values live in one generated source, so a new commit recompiles nothing else.
+file(CONFIGURE
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/serein_build_info.cpp
+    CONTENT [[#include "serein/core/build_info.h"
+
+namespace Serein {
+
+const char kBuildChannel[] = "@SEREIN_BUILD_CHANNEL@";
+const char kBuildCommit[] = "@SEREIN_BUILD_COMMIT@";
+
+} // namespace Serein
+]]
+    @ONLY)
+target_sources(Telegram PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/serein_build_info.cpp)
 
 if (WIN32)
     target_link_libraries(Telegram PRIVATE Dnsapi)

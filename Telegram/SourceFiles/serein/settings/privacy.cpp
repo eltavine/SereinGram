@@ -2,6 +2,7 @@
 
 #include "serein/admin/unblock_all.h"
 #include "serein/privacy/options.h"
+#include "serein/privacy/qr_scan.h"
 #include "serein/settings/gen/ghost_rows.h"
 #include "serein/settings/gen/history_rows.h"
 #include "serein/settings/gen/privacy_rows.h"
@@ -65,6 +66,18 @@ const auto kMeta = BuildHelper({
 	}
 	Privacy::AddLayout(builder);
 	const auto controller = builder.controller();
+	builder.addButton({
+		.id = u"serein/privacy/qr-scan"_q,
+		.title = tr::lng_serein_qr_scan(),
+		.st = &st::settingsButtonNoIcon,
+		.onClick = [=] {
+			if (controller) {
+				Privacy::ShowQrScanner(controller);
+			}
+		},
+		.keywords = { u"QR"_q, u"login"_q, u"scan"_q },
+	});
+	builder.addDividerText(tr::lng_serein_qr_scan_about());
 	builder.addButton({
 		.id = u"serein/privacy/unblock-all"_q,
 		.title = tr::lng_serein_unblock_all(),

@@ -65,6 +65,9 @@ on:
       ref:
         type: string
         default: ''
+      channel:
+        type: string
+        default: ''
     secrets:
       SEREIN_API_ID:
         required: false
@@ -186,6 +189,8 @@ jobs:
         env:
           SEREIN_API_ID: ${{ secrets.SEREIN_API_ID }}
           SEREIN_API_HASH: ${{ secrets.SEREIN_API_HASH }}
+          CHANNEL: ${{ inputs.channel }}
+          COMMIT: ${{ inputs.ref }}
         run: |
           # Without the repository secrets, build with the test-only credentials.
           API=()
@@ -204,6 +209,9 @@ jobs:
           if [ "$ARCH" = arm64 ]; then
             FLAGS+=(-D CMAKE_C_FLAGS=-fsigned-char
               -D "CMAKE_CXX_FLAGS=-fsigned-char -Wno-error=dangling-pointer")
+          fi
+          if [ -n "$CHANNEL" ]; then
+            FLAGS+=(-D SEREIN_BUILD_CHANNEL="$CHANNEL" -D SEREIN_BUILD_COMMIT="$COMMIT")
           fi
 
           ccache -z

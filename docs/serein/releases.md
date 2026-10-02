@@ -19,7 +19,7 @@
 
 ## 2. 产物
 
-所有产物都是 Release 配置构建，当前阶段不使用开发者证书签名、不做公证。macOS 应用包只带不需要证书的 ad-hoc 签名，这是 Apple 芯片启动程序的前提。
+所有产物都是 Release 配置构建，当前阶段不使用开发者证书签名、不做公证。macOS 应用包只带不需要证书的 ad-hoc 签名，这是 Apple 芯片启动程序的前提。因此第一次启动时，macOS 需要先打开一次应用，再到“系统设置 > 隐私与安全性”中选择“仍要打开”；Windows 需要在 SmartScreen 提示中选择“更多信息”和“仍要运行”。发布页正文的“Verify”一节给出同样的说明。
 
 命名规则：`SereinGram-<系统>-<架构>[-<变体>].<扩展名>`，系统为 `windows`、`macos`、`linux`，架构为 `x86_64`、`arm64`、`universal`。各渠道的同一产物名称相同，渠道与版本由标签区分。完整列表以 `tools/serein/policy/release_assets.json` 为准，发布前逐一核对，缺少或多出任何文件都会让发布失败。守卫把这份清单与 PR 目标分支或推送前的版本比较，删除、改名或改变已有产物的系统、架构与类型都会让检查失败，只允许新增。
 
@@ -35,6 +35,10 @@
 | Linux | x86_64 | `SereinGram-linux-x86_64.deb` | Debian、Ubuntu 软件包 |
 | Linux | x86_64 | `SereinGram-linux-x86_64.rpm` | Fedora、openSUSE 等软件包 |
 | Linux | x86_64 | `SereinGram-linux-x86_64.flatpak` | Flatpak 单文件包（GNOME 51 运行时） |
+| Linux | arm64 | `SereinGram-linux-arm64.tar.xz` | 便携版，`SereinGram/SereinGram`（glibc 2.28 起） |
+| Linux | arm64 | `SereinGram-linux-arm64.AppImage` | AppImage |
+| Linux | arm64 | `SereinGram-linux-arm64.deb` | Debian、Ubuntu 软件包 |
+| Linux | arm64 | `SereinGram-linux-arm64.rpm` | Fedora、openSUSE 等软件包 |
 | Linux | arm64 | `SereinGram-linux-arm64.flatpak` | Flatpak 单文件包（GNOME 51 运行时） |
 
 ## 3. 校验文件
@@ -81,7 +85,7 @@ Release 正文最上方是自动生成的变更记录：Nightly 列出自上一�
 | 工作流 | 触发 | 内容 |
 | --- | --- | --- |
 | `serein-guards.yml` | 每次推送与 PR | 格式与风格、Lint、静态分析、依赖与配置校验、生成代码一致性、上游侵入预算、提交信息、核心单元测试 |
-| `serein-win.yml`、`serein-mac.yml`、`serein-linux.yml` | PR 与 `main` 推送（Debug）；被发布流程调用（Release） | 编译（警告即错误）、`test_serein`、启动冒烟测试、打包 |
+| `serein-win.yml`、`serein-mac.yml`、`serein-linux.yml` | `develop` 与 `main` 推送、指向 `develop` 的 PR（Debug）；被发布流程调用（Release，Windows 与 Linux 各含 x86_64 和 arm64） | 编译（警告即错误）、`test_serein`、启动冒烟测试、打包与安装测试 |
 | `serein-flatpak.yml`、`serein-arch.yml` | 打包文件改动、每周定时；Flatpak 也被发布流程调用 | 发行版打包与安装检查 |
 | `serein-release.yml` | 每日定时、手动、`v*` 标签 | Release 矩阵、校验文件、变更记录与发布 |
 

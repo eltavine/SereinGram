@@ -72,11 +72,17 @@ jobs:
           EOF
           test "$(grep -c -e '-DTDESKTOP_API_' snap/snapcraft.yaml)" -eq "$#"
 
+      # The recipe takes the snap version from `git describe --tags`; the tag stays local.
+      - name: Tag the app version.
+        run: git tag -f "v$(awk '$1 == "AppVersionStr" { print $2 }' Telegram/build/version)"
+
       - name: Snap build.
         run: sudo -u "$USER" snap run snapcraft --verbosity=brief
 
       - name: Install and launch the snap.
         run: |
+          # snap-confine bind-mounts /usr/src, which the disk cleanup removed.
+          sudo mkdir -p /usr/src
           mkdir artifact
           mv sereingram_*.snap artifact/SereinGram-linux-x86_64.snap
           sudo snap install --dangerous artifact/SereinGram-linux-x86_64.snap

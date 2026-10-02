@@ -1,8 +1,8 @@
 #include "serein/features/history/menu.h"
 
+#include "serein/features/history/backend.h"
 #include "serein/features/history/model/recorder.h"
 #include "serein/features/history/viewer.h"
-#include "serein/hooks/history.h"
 #include "serein/hooks/menu/actions.h"
 #include "serein/ports/history_store.h"
 #include "base/unixtime.h"
@@ -27,7 +27,7 @@ namespace {
 
 [[nodiscard]] std::vector<History::Record> EditVersions(
 		not_null<HistoryItem*> item) {
-	const auto store = Hooks::HistoryStoreFor(&item->history()->session());
+	const auto store = StoreFor(&item->history()->session());
 	if (!store) {
 		return {};
 	}

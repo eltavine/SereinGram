@@ -103,6 +103,13 @@ inline constexpr auto kAndroidWebApps = Option<bool>{
 	Category::Services,
 	"lng_serein_android_web_apps",
 	0 };
+inline constexpr auto kFasterTransfers = Option<bool>{
+	"serein.fasterTransfers",
+	Scope::Device,
+	false,
+	Category::Services,
+	"lng_serein_faster_transfers",
+	0 };
 
 inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kServicesConfig));
@@ -117,6 +124,7 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kProxyPausedByVpn));
 	Expects(registry.Add(kCustomDoh));
 	Expects(registry.Add(kAndroidWebApps));
+	Expects(registry.Add(kFasterTransfers));
 }
 
 } // namespace Serein::ServiceSettings

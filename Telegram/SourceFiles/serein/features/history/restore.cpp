@@ -1,5 +1,6 @@
 #include "serein/hooks/history.h"
 
+#include "serein/features/history/backend.h"
 #include "serein/features/history/deleted_marks.h"
 #include "serein/features/history/restored_message.h"
 #include "serein/hooks/gen/history.h"
@@ -45,7 +46,7 @@ void Restore(
 
 void RestoreLoaded(gsl::not_null<::History*> history) {
 	const auto session = &history->session();
-	const auto store = HistoryStoreFor(session);
+	const auto store = HistoryFeature::StoreFor(session);
 	if (!store) {
 		return;
 	}
@@ -92,7 +93,7 @@ QString DeletedReplyText(
 		const QString &fallback) {
 	constexpr auto kPreviewLength = 64;
 	const auto store = (messageId > 0)
-		? HistoryStoreFor(&history->session())
+		? HistoryFeature::StoreFor(&history->session())
 		: nullptr;
 	if (!store) {
 		return fallback;

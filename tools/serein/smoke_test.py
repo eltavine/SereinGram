@@ -14,6 +14,7 @@ import time
 from pathlib import Path
 
 MARKER = "Launched version: "
+STDERR = "stderr.log"
 
 
 def launched(workdir):
@@ -28,7 +29,9 @@ def launched(workdir):
 
 def log_tail(workdir, lines=40):
     result = []
-    for path in sorted(Path(workdir).rglob("*.txt")):
+    for path in [*sorted(Path(workdir).rglob("*.txt")), Path(workdir) / STDERR]:
+        if not path.is_file():
+            continue
         text = path.read_text(encoding="utf-8", errors="replace")
         result.append(f"--- {path.name}")
         result += text.splitlines()[-lines:]
@@ -47,21 +50,22 @@ def stop(process):
 
 def run(binary, timeout, settle, workdir):
     command = [str(binary), "-workdir", str(workdir), "-debug"]
-    process = subprocess.Popen(command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    try:
-        deadline = time.monotonic() + timeout
-        while not launched(workdir):
+    with open(Path(workdir) / STDERR, "wb") as stderr:
+        process = subprocess.Popen(command, stdout=subprocess.DEVNULL, stderr=stderr)
+        try:
+            deadline = time.monotonic() + timeout
+            while not launched(workdir):
+                if process.poll() is not None:
+                    return f"exited with code {process.returncode} before launch"
+                if time.monotonic() > deadline:
+                    return f"no '{MARKER.strip()}' line within {timeout} s"
+                time.sleep(1)
+            time.sleep(settle)
             if process.poll() is not None:
-                return f"exited with code {process.returncode} before launch"
-            if time.monotonic() > deadline:
-                return f"no '{MARKER.strip()}' line within {timeout} s"
-            time.sleep(1)
-        time.sleep(settle)
-        if process.poll() is not None:
-            return f"exited with code {process.returncode} after launch"
-        return None
-    finally:
-        stop(process)
+                return f"exited with code {process.returncode} after launch"
+            return None
+        finally:
+            stop(process)
 
 
 def main(argv=None):

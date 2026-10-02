@@ -25,6 +25,34 @@ TEST_CASE("Updates") {
 	}) {
 		Require(!ParseLatestRelease(bad), "unsafe or unstable release accepted");
 	}
+	const auto nightly = ParseNightlyRelease(R"({
+		"tag_name": "nightly",
+		"target_commitish": "0123456789abcdef0123456789abcdef01234567",
+		"html_url": "https://github.com/eltavine/SereinGram/releases/tag/nightly",
+		"draft": false,
+		"prerelease": true
+	})");
+	Require(nightly
+		&& nightly->commit == u"0123456789abcdef0123456789abcdef01234567"_q
+		&& nightly->url.startsWith(u"https://github.com/"_q),
+		"nightly release not parsed");
+	for (const auto &bad : {
+		R"({"tag_name": "v8",
+			"target_commitish": "0123456789abcdef0123456789abcdef01234567",
+			"html_url": "https://github.com/a/b"})",
+		R"({"tag_name": "nightly",
+			"target_commitish": "develop",
+			"html_url": "https://github.com/a/b"})",
+		R"({"tag_name": "nightly",
+			"target_commitish": "0123456789abcdef0123456789abcdef01234567",
+			"html_url": "https://github.com/a/b",
+			"draft": true})",
+		R"({"tag_name": "nightly",
+			"target_commitish": "0123456789abcdef0123456789abcdef01234567",
+			"html_url": "https://evil.example/a/b"})",
+	}) {
+		Require(!ParseNightlyRelease(bad), "unexpected nightly release accepted");
+	}
 	Require(VersionParts(u"v7.2.10.1"_q) == std::vector<int>{ 7, 2, 10, 1 },
 		"four part version not parsed");
 	Require(VersionParts(u"7.2.10-beta"_q) == std::vector<int>{ 7, 2, 10 },

@@ -10,7 +10,7 @@
 
 namespace Serein::Compose {
 
-inline const auto kToggleRows = std::array<ToggleRow, 30>{ {
+inline const auto kToggleRows = std::array<ToggleRow, 31>{ {
 	{
 		&kHideAttachButton,
 		tr::lng_serein_hide_attach_button,
@@ -191,12 +191,19 @@ inline const auto kToggleRows = std::array<ToggleRow, 30>{ {
 		u"serein/compose/send-silently"_q,
 		{ u"silent"_q, u"notification"_q, u"send"_q },
 	},
+	{
+		&kOwnerSendAs,
+		tr::lng_serein_owner_send_as,
+		u"serein/compose/owner-send-as"_q,
+		{ u"anonymous"_q, u"send as"_q, u"owner"_q },
+	},
 } };
 
 struct CustomRows {
 	CustomRow defaultCodeLanguage;
 	CustomRow quickReplies;
 	CustomRow textReplacements;
+	CustomRow linkInlineBots;
 };
 
 inline void AddLayout(
@@ -252,6 +259,7 @@ inline void AddLayout(
 	custom.defaultCodeLanguage();
 	custom.quickReplies();
 	custom.textReplacements();
+	custom.linkInlineBots();
 	AddSection(builder, {
 		u"serein/compose/send-confirmation"_q,
 		tr::lng_serein_send_confirmation,
@@ -274,6 +282,8 @@ inline void AddLayout(
 		{ u"send"_q },
 	});
 	AddToggle(builder, kToggleRows[29]);
+	AddToggle(builder, kToggleRows[30]);
+	AddNote(builder, tr::lng_serein_owner_send_as_note);
 }
 
 } // namespace Serein::Compose

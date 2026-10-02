@@ -63,6 +63,8 @@ namespace Serein::Hooks::Compose {
 [[nodiscard]] rpl::producer<QByteArray> QuickRepliesValue();
 [[nodiscard]] QByteArray TextReplacements();
 [[nodiscard]] rpl::producer<QByteArray> TextReplacementsValue();
+[[nodiscard]] QByteArray LinkInlineBots();
+[[nodiscard]] rpl::producer<QByteArray> LinkInlineBotsValue();
 [[nodiscard]] bool ConfirmSticker();
 [[nodiscard]] rpl::producer<bool> ConfirmStickerValue();
 [[nodiscard]] bool ConfirmGif();
@@ -77,5 +79,7 @@ namespace Serein::Hooks::Compose {
 [[nodiscard]] rpl::producer<bool> ForwardBeforeCommentValue();
 [[nodiscard]] bool SendSilently();
 [[nodiscard]] rpl::producer<bool> SendSilentlyValue();
+[[nodiscard]] bool OwnerSendAs();
+[[nodiscard]] rpl::producer<bool> OwnerSendAsValue();
 
 } // namespace Serein::Hooks::Compose

@@ -8,6 +8,7 @@
 #include "lang/lang_keys.h"
 #include "mtproto/mtproto_proxy_data.h"
 #include "serein/core/options.h"
+#include "serein/network/dc_status.h"
 #include "serein/network/proxy_import.h"
 #include "serein/network/proxy_notes.h"
 #include "serein/network/proxy_tools.h"
@@ -221,6 +222,21 @@ void AddNetworkSettings(::Settings::Builder::SectionBuilder &builder) {
 		.keywords = { u"DNS"_q, u"DoH"_q, u"censorship"_q },
 	});
 	builder.addDividerText(tr::lng_serein_custom_doh_about());
+	AddToggle(builder, {
+		.option = &ServiceSettings::kFasterTransfers,
+		.title = tr::lng_serein_faster_transfers,
+		.id = u"serein/services/faster-transfers"_q,
+		.keywords = { u"upload"_q, u"download"_q, u"speed"_q },
+	});
+	builder.addDividerText(tr::lng_serein_faster_transfers_about());
+	builder.addButton({
+		.id = u"serein/services/dc-status"_q,
+		.title = tr::lng_serein_dc_status(),
+		.st = &st::settingsButtonNoIcon,
+		.onClick = [=] { Network::ShowDatacenterStatus(controller); },
+		.keywords = { u"DC"_q, u"ping"_q, u"datacenter"_q },
+	});
+	builder.addDividerText(tr::lng_serein_dc_status_about());
 }
 
 } // namespace Serein

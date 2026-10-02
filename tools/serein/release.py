@@ -258,10 +258,10 @@ def verify_lines():
         "",
         f"On Windows, compare `(Get-FileHash <file>).Hash` with the line in `{CHECKSUMS}`.",
         "",
-        "These builds are not signed with a developer certificate: on macOS "
-        "open the app with Control-click and Open the first time, on "
-        "Windows confirm the SmartScreen prompt with More info and Run "
-        "anyway.",
+        "These builds are not signed with a developer certificate. On macOS, "
+        "open the app once, then choose Open Anyway in System Settings > "
+        "Privacy & Security. On Windows, confirm the SmartScreen prompt with "
+        "More info and Run anyway.",
     ]
 
 

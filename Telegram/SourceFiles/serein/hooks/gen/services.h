@@ -36,5 +36,7 @@ namespace Serein::Hooks::ServiceSettings {
 [[nodiscard]] rpl::producer<QString> CustomDohValue();
 [[nodiscard]] bool AndroidWebApps();
 [[nodiscard]] rpl::producer<bool> AndroidWebAppsValue();
+[[nodiscard]] bool FasterTransfers();
+[[nodiscard]] rpl::producer<bool> FasterTransfersValue();
 
 } // namespace Serein::Hooks::ServiceSettings

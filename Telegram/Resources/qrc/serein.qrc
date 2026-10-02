@@ -1,5 +1,11 @@
 <RCC>
   <qresource prefix="/serein">
     <file alias="regdate_points.json">../serein/regdate_points.json</file>
+    <file alias="licenses/regdate_points.txt">../serein/regdate_points.LICENSE</file>
+    <file alias="licenses/rapidjson.txt">../serein/licenses/rapidjson.txt</file>
+    <file alias="licenses/opencc.txt">../../ThirdParty/OpenCC/LICENSE</file>
+    <file alias="licenses/marisa.txt">../../ThirdParty/OpenCC/deps/marisa-0.3.1/COPYING.md</file>
+    <file alias="licenses/darts-clone.txt">../../ThirdParty/OpenCC/deps/darts-clone-0.32h/COPYING.md</file>
+    <file alias="licenses/quirc.txt">../../ThirdParty/quirc/LICENSE</file>
   </qresource>
 </RCC>

@@ -1,3 +1,5 @@
+import contextlib
+import io
 import stat
 import sys
 import tempfile
@@ -14,6 +16,7 @@ exec sleep 30
 """
 CRASHING = """#!/bin/sh
 echo "Launched version: 1.0" > "$2/log.txt"
+echo "GLib-GIO-ERROR: no schemas" >&2
 exit 3
 """
 SILENT = """#!/bin/sh
@@ -45,6 +48,16 @@ class SmokeTest(unittest.TestCase):
         self.assertEqual(
             smoke_test.main([str(self.script(CRASHING)), "--timeout", "10", "--settle", "2"]), 1
         )
+
+    def test_failure_shows_the_error_output_of_the_app(self):
+        output = io.StringIO()
+        with contextlib.redirect_stderr(output):
+            result = smoke_test.main(
+                [str(self.script(CRASHING)), "--timeout", "10", "--settle", "2"]
+            )
+        self.assertEqual(result, 1)
+        self.assertIn(f"--- {smoke_test.STDERR}", output.getvalue())
+        self.assertIn("GLib-GIO-ERROR: no schemas", output.getvalue())
 
     def test_fails_without_the_launch_line(self):
         self.assertEqual(
