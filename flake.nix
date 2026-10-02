@@ -29,6 +29,6 @@
         sereingram = (mkSereingram pkgs).override { testCredentials = true; };
       });
 
-      formatter = forAllSystems (pkgs: pkgs.nixfmt-rfc-style);
+      formatter = forAllSystems (pkgs: pkgs.nixfmt);
     };
 }

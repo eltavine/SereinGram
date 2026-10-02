@@ -40,8 +40,7 @@ let
         previousAttrs.buildInputs ++ lib.optionals stdenv.hostPlatform.isLinux [ pango ] ++ [ tlottie ];
 
       cmakeFlags =
-        lib.filter (flag: !lib.hasPrefix "-DTDESKTOP_API_" flag) previousAttrs.cmakeFlags
-        ++ credentials;
+        lib.filter (flag: !lib.hasPrefix "-DTDESKTOP_API_" flag) previousAttrs.cmakeFlags ++ credentials;
 
       preConfigure =
         (previousAttrs.preConfigure or "")
