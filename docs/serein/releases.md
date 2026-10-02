@@ -35,6 +35,10 @@
 | Linux | x86_64 | `SereinGram-linux-x86_64.deb` | Debian、Ubuntu 软件包 |
 | Linux | x86_64 | `SereinGram-linux-x86_64.rpm` | Fedora、openSUSE 等软件包 |
 | Linux | x86_64 | `SereinGram-linux-x86_64.flatpak` | Flatpak 单文件包（GNOME 51 运行时） |
+| Linux | arm64 | `SereinGram-linux-arm64.tar.xz` | 便携版，`SereinGram/SereinGram`（glibc 2.28 起） |
+| Linux | arm64 | `SereinGram-linux-arm64.AppImage` | AppImage |
+| Linux | arm64 | `SereinGram-linux-arm64.deb` | Debian、Ubuntu 软件包 |
+| Linux | arm64 | `SereinGram-linux-arm64.rpm` | Fedora、openSUSE 等软件包 |
 | Linux | arm64 | `SereinGram-linux-arm64.flatpak` | Flatpak 单文件包（GNOME 51 运行时） |
 
 ## 3. 校验文件
@@ -81,7 +85,7 @@ Release 正文最上方是自动生成的变更记录：Nightly 列出自上一�
 | 工作流 | 触发 | 内容 |
 | --- | --- | --- |
 | `serein-guards.yml` | 每次推送与 PR | 格式与风格、Lint、静态分析、依赖与配置校验、生成代码一致性、上游侵入预算、提交信息、核心单元测试 |
-| `serein-win.yml`、`serein-mac.yml`、`serein-linux.yml` | PR 与 `main` 推送（Debug）；被发布流程调用（Release） | 编译（警告即错误）、`test_serein`、启动冒烟测试、打包 |
+| `serein-win.yml`、`serein-mac.yml`、`serein-linux.yml` | `develop` 与 `main` 推送、指向 `develop` 的 PR（Debug）；被发布流程调用（Release，Windows 与 Linux 各含 x86_64 和 arm64） | 编译（警告即错误）、`test_serein`、启动冒烟测试、打包与安装测试 |
 | `serein-flatpak.yml`、`serein-arch.yml` | 打包文件改动、每周定时；Flatpak 也被发布流程调用 | 发行版打包与安装检查 |
 | `serein-release.yml` | 每日定时、手动、`v*` 标签 | Release 矩阵、校验文件、变更记录与发布 |
 

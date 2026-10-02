@@ -62,6 +62,30 @@
       "kind": "flatpak"
     },
     {
+      "name": "SereinGram-linux-arm64.tar.xz",
+      "os": "linux",
+      "arch": "arm64",
+      "kind": "portable"
+    },
+    {
+      "name": "SereinGram-linux-arm64.AppImage",
+      "os": "linux",
+      "arch": "arm64",
+      "kind": "appimage"
+    },
+    {
+      "name": "SereinGram-linux-arm64.deb",
+      "os": "linux",
+      "arch": "arm64",
+      "kind": "deb"
+    },
+    {
+      "name": "SereinGram-linux-arm64.rpm",
+      "os": "linux",
+      "arch": "arm64",
+      "kind": "rpm"
+    },
+    {
       "name": "SereinGram-linux-arm64.flatpak",
       "os": "linux",
       "arch": "arm64",

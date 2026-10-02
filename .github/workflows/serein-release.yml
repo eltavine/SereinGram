@@ -144,6 +144,22 @@ jobs:
       config: Release
       ref: ${{ needs.plan.outputs.commit }}
 
+  linux-arm64:
+    name: Linux arm64
+    needs: plan
+    if: needs.plan.outputs.build == 'true'
+    uses: ./.github/workflows/serein-linux.yml
+    permissions:
+      contents: read
+      actions: write
+    secrets:
+      SEREIN_API_ID: ${{ secrets.SEREIN_API_ID }}
+      SEREIN_API_HASH: ${{ secrets.SEREIN_API_HASH }}
+    with:
+      arch: arm64
+      config: Release
+      ref: ${{ needs.plan.outputs.commit }}
+
   flatpak:
     name: Flatpak
     needs: plan
@@ -170,7 +186,7 @@ jobs:
 
   publish:
     name: Publish
-    needs: [plan, windows-x86_64, windows-arm64, macos, linux, flatpak]
+    needs: [plan, windows-x86_64, windows-arm64, macos, linux, linux-arm64, flatpak]
     if: needs.plan.outputs.publish == 'true'
     runs-on: ubuntu-latest
     permissions:
