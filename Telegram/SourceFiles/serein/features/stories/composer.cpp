@@ -8,6 +8,7 @@
 #include "chat_helpers/compose/compose_show.h"
 #include "core/application.h"
 #include "core/file_utilities.h"
+#include "core/mime_type.h"
 #include "data/data_document.h"
 #include "data/data_document_media.h"
 #include "data/data_file_origin.h"
@@ -40,6 +41,7 @@
 #include "styles/style_serein.h"
 #include "styles/style_settings.h"
 
+#include <QtCore/QMimeData>
 #include <QtGui/QPainterPath>
 
 #include <cmath>
@@ -174,17 +176,53 @@ void TrimVideo(
 		});
 }
 
+[[nodiscard]] bool Postable(const Ui::PreparedList &list) {
+	using Type = Ui::PreparedFile::Type;
+	if (list.error != Ui::PreparedList::Error::None
+		|| list.files.size() != 1) {
+		return false;
+	}
+	const auto &file = list.files.front();
+	return (file.type == Type::Photo)
+		|| ((file.type == Type::Video) && !file.isGifv());
+}
+
+[[nodiscard]] Ui::PreparedList ListFromMimeData(
+		not_null<const QMimeData*> data,
+		bool premium) {
+	const auto urls = Core::ReadMimeUrls(data);
+	if (!urls.isEmpty()) {
+		return Storage::PrepareMediaList(
+			urls.mid(0, 1),
+			st::sendMediaPreviewSize,
+			premium);
+	} else if (auto read = Core::ReadMimeImage(data)) {
+		return Storage::PrepareMediaFromImage(
+			std::move(read.image),
+			std::move(read.content),
+			st::sendMediaPreviewSize);
+	}
+	return Ui::PreparedList(Ui::PreparedList::Error::EmptyFile, QString());
+}
+
+void Accept(
+		std::shared_ptr<ChatHelpers::Show> show,
+		Ui::PreparedFile file,
+		Fn<void(Ui::PreparedFile)> chosen) {
+	if (TooLong(file)) {
+		TrimVideo(show, std::move(file), chosen);
+	} else {
+		chosen(std::move(file));
+	}
+}
+
 void ChooseFile(
 		std::shared_ptr<ChatHelpers::Show> show,
 		Fn<void(Ui::PreparedFile)> chosen) {
 	const auto premium = show->session().premium();
 	const auto callback = [=](FileDialog::OpenResult &&result) {
 		const auto check = [=](const Ui::PreparedList &list) {
-			using Type = Ui::PreparedFile::Type;
-			const auto ok = (list.files.size() == 1)
-				&& ((list.files.front().type == Type::Photo)
-					|| ((list.files.front().type == Type::Video)
-						&& !list.files.front().isGifv()));
+			const auto ok = Postable(list);
 			if (!ok) {
 				show->showToast(tr::lng_serein_story_unsupported(tr::now));
 			}
@@ -199,15 +237,9 @@ void ChooseFile(
 			error,
 			st::sendMediaPreviewSize,
 			premium);
-		if (!list) {
-			return;
+		if (list) {
+			Accept(show, std::move(list->files.front()), chosen);
 		}
-		auto &file = list->files.front();
-		if (TooLong(file)) {
-			TrimVideo(show, std::move(file), chosen);
-			return;
-		}
-		chosen(std::move(file));
 	};
 	FileDialog::GetOpenPath(
 		Core::App().getFileDialogParent(),
@@ -365,6 +397,24 @@ void ComposerBox(
 		}
 	});
 	const auto controls = AddPostControls(box, show, peer, state);
+	controls.caption->setMimeDataHook([=](
+			not_null<const QMimeData*> data,
+			Ui::InputField::MimeAction action) {
+		if (action == Ui::InputField::MimeAction::Check) {
+			return data->hasImage() || data->hasUrls();
+		} else if (state->posting) {
+			return false;
+		}
+		auto list = ListFromMimeData(data, show->session().premium());
+		if (list.error != Ui::PreparedList::Error::None) {
+			return false;
+		} else if (!Postable(list)) {
+			box->showToast(tr::lng_serein_story_unsupported(tr::now));
+			return true;
+		}
+		Accept(show, std::move(list.files.front()), crl::guard(box, setFile));
+		return true;
+	});
 	box->addButton(tr::lng_serein_story_post(), [=] {
 		if (state->posting || !state->file) {
 			return;
