@@ -44,6 +44,14 @@ on:
       - 'Telegram/Telegram/**'
       - 'Telegram/configure.sh'
       - 'Telegram/Telegram.plist'
+  workflow_call:
+    inputs:
+      arch:
+        type: string
+        default: x64
+      no_cache:
+        type: boolean
+        default: false
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -58,8 +66,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # arm64 returns with SG-PLAT-06 once ffmpeg n8.1.3 builds there.
-        arch: [x64]
+        # serein-win-arm64.yml passes arm64: its caches would not fit the quota.
+        arch: ${{ fromJSON(format('["{0}"]', inputs.arch || 'x64')) }}
         qt: [qt6]
         generator: [""]
 
@@ -155,6 +163,7 @@ jobs:
 
       - name: ThirdParty cache.
         id: cache-third-party
+        if: ${{ !inputs.no_cache }}
         uses: actions/cache/restore@v6
         with:
           path: ${{ env.TBUILD }}\ThirdParty
@@ -163,6 +172,7 @@ jobs:
 
       - name: Libraries cache.
         id: cache-libs
+        if: ${{ !inputs.no_cache }}
         uses: actions/cache/restore@v6
         with:
           path: |
@@ -176,6 +186,7 @@ jobs:
 
       - name: Qt cache.
         id: cache-qt
+        if: ${{ !inputs.no_cache }}
         uses: actions/cache/restore@v6
         with:
           path: |
@@ -194,14 +205,14 @@ jobs:
           %TBUILD%\%REPO_NAME%\Telegram\build\prepare\win.bat skip-release silent ${{ matrix.qt }}
 
       - name: Save the ThirdParty cache.
-        if: steps.cache-third-party.outputs.cache-hit != 'true'
+        if: ${{ !inputs.no_cache && steps.cache-third-party.outputs.cache-hit != 'true' }}
         uses: actions/cache/save@v6
         with:
           path: ${{ env.TBUILD }}\ThirdParty
           key: ${{ steps.cache-third-party.outputs.cache-primary-key }}
 
       - name: Save the libraries cache.
-        if: steps.cache-libs.outputs.cache-hit != 'true'
+        if: ${{ !inputs.no_cache && steps.cache-libs.outputs.cache-hit != 'true' }}
         uses: actions/cache/save@v6
         with:
           path: |
@@ -213,7 +224,7 @@ jobs:
           key: ${{ steps.cache-libs.outputs.cache-primary-key }}
 
       - name: Save the Qt cache.
-        if: steps.cache-qt.outputs.cache-hit != 'true'
+        if: ${{ !inputs.no_cache && steps.cache-qt.outputs.cache-hit != 'true' }}
         uses: actions/cache/save@v6
         with:
           path: |
@@ -310,7 +321,7 @@ jobs:
             choco install innosetup --no-progress -y
             if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           }
-          & $iscc "/DMyAppVersion=$version" "/DMyAppVersionFull=$version" "/DReleasePath=$root\out\Debug" "/DMyBuildTarget=win64" "$root\Telegram\build\setup.iss"
+          & $iscc "/DMyAppVersion=$version" "/DMyAppVersionFull=$version" "/DReleasePath=$root\out\Debug" "/DMyBuildTarget=${{ matrix.arch == 'arm64' && 'winarm' || 'win64' }}" "$root\Telegram\build\setup.iss"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Move artifact.
@@ -319,7 +330,7 @@ jobs:
           set OUT=%TBUILD%\%REPO_NAME%\out\Debug
           mkdir artifact
           move %OUT%\SereinGram.exe artifact/
-          if exist %OUT%\tsetup-x64.*.exe move %OUT%\tsetup-x64.*.exe artifact/
+          if exist %OUT%\tsetup-*.exe move %OUT%\tsetup-*.exe artifact/
       - uses: actions/upload-artifact@v7
         name: Upload artifact.
         if: env.UPLOAD_ARTIFACT == 'true'
@@ -341,11 +352,13 @@ jobs:
           path: dist
           merge-multiple: true
       - name: Name assets.
+        env:
+          ARCH: ${{ inputs.arch || 'x64' }}
         run: |
-          mv dist/SereinGram.exe dist/SereinGram-windows-x64-portable.exe
-          for setup in dist/tsetup-x64.*.exe; do
+          mv dist/SereinGram.exe "dist/SereinGram-windows-$ARCH-portable.exe"
+          for setup in dist/tsetup-*.exe; do
             if [ -e "$setup" ]; then
-              mv "$setup" dist/SereinGram-windows-x64-setup.exe
+              mv "$setup" "dist/SereinGram-windows-$ARCH-setup.exe"
             fi
           done
       - uses: softprops/action-gh-release@v3
