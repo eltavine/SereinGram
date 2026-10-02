@@ -504,6 +504,7 @@ void MainMenu::setupArchive() {
 				controller->openFolder(f);
 			}
 			controller->window().hideSettingsAndLayer();
+			controller->removeLayerBlackout();
 		}
 	};
 	const auto checkArchive = [=] {
