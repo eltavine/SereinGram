@@ -6,7 +6,7 @@ SereinGram 是基于 Telegram Desktop 的第三方桌面客户端，功能对标
 
 | 文档 | 内容 |
 | --- | --- |
-| [功能矩阵](features.md) | 功能 TODO 清单：稳定 Feature ID、来源、状态、优先级 |
+| [功能矩阵](features.md) | 功能与实现状态：稳定 Feature ID、来源、状态、优先级 |
 | [架构](architecture.md) | 模块分层、依赖方向、上游挂钩门面、schema、存储、守卫与迁移步骤 |
 | [发布约定](releases.md) | 渠道、构建矩阵、产物命名、校验文件与清单格式 |
 | [ADR](adr/) | 关键取舍与调研记录 |
