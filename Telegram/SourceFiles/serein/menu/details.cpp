@@ -2,7 +2,7 @@
 
 #include "serein/hooks/menu/actions.h"
 #include "serein/features/stickers/model/owner.h"
-#include "serein/privacy/peer_id.h"
+#include "serein/display/peer_id.h"
 #include "base/unixtime.h"
 #include "data/data_document.h"
 #include "data/data_media_types.h"
@@ -90,10 +90,10 @@ namespace {
 	add(tr::lng_serein_details_message_id(tr::now),
 		QString::number(item->id.bare));
 	add(tr::lng_serein_details_chat_id(tr::now),
-		Privacy::PeerIdText(peer, true));
+		Display::PeerIdText(peer, true));
 	if (const auto from = item->from(); from != peer) {
 		add(tr::lng_serein_details_sender_id(tr::now),
-			Privacy::PeerIdText(from, true));
+			Display::PeerIdText(from, true));
 	}
 	add(tr::lng_serein_details_date(tr::now), FormatDate(item->date()));
 	if (const auto edited = item->Get<HistoryMessageEdited>()

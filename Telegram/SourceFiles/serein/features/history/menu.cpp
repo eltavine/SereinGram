@@ -1,4 +1,4 @@
-#include "serein/menu/history.h"
+#include "serein/features/history/menu.h"
 
 #include "serein/features/history/model/recorder.h"
 #include "serein/features/history/viewer.h"
@@ -22,7 +22,7 @@
 #include "styles/style_layers.h"
 #include "styles/style_menu_icons.h"
 
-namespace Serein::Menu {
+namespace Serein::HistoryFeature {
 namespace {
 
 [[nodiscard]] std::vector<History::Record> EditVersions(
@@ -90,8 +90,9 @@ void InsertEditHistoryAction(
 	auto widget = base::make_unique_q<Ui::Menu::Action>(
 		menu->menu(), menu->menu()->st(), action,
 		&st::menuIconInfo, &st::menuIconInfo);
-	Tag(menu->insertAction(DeleteActionIndex(menu), std::move(widget)),
-		ActionId::EditHistory);
+	Menu::Tag(
+		menu->insertAction(Menu::DeleteActionIndex(menu), std::move(widget)),
+		Menu::ActionId::EditHistory);
 }
 
 void InsertDeletedMessagesAction(
@@ -113,8 +114,9 @@ void InsertDeletedMessagesAction(
 	auto widget = base::make_unique_q<Ui::Menu::Action>(
 		menu->menu(), menu->menu()->st(), action,
 		&st::menuIconInfo, &st::menuIconInfo);
-	Tag(menu->insertAction(DeleteActionIndex(menu), std::move(widget)),
-		ActionId::DeletedMessages);
+	Menu::Tag(
+		menu->insertAction(Menu::DeleteActionIndex(menu), std::move(widget)),
+		Menu::ActionId::DeletedMessages);
 }
 
 void InsertHistoryExclusionAction(
@@ -144,8 +146,9 @@ void InsertHistoryExclusionAction(
 	auto widget = base::make_unique_q<Ui::Menu::Action>(
 		menu->menu(), menu->menu()->st(), action,
 		&st::menuIconArchive, &st::menuIconArchive);
-	Tag(menu->insertAction(DeleteActionIndex(menu), std::move(widget)),
-		ActionId::HistoryExclusion);
+	Menu::Tag(
+		menu->insertAction(Menu::DeleteActionIndex(menu), std::move(widget)),
+		Menu::ActionId::HistoryExclusion);
 }
 
-} // namespace Serein::Menu
+} // namespace Serein::HistoryFeature

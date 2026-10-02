@@ -28,14 +28,17 @@ set(serein_sources
     serein/features/regdate/model/estimate.cpp
     serein/adapters/openssl/aes_gcm_cipher.cpp
     serein/hooks/ghost.cpp
+    serein/features/ghost/read_until_here.cpp
     serein/features/ghost/story_tip.cpp
     serein/app/ghost_read.cpp
     serein/features/history/entities.cpp
+    serein/features/history/menu.cpp
     serein/app/history_expiry.cpp
     serein/app/history_fade.cpp
     serein/app/history_restore.cpp
     serein/app/lifecycle.cpp
     serein/app/main_menu.cpp
+    serein/app/message_menu.cpp
     serein/app/modules.cpp
     serein/app/peer_menu.cpp
     serein/app/recent_chats.cpp
@@ -50,6 +53,7 @@ set(serein_sources
     serein/app/updates.cpp
     serein/app/ghost_menu.cpp
     serein/app/ghost_send.cpp
+    serein/display/peer_id.cpp
     serein/display/view_refresher.cpp
     serein/interface/main_menu.cpp
     serein/interface/app_icon.cpp
@@ -84,18 +88,15 @@ set(serein_sources
     serein/privacy/recorders.cpp
     serein/privacy/recorders_platform.cpp
     serein/menu/actions.cpp
+    serein/menu/contributors.cpp
     serein/menu/batch.cpp
     serein/menu/rating.cpp
     serein/menu/media.cpp
     serein/menu/buttons.cpp
     serein/menu/details.cpp
-    serein/menu/ghost_read.cpp
-    serein/menu/history.cpp
     serein/menu/model.cpp
     serein/menu/repeat.cpp
-    serein/menu/reading.cpp
     serein/menu/reminder.cpp
-    serein/menu/hide_message.cpp
     serein/menu/selection.cpp
     serein/media/sticker_catalog.cpp
     serein/media/sticker_catalog_rules.cpp
@@ -115,6 +116,7 @@ set(serein_sources
     serein/messages/reactions.cpp
     serein/messages/chinese.cpp
     serein/messages/reading.cpp
+    serein/messages/reading_menu.cpp
     serein/messages/chinese_warmup.cpp
     serein/tests/menu_scenario.cpp
     serein/filters/model.cpp
@@ -123,13 +125,13 @@ set(serein_sources
     serein/filters/view.cpp
     serein/filters/settings.cpp
     serein/filters/subscription.cpp
+    serein/filters/hide_message_menu.cpp
     serein/filters/menu.cpp
     serein/links/model.cpp
     serein/links/open.cpp
     serein/links/settings.cpp
     serein/snapshot/rules.cpp
     serein/snapshot/snapshot.cpp
-    serein/privacy/peer_id.cpp
     serein/privacy/profile.cpp
     serein/privacy/sessions.cpp
     serein/privacy/alias.cpp

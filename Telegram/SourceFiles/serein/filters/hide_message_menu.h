@@ -10,11 +10,11 @@ namespace Window {
 class SessionController;
 } // namespace Window
 
-namespace Serein::Menu {
+namespace Serein::Filters {
 
-void InsertReadUntilHereAction(
+void InsertHideMessageAction(
 	Ui::PopupMenu *menu,
 	HistoryItem *item,
 	Window::SessionController *controller);
 
-} // namespace Serein::Menu
+} // namespace Serein::Filters

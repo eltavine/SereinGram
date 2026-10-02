@@ -1,4 +1,4 @@
-#include "serein/menu/reading.h"
+#include "serein/messages/reading_menu.h"
 
 #include "serein/hooks/menu/actions.h"
 #include "serein/messages/options.h"
@@ -13,7 +13,7 @@
 #include "window/window_session_controller.h"
 #include "styles/style_menu_icons.h"
 
-namespace Serein::Menu {
+namespace Serein::Messages {
 
 void InsertReadingAction(
 		Ui::PopupMenu *menu,
@@ -48,15 +48,9 @@ void InsertReadingAction(
 	auto widget = base::make_unique_q<Ui::Menu::Action>(
 		menu->menu(), menu->menu()->st(), action,
 		&st::menuIconTranslate, &st::menuIconTranslate);
-	auto position = int(menu->actions().size());
-	for (auto i = 0; i < position; ++i) {
-		const auto value = menu->actions()[i]->property("sereinMenuActionId");
-		if (value.isValid() && value.toInt() == int(ActionId::Delete)) {
-			position = i;
-			break;
-		}
-	}
-	Tag(menu->insertAction(position, std::move(widget)), ActionId::Reading);
+	Menu::Tag(
+		menu->insertAction(Menu::DeleteActionIndex(menu), std::move(widget)),
+		Menu::ActionId::Reading);
 }
 
-} // namespace Serein::Menu
+} // namespace Serein::Messages

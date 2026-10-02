@@ -1,4 +1,4 @@
-#include "serein/menu/hide_message.h"
+#include "serein/filters/hide_message_menu.h"
 
 #include "serein/filters/hidden_messages.h"
 #include "serein/hooks/menu/actions.h"
@@ -15,10 +15,8 @@
 #include "window/window_session_controller.h"
 #include "styles/style_menu_icons.h"
 
-namespace Serein::Menu {
+namespace Serein::Filters {
 namespace {
-
-constexpr auto kActionIdProperty = "sereinMenuActionId";
 
 [[nodiscard]] QStringList Tokens(not_null<HistoryItem*> item) {
 	auto result = QStringList();
@@ -27,17 +25,6 @@ constexpr auto kActionIdProperty = "sereinMenuActionId";
 		result.push_back(Filters::HiddenMessageToken(peer, id.msg.bare));
 	}
 	return result;
-}
-
-[[nodiscard]] int InsertPosition(not_null<Ui::PopupMenu*> menu) {
-	const auto &actions = menu->actions();
-	for (auto index = 0; index != int(actions.size()); ++index) {
-		const auto value = actions[index]->property(kActionIdProperty);
-		if (value.isValid() && value.toInt() == int(ActionId::Delete)) {
-			return index;
-		}
-	}
-	return int(actions.size());
 }
 
 } // namespace
@@ -80,9 +67,9 @@ void InsertHideMessageAction(
 		action,
 		&st::menuIconCaptionHide,
 		&st::menuIconCaptionHide);
-	Tag(
-		menu->insertAction(InsertPosition(menu), std::move(widget)),
-		ActionId::HideMessage);
+	Menu::Tag(
+		menu->insertAction(Menu::DeleteActionIndex(menu), std::move(widget)),
+		Menu::ActionId::HideMessage);
 }
 
-} // namespace Serein::Menu
+} // namespace Serein::Filters

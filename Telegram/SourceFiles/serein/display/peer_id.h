@@ -6,8 +6,8 @@
 
 class PeerData;
 
-namespace Serein::Privacy {
+namespace Serein::Display {
 
 [[nodiscard]] QString PeerIdText(gsl::not_null<PeerData*> peer, bool botApi);
 
-} // namespace Serein::Privacy
+} // namespace Serein::Display

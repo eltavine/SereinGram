@@ -1,4 +1,4 @@
-#include "serein/menu/ghost_read.h"
+#include "serein/features/ghost/read_until_here.h"
 
 #include "serein/features/ghost/model/policy.h"
 #include "serein/hooks/ghost.h"
@@ -14,7 +14,7 @@
 #include "window/window_session_controller.h"
 #include "styles/style_menu_icons.h"
 
-namespace Serein::Menu {
+namespace Serein::Ghost {
 
 void InsertReadUntilHereAction(
 		Ui::PopupMenu *menu,
@@ -40,8 +40,9 @@ void InsertReadUntilHereAction(
 	auto widget = base::make_unique_q<Ui::Menu::Action>(
 		menu->menu(), menu->menu()->st(), action,
 		&st::menuIconMarkRead, &st::menuIconMarkRead);
-	Tag(menu->insertAction(DeleteActionIndex(menu), std::move(widget)),
-		ActionId::ReadUntilHere);
+	Menu::Tag(
+		menu->insertAction(Menu::DeleteActionIndex(menu), std::move(widget)),
+		Menu::ActionId::ReadUntilHere);
 }
 
-} // namespace Serein::Menu
+} // namespace Serein::Ghost

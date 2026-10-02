@@ -1,20 +1,8 @@
 #include "serein/hooks/menu/actions.h"
 
+#include "serein/menu/contributors.h"
 #include "serein/menu/model.h"
 #include "data/data_types.h"
-#include "serein/menu/buttons.h"
-#include "serein/menu/details.h"
-#include "serein/menu/rating.h"
-#include "serein/menu/repeat.h"
-#include "serein/menu/batch.h"
-#include "serein/menu/media.h"
-#include "serein/menu/reading.h"
-#include "serein/menu/reminder.h"
-#include "serein/menu/hide_message.h"
-#include "serein/menu/ghost_read.h"
-#include "serein/menu/history.h"
-#include "serein/filters/menu.h"
-#include "serein/snapshot/snapshot.h"
 
 #include "lang/lang_keys.h"
 #include "ui/widgets/popup_menu.h"
@@ -113,28 +101,13 @@ void Apply(
 		SelectionTarget selection) {
 	Expects(menu != nullptr);
 	if (controller) {
-		if (item) {
-			InsertQuickRatingActions(menu, item, controller);
-			InsertRepeatActions(menu, item, controller);
-			InsertReminderAction(menu, item, controller);
-		}
-		if (item || !selected.empty()) {
-			InsertBatchActions(menu, item, controller,
-				selected, selection);
-			Snapshot::InsertAction(menu, controller, item, selected);
-		}
-		if (item) {
-			InsertMediaInfoAction(menu, item, controller);
-			InsertReadingAction(menu, item, controller);
-			Filters::InsertAuthorAction(menu, item, controller);
-			InsertEditHistoryAction(menu, item, controller);
-			InsertDeletedMessagesAction(menu, item, controller);
-			InsertReadUntilHereAction(menu, item, controller);
-			InsertHistoryExclusionAction(menu, item, controller);
-			InsertButtonDataAction(menu, item, controller);
-			InsertDetailsAction(menu, item, controller);
-			InsertHideMessageAction(menu, item, controller);
-		}
+		Contribute({
+			.menu = menu,
+			.item = item,
+			.controller = controller,
+			.selected = selected,
+			.selection = selection,
+		});
 	}
 	const auto config = ForDevice().Get(kMenuConfig);
 	const auto optionHeld = (QGuiApplication::keyboardModifiers()

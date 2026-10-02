@@ -2,7 +2,7 @@
 
 #include "serein/features/regdate/model/estimate.h"
 #include "serein/privacy/options.h"
-#include "serein/privacy/peer_id.h"
+#include "serein/display/peer_id.h"
 #include "data/data_changes.h"
 #include "data/data_peer.h"
 #include "data/data_session.h"
@@ -22,7 +22,7 @@ namespace {
 		if (!format) {
 			return TextWithEntities();
 		}
-		return TextWithEntities{ PeerIdText(peer, format == 1) };
+		return TextWithEntities{ Display::PeerIdText(peer, format == 1) };
 	});
 }
 

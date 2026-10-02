@@ -4,11 +4,11 @@ class HistoryItem;
 namespace Ui { class PopupMenu; }
 namespace Window { class SessionController; }
 
-namespace Serein::Menu {
+namespace Serein::Messages {
 
 void InsertReadingAction(
 	Ui::PopupMenu *menu,
 	HistoryItem *item,
 	Window::SessionController *controller);
 
-} // namespace Serein::Menu
+} // namespace Serein::Messages

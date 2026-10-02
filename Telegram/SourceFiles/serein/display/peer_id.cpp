@@ -1,8 +1,8 @@
-#include "serein/privacy/peer_id.h"
+#include "serein/display/peer_id.h"
 
 #include "data/data_peer.h"
 
-namespace Serein::Privacy {
+namespace Serein::Display {
 
 QString PeerIdText(gsl::not_null<PeerData*> peer, bool botApi) {
 	auto result = QString::number(peer->id.value & PeerId::kChatTypeMask);
@@ -16,4 +16,4 @@ QString PeerIdText(gsl::not_null<PeerData*> peer, bool botApi) {
 	return result;
 }
 
-} // namespace Serein::Privacy
+} // namespace Serein::Display

@@ -10,7 +10,7 @@ namespace Window {
 class SessionController;
 } // namespace Window
 
-namespace Serein::Menu {
+namespace Serein::HistoryFeature {
 
 void InsertEditHistoryAction(
 	Ui::PopupMenu *menu,
@@ -27,4 +27,4 @@ void InsertHistoryExclusionAction(
 	HistoryItem *item,
 	Window::SessionController *controller);
 
-} // namespace Serein::Menu
+} // namespace Serein::HistoryFeature

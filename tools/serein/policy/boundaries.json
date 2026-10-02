@@ -100,6 +100,19 @@
       "app": true,
       "libraries": true
     },
+    "serein/menu/": {
+      "own": [
+        "serein/menu/",
+        "serein/core/",
+        "serein/schema/",
+        "serein/ports/",
+        "serein/hooks/",
+        "serein/display/",
+        "serein/features/stickers/model/"
+      ],
+      "app": true,
+      "libraries": true
+    },
     "serein/hooks/": {
       "own": [
         "serein/hooks/",
