@@ -62,6 +62,7 @@ public:
 	}
 
 	static const SectionBuildMethod kBuild;
+
 };
 
 bool Current(not_null<Ui::GenericBox*> box, const ServicesConfig &expected) {

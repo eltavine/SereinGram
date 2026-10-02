@@ -15,6 +15,7 @@ class ViewRefresher final {
 public:
 	static void Attach(not_null<Main::Session*> session);
 	static void Refresh(Data::Session &data);
+
 };
 
 } // namespace Serein

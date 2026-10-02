@@ -44,6 +44,7 @@ public:
 	}
 
 	static const SectionBuildMethod kBuild;
+
 };
 
 QString RoundnessLabel(int value) {

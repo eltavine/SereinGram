@@ -36,6 +36,7 @@ private:
 		}
 		return value;
 	}
+
 };
 
 } // namespace

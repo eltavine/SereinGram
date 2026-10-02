@@ -46,6 +46,7 @@ private:
 	int _skippedRows = 0;
 	int _batchDepth = 0;
 	bool _batchOpen = false;
+
 };
 
 } // namespace Serein::Adapters

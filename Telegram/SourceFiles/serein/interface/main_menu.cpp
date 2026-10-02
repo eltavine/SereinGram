@@ -80,6 +80,7 @@ private:
 	const QString _id;
 	Fn<void(QString, QString)> _moved;
 	QPoint _dragStart;
+
 };
 
 } // namespace

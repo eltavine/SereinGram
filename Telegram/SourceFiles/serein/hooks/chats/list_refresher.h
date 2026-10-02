@@ -11,6 +11,7 @@ namespace Serein {
 class ListRefresher final {
 public:
 	static void Attach(not_null<Dialogs::InnerWidget*> widget);
+
 };
 
 } // namespace Serein

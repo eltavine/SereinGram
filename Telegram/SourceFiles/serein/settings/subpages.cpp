@@ -33,6 +33,7 @@ public:
 	}
 
 	static const SectionBuildMethod kBuild;
+
 };
 
 const auto kGhostMeta = BuildHelper({
@@ -62,6 +63,7 @@ public:
 	}
 
 	static const SectionBuildMethod kBuild;
+
 };
 
 const auto kHistoryMeta = BuildHelper({

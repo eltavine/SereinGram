@@ -42,6 +42,7 @@ public:
 	}
 
 	std::map<std::string, QByteArray> values;
+
 };
 
 void Require(bool condition, const char *message) {

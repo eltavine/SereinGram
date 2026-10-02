@@ -128,6 +128,7 @@ private:
 	int _id;
 	Fn<void(int, int)> _moved;
 	QPoint _dragStart;
+
 };
 
 void RefreshSorting(gsl::not_null<Main::Session*> session) {

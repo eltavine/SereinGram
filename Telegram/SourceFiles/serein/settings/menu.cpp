@@ -39,6 +39,7 @@ public:
 	}
 
 	static const SectionBuildMethod kBuild;
+
 };
 
 QString Title(Menu::ActionId id) {

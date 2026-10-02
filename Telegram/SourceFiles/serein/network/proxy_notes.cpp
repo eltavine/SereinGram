@@ -8,8 +8,7 @@
 
 #include <algorithm>
 
-namespace Serein {
-namespace Network {
+namespace Serein::Network {
 namespace {
 
 constexpr auto kMaxKeyLength = 300;
@@ -74,7 +73,9 @@ QByteArray SerializeProxyNotes(const ProxyNotes &notes) {
 	return QJsonDocument(object).toJson(QJsonDocument::Compact);
 }
 
-} // namespace Network
+} // namespace Serein::Network
+
+namespace Serein {
 
 bool ServiceSettings::ValidProxyNotes(const QByteArray &value) {
 	return Network::ParseProxyNotes(value).has_value();

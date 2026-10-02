@@ -50,6 +50,7 @@ private:
 
 	Ports::HistoryStore &_store;
 	std::function<qint64()> _now;
+
 };
 
 } // namespace Serein::HistoryFeature

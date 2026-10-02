@@ -31,6 +31,7 @@ private:
 	bool _spacing = false;
 	int _chinese = 0;
 	bool _valid = false;
+
 };
 
 } // namespace Serein::Messages

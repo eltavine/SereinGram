@@ -17,6 +17,7 @@ public:
 	static void Select(HistoryView::ListWidget *widget, HistoryItem *source);
 	static void SelectRange(HistoryInner *widget);
 	static void SelectRange(HistoryView::ListWidget *widget);
+
 };
 
 class SelectionTarget final {

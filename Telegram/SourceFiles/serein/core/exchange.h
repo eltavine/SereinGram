@@ -44,6 +44,7 @@ public:
 		Options &options,
 		const Registry &registry,
 		const ExchangePlan &plan);
+
 };
 
 } // namespace Serein

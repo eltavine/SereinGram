@@ -23,6 +23,7 @@ public:
 	std::optional<QByteArray> decrypt(const QByteArray &sealed) override {
 		return sealed;
 	}
+
 };
 
 [[nodiscard]] Serein::HistoryFeature::Snapshot Message(qint64 id, bool bot = false) {

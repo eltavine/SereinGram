@@ -41,6 +41,7 @@ public:
 	}
 
 	static const SectionBuildMethod kBuild;
+
 };
 
 QString ReadingChineseLabel(int value) {

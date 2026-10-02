@@ -158,6 +158,7 @@ public:
 
 private:
 	std::vector<OptionInfo> _entries;
+
 };
 
 class RawPrefs {
@@ -166,6 +167,7 @@ public:
 	[[nodiscard]] virtual QByteArray read(std::string_view key) = 0;
 	virtual void write(std::string_view key, const QByteArray &value) = 0;
 	virtual void clear(std::string_view key) = 0;
+
 };
 
 class DevicePrefs final : public RawPrefs {
@@ -177,6 +179,7 @@ public:
 
 private:
 	Core::Settings &_settings;
+
 };
 
 class AccountPrefs final : public RawPrefs {
@@ -188,6 +191,7 @@ public:
 
 private:
 	Storage::Account &_account;
+
 };
 
 class Options final {

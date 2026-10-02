@@ -36,6 +36,7 @@ public:
 
 	ForcedReadReceipt(const ForcedReadReceipt &) = delete;
 	ForcedReadReceipt &operator=(const ForcedReadReceipt &) = delete;
+
 };
 
 class ExplicitReadReceipts final {

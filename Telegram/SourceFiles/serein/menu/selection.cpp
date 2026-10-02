@@ -191,4 +191,3 @@ void SelectionTarget::selectRange() const {
 }
 
 } // namespace Serein::Menu
-

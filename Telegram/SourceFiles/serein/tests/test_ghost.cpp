@@ -28,6 +28,7 @@ public:
 
 private:
 	std::map<std::string, QByteArray> _values;
+
 };
 
 } // namespace

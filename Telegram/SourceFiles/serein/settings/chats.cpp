@@ -47,6 +47,7 @@ public:
 	}
 
 	static const SectionBuildMethod kBuild;
+
 };
 
 QString StartupFolderLabel(not_null<Main::Session*> session) {

@@ -59,6 +59,7 @@ public:
 	}
 
 	static const SectionBuildMethod kBuild;
+
 };
 
 QString Title(const OptionInfo &info) {

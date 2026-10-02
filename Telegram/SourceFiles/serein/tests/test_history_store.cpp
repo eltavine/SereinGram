@@ -31,6 +31,7 @@ public:
 		std::reverse(result.begin(), result.end());
 		return result;
 	}
+
 };
 
 [[nodiscard]] Serein::History::Record Record(

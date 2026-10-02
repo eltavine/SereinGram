@@ -96,13 +96,13 @@ set(serein_sources
     serein/menu/reminder.cpp
     serein/menu/hide_message.cpp
     serein/menu/selection.cpp
-	serein/media/sticker_catalog.cpp
-	serein/media/sticker_catalog_rules.cpp
-	serein/media/chat_downloads.cpp
-	serein/media/download_names.cpp
-	serein/media/force_preview.cpp
-	serein/media/sticker_rounding.cpp
-	serein/media/voice_denoise.cpp
+    serein/media/sticker_catalog.cpp
+    serein/media/sticker_catalog_rules.cpp
+    serein/media/chat_downloads.cpp
+    serein/media/download_names.cpp
+    serein/media/force_preview.cpp
+    serein/media/sticker_rounding.cpp
+    serein/media/voice_denoise.cpp
     serein/messages/format.cpp
     serein/messages/content.cpp
     serein/messages/dates.cpp
@@ -139,7 +139,7 @@ set(serein_sources
     serein/settings/rules.cpp
     serein/settings/chats.cpp
     serein/settings/compose.cpp
-	serein/settings/config.cpp
+    serein/settings/config.cpp
     serein/settings/media.cpp
     serein/settings/menu.cpp
     serein/settings/privacy.cpp

@@ -13,8 +13,7 @@
 #include "main/main_session.h"
 #include "window/window_session_controller.h"
 
-namespace Serein {
-namespace App {
+namespace Serein::App {
 namespace {
 
 void SavePosition(
@@ -58,7 +57,9 @@ void TrackReadingPositions(gsl::not_null<Window::SessionController*> window) {
 	});
 }
 
-} // namespace App
+} // namespace Serein::App
+
+namespace Serein {
 
 MsgId Hooks::ReadingPosition(
 		gsl::not_null<Main::Session*> session,

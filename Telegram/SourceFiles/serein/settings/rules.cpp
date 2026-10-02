@@ -35,6 +35,7 @@ public:
 	}
 
 	static const SectionBuildMethod kBuild;
+
 };
 
 const auto kMeta = BuildHelper({

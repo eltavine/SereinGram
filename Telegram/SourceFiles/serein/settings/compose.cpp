@@ -43,6 +43,7 @@ public:
 	}
 
 	static const SectionBuildMethod kBuild;
+
 };
 
 void CodeLanguageBox(not_null<Ui::GenericBox*> box) {

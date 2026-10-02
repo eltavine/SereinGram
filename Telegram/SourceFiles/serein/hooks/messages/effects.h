@@ -23,6 +23,7 @@ public:
 private:
 	static void StopDisabled(
 		not_null<HistoryView::EmojiInteractions*> interactions);
+
 };
 
 } // namespace Serein::Messages
