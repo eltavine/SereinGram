@@ -6,7 +6,7 @@ SereinGram 支持讨论度最高的七个 Linux 发行版：Ubuntu、Debian、Li
 | --- | --- | --- | --- |
 | Ubuntu | `.deb` | 22.04、24.04、26.04 中用 apt 安装 | Pop!_OS、elementary OS、Zorin OS、KDE neon |
 | Debian | `.deb` | 12、13 中用 apt 安装 | MX Linux、LMDE |
-| Linux Mint | `.deb` | 23 中用 apt 安装（x86_64） | |
+| Linux Mint | `.deb` | 22.3 中用 apt 安装（x86_64） | |
 | Fedora | `.rpm` | 43 中用 dnf 安装 | Nobara；RHEL、Rocky Linux、AlmaLinux 8 起 |
 | openSUSE | `.rpm` | Tumbleweed、Leap 16.1 中用 zypper 安装 | |
 | Arch Linux | `packaging/arch/PKGBUILD`（系统库）；便携版、AppImage | PKGBUILD 构建并安装；便携版在 Arch 容器中检查动态库（x86_64） | Manjaro、EndeavourOS、CachyOS |

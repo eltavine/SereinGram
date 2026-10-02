@@ -50,7 +50,7 @@ check "openSUSE Leap 16.1" opensuse/leap:16.1 "$zypper"
 # the portable build or the AppImage; packaging/arch builds against system
 # libraries in its own workflow.
 if [ "$arch" = x86_64 ]; then
-	check "Linux Mint 23" linuxmintd/mint23-amd64 "$apt"
+	check "Linux Mint 22.3" linuxmintd/mint22.3-amd64 "$apt"
 	check "Arch Linux" archlinux:latest "pacman -Sy --noconfirm --needed \
 	cairo fontconfig freetype2 glib2 pango >/dev/null
 mkdir -p /opt
