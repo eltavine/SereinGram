@@ -28,6 +28,7 @@ set(serein_sources
     serein/features/history/model/recorder.cpp
     serein/features/updates/model/release.cpp
     serein/features/regdate/model/estimate.cpp
+    serein/features/stories/model/post.cpp
     serein/adapters/openssl/aes_gcm_cipher.cpp
     serein/features/ghost/hooks.cpp
     serein/features/instant_view/hooks.cpp
@@ -59,6 +60,10 @@ set(serein_sources
     serein/features/history/viewer.cpp
     serein/app/tray_menu.cpp
     serein/features/updates/checker.cpp
+    serein/features/stories/audience.cpp
+    serein/features/stories/canvas.cpp
+    serein/features/stories/composer.cpp
+    serein/features/stories/publisher.cpp
     serein/app/ghost_menu.cpp
     serein/features/ghost/send.cpp
     serein/display/json_files.cpp

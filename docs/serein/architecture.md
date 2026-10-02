@@ -29,7 +29,7 @@ Telegram/SourceFiles/serein/
   hooks/          上游唯一允许包含的 serein 头文件与生成的分发代码；默认返回上游行为
   display/        各领域共用的展示工具（视图刷新、ID 格式化）
   <领域>/         admin、chats、compose、filters、interface、links、media、menu、messages、network、privacy、services、snapshot
-  features/<名>/  ghost、history、instant_view、updates、stickers、regdate：model/ 为不依赖上游的纯逻辑与状态机，其余是该功能的界面、菜单项与挂钩实现
+  features/<名>/  ghost、history、instant_view、updates、stickers、regdate、stories：model/ 为不依赖上游的纯逻辑与状态机，其余是该功能的界面、菜单项与挂钩实现
   settings/       设置界面外壳：schema 生成的设置行（settings/gen）加各页面的自定义行
   app/            组合根：选项实例、模块表、菜单贡献者的注册顺序、需要创建适配器或跨领域组装的挂钩
   tests/          单元测试、假实现、界面场景

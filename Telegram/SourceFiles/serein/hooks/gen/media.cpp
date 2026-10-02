@@ -142,4 +142,12 @@ rpl::producer<bool> DenoiseVoiceMessagesValue() {
 	return ForDevice().Value(Serein::Media::kDenoiseVoiceMessages);
 }
 
+bool StoryPosting() {
+	return ForDevice().Get(Serein::Media::kStoryPosting);
+}
+
+rpl::producer<bool> StoryPostingValue() {
+	return ForDevice().Value(Serein::Media::kStoryPosting);
+}
+
 } // namespace Serein::Hooks::Media

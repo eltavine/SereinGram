@@ -169,4 +169,14 @@ message MediaSettings {
     ]
     note: "lng_serein_denoise_voice_messages_note"
   }];
+  optional bool story_posting = 18 [(serein.options.v1.field) = {
+    keywords: [
+      "story",
+      "stories",
+      "post",
+      "publish",
+      "close friends"
+    ]
+    note: "lng_serein_story_posting_note"
+  }];
 }

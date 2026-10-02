@@ -7,6 +7,7 @@ set(serein_test_sources
     serein/tests/test_spacing.cpp
     serein/tests/test_services.cpp
     serein/tests/test_updates.cpp
+    serein/tests/test_stories.cpp
     serein/tests/test_stickers.cpp
     serein/tests/test_recent_chats.cpp
     serein/tests/test_mention_query.cpp
@@ -54,6 +55,7 @@ set(serein_test_sources
     serein/features/history/model/recorder.cpp
     serein/features/updates/model/release.cpp
     serein/features/regdate/model/estimate.cpp
+    serein/features/stories/model/post.cpp
     serein/schema/codec.cpp
     serein/chats/validators.cpp
     serein/chats/recent.cpp

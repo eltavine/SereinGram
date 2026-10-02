@@ -320,7 +320,7 @@ TEST_CASE("Options") {
 	}
 	auto media = Registry();
 	Media::RegisterOptions(media);
-	Require(media.All().size() == 17, "media option count");
+	Require(media.All().size() == 18, "media option count");
 	Require(media.HasFlag(Media::kStickerScale.key,
 		Flag::RefreshMessageView), "sticker scale refresh flag");
 	Require(!media.HasFlag(Media::kRecentStickerLimit.key,

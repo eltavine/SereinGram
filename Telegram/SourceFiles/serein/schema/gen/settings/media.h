@@ -137,6 +137,13 @@ inline constexpr auto kDenoiseVoiceMessages = Option<bool>{
 	Category::Media,
 	"lng_serein_denoise_voice_messages",
 	0 };
+inline constexpr auto kStoryPosting = Option<bool>{
+	"serein.storyPosting",
+	Scope::Device,
+	false,
+	Category::Media,
+	"lng_serein_story_posting",
+	0 };
 
 inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kStickerScale));
@@ -156,6 +163,7 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kDownloadsPerChat));
 	Expects(registry.Add(kMp4FilePreview));
 	Expects(registry.Add(kDenoiseVoiceMessages));
+	Expects(registry.Add(kStoryPosting));
 }
 
 } // namespace Serein::Media
