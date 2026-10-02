@@ -15,7 +15,9 @@
 #include "serein/schema/gen/settings/ghost.h"
 #include "serein/schema/gen/settings/history.h"
 #include "serein/hooks/messages/time_format.h"
+#include "serein/tests/require.h"
 
+#include <doctest/doctest.h>
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
 
@@ -45,19 +47,13 @@ public:
 
 };
 
-void Require(bool condition, const char *message) {
-	if (!condition) {
-		throw std::runtime_error(message);
-	}
-}
-
 [[nodiscard]] bool ValidPercent(const int &value) {
 	return value >= 0 && value <= 100;
 }
 
 } // namespace
 
-void TestOptions() {
+TEST_CASE("Options") {
 	using namespace Serein;
 	using Menu::ActionId;
 	using Menu::Visibility;

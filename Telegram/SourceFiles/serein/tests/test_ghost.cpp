@@ -1,17 +1,12 @@
 #include "serein/features/ghost/model/policy.h"
+#include "serein/tests/require.h"
 
+#include <doctest/doctest.h>
 #include <iostream>
 #include <map>
-#include <stdexcept>
 #include <string>
 
 namespace {
-
-void Require(bool value, const char *message) {
-	if (!value) {
-		throw std::runtime_error(message);
-	}
-}
 
 class Prefs final : public Serein::RawPrefs {
 public:
@@ -33,7 +28,7 @@ private:
 
 } // namespace
 
-void TestGhost() {
+TEST_CASE("Ghost") {
 	using namespace Serein::Ghost;
 	auto prefs = Prefs();
 	auto devicePrefs = Prefs();

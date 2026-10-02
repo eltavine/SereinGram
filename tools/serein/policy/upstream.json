@@ -14,7 +14,8 @@
     "Telegram/ThirdParty/OpenCC",
     "Telegram/Resources/serein/",
     "crowdin.yml",
-    "packaging/"
+    "packaging/",
+    "Telegram/ThirdParty/doctest"
   ],
   "own_include_prefixes": [
     "serein/"

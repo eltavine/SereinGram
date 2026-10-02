@@ -1,20 +1,11 @@
 #include "serein/compose/text_replacements.h"
 #include "serein/compose/options.h"
 #include "base/basic_types.h"
+#include "serein/tests/require.h"
 
-#include <stdexcept>
+#include <doctest/doctest.h>
 
-namespace {
-
-void Require(bool value, const char *message) {
-	if (!value) {
-		throw std::runtime_error(message);
-	}
-}
-
-} // namespace
-
-void TestTextReplacements() {
+TEST_CASE("TextReplacements") {
 	using namespace Serein::Compose;
 	const auto parsed = ParseReplacementLines(
 		u"  brb => be right back \n\n:shrug:=>¯\\_(ツ)_/¯\nomw =>"_q);

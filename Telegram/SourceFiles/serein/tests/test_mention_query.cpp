@@ -1,14 +1,9 @@
 #include "serein/compose/mention_query.h"
+#include "serein/tests/require.h"
 
-#include <stdexcept>
+#include <doctest/doctest.h>
 
 namespace {
-
-void Require(bool value, const char *message) {
-	if (!value) {
-		throw std::runtime_error(message);
-	}
-}
 
 [[nodiscard]] Serein::Compose::MentionQuery Parse(const char *input) {
 	return Serein::Compose::ParseMentionQuery(QString::fromUtf8(input));
@@ -16,7 +11,7 @@ void Require(bool value, const char *message) {
 
 } // namespace
 
-void TestMentionQuery() {
+TEST_CASE("MentionQuery") {
 	for (const auto input : {
 			"@durov",
 			"durov",

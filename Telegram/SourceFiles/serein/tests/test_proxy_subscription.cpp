@@ -1,19 +1,10 @@
 #include "serein/network/proxy_subscription.h"
 #include "base/basic_types.h"
+#include "serein/tests/require.h"
 
-#include <stdexcept>
+#include <doctest/doctest.h>
 
-namespace {
-
-void Require(bool value, const char *message) {
-	if (!value) {
-		throw std::runtime_error(message);
-	}
-}
-
-} // namespace
-
-void TestProxySubscription() {
+TEST_CASE("ProxySubscription") {
 	using namespace Serein::Network;
 	const auto body = u"# my proxies\n"
 		"tg://proxy?server=1.2.3.4&port=443&secret=abcdef\n"

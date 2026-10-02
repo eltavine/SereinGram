@@ -1,20 +1,11 @@
 #include "serein/features/updates/model/release.h"
 #include "base/basic_types.h"
+#include "serein/tests/require.h"
 
+#include <doctest/doctest.h>
 #include <iostream>
-#include <stdexcept>
 
-namespace {
-
-void Require(bool value, const char *message) {
-	if (!value) {
-		throw std::runtime_error(message);
-	}
-}
-
-} // namespace
-
-void TestUpdates() {
+TEST_CASE("Updates") {
 	using namespace Serein::Updates;
 	const auto release = ParseLatestRelease(R"({
 		"tag_name": "v7.2.11",

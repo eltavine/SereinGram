@@ -1,21 +1,11 @@
 #include "serein/messages/chinese.h"
+#include "serein/tests/require.h"
 
+#include <doctest/doctest.h>
 #include <QtCore/QFile>
 #include <QtCore/QTemporaryDir>
 
-#include <stdexcept>
-
-namespace {
-
-void Require(bool value, const char *message) {
-	if (!value) {
-		throw std::runtime_error(message);
-	}
-}
-
-} // namespace
-
-void TestChinese() {
+TEST_CASE("Chinese") {
 	using namespace Serein::Messages;
 	auto source = TextWithEntities{ QString::fromUtf8("ab\u6F22\u5B57cd") };
 	source.entities.push_back(EntityInText(EntityType::Bold, 2, 2));

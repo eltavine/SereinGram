@@ -1,19 +1,10 @@
 #include "serein/privacy/recorders.h"
 #include "base/basic_types.h"
+#include "serein/tests/require.h"
 
-#include <stdexcept>
+#include <doctest/doctest.h>
 
-namespace {
-
-void Require(bool value, const char *message) {
-	if (!value) {
-		throw std::runtime_error(message);
-	}
-}
-
-} // namespace
-
-void TestRecorders() {
+TEST_CASE("Recorders") {
 	using namespace Serein::Privacy;
 	for (const auto name : {
 			"obs",

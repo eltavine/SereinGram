@@ -1,20 +1,11 @@
 #include "serein/chats/shown_order.h"
 
 #include "base/basic_types.h"
+#include "serein/tests/require.h"
 
-#include <stdexcept>
+#include <doctest/doctest.h>
 
-namespace {
-
-void Require(bool value, const char *message) {
-	if (!value) {
-		throw std::runtime_error(message);
-	}
-}
-
-} // namespace
-
-void TestShownOrder() {
+TEST_CASE("ShownOrder") {
 	using namespace Serein::Chats;
 	Require(ParseFolderIds(u"3,1,x,0,-2,7"_q) == base::flat_set<int>{ 1, 3, 7 },
 		"folder ids are not parsed");

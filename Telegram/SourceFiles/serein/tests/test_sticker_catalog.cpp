@@ -1,18 +1,9 @@
 #include "serein/schema/gen/config/sticker_catalog.h"
+#include "serein/tests/require.h"
 
-#include <stdexcept>
+#include <doctest/doctest.h>
 
-namespace {
-
-void Require(bool value, const char *message) {
-	if (!value) {
-		throw std::runtime_error(message);
-	}
-}
-
-} // namespace
-
-void TestStickerCatalog() {
+TEST_CASE("StickerCatalog") {
 	using namespace Serein::MediaSchema;
 	const auto parsed = ParseStickerCatalogFile(R"({
 		"format": "serein-sticker-catalog",

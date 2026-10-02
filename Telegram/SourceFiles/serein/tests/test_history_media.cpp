@@ -2,19 +2,13 @@
 #include "serein/features/history/media_store.h"
 #include "serein/features/history/model/recorder.h"
 #include "base/basic_types.h"
+#include "serein/tests/require.h"
 
+#include <doctest/doctest.h>
 #include <QtCore/QFileInfo>
 #include <QtCore/QTemporaryDir>
 
-#include <stdexcept>
-
 namespace {
-
-void Require(bool value, const char *message) {
-	if (!value) {
-		throw std::runtime_error(message);
-	}
-}
 
 class XorCipher final : public Serein::Ports::Cipher {
 public:
@@ -41,7 +35,7 @@ private:
 
 } // namespace
 
-void TestCachedMedia() {
+TEST_CASE("CachedMedia") {
 	using namespace Serein;
 	using namespace Serein::HistoryFeature;
 	auto directory = QTemporaryDir();

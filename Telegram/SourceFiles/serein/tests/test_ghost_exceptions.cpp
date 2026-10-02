@@ -2,20 +2,11 @@
 #include "serein/schema/gen/settings/ghost.h"
 
 #include "base/basic_types.h"
+#include "serein/tests/require.h"
 
-#include <stdexcept>
+#include <doctest/doctest.h>
 
-namespace {
-
-void Require(bool value, const char *message) {
-	if (!value) {
-		throw std::runtime_error(message);
-	}
-}
-
-} // namespace
-
-void TestGhostExceptions() {
+TEST_CASE("GhostExceptions") {
 	using namespace Serein::Ghost;
 	auto value = QString();
 	value = ToggleException(value, 42);

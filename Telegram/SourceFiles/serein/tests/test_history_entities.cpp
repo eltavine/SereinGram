@@ -1,21 +1,12 @@
 #include "serein/features/history/entities.h"
 #include "base/basic_types.h"
+#include "serein/tests/require.h"
 
-#include <stdexcept>
+#include <doctest/doctest.h>
 #include <utility>
 #include <vector>
 
-namespace {
-
-void Require(bool value, const char *message) {
-	if (!value) {
-		throw std::runtime_error(message);
-	}
-}
-
-} // namespace
-
-void TestHistoryEntities() {
+TEST_CASE("HistoryEntities") {
 	using Serein::HistoryFeature::EntityName;
 	using Serein::HistoryFeature::EntityTypeFromName;
 

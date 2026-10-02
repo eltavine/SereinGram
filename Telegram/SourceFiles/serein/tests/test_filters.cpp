@@ -1,19 +1,14 @@
 #include "serein/filters/model.h"
+#include "serein/tests/require.h"
 
+#include <doctest/doctest.h>
 #include <QtCore/QElapsedTimer>
 #include <QtCore/QJsonArray>
 #include <QtCore/QJsonDocument>
 
 #include <iostream>
-#include <stdexcept>
 
 namespace {
-
-void Require(bool value, const char *message) {
-	if (!value) {
-		throw std::runtime_error(message);
-	}
-}
 
 QJsonObject Rule(const QString &pattern, const QString &action) {
 	return {
@@ -145,7 +140,7 @@ void TestSharedRules() {
 		"shared rules ran before local ones");
 }
 
-void TestFilters() {
+TEST_CASE("Filters") {
 	using namespace Serein::Filters;
 	TestFilterScopes();
 	TestSharedRules();

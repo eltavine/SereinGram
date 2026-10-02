@@ -327,7 +327,8 @@ if (DESKTOP_APP_TEST_APPS)
 
     target_include_directories(test_serein PRIVATE
         ${src_loc}
-        ${CMAKE_CURRENT_SOURCE_DIR}/lib_ui)
+        ${CMAKE_CURRENT_SOURCE_DIR}/lib_ui
+        ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/doctest)
 
     target_link_libraries(test_serein PRIVATE
         desktop-app::lib_base

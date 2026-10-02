@@ -1,6 +1,7 @@
 include(${CMAKE_CURRENT_LIST_DIR}/../SourceFiles/serein/schema/gen/sources.cmake)
 
 set(serein_test_sources
+    serein/tests/test_main.cpp
     serein/tests/test_lang.cpp
     serein/tests/test_options.cpp
     serein/tests/test_spacing.cpp

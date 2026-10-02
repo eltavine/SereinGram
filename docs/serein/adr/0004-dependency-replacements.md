@@ -37,3 +37,12 @@
 - 未登录任何账号时读取与写入返回“不可用”；清除凭据时文件中不再有条目即删除文件。
 
 Catch2 暂缓：现有测试以 `Require` 断言与单一入口组织，已覆盖全部纯逻辑模块并在三平台 CI 运行；迁移收益不足以抵消把几十个测试文件改写成 Catch2 用例的成本，待测试规模增长后再评估。
+
+## 修订（2026-10-02）：单元测试改用 doctest
+
+核心测试改用 doctest 2.5.3（MIT），以单个头文件放在 `Telegram/ThirdParty/doctest`，只供测试目标使用：
+
+- 不选 Catch2 v3：它需要单独编译的库，在 Windows 上要与上游静态运行库的设置一致，还要新增子模块；doctest 只有头文件，Flatpak、Arch 等离线构建也能编译。
+- 每个测试文件用 `TEST_CASE` 自注册，新增测试不再修改中央入口；`test_main.cpp` 只创建 doctest 上下文和 Qt SQL 测试需要的 `QCoreApplication`。
+- 各文件原先重复定义的 `Require` 合并为 `serein/tests/require.h`：用 doctest 断言计数，失败时报告说明与调用位置。
+- 每个用例单独报告，可用 `-tc=<名称>` 筛选；以随机顺序运行同样全部通过，用例之间没有顺序依赖。

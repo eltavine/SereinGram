@@ -187,7 +187,7 @@ cmake --build out/serein-core-tests && ctest --test-dir out/serein-core-tests
 
 1. 新功能先在功能矩阵登记 ID、来源与优先级；P3 或存在服务条款、平台能力风险的功能先写 ADR。
 2. 设置项在 proto 中声明并重新生成代码，默认值必须让客户端行为与上游一致，`TestNeutralDefaults` 负责检查。
-3. 逻辑放在 `features/` 或对应功能目录并配核心测试；上游只通过 `serein/hooks` 中的单行调用接入，需要新挂钩时在同一提交中按增量上调侵入预算。
+3. 逻辑放在 `features/` 或对应功能目录并配核心测试（在 `serein/tests/` 中用 doctest 的 `TEST_CASE` 自注册，并加入 `serein_tests.cmake`）；上游只通过 `serein/hooks` 中的单行调用接入，需要新挂钩时在同一提交中按增量上调侵入预算。
 4. 同步上游用 `tools/serein/upstream_sync.py`：合并后移动预算基线，并让打包配方的依赖版本跟随 snap 配方；合并后的三平台构建通过才算完成同步。
 
 ## 9. 项目约定

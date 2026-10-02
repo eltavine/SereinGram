@@ -27,6 +27,7 @@ target_include_directories(test_serein PRIVATE
     ${lib_loc}/ThirdParty/GSL/include
     ${lib_loc}/ThirdParty/range-v3/include
     ${lib_loc}/ThirdParty/expected/include
+    ${lib_loc}/ThirdParty/doctest
 )
 
 target_link_libraries(test_serein PRIVATE Qt6::Core Qt6::Sql OpenSSL::Crypto Serein::OpenCC)

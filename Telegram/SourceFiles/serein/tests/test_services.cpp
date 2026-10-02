@@ -1,25 +1,16 @@
 #include "serein/hooks/services/model.h"
 #include "serein/services/translation_protocol.h"
 #include "base/basic_types.h"
+#include "serein/tests/require.h"
 
+#include <doctest/doctest.h>
 #include <QtCore/QJsonArray>
 #include <QtCore/QJsonDocument>
 #include <QtCore/QRegularExpression>
 
 #include <iostream>
-#include <stdexcept>
 
-namespace {
-
-void Require(bool value, const char *message) {
-	if (!value) {
-		throw std::runtime_error(message);
-	}
-}
-
-} // namespace
-
-void TestServices() {
+TEST_CASE("Services") {
 	using namespace Serein;
 	const auto service = ServiceDefinition{
 		.id = u"00000000-0000-0000-0000-000000000001"_q,
@@ -146,7 +137,7 @@ void TestServices() {
 	std::cout << "PASS: Serein service config and credential binding" << std::endl;
 }
 
-void TestTranslationProtocols() {
+TEST_CASE("TranslationProtocols") {
 	using namespace Serein;
 	const auto chat = ServiceDefinition{
 		.id = u"00000000-0000-0000-0000-000000000001"_q,

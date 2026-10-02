@@ -1,23 +1,14 @@
 #include "serein/links/model.h"
 #include "base/basic_types.h"
+#include "serein/tests/require.h"
 
+#include <doctest/doctest.h>
 #include <QtCore/QJsonArray>
 #include <QtCore/QJsonDocument>
 
 #include <iostream>
-#include <stdexcept>
 
-namespace {
-
-void Require(bool value, const char *message) {
-	if (!value) {
-		throw std::runtime_error(message);
-	}
-}
-
-} // namespace
-
-void TestLinks() {
+TEST_CASE("Links") {
 	using namespace Serein::Links;
 	auto newRule = NewRule();
 	newRule.host = u"example.com"_q;

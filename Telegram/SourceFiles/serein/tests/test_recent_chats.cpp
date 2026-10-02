@@ -1,19 +1,10 @@
 #include "serein/chats/recent.h"
 #include "serein/chats/options.h"
+#include "serein/tests/require.h"
 
-#include <stdexcept>
+#include <doctest/doctest.h>
 
-namespace {
-
-void Require(bool value, const char *message) {
-	if (!value) {
-		throw std::runtime_error(message);
-	}
-}
-
-} // namespace
-
-void TestRecentChats() {
+TEST_CASE("RecentChats") {
 	using namespace Serein::Chats;
 	auto list = QString();
 	list = PushRecentChat(list, 7);

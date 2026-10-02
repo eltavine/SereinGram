@@ -1,20 +1,11 @@
 #include "serein/chats/local_pins.h"
 #include "serein/chats/options.h"
 #include "base/basic_types.h"
+#include "serein/tests/require.h"
 
-#include <stdexcept>
+#include <doctest/doctest.h>
 
-namespace {
-
-void Require(bool value, const char *message) {
-	if (!value) {
-		throw std::runtime_error(message);
-	}
-}
-
-} // namespace
-
-void TestLocalPins() {
+TEST_CASE("LocalPins") {
 	using namespace Serein::Chats;
 	auto value = QString();
 	value = ToggleLocalPin(value, 7);

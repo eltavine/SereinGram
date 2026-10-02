@@ -1,18 +1,9 @@
 #include "serein/snapshot/rules.h"
+#include "serein/tests/require.h"
 
-#include <stdexcept>
+#include <doctest/doctest.h>
 
-namespace {
-
-void Require(bool value, const char *message) {
-	if (!value) {
-		throw std::runtime_error(message);
-	}
-}
-
-} // namespace
-
-void TestSnapshotConfig() {
+TEST_CASE("SnapshotConfig") {
 	using namespace Serein::Snapshot;
 	const auto stored = ReadStored(R"({"version":1,"background":true,)"
 		R"("date":false,"headers":true,"reactions":true,"builtinTheme":true})");

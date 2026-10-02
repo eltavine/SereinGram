@@ -1,19 +1,10 @@
 #include "serein/hooks/interface/text.h"
 #include "base/basic_types.h"
+#include "serein/tests/require.h"
 
-#include <stdexcept>
+#include <doctest/doctest.h>
 
-namespace {
-
-void Require(bool value, const char *message) {
-	if (!value) {
-		throw std::runtime_error(message);
-	}
-}
-
-} // namespace
-
-void TestHalfwidthPunctuation() {
+TEST_CASE("HalfwidthPunctuation") {
 	using Serein::Interface::HalfwidthPunctuation;
 	Require(HalfwidthPunctuation(u"ＡＢＣｘｙｚ１２３！？～"_q)
 		== u"ABCxyz123!?~"_q, "fullwidth ASCII not converted");

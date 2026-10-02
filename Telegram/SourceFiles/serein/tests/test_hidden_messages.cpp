@@ -2,22 +2,12 @@
 
 #include "serein/schema/gen/settings/filters.h"
 #include "base/basic_types.h"
+#include "serein/tests/require.h"
 
+#include <doctest/doctest.h>
 #include <QtCore/QStringList>
 
-#include <stdexcept>
-
-namespace {
-
-void Require(bool value, const char *message) {
-	if (!value) {
-		throw std::runtime_error(message);
-	}
-}
-
-} // namespace
-
-void TestHiddenMessages() {
+TEST_CASE("HiddenMessages") {
 	using namespace Serein::Filters;
 	const auto first = HiddenMessageToken(777, 15);
 	const auto second = HiddenMessageToken(777, 16);

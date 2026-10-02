@@ -1,19 +1,10 @@
 #include "serein/adapters/openssl/aes_gcm_cipher.h"
+#include "serein/tests/require.h"
 
+#include <doctest/doctest.h>
 #include <iostream>
-#include <stdexcept>
 
-namespace {
-
-void Require(bool value, const char *message) {
-	if (!value) {
-		throw std::runtime_error(message);
-	}
-}
-
-} // namespace
-
-void TestCipher() {
+TEST_CASE("Cipher") {
 	using Serein::Adapters::AesGcmCipher;
 	const auto secret = QByteArray(256, '\x5a');
 	Require(!AesGcmCipher::FromSecret(QByteArray(8, 'x'), "ctx"), "short secrets are refused");

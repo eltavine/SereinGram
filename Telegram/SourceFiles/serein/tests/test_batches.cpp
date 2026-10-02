@@ -1,10 +1,11 @@
 #include "serein/hooks/messages/batches.h"
+#include "serein/tests/require.h"
 
+#include <doctest/doctest.h>
 #include <QtCore/QList>
 
 #include <functional>
 #include <optional>
-#include <stdexcept>
 #include <vector>
 
 namespace {
@@ -22,12 +23,6 @@ struct FakeDraft {
 	int options = 0;
 };
 
-void Require(bool value, const char *message) {
-	if (!value) {
-		throw std::runtime_error(message);
-	}
-}
-
 [[nodiscard]] std::vector<std::size_t> Sizes(const std::vector<FakeDraft> &parts) {
 	auto result = std::vector<std::size_t>();
 	for (const auto &part : parts) {
@@ -38,7 +33,7 @@ void Require(bool value, const char *message) {
 
 } // namespace
 
-void TestBatches() {
+TEST_CASE("Batches") {
 	using namespace Serein::Hooks;
 	auto singles = std::vector<FakeItem>(205);
 	auto draft = FakeDraft{ .options = 2 };

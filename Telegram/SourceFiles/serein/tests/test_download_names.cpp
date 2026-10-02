@@ -1,20 +1,11 @@
 #include "serein/media/download_names.h"
 
 #include "base/basic_types.h"
+#include "serein/tests/require.h"
 
-#include <stdexcept>
+#include <doctest/doctest.h>
 
-namespace {
-
-void Require(bool value, const char *message) {
-	if (!value) {
-		throw std::runtime_error(message);
-	}
-}
-
-} // namespace
-
-void TestDownloadNames() {
+TEST_CASE("DownloadNames") {
 	using Serein::Media::DownloadFolderName;
 	Require(DownloadFolderName(u"News & Talk"_q, 1) == u"News & Talk"_q,
 		"plain chat name changed");

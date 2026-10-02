@@ -13,9 +13,10 @@
 #include "serein/schema/gen/settings/privacy.h"
 #include "serein/schema/gen/settings/services.h"
 #include "serein/schema/gen/settings/snapshot.h"
+#include "serein/tests/require.h"
 
+#include <doctest/doctest.h>
 #include <map>
-#include <stdexcept>
 #include <string>
 #include <string_view>
 
@@ -41,10 +42,9 @@ const auto kGatedMenuActions = std::map<Serein::Menu::ActionId, std::string_view
 	{ Serein::Menu::ActionId::QuickRatingSecond, "needs a quick rating, unset by default" },
 };
 
-void Require(bool value, const char *message, std::string_view key) {
-	if (!value) {
-		throw std::runtime_error(std::string(message) + ": " + std::string(key));
-	}
+void RequireKey(bool value, const char *message, std::string_view key) {
+	INFO((std::string("option ") + std::string(key)));
+	::Require(value, message);
 }
 
 [[nodiscard]] bool Neutral(const Serein::OptionInfo &entry) {
@@ -60,7 +60,7 @@ void Require(bool value, const char *message, std::string_view key) {
 
 } // namespace
 
-void TestNeutralDefaults() {
+TEST_CASE("NeutralDefaults") {
 	using namespace Serein;
 	auto registry = Registry();
 	Chats::RegisterOptions(registry);
@@ -80,22 +80,22 @@ void TestNeutralDefaults() {
 	for (const auto &entry : registry.All()) {
 		const auto listed = kInertDefaults.contains(entry.key);
 		if (Neutral(entry)) {
-			Require(!listed, "listed default is already neutral", entry.key);
+			RequireKey(!listed, "listed default is already neutral", entry.key);
 		} else {
-			Require(listed, "default is not off, zero or empty", entry.key);
+			RequireKey(listed, "default is not off, zero or empty", entry.key);
 			++inert;
 		}
 	}
-	Require(inert == kInertDefaults.size(), "unknown listed default", {});
+	RequireKey(inert == kInertDefaults.size(), "unknown listed default", {});
 	for (const auto &entry : Menu::kEntries) {
 		const auto shown = (Menu::DefaultVisibility(entry.id)
 			== Menu::Visibility::Show);
 		if (int(entry.id) < int(Menu::ActionId::Repeat)) {
-			Require(shown, "upstream menu action hidden", entry.titleKey);
+			RequireKey(shown, "upstream menu action hidden", entry.titleKey);
 		} else if (kGatedMenuActions.contains(entry.id)) {
-			Require(shown, "listed menu action is already hidden", entry.titleKey);
+			RequireKey(shown, "listed menu action is already hidden", entry.titleKey);
 		} else {
-			Require(!shown, "Serein menu action shown by default", entry.titleKey);
+			RequireKey(!shown, "Serein menu action shown by default", entry.titleKey);
 		}
 	}
 }

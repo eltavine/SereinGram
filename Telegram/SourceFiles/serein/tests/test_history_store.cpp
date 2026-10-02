@@ -1,20 +1,15 @@
 #include "serein/adapters/qtsql/history_store.h"
 #include "base/basic_types.h"
+#include "serein/tests/require.h"
 
+#include <doctest/doctest.h>
 #include <QtCore/QTemporaryDir>
 #include <QtSql/QSqlDatabase>
 #include <QtSql/QSqlQuery>
 
 #include <iostream>
-#include <stdexcept>
 
 namespace {
-
-void Require(bool value, const char *message) {
-	if (!value) {
-		throw std::runtime_error(message);
-	}
-}
 
 class ReversingCipher final : public Serein::Ports::Cipher {
 public:
@@ -51,7 +46,7 @@ public:
 
 } // namespace
 
-void TestHistoryStore() {
+TEST_CASE("HistoryStore") {
 	using namespace Serein;
 	using Kind = History::RecordKind;
 	auto directory = QTemporaryDir();

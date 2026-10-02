@@ -1,19 +1,14 @@
 #include "serein/adapters/qtsql/history_store.h"
 #include "serein/features/history/model/recorder.h"
 #include "base/basic_types.h"
+#include "serein/tests/require.h"
 
+#include <doctest/doctest.h>
 #include <QtCore/QTemporaryDir>
 
 #include <iostream>
-#include <stdexcept>
 
 namespace {
-
-void Require(bool value, const char *message) {
-	if (!value) {
-		throw std::runtime_error(message);
-	}
-}
 
 class PlainCipher final : public Serein::Ports::Cipher {
 public:
@@ -39,7 +34,7 @@ public:
 
 } // namespace
 
-void TestHistoryRecorder() {
+TEST_CASE("HistoryRecorder") {
 	using namespace Serein;
 	using namespace Serein::HistoryFeature;
 	auto directory = QTemporaryDir();

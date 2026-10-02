@@ -1,54 +1,12 @@
-#include <QtCore/QCoreApplication>
 #include <QtCore/QDir>
+#include <doctest/doctest.h>
 #include <fstream>
-#include <iostream>
 #include <map>
 #include <optional>
 #include <regex>
 #include <set>
 #include <stdexcept>
 #include <string>
-
-void TestOptions();
-void TestSpacing();
-void TestServices();
-void TestTranslationProtocols();
-void TestUpdates();
-void TestStickers();
-void TestRecentChats();
-void TestMentionQuery();
-void TestRecorders();
-void TestReadingPositions();
-void TestLocalPins();
-void TestSummary();
-void TestTextReplacements();
-void TestProxySubscription();
-void TestVpnRules();
-void TestProxyOrder();
-void TestProxyNotes();
-void TestHiddenMessages();
-void TestBatches();
-void TestDownloadNames();
-void TestShownOrder();
-void TestGhostExceptions();
-void TestPersianCalendar();
-void TestNeutralDefaults();
-void TestChinese();
-void TestAliases();
-void TestStickerCatalog();
-void TestSnapshotConfig();
-void TestRegistrationDate();
-void TestFilters();
-void TestLinks();
-void TestCodec();
-void TestGhost();
-void TestCipher();
-void TestCredentials();
-void TestHalfwidthPunctuation();
-void TestHistoryEntities();
-void TestHistoryStore();
-void TestHistoryRecorder();
-void TestCachedMedia();
 
 namespace {
 
@@ -184,90 +142,36 @@ void CheckPartialTranslation(
 
 } // namespace
 
-int main() {
-	try {
-		TestOptions();
-		TestSpacing();
-		TestServices();
-		TestTranslationProtocols();
-		TestUpdates();
-		TestStickers();
-		TestRecentChats();
-		TestMentionQuery();
-		TestRecorders();
-		TestReadingPositions();
-		TestLocalPins();
-		TestSummary();
-		TestTextReplacements();
-		TestProxySubscription();
-		TestVpnRules();
-		TestProxyOrder();
-		TestProxyNotes();
-		TestHiddenMessages();
-		TestBatches();
-		TestDownloadNames();
-		TestShownOrder();
-		TestGhostExceptions();
-		TestPersianCalendar();
-		TestNeutralDefaults();
-		TestChinese();
-		TestAliases();
-		TestStickerCatalog();
-		TestSnapshotConfig();
-		TestRegistrationDate();
-		TestFilters();
-		TestLinks();
-		TestCodec();
-		TestGhost();
-		TestCipher();
-		TestCredentials();
-		TestHalfwidthPunctuation();
-		TestHistoryEntities();
-#ifdef SEREIN_HAVE_QT_SQL
-		auto argc = 1;
-		char name[] = "test_serein";
-		char *argv[] = { name, nullptr };
-		QCoreApplication application(argc, argv);
-		TestHistoryStore();
-		TestHistoryRecorder();
-		TestCachedMedia();
-#endif // SEREIN_HAVE_QT_SQL
-		const auto root = std::string(SEREIN_LANG_SOURCE_DIR);
-		const auto upstream = ReadStrings(root + "/lang.strings", false);
-		const auto english = ReadStrings(root + "/serein/serein.strings", true);
-		if (english.empty()) {
-			throw std::runtime_error("Serein English strings are empty");
+TEST_CASE("SereinStrings") {
+	const auto root = std::string(SEREIN_LANG_SOURCE_DIR);
+	const auto upstream = ReadStrings(root + "/lang.strings", false);
+	const auto english = ReadStrings(root + "/serein/serein.strings", true);
+	if (english.empty()) {
+		throw std::runtime_error("Serein English strings are empty");
+	}
+	for (const auto &entry : english) {
+		const auto &key = entry.first;
+		if (!key.starts_with("lng_serein_")) {
+			throw std::runtime_error("Invalid Serein key prefix: " + key);
 		}
-		for (const auto &entry : english) {
-			const auto &key = entry.first;
-			if (!key.starts_with("lng_serein_")) {
-				throw std::runtime_error("Invalid Serein key prefix: " + key);
-			}
-			if (key.ends_with("#one") || key.ends_with("#other")) {
-				throw std::runtime_error("Serein plural key is unsupported: " + key);
-			}
-			if (upstream.contains(key)) {
-				throw std::runtime_error("Key collides with upstream: " + key);
-			}
+		if (key.ends_with("#one") || key.ends_with("#other")) {
+			throw std::runtime_error("Serein plural key is unsupported: " + key);
 		}
-		for (const auto &locale : { "zh-hans", "zh-hant" }) {
-			const auto path = root + "/serein/" + locale + ".strings";
-			CheckTranslation(english, path);
+		if (upstream.contains(key)) {
+			throw std::runtime_error("Key collides with upstream: " + key);
 		}
-		const auto directory = QDir(QString::fromStdString(root + "/serein"));
-		for (const auto &entry : directory.entryList(
-				{ QString::fromLatin1("*.strings") },
-				QDir::Files)) {
-			const auto name = entry.toStdString();
-			if (name != "serein.strings" && !name.starts_with("zh-")) {
-				CheckPartialTranslation(english, root + "/serein/" + name);
-			}
+	}
+	for (const auto &locale : { "zh-hans", "zh-hant" }) {
+		const auto path = root + "/serein/" + locale + ".strings";
+		CheckTranslation(english, path);
+	}
+	const auto directory = QDir(QString::fromStdString(root + "/serein"));
+	for (const auto &entry : directory.entryList(
+			{ QString::fromLatin1("*.strings") },
+			QDir::Files)) {
+		const auto name = entry.toStdString();
+		if (name != "serein.strings" && !name.starts_with("zh-")) {
+			CheckPartialTranslation(english, root + "/serein/" + name);
 		}
-		std::cout << "PASS: Serein strings (" << english.size()
-			<< " English keys)" << std::endl;
-		return 0;
-	} catch (const std::exception &error) {
-		std::cerr << "FAIL: " << error.what() << std::endl;
-		return 1;
 	}
 }

@@ -1,19 +1,14 @@
 #include "serein/services/credentials.h"
 #include "base/basic_types.h"
+#include "serein/tests/require.h"
 
+#include <doctest/doctest.h>
 #include <map>
-#include <stdexcept>
 
 namespace {
 
 auto Stored = std::map<QString, QByteArray>();
 auto Calls = 0;
-
-void Require(bool value, const char *message) {
-	if (!value) {
-		throw std::runtime_error(message);
-	}
-}
 
 } // namespace
 
@@ -43,7 +38,7 @@ CredentialError Remove(const QString &account) {
 
 } // namespace Serein::Ports::SecretStore
 
-void TestCredentials() {
+TEST_CASE("Credentials") {
 	using namespace Serein;
 	const auto account = u"service:00000000-0000-0000-0000-000000000002"_q;
 	Require(WriteCredential(account, "sk-local") == CredentialError::None,

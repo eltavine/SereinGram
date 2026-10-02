@@ -1,20 +1,11 @@
 #include "serein/network/proxy_notes.h"
 
 #include "base/basic_types.h"
+#include "serein/tests/require.h"
 
-#include <stdexcept>
+#include <doctest/doctest.h>
 
-namespace {
-
-void Require(bool value, const char *message) {
-	if (!value) {
-		throw std::runtime_error(message);
-	}
-}
-
-} // namespace
-
-void TestProxyNotes() {
+TEST_CASE("ProxyNotes") {
 	using namespace Serein::Network;
 	Require(ProxyNoteKey(u" Proxy.Example.COM "_q, 443) == u"proxy.example.com:443"_q,
 		"proxy note key is not normalized");
