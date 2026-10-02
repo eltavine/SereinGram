@@ -18,7 +18,11 @@ message MenuConfig {
   map<string, string> states = 1 [(buf.validate.field).map = {
     values: {
       string: {
-        in: ["show", "hide", "option"]
+        in: [
+          "show",
+          "hide",
+          "option"
+        ]
       }
     }
   }];

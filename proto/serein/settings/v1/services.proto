@@ -24,12 +24,8 @@ message ServicesSettings {
     custom_ui: true
     refresh: [REFRESH_COMPOSE_BUTTONS]
   }];
-  optional bool translation_context = 6 [(serein.options.v1.field) = {
-    custom_ui: true
-  }];
-  optional bool chat_translation_without_premium = 8 [(serein.options.v1.field) = {
-    custom_ui: true
-  }];
+  optional bool translation_context = 6 [(serein.options.v1.field) = {custom_ui: true}];
+  optional bool chat_translation_without_premium = 8 [(serein.options.v1.field) = {custom_ui: true}];
   optional bool auto_translate_chats = 11 [(serein.options.v1.field) = {
     scope: SCOPE_ACCOUNT
     custom_ui: true
@@ -39,7 +35,10 @@ message ServicesSettings {
       title: "lng_serein_proxy_subscription"
       custom_ui: true
     },
-    (buf.validate.field).string = {max_len: 2048, pattern: "^(https://[^\\s]+)?$"}
+    (buf.validate.field).string = {
+      max_len: 2048
+      pattern: "^(https://[^\\s]+)?$"
+    }
   ];
   optional bytes proxy_notes = 9 [(serein.options.v1.field) = {
     title: "lng_serein_proxy_notes"
@@ -55,16 +54,19 @@ message ServicesSettings {
     hidden: true
   }];
   optional string custom_doh = 7 [
-    (serein.options.v1.field) = {
-      custom_ui: true
-    },
+    (serein.options.v1.field) = {custom_ui: true},
     (buf.validate.field).string = {
       max_len: 253
       pattern: "^(([A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?\\.)+[A-Za-z]{2,63})?$"
     }
   ];
   optional bool android_web_apps = 10 [(serein.options.v1.field) = {
-    keywords: ["mini apps", "web apps", "bots", "Android"]
+    keywords: [
+      "mini apps",
+      "web apps",
+      "bots",
+      "Android"
+    ]
     custom_ui: true
   }];
 }

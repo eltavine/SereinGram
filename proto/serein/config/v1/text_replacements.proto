@@ -21,6 +21,9 @@ message TextReplacements {
 message TextReplacement {
   option (serein.options.v1.codec) = {require_fields: true};
 
-  string from = 1 [(buf.validate.field).string = {min_len: 1, max_len: 32}];
+  string from = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 32
+  }];
   string to = 2 [(buf.validate.field).string.max_len = 256];
 }

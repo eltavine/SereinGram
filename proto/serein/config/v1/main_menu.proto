@@ -20,7 +20,17 @@ message MainMenuConfig {
     unique: true
     items: {
       string: {
-        in: ["profile", "bots", "newGroup", "newChannel", "contacts", "calls", "savedMessages", "settings", "nightMode"]
+        in: [
+          "profile",
+          "bots",
+          "newGroup",
+          "newChannel",
+          "contacts",
+          "calls",
+          "savedMessages",
+          "settings",
+          "nightMode"
+        ]
       }
     }
   }];
@@ -29,7 +39,16 @@ message MainMenuConfig {
     unique: true
     items: {
       string: {
-        in: ["profile", "bots", "newGroup", "newChannel", "contacts", "calls", "savedMessages", "nightMode"]
+        in: [
+          "profile",
+          "bots",
+          "newGroup",
+          "newChannel",
+          "contacts",
+          "calls",
+          "savedMessages",
+          "nightMode"
+        ]
       }
     }
   }];

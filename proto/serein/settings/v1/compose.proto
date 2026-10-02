@@ -12,111 +12,160 @@ message ComposeSettings {
     category: CATEGORY_COMPOSE
   };
 
-  optional bool hide_attach_button = 1 [
-    (serein.options.v1.field) = {
-      section: {title: "lng_serein_compose_buttons" id: "buttons" keywords: ["buttons", "compose"]}
-      keywords: ["attach"]
-      refresh: REFRESH_COMPOSE_BUTTONS
+  optional bool hide_attach_button = 1 [(serein.options.v1.field) = {
+    section: {
+      title: "lng_serein_compose_buttons"
+      id: "buttons"
+      keywords: [
+        "buttons",
+        "compose"
+      ]
     }
-  ];
-  optional bool hide_emoji_button = 2 [
-    (serein.options.v1.field) = {
-      keywords: ["emoji"]
-      refresh: REFRESH_COMPOSE_BUTTONS
-    }
-  ];
-  optional bool hide_recording_button = 3 [
-    (serein.options.v1.field) = {
-      keywords: ["recording"]
-      refresh: REFRESH_COMPOSE_BUTTONS
-    }
-  ];
-  optional bool hide_bot_command_button = 4 [
-    (serein.options.v1.field) = {
-      keywords: ["bot", "command"]
-      refresh: REFRESH_COMPOSE_BUTTONS
-    }
-  ];
-  optional bool hide_bot_menu = 5 [
-    (serein.options.v1.field) = {
-      keywords: ["bot", "menu"]
-      refresh: REFRESH_COMPOSE_BUTTONS
-    }
-  ];
-  optional bool hide_auto_delete_button = 6 [
-    (serein.options.v1.field) = {
-      keywords: ["delete", "timer"]
-      refresh: REFRESH_COMPOSE_BUTTONS
-    }
-  ];
-  optional bool hide_gift_button = 7 [
-    (serein.options.v1.field) = {
-      keywords: ["gift"]
-      refresh: REFRESH_COMPOSE_BUTTONS
-    }
-  ];
-  optional bool hide_ai_button = 8 [
-    (serein.options.v1.field) = {
-      keywords: ["AI"]
-      refresh: REFRESH_COMPOSE_BUTTONS
-    }
-  ];
-  optional bool hide_send_as_button = 9 [
-    (serein.options.v1.field) = {
-      keywords: ["send as"]
-      refresh: REFRESH_COMPOSE_BUTTONS
-    }
-  ];
-  optional bool hide_stars_reaction_button = 10 [
-    (serein.options.v1.field) = {
-      keywords: ["Stars"]
-      refresh: REFRESH_COMPOSE_BUTTONS
-    }
-  ];
-  optional bool hide_channel_mute_button = 11 [
-    (serein.options.v1.field) = {
-      keywords: ["channel", "mute"]
-      refresh: REFRESH_COMPOSE_BUTTONS
-    }
-  ];
+    keywords: ["attach"]
+    refresh: REFRESH_COMPOSE_BUTTONS
+  }];
+  optional bool hide_emoji_button = 2 [(serein.options.v1.field) = {
+    keywords: ["emoji"]
+    refresh: REFRESH_COMPOSE_BUTTONS
+  }];
+  optional bool hide_recording_button = 3 [(serein.options.v1.field) = {
+    keywords: ["recording"]
+    refresh: REFRESH_COMPOSE_BUTTONS
+  }];
+  optional bool hide_bot_command_button = 4 [(serein.options.v1.field) = {
+    keywords: [
+      "bot",
+      "command"
+    ]
+    refresh: REFRESH_COMPOSE_BUTTONS
+  }];
+  optional bool hide_bot_menu = 5 [(serein.options.v1.field) = {
+    keywords: [
+      "bot",
+      "menu"
+    ]
+    refresh: REFRESH_COMPOSE_BUTTONS
+  }];
+  optional bool hide_auto_delete_button = 6 [(serein.options.v1.field) = {
+    keywords: [
+      "delete",
+      "timer"
+    ]
+    refresh: REFRESH_COMPOSE_BUTTONS
+  }];
+  optional bool hide_gift_button = 7 [(serein.options.v1.field) = {
+    keywords: ["gift"]
+    refresh: REFRESH_COMPOSE_BUTTONS
+  }];
+  optional bool hide_ai_button = 8 [(serein.options.v1.field) = {
+    keywords: ["AI"]
+    refresh: REFRESH_COMPOSE_BUTTONS
+  }];
+  optional bool hide_send_as_button = 9 [(serein.options.v1.field) = {
+    keywords: ["send as"]
+    refresh: REFRESH_COMPOSE_BUTTONS
+  }];
+  optional bool hide_stars_reaction_button = 10 [(serein.options.v1.field) = {
+    keywords: ["Stars"]
+    refresh: REFRESH_COMPOSE_BUTTONS
+  }];
+  optional bool hide_channel_mute_button = 11 [(serein.options.v1.field) = {
+    keywords: [
+      "channel",
+      "mute"
+    ]
+    refresh: REFRESH_COMPOSE_BUTTONS
+  }];
   optional bool disable_emoji_hover = 12 [(serein.options.v1.field) = {
-    section: {title: "lng_serein_input_behavior" id: "input-behavior" keywords: ["input", "behavior"]}
-    keywords: ["emoji", "hover"]
+    section: {
+      title: "lng_serein_input_behavior"
+      id: "input-behavior"
+      keywords: [
+        "input",
+        "behavior"
+      ]
+    }
+    keywords: [
+      "emoji",
+      "hover"
+    ]
   }];
   optional bool disable_attach_hover = 13 [(serein.options.v1.field) = {
-    keywords: ["attachment", "hover"]
+    keywords: [
+      "attachment",
+      "hover"
+    ]
   }];
   optional bool bot_commands_to_draft = 14 [(serein.options.v1.field) = {
-    keywords: ["bot", "command", "draft"]
+    keywords: [
+      "bot",
+      "command",
+      "draft"
+    ]
   }];
   optional int32 input_placeholder_mode = 15 [
     (serein.options.v1.field) = {
       title: "lng_serein_input_placeholder"
-      keywords: ["placeholder", "hint"]
+      keywords: [
+        "placeholder",
+        "hint"
+      ]
       choice: {
-        labels: ["lng_serein_preview_follow", "lng_serein_placeholder_chat", "lng_serein_placeholder_sender"]
+        labels: [
+          "lng_serein_preview_follow",
+          "lng_serein_placeholder_chat",
+          "lng_serein_placeholder_sender"
+        ]
       }
     },
-    (buf.validate.field).int32 = {gte: 0, lte: 2}
+    (buf.validate.field).int32 = {
+      gte: 0
+      lte: 2
+    }
   ];
   optional bool disable_auto_markdown = 16 [(serein.options.v1.field) = {
-    section: {title: "lng_serein_text_format" id: "text-format" keywords: ["text", "format"]}
+    section: {
+      title: "lng_serein_text_format"
+      id: "text-format"
+      keywords: [
+        "text",
+        "format"
+      ]
+    }
     keywords: ["Markdown"]
   }];
   optional bool disable_link_preview = 17 [(serein.options.v1.field) = {
-    keywords: ["link", "preview"]
+    keywords: [
+      "link",
+      "preview"
+    ]
   }];
   optional bool space_on_send = 18 [(serein.options.v1.field) = {
-    keywords: ["spacing", "send"]
+    keywords: [
+      "spacing",
+      "send"
+    ]
   }];
   optional bool space_on_edit = 19 [(serein.options.v1.field) = {
-    keywords: ["spacing", "edit"]
+    keywords: [
+      "spacing",
+      "edit"
+    ]
   }];
   optional bool mention_menu = 29 [(serein.options.v1.field) = {
-    keywords: ["mention", "format"]
+    keywords: [
+      "mention",
+      "format"
+    ]
   }];
   optional bool remember_forward_options = 33 [(serein.options.v1.field) = {
-    keywords: ["forward", "sender", "names", "captions", "remember"]
+    keywords: [
+      "forward",
+      "sender",
+      "names",
+      "captions",
+      "remember"
+    ]
     note: "lng_serein_remember_forward_options_note"
   }];
   optional int32 last_forward_options = 34 [
@@ -124,52 +173,110 @@ message ComposeSettings {
       title: "lng_serein_remember_forward_options"
       hidden: true
     },
-    (buf.validate.field).int32 = {in: [0, 1, 2]}
-  ];
-  optional bool caption_above_media = 35 [(serein.options.v1.field) = {
-    keywords: ["caption", "above", "media", "photo", "video"]
-  }];
-  optional bool draft_translation = 32 [(serein.options.v1.field) = {
-    keywords: ["translate", "draft", "message field"]
-  }];
-  optional bool format_toolbar = 31 [(serein.options.v1.field) = {
-    keywords: ["format", "toolbar", "bold", "selection"]
-  }];
-  optional string default_code_language = 20 [
-    (buf.validate.field).string = {max_len: 32, pattern: "^[A-Za-z0-9+-]*$"}
-  ];
-  optional bytes quick_replies = 21 [
-    (serein.options.v1.field) = {
-      validator: "ValidQuickReplies"
-      default_string: "{\"version\":1,\"replies\":[\"\",\"\"]}"
+    (buf.validate.field).int32 = {
+      in: [
+        0,
+        1,
+        2
+      ]
     }
   ];
+  optional bool caption_above_media = 35 [(serein.options.v1.field) = {
+    keywords: [
+      "caption",
+      "above",
+      "media",
+      "photo",
+      "video"
+    ]
+  }];
+  optional bool draft_translation = 32 [(serein.options.v1.field) = {
+    keywords: [
+      "translate",
+      "draft",
+      "message field"
+    ]
+  }];
+  optional bool format_toolbar = 31 [(serein.options.v1.field) = {
+    keywords: [
+      "format",
+      "toolbar",
+      "bold",
+      "selection"
+    ]
+  }];
+  optional string default_code_language = 20 [(buf.validate.field).string = {
+    max_len: 32
+    pattern: "^[A-Za-z0-9+-]*$"
+  }];
+  optional bytes quick_replies = 21 [(serein.options.v1.field) = {
+    validator: "ValidQuickReplies"
+    default_string: "{\"version\":1,\"replies\":[\"\",\"\"]}"
+  }];
   optional bytes text_replacements = 30 [(serein.options.v1.field) = {
     custom_ui: true
     validator: "ValidTextReplacementsBytes"
   }];
   optional bool confirm_sticker = 22 [(serein.options.v1.field) = {
-    section: {title: "lng_serein_send_confirmation" id: "send-confirmation" keywords: ["send", "confirm"]}
-    keywords: ["sticker", "confirm"]
+    section: {
+      title: "lng_serein_send_confirmation"
+      id: "send-confirmation"
+      keywords: [
+        "send",
+        "confirm"
+      ]
+    }
+    keywords: [
+      "sticker",
+      "confirm"
+    ]
   }];
   optional bool confirm_gif = 23 [(serein.options.v1.field) = {
-    keywords: ["GIF", "confirm"]
+    keywords: [
+      "GIF",
+      "confirm"
+    ]
   }];
   optional bool preview_voice = 24 [(serein.options.v1.field) = {
-    keywords: ["voice", "listen"]
+    keywords: [
+      "voice",
+      "listen"
+    ]
   }];
   optional bool preview_round_video = 25 [(serein.options.v1.field) = {
-    keywords: ["video", "preview"]
+    keywords: [
+      "video",
+      "preview"
+    ]
   }];
   optional bool confirm_private_call = 26 [(serein.options.v1.field) = {
-    keywords: ["call", "confirm"]
+    keywords: [
+      "call",
+      "confirm"
+    ]
   }];
   optional bool forward_before_comment = 27 [(serein.options.v1.field) = {
-    section: {title: "lng_serein_forwarding" id: "forwarding" keywords: ["forward"]}
-    keywords: ["forward", "comment", "order"]
+    section: {
+      title: "lng_serein_forwarding"
+      id: "forwarding"
+      keywords: ["forward"]
+    }
+    keywords: [
+      "forward",
+      "comment",
+      "order"
+    ]
   }];
   optional bool send_silently = 28 [(serein.options.v1.field) = {
-    section: {title: "lng_serein_sending" id: "sending" keywords: ["send"]}
-    keywords: ["silent", "notification", "send"]
+    section: {
+      title: "lng_serein_sending"
+      id: "sending"
+      keywords: ["send"]
+    }
+    keywords: [
+      "silent",
+      "notification",
+      "send"
+    ]
   }];
 }

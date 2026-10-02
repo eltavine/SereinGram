@@ -13,60 +13,120 @@ message PrivacySettings {
   };
 
   optional bool demo_mode = 1 [(serein.options.v1.field) = {
-    keywords: ["presentation", "capture"]
+    keywords: [
+      "presentation",
+      "capture"
+    ]
     note: "lng_serein_demo_mode_note"
   }];
   optional bool auto_demo_mode = 10 [(serein.options.v1.field) = {
-    keywords: ["presentation", "OBS", "recording", "streaming"]
+    keywords: [
+      "presentation",
+      "OBS",
+      "recording",
+      "streaming"
+    ]
     note: "lng_serein_auto_demo_mode_note"
   }];
   optional bool lock_settings = 11 [(serein.options.v1.field) = {
-    keywords: ["lock", "passcode", "settings"]
+    keywords: [
+      "lock",
+      "passcode",
+      "settings"
+    ]
     note: "lng_serein_lock_settings_note"
   }];
   optional bool hide_read_time = 2 [(serein.options.v1.field) = {
-    keywords: ["read", "time"]
+    keywords: [
+      "read",
+      "time"
+    ]
   }];
   optional bool hide_share_phone_prompt = 3 [(serein.options.v1.field) = {
-    keywords: ["share", "phone"]
+    keywords: [
+      "share",
+      "phone"
+    ]
   }];
   optional int32 profile_id_format = 4 [
     (serein.options.v1.field) = {
-      keywords: ["profile", "ID"]
+      keywords: [
+        "profile",
+        "ID"
+      ]
       choice: {
-        labels: ["lng_serein_id_off", "lng_serein_id_bot_api", "lng_serein_id_raw"]
+        labels: [
+          "lng_serein_id_off",
+          "lng_serein_id_bot_api",
+          "lng_serein_id_raw"
+        ]
       }
     },
-    (buf.validate.field).int32 = {gte: 0, lte: 2}
+    (buf.validate.field).int32 = {
+      gte: 0
+      lte: 2
+    }
   ];
   optional bool show_profile_dc = 5 [(serein.options.v1.field) = {
-    keywords: ["profile", "DC"]
+    keywords: [
+      "profile",
+      "DC"
+    ]
   }];
   optional bool show_registration_date = 9 [(serein.options.v1.field) = {
-    keywords: ["profile", "registration", "account age"]
+    keywords: [
+      "profile",
+      "registration",
+      "account age"
+    ]
     note: "lng_serein_registration_date_note"
   }];
   optional bool show_contact_status = 14 [(serein.options.v1.field) = {
-    keywords: ["profile", "contact", "mutual contact"]
+    keywords: [
+      "profile",
+      "contact",
+      "mutual contact"
+    ]
     note: "lng_serein_contact_status_note"
   }];
   optional bool show_session_details = 13 [(serein.options.v1.field) = {
-    keywords: ["sessions", "devices", "API ID", "login"]
+    keywords: [
+      "sessions",
+      "devices",
+      "API ID",
+      "login"
+    ]
     note: "lng_serein_session_details_note"
   }];
   optional bool local_names = 12 [(serein.options.v1.field) = {
-    keywords: ["local name", "alias", "rename", "nickname"]
+    keywords: [
+      "local name",
+      "alias",
+      "rename",
+      "nickname"
+    ]
     note: "lng_serein_local_names_note"
   }];
   optional bool hide_profile_gifts = 6 [(serein.options.v1.field) = {
-    keywords: ["profile", "gifts"]
+    keywords: [
+      "profile",
+      "gifts"
+    ]
   }];
   optional bool hide_create_todo = 7 [(serein.options.v1.field) = {
-    keywords: ["todo", "list"]
+    keywords: [
+      "todo",
+      "list"
+    ]
   }];
   // Forwarding stays blocked because Telegram rejects it server-side.
   optional bool save_protected_content = 8 [(serein.options.v1.field) = {
-    keywords: ["protected", "save", "copy", "noforwards"]
+    keywords: [
+      "protected",
+      "save",
+      "copy",
+      "noforwards"
+    ]
     note: "lng_serein_save_protected_content_note"
   }];
 }

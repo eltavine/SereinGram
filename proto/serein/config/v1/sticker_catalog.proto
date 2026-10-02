@@ -25,6 +25,10 @@ message StickerCatalogSet {
   string short_name = 1 [(buf.validate.field).string.pattern = "^[a-zA-Z0-9_]{1,64}$"];
   string title = 2 [(buf.validate.field).string.max_len = 256];
   string type = 3 [(buf.validate.field).string = {
-    in: ["stickers", "masks", "emoji"]
+    in: [
+      "stickers",
+      "masks",
+      "emoji"
+    ]
   }];
 }

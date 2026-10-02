@@ -26,7 +26,10 @@ message FilterSettings {
       scope: SCOPE_DEVICE
       custom_ui: true
     },
-    (buf.validate.field).string = {max_len: 2048, pattern: "^(https://[^\\s]+)?$"}
+    (buf.validate.field).string = {
+      max_len: 2048
+      pattern: "^(https://[^\\s]+)?$"
+    }
   ];
   optional bytes subscribed_rules = 3 [(serein.options.v1.field) = {
     title: "lng_serein_filter_subscription"
