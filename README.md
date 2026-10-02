@@ -13,6 +13,8 @@ The SereinGram logo is designed by [OukaroMF](https://github.com/OukaroMF/).
   [Feature matrix](docs/serein/features.md) ·
   [Architecture](docs/serein/architecture.md)
 - [Brand assets and application identity](BRANDING.md)
+- [Linux distributions](docs/serein/linux.md): Ubuntu, Debian, Linux Mint,
+  Fedora, openSUSE, Arch Linux and NixOS
 - Build instructions: [macOS](docs/building-mac.md),
   [Windows](docs/building-win.md), [Linux](docs/building-linux.md)
 - [Source](https://github.com/eltavine/SereinGram) ·

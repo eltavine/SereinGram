@@ -9,6 +9,7 @@ SereinGram 是基于 Telegram Desktop 的第三方桌面客户端，功能对标
 | [功能矩阵](features.md) | 功能与实现状态：稳定 Feature ID、来源、状态、优先级 |
 | [架构](architecture.md) | 模块分层、依赖方向、上游挂钩门面、schema、存储、守卫与迁移步骤 |
 | [发布约定](releases.md) | 渠道、构建矩阵、产物命名、校验文件与清单格式 |
+| [Linux 发行版](linux.md) | 七个主流发行版的安装方式、CI 安装测试与 Nix 包 |
 | [ADR](adr/) | 关键取舍与调研记录 |
 
 ## 0. 全局工程原则
@@ -35,14 +36,16 @@ SereinGram 是基于 Telegram Desktop 的第三方桌面客户端，功能对标
 | --- | --- | --- | --- |
 | macOS | arm64 + x86_64 通用二进制，DMG | 上游 `prepare.py` + Xcode | 随上游 |
 | Windows | x86_64 与 arm64 安装包、便携版 | 上游 `prepare.py` + MSVC | 随上游 |
-| Linux | x86_64 静态构建便携包、AppImage、`.deb` 与 `.rpm`（Rocky Linux 8 容器，glibc 2.28 及以上）；x86_64 与 arm64 Flatpak 包；Arch Linux PKGBUILD 以系统库构建 | 上游 Docker 环境；Arch 与 Flatpak 用各自的依赖 | 随上游 |
+| Linux | x86_64 静态构建便携包、AppImage、`.deb` 与 `.rpm`（Rocky Linux 8 容器，glibc 2.28 及以上）；x86_64 与 arm64 Flatpak 包；Arch Linux PKGBUILD 与 Nix flake 以系统库构建；七个主流发行版的安装方式见 [Linux 发行版](linux.md) | 上游 Docker 环境；Arch、Flatpak 与 Nix 用各自的依赖 | 随上游 |
 
 Linux 发行版打包：
 
 - `packaging/nfpm/`：把静态构建打成 `.deb` 与 `.rpm`，Linux 工作流随构建产物一起生成。
 - `packaging/arch/PKGBUILD`：以系统库构建 `sereingram-desktop-git`，CI 工作流 `serein-arch.yml` 在 Arch 容器中构建并安装检查。
 - `packaging/flatpak/`：GNOME 运行时上的 Flatpak 清单，构建本地检出，CI 工作流 `serein-flatpak.yml` 生成 `.flatpak` 包。
-- 打包者必须使用自己的 API 凭据：PKGBUILD 读取环境变量 `SEREIN_API_ID` 与 `SEREIN_API_HASH`，Flatpak 读取被忽略的 `Telegram/build/api_credentials.local.cmake`；缺少凭据时构建报错。以系统库构建时不检查 GitHub 更新，由包管理器负责更新。
+- `flake.nix` 与 `packaging/nix/package.nix`：基于 nixpkgs 的 telegram-desktop 配方构建，CI 工作流 `serein-nix.yml` 在 x86_64 与 aarch64 上构建并启动。
+- `tools/serein/linux_package_test.sh`：在 Ubuntu、Debian、Linux Mint、Fedora、openSUSE 与 Arch Linux 的容器中安装软件包并检查文件与动态库。
+- 打包者必须使用自己的 API 凭据：PKGBUILD 读取环境变量 `SEREIN_API_ID` 与 `SEREIN_API_HASH`，Flatpak 读取被忽略的 `Telegram/build/api_credentials.local.cmake`，Nix 包通过 `apiId` 与 `apiHash` 参数传入；缺少凭据时构建报错。以系统库构建时不检查 GitHub 更新，由包管理器负责更新。
 - `tools/serein/check_packaging.py` 要求两份配方锁定的依赖版本与 `snap/snapcraft.yaml` 一致。`upstream_sync.py` 合并上游后自动改写两份配方中 tdlib、tg_owt、tlottie 与 patches 的提交（也可运行 `check_packaging.py --update`）；Qt 版本变化需要新的源码包校验值，tlottie 提交变化需要重新生成 `tlottie-cargo-sources.yml`，这两项由检查报出后手动更新。
 
 ## 3. 标识与状态
