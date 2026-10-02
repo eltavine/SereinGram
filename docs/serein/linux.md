@@ -14,7 +14,7 @@ SereinGram 支持讨论度最高的七个 Linux 发行版：Ubuntu、Debian、Li
 
 `.deb` 与 `.rpm` 的安装测试由 `tools/serein/linux_package_test.sh` 完成：在各发行版的容器中用系统包管理器安装，解析依赖后检查程序、桌面入口、AppStream 元数据、图标，以及程序需要的动态库都能找到。Linux 工作流对 x86_64 与 arm64 的每次构建都运行它。
 
-所有发行版也都可以使用 Flatpak 单文件包、AppImage 或便携版压缩包（glibc 2.28 起）。
+所有发行版也都可以使用 Flatpak 单文件包、AppImage 或便携版压缩包（glibc 2.28 起）。支持 Snap 的发行版还可以安装 Snap 包：`snap/snapcraft.yaml` 以 core24 构建，CI 工作流 `serein-snap.yml` 在配方改动时和每周构建、安装并启动它。
 
 ## 安装
 
@@ -47,6 +47,16 @@ git clone https://github.com/eltavine/SereinGram.git
 cd SereinGram/packaging/arch
 SEREIN_API_ID=<your api_id> SEREIN_API_HASH=<your api_hash> makepkg -si
 ```
+
+## Snap
+
+Snap 包尚未上架 Snap Store，下载或自行构建后用 `--dangerous` 安装本地文件：
+
+```sh
+sudo snap install --dangerous ./SereinGram-linux-x86_64.snap
+```
+
+配方不含任何 API 凭据。自行构建时，在 `snap/snapcraft.yaml` 的 `cmake-parameters` 中加入自己的 `-DTDESKTOP_API_ID` 与 `-DTDESKTOP_API_HASH`（不要提交这项改动）；CI 只在构建用的副本中加入。
 
 ## NixOS 与 Nix
 
