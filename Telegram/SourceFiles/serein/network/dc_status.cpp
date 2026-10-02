@@ -86,7 +86,7 @@ void Probe::start(int index) {
 		const auto weak = base::make_weak(this);
 		raw->connect(raw, &Connection::connected, [=] {
 			if (const auto strong = weak.get()) {
-				strong->finish(index, raw->pingTime());
+				strong->finish(index, int(raw->pingTime()));
 			}
 		});
 		const auto failed = [=] {

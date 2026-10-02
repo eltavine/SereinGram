@@ -1,7 +1,5 @@
 #include "serein/settings/services_network.h"
 
-#include "serein/settings/rows.h"
-
 #include "core/application.h"
 #include "base/flat_set.h"
 #include "core/core_settings.h"
@@ -161,7 +159,7 @@ void ProxyNotesBox(not_null<Ui::GenericBox*> box) {
 
 } // namespace
 
-void AddNetworkSettings(::Settings::Builder::SectionBuilder &builder) {
+void AddProxySubscriptionRow(::Settings::Builder::SectionBuilder &builder) {
 	const auto controller = builder.controller();
 	builder.addButton({
 		.id = u"serein/services/proxy-subscription"_q,
@@ -177,6 +175,10 @@ void AddNetworkSettings(::Settings::Builder::SectionBuilder &builder) {
 		.keywords = { u"proxy"_q, u"subscription"_q, u"MTProto"_q },
 	});
 	builder.addDividerText(tr::lng_serein_proxy_subscription_about());
+}
+
+void AddProxyToolRows(::Settings::Builder::SectionBuilder &builder) {
+	const auto controller = builder.controller();
 	builder.addButton({
 		.id = u"serein/services/proxy-sort"_q,
 		.title = tr::lng_serein_proxy_sort(),
@@ -201,13 +203,10 @@ void AddNetworkSettings(::Settings::Builder::SectionBuilder &builder) {
 		.keywords = { u"proxy"_q, u"note"_q, u"remark"_q },
 	});
 	builder.addDividerText(tr::lng_serein_proxy_tools_about());
-	AddToggle(builder, {
-		.option = &ServiceSettings::kPauseProxyOnVpn,
-		.title = tr::lng_serein_proxy_vpn,
-		.id = u"serein/services/proxy-vpn"_q,
-		.keywords = { u"proxy"_q, u"VPN"_q },
-	});
-	builder.addDividerText(tr::lng_serein_proxy_vpn_about());
+}
+
+void AddCustomDohRow(::Settings::Builder::SectionBuilder &builder) {
+	const auto controller = builder.controller();
 	builder.addButton({
 		.id = u"serein/services/custom-doh"_q,
 		.title = tr::lng_serein_custom_doh(),
@@ -222,13 +221,10 @@ void AddNetworkSettings(::Settings::Builder::SectionBuilder &builder) {
 		.keywords = { u"DNS"_q, u"DoH"_q, u"censorship"_q },
 	});
 	builder.addDividerText(tr::lng_serein_custom_doh_about());
-	AddToggle(builder, {
-		.option = &ServiceSettings::kFasterTransfers,
-		.title = tr::lng_serein_faster_transfers,
-		.id = u"serein/services/faster-transfers"_q,
-		.keywords = { u"upload"_q, u"download"_q, u"speed"_q },
-	});
-	builder.addDividerText(tr::lng_serein_faster_transfers_about());
+}
+
+void AddDatacenterStatusRow(::Settings::Builder::SectionBuilder &builder) {
+	const auto controller = builder.controller();
 	builder.addButton({
 		.id = u"serein/services/dc-status"_q,
 		.title = tr::lng_serein_dc_status(),

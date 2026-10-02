@@ -11,6 +11,11 @@ sereinSnapshotPreviewMinimum: 80px;
 
 sereinHistoryPreviewSize: size(240px, 180px);
 
+sereinStoryPreviewSize: size(135px, 240px);
+sereinStoryCaption: InputField(defaultInputField) {
+	heightMax: 148px;
+}
+
 sereinFormatToolbar: InnerDropdown(defaultInnerDropdown) {
 	scrollMargin: margins(4px, 4px, 4px, 4px);
 }

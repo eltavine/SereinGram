@@ -117,7 +117,6 @@ jobs:
             sudo apt-get install -y ccache
           fi
           echo "CCACHE_DIR=$RUNNER_TEMP/.tdesktop-cache" >> "$GITHUB_ENV"
-          echo "SOURCE_DATE_EPOCH=$(git log -1 --format=%ct)" >> "$GITHUB_ENV"
           cd Telegram/build/docker/centos_env
           poetry install
           DOCKERFILE=$(DEBUG='' LTO='' poetry run gen_dockerfile)
@@ -143,7 +142,7 @@ jobs:
           path: |
             ${{ runner.temp }}/.buildx-cache
             ${{ runner.temp }}/.mount-cache
-          key: ${{ runner.OS }}-${{ env.KEY_ARCH }}libs-${{ hashFiles('Telegram/build/docker/centos_env/**') }}
+          key: ${{ runner.OS }}-${{ env.KEY_ARCH }}libs-v2-${{ hashFiles('Telegram/build/docker/centos_env/**') }}
           restore-keys: ${{ runner.OS }}-${{ env.KEY_ARCH }}libs-
 
       - name: Restore Docker cache mounts.
@@ -167,6 +166,10 @@ jobs:
         run: |
           rm -rf "${{ runner.temp }}/.buildx-cache"
           mv "${{ runner.temp }}/.buildx-cache-new" "${{ runner.temp }}/.buildx-cache"
+
+      # Set after the image: as a build argument it would change every commit's image cache.
+      - name: Pin the source date.
+        run: echo "SOURCE_DATE_EPOCH=$(git log -1 --format=%ct)" >> "$GITHUB_ENV"
 
       - name: Save the libraries cache.
         if: env.SAVE_CACHE == 'true' && steps.cache-libs.outputs.cache-hit != 'true'

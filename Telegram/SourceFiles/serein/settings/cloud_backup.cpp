@@ -5,10 +5,12 @@
 #include "base/unixtime.h"
 #include "data/data_document.h"
 #include "data/data_document_media.h"
+#include "data/data_file_origin.h"
 #include "data/data_media_types.h"
 #include "data/data_peer.h"
 #include "data/data_session.h"
 #include "data/data_types.h"
+#include "data/data_user.h"
 #include "history/history.h"
 #include "history/history_item.h"
 #include "lang/lang_keys.h"
@@ -117,7 +119,9 @@ void Download(
 	controller->session().downloaderTaskFinished(
 	) | rpl::filter([=] {
 		return loading->media->loaded() || !document->loading();
-	}) | rpl::take(1) | rpl::on_next(finish, loading->lifetime);
+	}) | rpl::take(1) | rpl::on_next([=] {
+		finish();
+	}, loading->lifetime);
 }
 
 } // namespace
@@ -154,9 +158,8 @@ void RestoreFromSavedMessages(
 		gsl::not_null<Window::SessionController*> controller,
 		Fn<void(QByteArray)> done) {
 	const auto session = &controller->session();
-	using Flag = MTPmessages_Search::Flag;
 	session->api().request(MTPmessages_Search(
-		MTP_flags(Flag()),
+		MTP_flags(0),
 		MTP_inputPeerSelf(),
 		MTP_string(QString::fromLatin1(kTag)),
 		MTP_inputPeerEmpty(), // from_id

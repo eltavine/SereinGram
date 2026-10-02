@@ -88,5 +88,6 @@ Release 正文最上方是自动生成的变更记录：Nightly 列出自上一�
 | `serein-win.yml`、`serein-mac.yml`、`serein-linux.yml` | `develop` 与 `main` 推送、指向 `develop` 的 PR（Debug）；被发布流程调用（Release，Windows 与 Linux 各含 x86_64 和 arm64） | 编译（警告即错误）、`test_serein`、启动冒烟测试、打包与安装测试 |
 | `serein-flatpak.yml`、`serein-arch.yml` | 打包文件改动、每周定时；Flatpak 也被发布流程调用 | 发行版打包与安装检查 |
 | `serein-release.yml` | 每日定时、手动、`v*` 标签 | Release 矩阵、校验文件、变更记录与发布 |
+| `serein-upstream.yml` | 每周一、手动 | 合并 Telegram Desktop `dev`，开同步 PR 并触发守卫与三平台构建 |
 
 构建尽量可重复：依赖与工具按版本或校验和固定，Linux 构建以提交时间作为 `SOURCE_DATE_EPOCH`，便携包的文件顺序、属主与时间戳固定；不承诺逐字节一致。

@@ -8,6 +8,7 @@ on:
   pull_request:
     branches:
       - develop
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -206,7 +207,8 @@ jobs:
           git submodule update --init --depth 1 \
             Telegram/lib_base Telegram/lib_crl Telegram/lib_rpl Telegram/lib_ui \
             Telegram/ThirdParty/GSL Telegram/ThirdParty/range-v3 Telegram/ThirdParty/expected \
-            Telegram/ThirdParty/OpenCC Telegram/ThirdParty/doctest
+            Telegram/ThirdParty/OpenCC Telegram/ThirdParty/doctest \
+            Telegram/ThirdParty/quirc Telegram/ThirdParty/QR
 
       - name: Install OpenSSL headers.
         run: sudo apt-get update && sudo apt-get install -y libssl-dev
@@ -253,7 +255,8 @@ jobs:
           git submodule update --init --depth 1 \
             Telegram/lib_base Telegram/lib_crl Telegram/lib_rpl Telegram/lib_ui \
             Telegram/ThirdParty/GSL Telegram/ThirdParty/range-v3 Telegram/ThirdParty/expected \
-            Telegram/ThirdParty/OpenCC Telegram/ThirdParty/doctest
+            Telegram/ThirdParty/OpenCC Telegram/ThirdParty/doctest \
+            Telegram/ThirdParty/quirc Telegram/ThirdParty/QR
 
       - name: Install OpenSSL headers.
         run: sudo apt-get update && sudo apt-get install -y libssl-dev

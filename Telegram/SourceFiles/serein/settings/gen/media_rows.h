@@ -10,7 +10,7 @@
 
 namespace Serein::Media {
 
-inline const auto kToggleRows = std::array<ToggleRow, 14>{ {
+inline const auto kToggleRows = std::array<ToggleRow, 15>{ {
 	{
 		&kHideStickerTime,
 		tr::lng_serein_hide_sticker_time,
@@ -95,6 +95,12 @@ inline const auto kToggleRows = std::array<ToggleRow, 14>{ {
 		u"serein/media/denoise-voice-messages"_q,
 		{ u"noise"_q, u"voice"_q, u"recording"_q, u"microphone"_q },
 	},
+	{
+		&kStoryPosting,
+		tr::lng_serein_story_posting,
+		u"serein/media/story-posting"_q,
+		{ u"story"_q, u"stories"_q, u"post"_q, u"publish"_q, u"close friends"_q },
+	},
 } };
 
 inline void AddLayout(
@@ -141,6 +147,8 @@ inline void AddLayout(
 	AddToggle(builder, kToggleRows[12]);
 	AddToggle(builder, kToggleRows[13]);
 	AddNote(builder, tr::lng_serein_denoise_voice_messages_note);
+	AddToggle(builder, kToggleRows[14]);
+	AddNote(builder, tr::lng_serein_story_posting_note);
 }
 
 } // namespace Serein::Media

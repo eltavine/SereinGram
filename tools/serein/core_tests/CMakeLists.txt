@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.25)
-project(serein_core_tests LANGUAGES CXX)
+project(serein_core_tests LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -13,10 +13,16 @@ set(lib_loc ${repo_loc}/Telegram)
 
 include(${lib_loc}/cmake/serein_tests.cmake)
 include(${lib_loc}/cmake/serein_opencc.cmake)
+include(${lib_loc}/cmake/serein_quirc.cmake)
 list(APPEND serein_test_sources ${serein_sql_test_sources})
 list(TRANSFORM serein_test_sources PREPEND ${src_loc}/)
 
-add_executable(test_serein ${serein_test_sources} assertion_log.cpp)
+set_source_files_properties(${lib_loc}/ThirdParty/QR/cpp/qrcodegen.cpp
+    PROPERTIES COMPILE_OPTIONS -w)
+add_executable(test_serein
+    ${serein_test_sources}
+    ${lib_loc}/ThirdParty/QR/cpp/qrcodegen.cpp
+    assertion_log.cpp)
 
 target_include_directories(test_serein PRIVATE
     ${src_loc}
@@ -28,9 +34,15 @@ target_include_directories(test_serein PRIVATE
     ${lib_loc}/ThirdParty/range-v3/include
     ${lib_loc}/ThirdParty/expected/include
     ${lib_loc}/ThirdParty/doctest
+    ${lib_loc}/ThirdParty/QR/cpp
 )
 
-target_link_libraries(test_serein PRIVATE Qt6::Core Qt6::Sql OpenSSL::Crypto Serein::OpenCC)
+target_link_libraries(test_serein PRIVATE
+    Qt6::Core
+    Qt6::Sql
+    OpenSSL::Crypto
+    Serein::OpenCC
+    Serein::Quirc)
 
 target_compile_definitions(test_serein PRIVATE
     SEREIN_LANG_SOURCE_DIR="${lib_loc}/Resources/langs"

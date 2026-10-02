@@ -44,6 +44,16 @@ on:
       - 'Telegram/Telegram/**'
       - 'Telegram/configure.sh'
       - 'Telegram/Telegram.plist'
+  workflow_dispatch:
+    inputs:
+      arch:
+        type: choice
+        options: [x64, arm64]
+        default: x64
+      config:
+        type: choice
+        options: [Debug, Release]
+        default: Debug
   workflow_call:
     inputs:
       arch:
@@ -118,6 +128,14 @@ jobs:
             }
           }
           Get-PSDrive C | Format-Table Name, Used, Free
+
+      # Release compiles exhaust commit memory with the default pagefile; x64 runners keep C: tight.
+      - name: Enlarge the pagefile.
+        uses: al-cheb/configure-pagefile-action@9b6da52fb72a3c6147c1aad2df22d8d905681adc # v1.5
+        with:
+          minimum-size: 16GB
+          maximum-size: 32GB
+          disk-root: ${{ matrix.arch == 'arm64' && 'C:' || 'D:' }}
 
       - name: Prepare directories.
         run: |

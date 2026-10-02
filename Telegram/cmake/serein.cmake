@@ -28,6 +28,7 @@ set(serein_sources
     serein/features/history/model/recorder.cpp
     serein/features/updates/model/release.cpp
     serein/features/regdate/model/estimate.cpp
+    serein/features/stories/model/post.cpp
     serein/adapters/openssl/aes_gcm_cipher.cpp
     serein/features/ghost/hooks.cpp
     serein/features/instant_view/hooks.cpp
@@ -59,6 +60,10 @@ set(serein_sources
     serein/features/history/viewer.cpp
     serein/app/tray_menu.cpp
     serein/features/updates/checker.cpp
+    serein/features/stories/audience.cpp
+    serein/features/stories/canvas.cpp
+    serein/features/stories/composer.cpp
+    serein/features/stories/publisher.cpp
     serein/app/ghost_menu.cpp
     serein/features/ghost/send.cpp
     serein/display/json_files.cpp
@@ -94,6 +99,7 @@ set(serein_sources
     serein/settings/subpages.cpp
     serein/privacy/auto_demo.cpp
     serein/privacy/login_token.cpp
+    serein/privacy/qr_decode.cpp
     serein/privacy/qr_scan.cpp
     serein/admin/delete_mine.cpp
     serein/admin/unblock_all.cpp
@@ -163,6 +169,7 @@ set(serein_sources
     serein/settings/menu.cpp
     serein/settings/privacy.cpp
     serein/settings/messages.cpp
+    serein/settings/service_editor.cpp
     serein/settings/services.cpp
     serein/settings/services_network.cpp
     serein/services/credentials.cpp
@@ -379,7 +386,9 @@ if (DESKTOP_APP_TEST_APPS)
         desktop-app::lib_crl
         desktop-app::external_openssl
         desktop-app::external_qt
+        desktop-app::external_qr_code_generator
         Serein::OpenCC
+        Serein::Quirc
     )
 
     target_compile_definitions(test_serein PRIVATE

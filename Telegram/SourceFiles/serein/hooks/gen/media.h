@@ -40,5 +40,7 @@ namespace Serein::Hooks::Media {
 [[nodiscard]] rpl::producer<bool> Mp4FilePreviewValue();
 [[nodiscard]] bool DenoiseVoiceMessages();
 [[nodiscard]] rpl::producer<bool> DenoiseVoiceMessagesValue();
+[[nodiscard]] bool StoryPosting();
+[[nodiscard]] rpl::producer<bool> StoryPostingValue();
 
 } // namespace Serein::Hooks::Media

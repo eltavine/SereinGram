@@ -7,6 +7,7 @@
 #include "serein/chats/options.h"
 #include "serein/chats/quick_actions.h"
 #include "serein/features/history/viewer.h"
+#include "serein/features/stories/composer.h"
 #include "serein/filters/model.h"
 #include "serein/filters/reveal.h"
 #include "serein/services/summary.h"
@@ -14,6 +15,7 @@
 #include "serein/hooks/ghost.h"
 #include "serein/features/ghost/model/exceptions.h"
 #include "serein/schema/gen/settings/ghost.h"
+#include "serein/schema/gen/settings/media.h"
 #include "serein/privacy/options.h"
 #include "data/data_forum_topic.h"
 #include "data/data_histories.h"
@@ -84,6 +86,14 @@ void FillHistoryMenu(
 	}
 	if (!topic) {
 		FillReadExceptionAction(addAction, controller, peer);
+	}
+	if (!topic
+		&& ForDevice().Get(Serein::Media::kStoryPosting)
+		&& peer->isChannel()
+		&& peer->canPostStories()) {
+		addAction(tr::lng_serein_story_post_channel(tr::now), [=] {
+			Serein::Stories::StartPosting(controller, peer);
+		}, &st::menuIconStoriesSavedSection);
 	}
 	if (!topic && CanSummarizeChats()) {
 		addAction(tr::lng_serein_summary_action(tr::now), [=] {

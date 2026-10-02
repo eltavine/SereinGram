@@ -72,6 +72,13 @@
       "app": false,
       "libraries": true
     },
+    "serein/features/stories/model/": {
+      "own": [
+        "serein/features/stories/model/"
+      ],
+      "app": false,
+      "libraries": true
+    },
     "serein/core/": {
       "own": [
         "serein/core/",
@@ -121,6 +128,17 @@
         "serein/ports/",
         "serein/hooks/",
         "serein/adapters/qtnetwork/"
+      ],
+      "app": true,
+      "libraries": true
+    },
+    "serein/features/stories/": {
+      "own": [
+        "serein/features/stories/",
+        "serein/core/",
+        "serein/schema/",
+        "serein/ports/",
+        "serein/hooks/"
       ],
       "app": true,
       "libraries": true

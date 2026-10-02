@@ -1,6 +1,7 @@
 #include "serein/privacy/qr_scan.h"
 
 #include "serein/privacy/login_token.h"
+#include "serein/privacy/qr_decode.h"
 #include "apiwrap.h"
 #include "base/call_delayed.h"
 #include "core/application.h"
@@ -24,62 +25,22 @@
 #include <QtGui/QImage>
 #include <QtGui/QScreen>
 
-#include <quirc.h>
-
-#include <cstring>
-#include <memory>
-
 namespace Serein::Privacy {
 namespace {
 
-constexpr auto kMaxImagePixels = qint64(64) * 1024 * 1024;
 constexpr auto kScreenDelay = crl::time(300);
 
-struct QuircDeleter {
-	void operator()(quirc *decoder) const {
-		quirc_destroy(decoder);
-	}
-};
-
 [[nodiscard]] QStringList Decode(const QImage &image) {
-	auto result = QStringList();
-	if (image.isNull()
-		|| qint64(image.width()) * image.height() > kMaxImagePixels) {
-		return result;
+	if (image.isNull()) {
+		return QStringList();
 	}
 	const auto gray = image.convertToFormat(QImage::Format_Grayscale8);
-	const auto decoder = std::unique_ptr<quirc, QuircDeleter>(quirc_new());
-	if (!decoder
-		|| quirc_resize(decoder.get(), gray.width(), gray.height()) < 0) {
-		return result;
-	}
-	auto width = 0;
-	auto height = 0;
-	const auto pixels = quirc_begin(decoder.get(), &width, &height);
-	for (auto y = 0; y != height; ++y) {
-		std::memcpy(
-			pixels + qint64(y) * width,
-			gray.constScanLine(y),
-			width);
-	}
-	quirc_end(decoder.get());
-	for (auto i = 0, count = quirc_count(decoder.get()); i != count; ++i) {
-		auto code = quirc_code();
-		auto data = quirc_data();
-		quirc_extract(decoder.get(), i, &code);
-		auto error = quirc_decode(&code, &data);
-		if (error == QUIRC_ERROR_DATA_ECC) {
-			quirc_flip(&code);
-			error = quirc_decode(&code, &data);
-		}
-		if (error == QUIRC_SUCCESS) {
-			result.push_back(QString::fromUtf8(
-				reinterpret_cast<const char*>(data.payload),
-				data.payload_len));
-		}
-	}
-	result.removeDuplicates();
-	return result;
+	return DecodeQrCodes({
+		.pixels = gray.constBits(),
+		.width = gray.width(),
+		.height = gray.height(),
+		.stride = int(gray.bytesPerLine()),
+	});
 }
 
 [[nodiscard]] QStringList DecodeScreens() {

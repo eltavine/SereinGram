@@ -5,7 +5,7 @@ package serein.settings.v1;
 import "buf/validate/validate.proto";
 import "serein/options/v1/options.proto";
 
-// Translation and transcription services; the services page edits them by hand.
+// Translation, transcription and network services; rows follow the field order.
 message ServicesSettings {
   option (serein.options.v1.page) = {
     cpp_namespace: "ServiceSettings"
@@ -24,13 +24,40 @@ message ServicesSettings {
     custom_ui: true
     refresh: [REFRESH_COMPOSE_BUTTONS]
   }];
-  optional bool translation_context = 6 [(serein.options.v1.field) = {custom_ui: true}];
-  optional bool chat_translation_without_premium = 8 [(serein.options.v1.field) = {custom_ui: true}];
+  optional bool translation_context = 6 [(serein.options.v1.field) = {
+    keywords: [
+      "LLM",
+      "context",
+      "translate"
+    ]
+    note: "lng_serein_translation_context_about"
+  }];
+  optional bool chat_translation_without_premium = 8 [(serein.options.v1.field) = {
+    title: "lng_serein_chat_translation"
+    keywords: [
+      "translate",
+      "chat",
+      "Premium"
+    ]
+    note: "lng_serein_chat_translation_about"
+  }];
   optional bool auto_translate_chats = 11 [(serein.options.v1.field) = {
     scope: SCOPE_ACCOUNT
-    custom_ui: true
+    keywords: [
+      "translate",
+      "automatic",
+      "chat"
+    ]
+    note: "lng_serein_auto_translate_chats_about"
   }];
-  optional bool instant_view_translation = 12 [(serein.options.v1.field) = {custom_ui: true}];
+  optional bool instant_view_translation = 12 [(serein.options.v1.field) = {
+    keywords: [
+      "translate",
+      "Instant View",
+      "article"
+    ]
+    note: "lng_serein_instant_view_translation_about"
+  }];
   optional string proxy_subscription = 3 [
     (serein.options.v1.field) = {
       title: "lng_serein_proxy_subscription"
@@ -48,7 +75,11 @@ message ServicesSettings {
   }];
   optional bool pause_proxy_on_vpn = 4 [(serein.options.v1.field) = {
     title: "lng_serein_proxy_vpn"
-    custom_ui: true
+    keywords: [
+      "proxy",
+      "VPN"
+    ]
+    note: "lng_serein_proxy_vpn_about"
   }];
   optional bool proxy_paused_by_vpn = 5 [(serein.options.v1.field) = {
     title: "lng_serein_proxy_vpn"
@@ -61,6 +92,15 @@ message ServicesSettings {
       pattern: "^(([A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?\\.)+[A-Za-z]{2,63})?$"
     }
   ];
+  optional bool faster_transfers = 13 [(serein.options.v1.field) = {
+    title: "lng_serein_faster_transfers"
+    keywords: [
+      "upload",
+      "download",
+      "speed"
+    ]
+    note: "lng_serein_faster_transfers_about"
+  }];
   optional bool android_web_apps = 10 [(serein.options.v1.field) = {
     keywords: [
       "mini apps",
@@ -68,10 +108,6 @@ message ServicesSettings {
       "bots",
       "Android"
     ]
-    custom_ui: true
-  }];
-  optional bool faster_transfers = 13 [(serein.options.v1.field) = {
-    title: "lng_serein_faster_transfers"
-    custom_ui: true
+    note: "lng_serein_android_web_apps_about"
   }];
 }
