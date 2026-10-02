@@ -451,6 +451,15 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_custom_doh_about" = "Tried before Google and Cloudflare when Telegram looks up its fallback configuration and proxy domains over DNS-over-HTTPS. Useful where those resolvers are blocked.";
 "lng_serein_faster_transfers" = "Faster uploads and downloads";
 "lng_serein_faster_transfers_about" = "Downloads start with several connections and the full transfer window, and uploads keep more data in flight on each connection. Helps on high-latency networks such as distant proxies; Telegram still limits the speed of each account.";
+"lng_serein_dc_status" = "Data center status";
+"lng_serein_dc_status_about" = "Measures how quickly each Telegram data center answers through the proxy you use, or directly without one.";
+"lng_serein_dc_via_direct" = "Measured with a direct connection.";
+"lng_serein_dc_via_proxy" = "Measured through the proxy {proxy}.";
+"lng_serein_dc_this_account" = "this account";
+"lng_serein_dc_recheck" = "Check again";
+"lng_serein_dc_miami" = "Miami";
+"lng_serein_dc_amsterdam" = "Amsterdam";
+"lng_serein_dc_singapore" = "Singapore";
 "lng_serein_android_web_apps" = "Open mini apps as on Android";
 "lng_serein_android_web_apps_about" = "Mini apps opened from now on are told that they run in the Android app instead of Telegram Desktop. Some of them offer features or layouts there that they hide on desktop.";
 "lng_serein_services_about" = "External services receive only the text or audio you explicitly request to process. Automatic chat translation keeps its existing provider. API keys stay in the system credential store and are excluded from configuration exports.";

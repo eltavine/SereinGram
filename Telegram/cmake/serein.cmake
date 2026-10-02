@@ -174,6 +174,7 @@ set(serein_sources
     serein/services/draft_translation.cpp
     serein/services/summary.cpp
     serein/services/summary_protocol.cpp
+    serein/network/dc_status.cpp
     serein/network/doh.cpp
     serein/network/proxy_import.cpp
     serein/network/proxy_order.cpp

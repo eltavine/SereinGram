@@ -447,6 +447,15 @@
 "lng_serein_custom_doh_about" = "Telegram 透過 DNS-over-HTTPS 查詢備用設定與代理網域時，會先於 Google 與 Cloudflare 嘗試該伺服器，適用於這兩者被封鎖的網路。";
 "lng_serein_faster_transfers" = "加快上傳與下載";
 "lng_serein_faster_transfers_about" = "下載一開始就使用多條連線與完整的傳輸視窗，上傳時每條連線可同時傳送更多資料。適合延遲較高的網路（例如經遠端代理連線）；Telegram 伺服器仍會依帳號限制速度。";
+"lng_serein_dc_status" = "資料中心狀態";
+"lng_serein_dc_status_about" = "測量各個 Telegram 資料中心的回應速度：使用代理時經目前的代理測量，否則直接連線測量。";
+"lng_serein_dc_via_direct" = "直接連線測量。";
+"lng_serein_dc_via_proxy" = "經代理 {proxy} 測量。";
+"lng_serein_dc_this_account" = "目前帳號";
+"lng_serein_dc_recheck" = "重新檢測";
+"lng_serein_dc_miami" = "邁阿密";
+"lng_serein_dc_amsterdam" = "阿姆斯特丹";
+"lng_serein_dc_singapore" = "新加坡";
 "lng_serein_android_web_apps" = "以 Android 用戶端身分開啟小程式";
 "lng_serein_android_web_apps_about" = "之後開啟的小程式會認為自己執行於 Android 用戶端而非 Telegram Desktop 中。部分小程式在 Android 上提供桌面版隱藏的功能或版面。";
 "lng_serein_services_about" = "外部服務僅接收你手動請求處理的文字或音訊。自動聊天翻譯仍使用原服務。API 金鑰儲存在系統憑證庫，不隨設定匯出。";
