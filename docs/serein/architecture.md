@@ -133,7 +133,7 @@ message MessagesSettings {
 - 生成器 `tools/serein/codegen`（`uv run tools/serein/codegen/generate.py`）读取 `buf build` 的 JSON 映像，用 Jinja2 为每个设置页生成 `serein/schema/gen/settings/<页>.h`：类型化的 `Option<T>` 句柄、校验与 `RegisterOptions`。命名约定：常量 `k<字段名驼峰>`、存储键 `serein.<json_name>`、标题 `lng_serein_<字段名>`，只有例外才写 `cpp_name`、`title`。
 - 全部设置页的选项都由生成头文件声明；各功能目录的 `options.h` 只转发到生成头文件。
 - 编解码：带文件选项的 proto 生成 `serein/schema/gen/<目录>/<名>.h/.cpp`（值类型、`Read`/`Write`/`Validate`、文档级 `Parse…`/`Serialize…`），手写运行时只有 `serein/schema/codec.h`。生成的 `.cpp` 列在 `serein/schema/gen/sources.cmake`，主构建与测试构建都直接引入。使用者包括消息历史记录 `proto/serein/history/v1/record.proto` 与 `proto/serein/config/v1/` 下的各结构化配置；`require_fields` 让编解码器拒绝缺少字段的文档，格式变更需要提升文档版本并提供迁移。
-- 生成代码提交入库：三平台与发行版构建不需要 Buf 或 Python 依赖；CI 运行 `buf lint`、`tools/serein/proto_breaking.sh` 与 `generate.py --check`。
+- 生成代码提交入库：三平台与发行版构建不需要 Buf 或 Python 依赖；CI 运行 `buf lint`、`tools/serein/proto_breaking.sh` 与 `generate.py --check`。生成器的 Python 依赖连同传递依赖与哈希锁定在 `generate.py.lock`，CI 用 `uv lock --script --check` 确认锁文件与脚本声明一致，并以 `--locked` 运行。
 
 ## 6. 存储（ADR-0003）
 
