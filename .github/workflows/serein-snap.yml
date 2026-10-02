@@ -60,9 +60,16 @@ jobs:
             echo "::notice::The repository secrets are missing; building with the test-only credentials."
             set -- -DTDESKTOP_API_TEST=ON
           fi
-          for flag in "$@"; do
-            sed -i "/^      - -DCMAKE_INSTALL_PREFIX=\/usr$/a\\      - $flag" snap/snapcraft.yaml
-          done
+          # Every CMake part has the same install prefix line; only the app gets the flags.
+          python3 - "$@" <<'EOF'
+          import pathlib, sys
+          path = pathlib.Path("snap/snapcraft.yaml")
+          lines = path.read_text().split("\n")
+          start = lines.index("  telegram:")
+          prefix = lines.index("      - -DCMAKE_INSTALL_PREFIX=/usr", start)
+          lines[prefix + 1:prefix + 1] = ["      - " + flag for flag in sys.argv[1:]]
+          path.write_text("\n".join(lines))
+          EOF
           test "$(grep -c -e '-DTDESKTOP_API_' snap/snapcraft.yaml)" -eq "$#"
 
       - name: Snap build.
