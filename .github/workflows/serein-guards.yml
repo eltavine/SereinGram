@@ -237,3 +237,44 @@ jobs:
         run: |
           python3 tools/serein/run_clang_tidy.py -p out/serein-core-tests \
             --clang-tidy "uvx --from clang-tidy==21.1.1 clang-tidy" --jobs "$(nproc)"
+
+  sanitizers:
+    name: Core tests with sanitizers
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clone.
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Fetch the submodules the core needs.
+        run: |
+          git submodule update --init --depth 1 \
+            Telegram/lib_base Telegram/lib_crl Telegram/lib_rpl Telegram/lib_ui \
+            Telegram/ThirdParty/GSL Telegram/ThirdParty/range-v3 Telegram/ThirdParty/expected \
+            Telegram/ThirdParty/OpenCC Telegram/ThirdParty/doctest
+
+      - name: Install OpenSSL headers.
+        run: sudo apt-get update && sudo apt-get install -y libssl-dev
+
+      - name: Set up Qt.
+        uses: jurplel/install-qt-action@a9c63c7c123f3069cff414e7e482d95dfa9d8125 # v4.4.1
+        with:
+          version: 6.11.2
+          cache: true
+
+      - name: Build with AddressSanitizer and UndefinedBehaviorSanitizer.
+        run: |
+          cmake -S tools/serein/core_tests -B out/serein-core-sanitize \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_CXX_FLAGS="-fsanitize=address,undefined -fno-omit-frame-pointer -fno-sanitize-recover=undefined" \
+            -DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address,undefined"
+          cmake --build out/serein-core-sanitize --parallel "$(nproc)"
+
+      # Qt and OpenCC keep global objects until exit, which LeakSanitizer reports.
+      - name: Test.
+        env:
+          ASAN_OPTIONS: detect_leaks=0:abort_on_error=1
+          UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1
+        run: out/serein-core-sanitize/test_serein

@@ -158,6 +158,8 @@ message MessagesSettings {
 | 格式与风格 | `tools/serein/check_style.py`：自有文本文件为无 BOM 的 UTF-8、只用 LF、以单个换行结尾、无行尾空白，YAML、Python、proto、JSON 与 CMake 不用制表符缩进，`tools/serein/policy/` 的 JSON 为规范格式；Serein C++ 用制表符缩进、不连续空行、`&&` 与 `\|\|` 置于续行开头、带访问区段的类在 `};` 前空一行、使用嵌套命名空间写法、类外定义不重复 `[[nodiscard]]`、注释按单行限额（多行须以 `// WHY:` 开头且不超过三行，测试目录除外），并禁用 `QStringLiteral`、`(void)` 与 `static_cast<void>`、`Q_OS_LINUX`、`NULL` 以及生产代码中的 `_DEBUG` 分支 | 已实施 |
 | Python、Shell、YAML、文档与 proto 格式 | ruff 0.16.10 格式检查与 Lint（`tools/serein/ruff.toml`）；shellcheck；yamllint 1.37.1 严格模式（`tools/serein/yamllint.yml`）；markdownlint-cli2 0.19.1（`tools/serein/serein.markdownlint-cli2.jsonc`）；`buf format --diff --exit-code` | 已实施 |
 | 静态分析 | clang-tidy 21.1.1 按 `Telegram/SourceFiles/serein/.clang-tidy` 检查核心测试工程中的全部手写 Serein 编译单元（bugprone、clang-analyzer、performance 等），由 `tools/serein/run_clang_tidy.py` 并行运行；只统计 Serein 自有位置的诊断，生成代码与上游头文件除外，无法解析的编译单元同样判为失败 | 已实施 |
+| 内存与未定义行为 | 核心测试另以 AddressSanitizer 与 UndefinedBehaviorSanitizer 构建并运行（未定义行为直接失败）；Qt 与 OpenCC 的全局对象在退出时才释放，因此关闭泄漏检测；本地 `check_all.sh` 同样运行，可用 `SEREIN_SKIP_SANITIZERS=1` 跳过 | 已实施 |
+| 内存与未定义行为 | 核心测试另以 AddressSanitizer 与 UndefinedBehaviorSanitizer 构建并运行（未定义行为直接失败）；Qt 与 OpenCC 的全局对象在退出时才释放，因此关闭泄漏检测；本地 `check_all.sh` 同样运行，可用 `SEREIN_SKIP_SANITIZERS=1` 跳过 | 已实施 |
 | 密钥扫描 | gitleaks 8.30.1 扫描每次推送或 PR 新增的主线提交（`tools/serein/gitleaks.toml` 只放行打包说明中的占位凭据） | 已实施 |
 | 桌面元数据 | `desktop-file-validate` 校验桌面入口，`appstreamcli validate` 校验 AppStream 元数据 | 已实施 |
 | 启动冒烟与安装测试 | `tools/serein/smoke_test.py`：三平台构建后以全新 `-workdir` 启动应用，要求日志出现启动行且进程在等待期后仍在运行；Linux 先用 `ldd` 确认运行库都能找到。随后测试交付的产物：Windows 解压便携包并静默安装后启动安装的程序，macOS 挂载 DMG、校验签名并从镜像启动，Linux 以 AppImage 启动，并在 Debian 12、Ubuntu 24.04 与 Fedora 43 容器中安装 `.deb` 与 `.rpm`（依赖由包声明解析），检查文件与运行库 | 已实施 |

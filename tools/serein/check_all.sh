@@ -64,4 +64,15 @@ if [ "${SEREIN_SKIP_TIDY:-0}" != 1 ]; then
 	python3 tools/serein/run_clang_tidy.py -p "$build" \
 		--clang-tidy "uvx --quiet --from clang-tidy==21.1.1 clang-tidy"
 fi
+if [ "${SEREIN_SKIP_SANITIZERS:-0}" != 1 ]; then
+	sanitize="${SEREIN_SANITIZE_BUILD:-out/serein-core-sanitize}"
+	if [ ! -f "$sanitize/CMakeCache.txt" ]; then
+		cmake -S tools/serein/core_tests -B "$sanitize" -G Ninja -DCMAKE_BUILD_TYPE=Debug \
+			-DCMAKE_CXX_FLAGS="-fsanitize=address,undefined -fno-omit-frame-pointer -fno-sanitize-recover=undefined" \
+			-DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address,undefined"
+	fi
+	cmake --build "$sanitize"
+	ASAN_OPTIONS=detect_leaks=0:abort_on_error=1 UBSAN_OPTIONS=print_stacktrace=1:halt_on_error=1 \
+		"$sanitize/test_serein"
+fi
 echo "All local SereinGram checks passed."

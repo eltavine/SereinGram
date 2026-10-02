@@ -54,7 +54,7 @@ Linux 发行版打包：
 ## 4. 发布门禁
 
 1. 三平台 CI 构建成功，`test_serein` 全部通过。
-2. 守卫全部通过：格式与风格、Lint、静态分析、依赖与配置校验、源文件行数、模块边界、上游侵入预算、`buf lint` 与 `buf breaking`、生成代码无漂移、三语文案一致、门面命名空间遮蔽、功能矩阵格式、工作流 actionlint，以及三平台的启动冒烟测试。本地用 `tools/serein/check_all.sh` 一次运行全部守卫与核心测试。
+2. 守卫全部通过：格式与风格、Lint、静态分析、AddressSanitizer 与 UndefinedBehaviorSanitizer 下的核心测试、AddressSanitizer 与 UndefinedBehaviorSanitizer 下的核心测试、依赖与配置校验、源文件行数、模块边界、上游侵入预算、`buf lint` 与 `buf breaking`、生成代码无漂移、三语文案一致、门面命名空间遮蔽、功能矩阵格式、工作流 actionlint，以及三平台的启动冒烟测试。本地用 `tools/serein/check_all.sh` 一次运行全部守卫与核心测试。
 3. 发布说明分别列出本版本 `Verified` 与仅 `Implemented` 的功能。
 4. 发布流程：`serein-release.yml` 每天从 `develop` 构建 Release 配置的 Nightly，推送 `v*` 标签时构建正式版草稿；全部产物不签名、不公证，名称、校验文件与清单格式固定，约定见 [releases.md](releases.md)；应用内的 GitHub 更新检查只提示正式版。
 
