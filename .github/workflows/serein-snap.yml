@@ -81,6 +81,8 @@ jobs:
 
       - name: Install and launch the snap.
         run: |
+          # snap-confine bind-mounts /usr/src, which the disk cleanup removed.
+          sudo mkdir -p /usr/src
           mkdir artifact
           mv sereingram_*.snap artifact/SereinGram-linux-x86_64.snap
           sudo snap install --dangerous artifact/SereinGram-linux-x86_64.snap
