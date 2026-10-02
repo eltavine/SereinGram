@@ -164,6 +164,7 @@ set(serein_sources
     serein/settings/menu.cpp
     serein/settings/privacy.cpp
     serein/settings/messages.cpp
+    serein/settings/service_editor.cpp
     serein/settings/services.cpp
     serein/settings/services_network.cpp
     serein/services/credentials.cpp
