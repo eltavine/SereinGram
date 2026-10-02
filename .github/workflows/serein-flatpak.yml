@@ -19,6 +19,11 @@ on:
       ref:
         type: string
         default: ''
+    secrets:
+      SEREIN_API_ID:
+        required: false
+      SEREIN_API_HASH:
+        required: false
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-flatpak-${{ inputs.arch || 'all' }}
@@ -56,6 +61,7 @@ jobs:
       - name: Clone.
         uses: actions/checkout@v7
         with:
+          persist-credentials: false
           ref: ${{ inputs.ref }}
           submodules: recursive
 
@@ -74,7 +80,7 @@ jobs:
           fi
 
       - name: Build the bundle.
-        uses: flathub-infra/flatpak-github-actions/flatpak-builder@master
+        uses: flathub-infra/flatpak-github-actions/flatpak-builder@933e9e8ca36e85046ebca8e211f0785c6becac40 # master
         with:
           bundle: ${{ env.ASSET }}.flatpak
           manifest-path: packaging/flatpak/io.github.eltavine.SereinGram.yml

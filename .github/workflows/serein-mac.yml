@@ -46,6 +46,11 @@ on:
       ref:
         type: string
         default: ''
+    secrets:
+      SEREIN_API_ID:
+        required: false
+      SEREIN_API_HASH:
+        required: false
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-macos-${{ inputs.config || 'Debug' }}
@@ -73,6 +78,7 @@ jobs:
       - name: Clone.
         uses: actions/checkout@v7
         with:
+          persist-credentials: false
           ref: ${{ inputs.ref }}
           submodules: recursive
           path: ${{ env.REPO_NAME }}

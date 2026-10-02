@@ -43,10 +43,12 @@ jobs:
       - name: Clone.
         if: steps.secrets.outputs.configured == 'true'
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Sync with Crowdin.
         if: steps.secrets.outputs.configured == 'true'
-        uses: crowdin/github-action@v3
+        uses: crowdin/github-action@9c23991700c0ec5256fd41089b9d9d7d540e424e # v3.3.0
         with:
           config: crowdin.yml
           upload_sources: true

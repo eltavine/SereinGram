@@ -56,6 +56,11 @@ on:
       no_cache:
         type: boolean
         default: false
+    secrets:
+      SEREIN_API_ID:
+        required: false
+      SEREIN_API_HASH:
+        required: false
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-windows-${{ inputs.arch || 'x64' }}-${{ inputs.config || 'Debug' }}
@@ -122,6 +127,7 @@ jobs:
       - name: Clone.
         uses: actions/checkout@v7
         with:
+          persist-credentials: false
           ref: ${{ inputs.ref }}
           submodules: recursive
           path: ${{ env.TBUILD }}\${{ env.REPO_NAME }}
@@ -157,7 +163,7 @@ jobs:
           Remove-Item $exe -Force -ErrorAction SilentlyContinue
           if ($p.ExitCode -ne 0 -and $p.ExitCode -ne 3010) { exit $p.ExitCode }
 
-      - uses: Eden-CI/msvc-dev-cmd@master
+      - uses: Eden-CI/msvc-dev-cmd@1bd71f95d6f3d1b2b3395b335cc63bcdc90cf223 # master
         name: Native Tools Command Prompt.
         with:
           arch: ${{ matrix.arch }}
@@ -228,6 +234,7 @@ jobs:
         shell: bash
         env:
           SEREIN_API_ID: ${{ secrets.SEREIN_API_ID }}
+          MSVC_ARCH: ${{ matrix.arch }}
         run: |
           # Without the repository secrets, build with the test-only credentials.
           API=""
@@ -235,7 +242,11 @@ jobs:
             API="-D TDESKTOP_API_TEST=ON"
           fi
           echo "TDESKTOP_BUILD_API=$API" >> "$GITHUB_ENV"
-          echo "TDESKTOP_BUILD_ARCH=${{ matrix.arch == 'arm64' && 'arm' || matrix.arch }}" >> "$GITHUB_ENV"
+          ARCH=$MSVC_ARCH
+          if [ "$ARCH" = arm64 ]; then
+            ARCH=arm
+          fi
+          echo "TDESKTOP_BUILD_ARCH=$ARCH" >> "$GITHUB_ENV"
 
       - name: Free up some disk space.
         shell: bash

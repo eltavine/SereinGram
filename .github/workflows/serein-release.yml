@@ -43,6 +43,7 @@ jobs:
       - name: Clone.
         uses: actions/checkout@v7
         with:
+          persist-credentials: false
           ref: ${{ github.ref_type == 'tag' && github.ref || 'develop' }}
           fetch-depth: 0
 
@@ -94,7 +95,9 @@ jobs:
     needs: plan
     if: needs.plan.outputs.build == 'true'
     uses: ./.github/workflows/serein-win.yml
-    secrets: inherit
+    secrets:
+      SEREIN_API_ID: ${{ secrets.SEREIN_API_ID }}
+      SEREIN_API_HASH: ${{ secrets.SEREIN_API_HASH }}
     with:
       arch: x64
       config: Release
@@ -105,7 +108,9 @@ jobs:
     needs: plan
     if: needs.plan.outputs.build == 'true'
     uses: ./.github/workflows/serein-win.yml
-    secrets: inherit
+    secrets:
+      SEREIN_API_ID: ${{ secrets.SEREIN_API_ID }}
+      SEREIN_API_HASH: ${{ secrets.SEREIN_API_HASH }}
     with:
       arch: arm64
       config: Release
@@ -117,7 +122,9 @@ jobs:
     needs: plan
     if: needs.plan.outputs.build == 'true'
     uses: ./.github/workflows/serein-mac.yml
-    secrets: inherit
+    secrets:
+      SEREIN_API_ID: ${{ secrets.SEREIN_API_ID }}
+      SEREIN_API_HASH: ${{ secrets.SEREIN_API_HASH }}
     with:
       config: Release
       ref: ${{ needs.plan.outputs.commit }}
@@ -130,7 +137,9 @@ jobs:
     permissions:
       contents: read
       actions: write
-    secrets: inherit
+    secrets:
+      SEREIN_API_ID: ${{ secrets.SEREIN_API_ID }}
+      SEREIN_API_HASH: ${{ secrets.SEREIN_API_HASH }}
     with:
       config: Release
       ref: ${{ needs.plan.outputs.commit }}
@@ -140,7 +149,9 @@ jobs:
     needs: plan
     if: needs.plan.outputs.build == 'true'
     uses: ./.github/workflows/serein-flatpak.yml
-    secrets: inherit
+    secrets:
+      SEREIN_API_ID: ${{ secrets.SEREIN_API_ID }}
+      SEREIN_API_HASH: ${{ secrets.SEREIN_API_HASH }}
     with:
       ref: ${{ needs.plan.outputs.commit }}
 
@@ -177,6 +188,7 @@ jobs:
       - name: Clone.
         uses: actions/checkout@v7
         with:
+          persist-credentials: false
           ref: ${{ needs.plan.outputs.commit }}
           fetch-depth: 0
 
@@ -216,8 +228,8 @@ jobs:
           if gh release view nightly >/dev/null 2>&1; then
             gh release delete nightly --cleanup-tag --yes
           fi
-          if git ls-remote --exit-code --tags origin refs/tags/nightly >/dev/null; then
-            git push origin :refs/tags/nightly
+          if gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/nightly" >/dev/null 2>&1; then
+            gh api -X DELETE "repos/$GITHUB_REPOSITORY/git/refs/tags/nightly"
           fi
           gh release edit "$draft" --tag nightly --draft=false --prerelease
 

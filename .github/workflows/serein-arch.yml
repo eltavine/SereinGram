@@ -36,6 +36,7 @@ jobs:
       - name: Clone.
         uses: actions/checkout@v7
         with:
+          persist-credentials: false
           path: SereinGram
           fetch-depth: 0
 
