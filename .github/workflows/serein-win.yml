@@ -44,6 +44,16 @@ on:
       - 'Telegram/Telegram/**'
       - 'Telegram/configure.sh'
       - 'Telegram/Telegram.plist'
+  workflow_dispatch:
+    inputs:
+      arch:
+        type: choice
+        options: [x64, arm64]
+        default: x64
+      config:
+        type: choice
+        options: [Debug, Release]
+        default: Debug
   workflow_call:
     inputs:
       arch:

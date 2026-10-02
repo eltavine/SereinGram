@@ -40,6 +40,12 @@ on:
       - 'Telegram/SourceFiles/platform/win/**'
       - 'Telegram/SourceFiles/platform/linux/**'
       - 'Telegram/configure.bat'
+  workflow_dispatch:
+    inputs:
+      config:
+        type: choice
+        options: [Debug, Release]
+        default: Debug
   workflow_call:
     inputs:
       config:
