@@ -4,6 +4,9 @@
 
 namespace Serein {
 
-void AddNetworkSettings(::Settings::Builder::SectionBuilder &builder);
+void AddProxySubscriptionRow(::Settings::Builder::SectionBuilder &builder);
+void AddProxyToolRows(::Settings::Builder::SectionBuilder &builder);
+void AddCustomDohRow(::Settings::Builder::SectionBuilder &builder);
+void AddDatacenterStatusRow(::Settings::Builder::SectionBuilder &builder);
 
 } // namespace Serein

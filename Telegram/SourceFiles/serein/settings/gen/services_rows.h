@@ -10,20 +10,57 @@
 
 namespace Serein::ServiceSettings {
 
+inline const auto kToggleRows = std::array<ToggleRow, 7>{ {
+	{
+		&kTranslationContext,
+		tr::lng_serein_translation_context,
+		u"serein/services/translation-context"_q,
+		{ u"LLM"_q, u"context"_q, u"translate"_q },
+	},
+	{
+		&kChatTranslationWithoutPremium,
+		tr::lng_serein_chat_translation,
+		u"serein/services/chat-translation-without-premium"_q,
+		{ u"translate"_q, u"chat"_q, u"Premium"_q },
+	},
+	{
+		&kAutoTranslateChats,
+		tr::lng_serein_auto_translate_chats,
+		u"serein/services/auto-translate-chats"_q,
+		{ u"translate"_q, u"automatic"_q, u"chat"_q },
+	},
+	{
+		&kInstantViewTranslation,
+		tr::lng_serein_instant_view_translation,
+		u"serein/services/instant-view-translation"_q,
+		{ u"translate"_q, u"Instant View"_q, u"article"_q },
+	},
+	{
+		&kPauseProxyOnVpn,
+		tr::lng_serein_proxy_vpn,
+		u"serein/services/pause-proxy-on-vpn"_q,
+		{ u"proxy"_q, u"VPN"_q },
+	},
+	{
+		&kFasterTransfers,
+		tr::lng_serein_faster_transfers,
+		u"serein/services/faster-transfers"_q,
+		{ u"upload"_q, u"download"_q, u"speed"_q },
+	},
+	{
+		&kAndroidWebApps,
+		tr::lng_serein_android_web_apps,
+		u"serein/services/android-web-apps"_q,
+		{ u"mini apps"_q, u"web apps"_q, u"bots"_q, u"Android"_q },
+	},
+} };
 
 struct CustomRows {
 	CustomRow services;
 	CustomRow preferSystemAi;
-	CustomRow translationContext;
-	CustomRow chatTranslationWithoutPremium;
-	CustomRow autoTranslateChats;
-	CustomRow instantViewTranslation;
 	CustomRow proxySubscription;
 	CustomRow proxyNotes;
-	CustomRow pauseProxyOnVpn;
 	CustomRow customDoh;
-	CustomRow androidWebApps;
-	CustomRow fasterTransfers;
 };
 
 inline void AddLayout(
@@ -31,16 +68,23 @@ inline void AddLayout(
 		const CustomRows &custom) {
 	custom.services();
 	custom.preferSystemAi();
-	custom.translationContext();
-	custom.chatTranslationWithoutPremium();
-	custom.autoTranslateChats();
-	custom.instantViewTranslation();
+	AddToggle(builder, kToggleRows[0]);
+	AddNote(builder, tr::lng_serein_translation_context_about);
+	AddToggle(builder, kToggleRows[1]);
+	AddNote(builder, tr::lng_serein_chat_translation_about);
+	AddToggle(builder, kToggleRows[2]);
+	AddNote(builder, tr::lng_serein_auto_translate_chats_about);
+	AddToggle(builder, kToggleRows[3]);
+	AddNote(builder, tr::lng_serein_instant_view_translation_about);
 	custom.proxySubscription();
 	custom.proxyNotes();
-	custom.pauseProxyOnVpn();
+	AddToggle(builder, kToggleRows[4]);
+	AddNote(builder, tr::lng_serein_proxy_vpn_about);
 	custom.customDoh();
-	custom.androidWebApps();
-	custom.fasterTransfers();
+	AddToggle(builder, kToggleRows[5]);
+	AddNote(builder, tr::lng_serein_faster_transfers_about);
+	AddToggle(builder, kToggleRows[6]);
+	AddNote(builder, tr::lng_serein_android_web_apps_about);
 }
 
 } // namespace Serein::ServiceSettings
