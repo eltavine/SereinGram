@@ -6,7 +6,7 @@
 
 | 渠道 | 标签 | 生成方式 | Release 状态 |
 | --- | --- | --- | --- |
-| Nightly | `nightly`（滚动） | 每天 19:00 UTC 由 `serein-release.yml` 从 `develop` 最新提交构建；分支自上次 Nightly 以来没有新提交时跳过；也可手动触发 | 预发布，每次构建替换上一次 |
+| Nightly | `nightly`（滚动） | 每天 19:00 UTC 由 `serein-release.yml` 从 `develop` 最新提交构建；分支自上次 Nightly 以来没有新提交时跳过；也可手动触发，`develop` 上修改该工作流本身时同样运行 | 预发布，每次构建替换上一次 |
 | 正式版 | `vX.Y.Z`，预发布为 `vX.Y.Z-<后缀>` | 推送标签时由 `serein-release.yml` 从标签提交构建 | 草稿，核对后手动发布；带后缀的标签标为预发布 |
 
 固定下载地址：

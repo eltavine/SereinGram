@@ -10,8 +10,12 @@ on:
         type: boolean
         default: false
   push:
+    branches:
+      - develop
     tags:
       - 'v*'
+    paths:
+      - '.github/workflows/serein-release.yml'
 
 concurrency:
   group: serein-release-${{ github.ref }}
