@@ -5,17 +5,23 @@ on:
     branches:
       - develop
       - main
-    tags:
-      - 'v*'
     paths:
       - 'packaging/flatpak/**'
       - '.github/workflows/serein-flatpak.yml'
   schedule:
     - cron: '0 4 * * 1'
   workflow_dispatch:
+  workflow_call:
+    inputs:
+      arch:
+        type: string
+        default: ''
+      ref:
+        type: string
+        default: ''
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}-flatpak-${{ inputs.arch || 'all' }}
   cancel-in-progress: false
 
 permissions:
@@ -24,8 +30,8 @@ permissions:
 jobs:
 
   flatpak:
-    name: Flatpak bundle
-    runs-on: ubuntu-latest
+    name: Flatpak bundle (${{ matrix.arch }})
+    runs-on: ${{ matrix.arch == 'aarch64' && 'ubuntu-24.04-arm' || 'ubuntu-24.04' }}
     timeout-minutes: 360
     container:
       image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-51
@@ -35,6 +41,14 @@ jobs:
         --volume /usr/local/lib/android:/host/android
         --volume /opt/ghc:/host/ghc
 
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: ${{ fromJSON(inputs.arch && format('["{0}"]', inputs.arch) || '["x86_64","aarch64"]') }}
+
+    env:
+      ASSET: SereinGram-linux-${{ matrix.arch == 'aarch64' && 'arm64' || 'x86_64' }}
+
     steps:
       - name: Free disk space.
         run: rm -rf /host/dotnet/* /host/android/* /host/ghc/*
@@ -42,6 +56,7 @@ jobs:
       - name: Clone.
         uses: actions/checkout@v7
         with:
+          ref: ${{ inputs.ref }}
           submodules: recursive
 
       - name: Provide the API credentials.
@@ -61,8 +76,18 @@ jobs:
       - name: Build the bundle.
         uses: flathub-infra/flatpak-github-actions/flatpak-builder@master
         with:
-          bundle: SereinGram.flatpak
+          bundle: ${{ env.ASSET }}.flatpak
           manifest-path: packaging/flatpak/io.github.eltavine.SereinGram.yml
+          arch: ${{ matrix.arch }}
+          upload-artifact: false
           # WHY: the builder state is several gigabytes, and the repository
           # cache quota would evict the platform workflows' dependency caches.
           cache: false
+
+      - uses: actions/upload-artifact@v7
+        name: Upload artifact.
+        with:
+          name: ${{ env.ASSET }}-flatpak
+          path: ${{ env.ASSET }}.flatpak
+          if-no-files-found: error
+          retention-days: 3

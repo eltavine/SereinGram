@@ -5,8 +5,6 @@ on:
     branches:
       - serein-next
       - main
-    tags:
-      - 'v*'
     paths-ignore:
       - 'docs/**'
       - '**.md'
@@ -40,10 +38,21 @@ on:
       - 'Telegram/SourceFiles/platform/win/**'
       - 'Telegram/SourceFiles/platform/linux/**'
       - 'Telegram/configure.bat'
+  workflow_call:
+    inputs:
+      config:
+        type: string
+        default: Debug
+      ref:
+        type: string
+        default: ''
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}-macos-${{ inputs.config || 'Debug' }}
   cancel-in-progress: false
+
+permissions:
+  contents: read
 
 jobs:
 
@@ -51,28 +60,24 @@ jobs:
     name: MacOS
     runs-on: macos-latest
 
-    strategy:
-      matrix:
-        defines:
-          - ""
     env:
-      UPLOAD_ARTIFACT: "true"
-      ONLY_CACHE: "false"
+      CONFIG: ${{ inputs.config || 'Debug' }}
       PREPARE_PATH: "Telegram/build/prepare/prepare.py"
 
     steps:
       - name: Get repository name.
-        run: echo "REPO_NAME=${GITHUB_REPOSITORY##*/}" >> $GITHUB_ENV
+        run: echo "REPO_NAME=${GITHUB_REPOSITORY##*/}" >> "$GITHUB_ENV"
 
       - name: Clone.
         uses: actions/checkout@v7
         with:
+          ref: ${{ inputs.ref }}
           submodules: recursive
           path: ${{ env.REPO_NAME }}
 
       - name: First set up.
         run: |
-          sudo chown -R `whoami`:admin /usr/local/share
+          sudo chown -R "$(whoami)":admin /usr/local/share
 
           brew update
           brew upgrade || true
@@ -104,14 +109,16 @@ jobs:
           path: |
             Libraries
             ThirdParty
-          key: ${{ runner.OS }}-libs-${{ hashFiles(format('{0}/{1}', env.REPO_NAME, env.PREPARE_PATH)) }}-${{ env.TOOLCHAIN_KEY }}
+          key: ${{ runner.OS }}-libs-v2-${{ hashFiles(format('{0}/{1}', env.REPO_NAME, env.PREPARE_PATH)) }}-${{ env.TOOLCHAIN_KEY }}
           restore-keys: |
-            ${{ runner.OS }}-libs-${{ hashFiles(format('{0}/{1}', env.REPO_NAME, env.PREPARE_PATH)) }}-
+            ${{ runner.OS }}-libs-v2-${{ hashFiles(format('{0}/{1}', env.REPO_NAME, env.PREPARE_PATH)) }}-
+            ${{ runner.OS }}-libs-v2-
             ${{ runner.OS }}-libs-
 
+      # Debug and Release libraries, so both configurations share one cache.
       - name: Libraries.
         run: |
-          ./$REPO_NAME/Telegram/build/prepare/mac.sh skip-release silent
+          "./$REPO_NAME/Telegram/build/prepare/mac.sh" silent
 
       - name: Free up some disk space.
         run: find Libraries '(' '(' ! '(' -name '*.a' -o -name '*.h' -o -name '*.hpp' -o -name '*.inc' -o -name '*.cmake' -o -name '*.pc' -o -path '*/include/*' -o -path '*/objects-*' -o -path '*/cache_keys/*' -o -path '*/patches/*' -o -perm +111 ')' -type f ')' -o -empty ')' -delete
@@ -129,72 +136,54 @@ jobs:
         run: defaults write com.apple.dt.Xcode IDEBuildingContinueBuildingAfterErrors -bool YES
 
       - name: Serein build.
-        if: env.ONLY_CACHE == 'false'
         env:
           SEREIN_API_ID: ${{ secrets.SEREIN_API_ID }}
           SEREIN_API_HASH: ${{ secrets.SEREIN_API_HASH }}
         run: |
-          cd $REPO_NAME/Telegram
+          cd "$REPO_NAME/Telegram"
 
           # Without the repository secrets, build with the test-only credentials.
-          API=""
+          API=()
           if [ -z "$SEREIN_API_ID" ]; then
-            API="-D TDESKTOP_API_TEST=ON"
-          fi
-
-          DEFINE=""
-          if [ -n "${{ matrix.defines }}" ]; then
-            DEFINE="-D ${{ matrix.defines }}=ON"
-            echo Define from matrix: $DEFINE
-            echo "ARTIFACT_NAME=SereinGram ${{ matrix.defines }}" >> $GITHUB_ENV
-          else
-            echo "ARTIFACT_NAME=SereinGram" >> $GITHUB_ENV
+            API=(-D TDESKTOP_API_TEST=ON)
           fi
 
           ./configure.sh \
-          -D CMAKE_CONFIGURATION_TYPES=Debug \
-          -D DESKTOP_APP_TEST_APPS=ON \
-          -D CMAKE_COMPILE_WARNING_AS_ERROR=ON \
-          -D CMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED=NO \
-          $API \
-          $DEFINE
+            -D CMAKE_CONFIGURATION_TYPES="$CONFIG" \
+            -D DESKTOP_APP_TEST_APPS=ON \
+            -D CMAKE_COMPILE_WARNING_AS_ERROR=ON \
+            -D CMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED=NO \
+            "${API[@]}"
 
-          cmake --build ../out --config Debug --parallel
-          ../out/serein-tests/Debug/test_serein
+          cmake --build ../out --config "$CONFIG" --parallel
+          "../out/serein-tests/$CONFIG/test_serein"
 
-      - name: Move artifact.
-        if: env.UPLOAD_ARTIFACT == 'true'
+      # WHY: Apple silicon only starts code with a signature; an ad-hoc one
+      # needs no certificate and lets a downloaded copy open after Control-
+      # click, where a bundle without any signature is reported as damaged.
+      - name: Ad-hoc signature.
         run: |
-          cd $REPO_NAME/out/Debug
+          app="$REPO_NAME/out/$CONFIG/SereinGram.app"
+          lipo "$app/Contents/MacOS/SereinGram" -verify_arch x86_64 arm64
+          codesign --force --deep --sign - "$app"
+          codesign --verify --deep --strict "$app"
+
+      - name: Smoke test.
+        run: |
+          python3 "$REPO_NAME/tools/serein/smoke_test.py" \
+            "$REPO_NAME/out/$CONFIG/SereinGram.app/Contents/MacOS/SereinGram"
+
+      - name: Name the artifacts.
+        run: |
           mkdir artifact
-          lipo SereinGram.app/Contents/MacOS/SereinGram -verify_arch x86_64 arm64
-          hdiutil create -volname SereinGram -srcfolder SereinGram.app -ov -format UDZO artifact/SereinGram.dmg
+          hdiutil create -volname SereinGram \
+            -srcfolder "$REPO_NAME/out/$CONFIG/SereinGram.app" \
+            -ov -format UDZO artifact/SereinGram-macos-universal.dmg
+
       - uses: actions/upload-artifact@v7
-        if: env.UPLOAD_ARTIFACT == 'true'
         name: Upload artifact.
         with:
-          name: ${{ env.ARTIFACT_NAME }}
-          path: ${{ env.REPO_NAME }}/out/Debug/artifact/
-          retention-days: 1
-
-  release:
-    name: Attach to release
-    needs: macos
-    if: startsWith(github.ref, 'refs/tags/v')
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/download-artifact@v8
-        with:
-          path: dist
-          merge-multiple: true
-      - name: Name assets.
-        run: |
-          mv dist/SereinGram.dmg dist/SereinGram-macos-universal.dmg
-      - uses: softprops/action-gh-release@v3
-        with:
-          draft: true
-          prerelease: true
-          fail_on_unmatched_files: true
-          files: dist/*
+          name: SereinGram-macos-universal
+          path: artifact/
+          if-no-files-found: error
+          retention-days: 3

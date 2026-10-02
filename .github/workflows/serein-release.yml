@@ -1,0 +1,233 @@
+name: Serein release.
+
+on:
+  schedule:
+    - cron: '0 19 * * *'
+  workflow_dispatch:
+    inputs:
+      force:
+        description: Publish a nightly even if the development branch has not moved.
+        type: boolean
+        default: false
+  push:
+    tags:
+      - 'v*'
+
+concurrency:
+  group: serein-release-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+
+  plan:
+    name: Plan
+    runs-on: ubuntu-latest
+    outputs:
+      build: ${{ steps.plan.outputs.build }}
+      publish: ${{ steps.plan.outputs.publish }}
+      channel: ${{ steps.plan.outputs.channel }}
+      tag: ${{ steps.plan.outputs.tag }}
+      commit: ${{ steps.plan.outputs.commit }}
+      previous: ${{ steps.plan.outputs.previous }}
+      since: ${{ steps.plan.outputs.since }}
+      date: ${{ steps.plan.outputs.date }}
+
+    steps:
+      - name: Clone.
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.ref_type == 'tag' && github.ref || 'develop' }}
+          fetch-depth: 0
+
+      - name: Decide what to build.
+        id: plan
+        env:
+          FORCE: ${{ inputs.force || false }}
+          SEREIN_API_ID: ${{ secrets.SEREIN_API_ID }}
+          SEREIN_API_HASH: ${{ secrets.SEREIN_API_HASH }}
+        run: |
+          git fetch --force --tags origin
+          commit=$(git rev-parse HEAD)
+          build=true
+          if [ "$GITHUB_REF_TYPE" = tag ]; then
+            channel=release
+            tag=$GITHUB_REF_NAME
+            since=$(git describe --tags --abbrev=0 --match 'v*' "$commit^" 2>/dev/null || true)
+            previous=""
+            if [ -n "$since" ]; then
+              previous=$(git rev-parse "$since^{commit}")
+            fi
+          else
+            channel=nightly
+            tag=nightly
+            since="the previous nightly"
+            previous=$(git rev-parse -q --verify 'refs/tags/nightly^{commit}' || true)
+            if [ "$previous" = "$commit" ] && [ "$FORCE" != true ]; then
+              build=false
+              echo "::notice::The development branch has not moved since the last nightly."
+            fi
+          fi
+          publish=false
+          if [ "$build" = true ] && [ -n "$SEREIN_API_ID" ] && [ -n "$SEREIN_API_HASH" ]; then
+            publish=true
+          fi
+          {
+            echo "build=$build"
+            echo "publish=$publish"
+            echo "channel=$channel"
+            echo "tag=$tag"
+            echo "commit=$commit"
+            echo "previous=$previous"
+            echo "since=${since:-the beginning}"
+            echo "date=$(date -u +%Y-%m-%d)"
+          } | tee -a "$GITHUB_OUTPUT"
+
+  windows-x86_64:
+    name: Windows x86_64
+    needs: plan
+    if: needs.plan.outputs.build == 'true'
+    uses: ./.github/workflows/serein-win.yml
+    secrets: inherit
+    with:
+      arch: x64
+      config: Release
+      ref: ${{ needs.plan.outputs.commit }}
+
+  windows-arm64:
+    name: Windows arm64
+    needs: plan
+    if: needs.plan.outputs.build == 'true'
+    uses: ./.github/workflows/serein-win.yml
+    secrets: inherit
+    with:
+      arch: arm64
+      config: Release
+      ref: ${{ needs.plan.outputs.commit }}
+      no_cache: true
+
+  macos:
+    name: macOS universal
+    needs: plan
+    if: needs.plan.outputs.build == 'true'
+    uses: ./.github/workflows/serein-mac.yml
+    secrets: inherit
+    with:
+      config: Release
+      ref: ${{ needs.plan.outputs.commit }}
+
+  linux:
+    name: Linux x86_64
+    needs: plan
+    if: needs.plan.outputs.build == 'true'
+    uses: ./.github/workflows/serein-linux.yml
+    permissions:
+      contents: read
+      actions: write
+    secrets: inherit
+    with:
+      config: Release
+      ref: ${{ needs.plan.outputs.commit }}
+
+  flatpak:
+    name: Flatpak
+    needs: plan
+    if: needs.plan.outputs.build == 'true'
+    uses: ./.github/workflows/serein-flatpak.yml
+    secrets: inherit
+    with:
+      ref: ${{ needs.plan.outputs.commit }}
+
+  credentials:
+    name: Release credentials
+    needs: plan
+    if: needs.plan.outputs.build == 'true' && needs.plan.outputs.publish != 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require SereinGram API credentials for published builds.
+        env:
+          CHANNEL: ${{ needs.plan.outputs.channel }}
+        run: |
+          echo "::error::The SEREIN_API_ID and SEREIN_API_HASH repository secrets are not set, so this run builds with Telegram's test credentials and does not publish the $CHANNEL release."
+          exit 1
+
+  publish:
+    name: Publish
+    needs: [plan, windows-x86_64, windows-arm64, macos, linux, flatpak]
+    if: needs.plan.outputs.publish == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      CHANNEL: ${{ needs.plan.outputs.channel }}
+      TAG: ${{ needs.plan.outputs.tag }}
+      COMMIT: ${{ needs.plan.outputs.commit }}
+      PREVIOUS: ${{ needs.plan.outputs.previous }}
+      SINCE: ${{ needs.plan.outputs.since }}
+      DATE: ${{ needs.plan.outputs.date }}
+
+    steps:
+      - name: Clone.
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.plan.outputs.commit }}
+          fetch-depth: 0
+
+      - name: Download the builds.
+        uses: actions/download-artifact@v8
+        with:
+          pattern: SereinGram-*
+          path: dist
+          merge-multiple: true
+
+      - name: Check the release structure.
+        run: python3 tools/serein/release.py verify dist
+
+      - name: Checksums, manifest and notes.
+        run: |
+          info=(--repo "$GITHUB_REPOSITORY" --tag "$TAG" --channel "$CHANNEL"
+            --commit "$COMMIT" --date "$DATE")
+          python3 tools/serein/release.py manifest dist "${info[@]}" \
+            -o "$RUNNER_TEMP/release.json"
+          python3 tools/serein/release.py checksums dist \
+            -o "$RUNNER_TEMP/SHA256SUMS"
+          python3 tools/serein/release.py notes "${info[@]}" \
+            --previous "$PREVIOUS" --since "$SINCE" -o "$RUNNER_TEMP/notes.md"
+          mv "$RUNNER_TEMP/release.json" "$RUNNER_TEMP/SHA256SUMS" dist/
+          (cd dist && sha256sum -c SHA256SUMS)
+
+      # WHY: the new nightly is uploaded as a draft first, so the published
+      # release is replaced in one step and never lists half of its files or
+      # a SHA256SUMS that disagrees with them.
+      - name: Publish the nightly release.
+        if: env.CHANNEL == 'nightly'
+        run: |
+          draft="nightly-$GITHUB_RUN_ID"
+          gh release create "$draft" dist/* --draft --prerelease \
+            --target "$COMMIT" --title "SereinGram Nightly $DATE (${COMMIT::7})" \
+            --notes-file "$RUNNER_TEMP/notes.md"
+          if gh release view nightly >/dev/null 2>&1; then
+            gh release delete nightly --cleanup-tag --yes
+          fi
+          if git ls-remote --exit-code --tags origin refs/tags/nightly >/dev/null; then
+            git push origin :refs/tags/nightly
+          fi
+          gh release edit "$draft" --tag nightly --draft=false --prerelease
+
+      - name: Publish the tagged release.
+        if: env.CHANNEL == 'release'
+        run: |
+          prerelease=()
+          if [[ "$TAG" == *-* ]]; then
+            prerelease=(--prerelease)
+          fi
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" dist/* --clobber
+            gh release edit "$TAG" --notes-file "$RUNNER_TEMP/notes.md"
+          else
+            gh release create "$TAG" dist/* --draft --verify-tag "${prerelease[@]}" \
+              --title "SereinGram $TAG" --notes-file "$RUNNER_TEMP/notes.md"
+          fi

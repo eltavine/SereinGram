@@ -1,0 +1,88 @@
+# SereinGram 发布与构建产物约定
+
+本文是脚本、包管理器与自动更新可以长期依赖的发布约定。约定只做向后兼容的扩展：可以增加新的产物，已发布的产物名称、校验文件格式与清单字段不改名、不删除。
+
+## 1. 渠道
+
+| 渠道 | 标签 | 生成方式 | Release 状态 |
+| --- | --- | --- | --- |
+| Nightly | `nightly`（滚动） | 每天 19:00 UTC 由 `serein-release.yml` 从 `develop` 最新提交构建；分支自上次 Nightly 以来没有新提交时跳过；也可手动触发 | 预发布，每次构建替换上一次 |
+| 正式版 | `vX.Y.Z`，预发布为 `vX.Y.Z-<后缀>` | 推送标签时由 `serein-release.yml` 从标签提交构建 | 草稿，核对后手动发布；带后缀的标签标为预发布 |
+
+固定下载地址：
+
+- Nightly：`https://github.com/eltavine/SereinGram/releases/download/nightly/<产物名>`
+- 最新正式版：`https://github.com/eltavine/SereinGram/releases/latest/download/<产物名>`
+- 指定版本：`https://github.com/eltavine/SereinGram/releases/download/vX.Y.Z/<产物名>`
+
+定时触发只在默认分支上生效，因此 `serein-release.yml` 进入 `main` 后 Nightly 才会按时自动运行；在此之前可在 Actions 页面对 `develop` 手动运行。
+
+## 2. 产物
+
+所有产物都是 Release 配置构建，当前阶段不使用开发者证书签名、不做公证。macOS 应用包只带不需要证书的 ad-hoc 签名，这是 Apple 芯片启动程序的前提。
+
+命名规则：`SereinGram-<系统>-<架构>[-<变体>].<扩展名>`，系统为 `windows`、`macos`、`linux`，架构为 `x86_64`、`arm64`、`universal`。各渠道的同一产物名称相同，渠道与版本由标签区分。完整列表以 `tools/serein/policy/release_assets.json` 为准，发布前逐一核对，缺少或多出任何文件都会让发布失败。
+
+| 系统 | 架构 | 产物 | 内容 |
+| --- | --- | --- | --- |
+| Windows | x86_64 | `SereinGram-windows-x86_64-setup.exe` | Inno Setup 安装包 |
+| Windows | x86_64 | `SereinGram-windows-x86_64-portable.zip` | 便携版，`SereinGram/SereinGram.exe` |
+| Windows | arm64 | `SereinGram-windows-arm64-setup.exe` | Inno Setup 安装包 |
+| Windows | arm64 | `SereinGram-windows-arm64-portable.zip` | 便携版，`SereinGram/SereinGram.exe` |
+| macOS | universal | `SereinGram-macos-universal.dmg` | arm64 与 x86_64 通用应用 |
+| Linux | x86_64 | `SereinGram-linux-x86_64.tar.xz` | 便携版，`SereinGram/SereinGram`（glibc 2.28 起） |
+| Linux | x86_64 | `SereinGram-linux-x86_64.AppImage` | AppImage |
+| Linux | x86_64 | `SereinGram-linux-x86_64.deb` | Debian、Ubuntu 软件包 |
+| Linux | x86_64 | `SereinGram-linux-x86_64.rpm` | Fedora、openSUSE 等软件包 |
+| Linux | x86_64 | `SereinGram-linux-x86_64.flatpak` | Flatpak 单文件包（GNOME 51 运行时） |
+| Linux | arm64 | `SereinGram-linux-arm64.flatpak` | Flatpak 单文件包（GNOME 51 运行时） |
+
+## 3. 校验文件
+
+每个 Release 都附带：
+
+- `SHA256SUMS`：GNU coreutils 格式，每行 `<64 位小写十六进制>␠␠<产物名>`，按产物名排序，LF 换行，覆盖上表全部产物。校验：`sha256sum --ignore-missing -c SHA256SUMS`（Linux）、`shasum -a 256 --ignore-missing -c SHA256SUMS`（macOS）、`(Get-FileHash <文件>).Hash`（Windows，与对应行比较，大小写不敏感）。
+- `release.json`：供脚本读取的清单，`schema_version` 为 1：
+
+```json
+{
+  "schema_version": 1,
+  "channel": "nightly",
+  "tag": "nightly",
+  "version": "7.2.10",
+  "commit": "<40 位提交>",
+  "date": "2026-10-02",
+  "assets": [
+    {
+      "name": "SereinGram-linux-x86_64.AppImage",
+      "os": "linux",
+      "arch": "x86_64",
+      "kind": "appimage",
+      "size": 123456789,
+      "sha256": "<64 位小写十六进制>",
+      "url": "https://github.com/eltavine/SereinGram/releases/download/nightly/SereinGram-linux-x86_64.AppImage"
+    }
+  ]
+}
+```
+
+`channel` 为 `nightly` 或 `release`；`version` 是构建所基于的 Telegram Desktop 版本；`kind` 取值 `installer`、`portable`、`disk-image`、`appimage`、`deb`、`rpm`、`flatpak`。新增字段只追加，不改变已有字段的含义。
+
+## 4. 发布页内容
+
+Release 正文最上方是自动生成的变更记录：Nightly 列出自上一个 Nightly 以来、正式版列出自上一个 `v*` 标签以来 `develop` 主线上的提交，按 Conventional Commits 类型分为不兼容变更、新功能、修复、性能与 Telegram Desktop 上游合并，构建、工具与文档等其余提交折叠显示；随后是按系统与架构排列的下载表与校验说明。生成逻辑在 `tools/serein/release.py`。
+
+## 5. API 凭据
+
+发布的构建必须使用 SereinGram 自己的 API 凭据（仓库 Secrets `SEREIN_API_ID`、`SEREIN_API_HASH`）。缺少凭据时 `serein-release.yml` 仍完成整套构建并保留产物供内部测试，但不发布，并以“Release credentials”任务失败提示配置。
+
+## 6. 构建矩阵与质量门禁
+
+| 工作流 | 触发 | 内容 |
+| --- | --- | --- |
+| `serein-guards.yml` | 每次推送与 PR | 格式与风格、Lint、静态分析、依赖与配置校验、生成代码一致性、上游侵入预算、提交信息、核心单元测试 |
+| `serein-win.yml`、`serein-mac.yml`、`serein-linux.yml` | PR 与 `main` 推送（Debug）；被发布流程调用（Release） | 编译（警告即错误）、`test_serein`、启动冒烟测试、打包 |
+| `serein-flatpak.yml`、`serein-arch.yml` | 打包文件改动、每周定时；Flatpak 也被发布流程调用 | 发行版打包与安装检查 |
+| `serein-release.yml` | 每日定时、手动、`v*` 标签 | Release 矩阵、校验文件、变更记录与发布 |
+
+构建尽量可重复：依赖与工具按版本或校验和固定，Linux 构建以提交时间作为 `SOURCE_DATE_EPOCH`，便携包的文件顺序、属主与时间戳固定；不承诺逐字节一致。

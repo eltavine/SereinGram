@@ -8,6 +8,7 @@ SereinGram 是基于 Telegram Desktop 的第三方桌面客户端，功能对标
 | --- | --- |
 | [功能矩阵](features.md) | 功能 TODO 清单：稳定 Feature ID、来源、状态、优先级 |
 | [架构](architecture.md) | 模块分层、依赖方向、上游挂钩门面、schema、存储、守卫与迁移步骤 |
+| [发布约定](releases.md) | 渠道、构建矩阵、产物命名、校验文件与清单格式 |
 | [ADR](adr/) | 关键取舍与调研记录 |
 
 ## 0. 全局工程原则
@@ -33,8 +34,8 @@ SereinGram 是基于 Telegram Desktop 的第三方桌面客户端，功能对标
 | 平台 | 产物 | 依赖准备 | 最低系统版本 |
 | --- | --- | --- | --- |
 | macOS | arm64 + x86_64 通用二进制，DMG | 上游 `prepare.py` + Xcode | 随上游 |
-| Windows | x64 与 arm64 安装包、便携版（arm64 每周及发布时构建） | 上游 `prepare.py` + MSVC | 随上游 |
-| Linux | x86_64 静态构建 tar 包、AppImage、`.deb` 与 `.rpm`（Rocky Linux 8 容器，glibc 2.28 及以上）；Arch Linux PKGBUILD 与 Flatpak 清单以系统库构建 | 上游 Docker 环境；Arch 与 Flatpak 用各自的依赖 | 随上游 |
+| Windows | x86_64 与 arm64 安装包、便携版 | 上游 `prepare.py` + MSVC | 随上游 |
+| Linux | x86_64 静态构建便携包、AppImage、`.deb` 与 `.rpm`（Rocky Linux 8 容器，glibc 2.28 及以上）；x86_64 与 arm64 Flatpak 包；Arch Linux PKGBUILD 以系统库构建 | 上游 Docker 环境；Arch 与 Flatpak 用各自的依赖 | 随上游 |
 
 Linux 发行版打包：
 
@@ -53,9 +54,9 @@ Linux 发行版打包：
 ## 4. 发布门禁
 
 1. 三平台 CI 构建成功，`test_serein` 全部通过。
-2. 守卫全部通过：源文件行数、模块边界、上游侵入预算、`buf lint` 与 `buf breaking`、生成代码无漂移、三语文案一致、门面命名空间遮蔽、功能矩阵格式、工作流 actionlint。本地用 `tools/serein/check_all.sh` 一次运行全部守卫与核心测试。
+2. 守卫全部通过：格式与风格、Lint、静态分析、依赖与配置校验、源文件行数、模块边界、上游侵入预算、`buf lint` 与 `buf breaking`、生成代码无漂移、三语文案一致、门面命名空间遮蔽、功能矩阵格式、工作流 actionlint，以及三平台的启动冒烟测试。本地用 `tools/serein/check_all.sh` 一次运行全部守卫与核心测试。
 3. 发布说明分别列出本版本 `Verified` 与仅 `Implemented` 的功能。
-4. 发布流程：推送 `v*` 标签后，三平台工作流构建并把产物（macOS 通用 DMG、Linux x86_64 tar 包、AppImage、`.deb` 与 `.rpm`、Windows x64 便携版与安装包）上传到同一个草稿预发布 Release，核对门禁后手动发布；应用内的 GitHub 更新检查只提示正式版。CI 目前只构建 Debug 配置，正式版的构建配置与签名尚未确定。
+4. 发布流程：`serein-release.yml` 每天从 `develop` 构建 Release 配置的 Nightly，推送 `v*` 标签时构建正式版草稿；全部产物不签名、不公证，名称、校验文件与清单格式固定，约定见 [releases.md](releases.md)；应用内的 GitHub 更新检查只提示正式版。
 
 ## 5. 提交规范
 
