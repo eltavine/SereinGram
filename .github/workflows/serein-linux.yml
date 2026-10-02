@@ -197,6 +197,10 @@ jobs:
             FLAGS=(-D CMAKE_C_FLAGS_RELEASE="-O2 -DNDEBUG -fpch-preprocess"
               -D CMAKE_CXX_FLAGS_RELEASE="-O2 -DNDEBUG -fpch-preprocess")
           fi
+          # Upstream code assumes the signed char of every other target.
+          if [ "$ARCH" = arm64 ]; then
+            FLAGS+=(-D CMAKE_C_FLAGS=-fsigned-char -D CMAKE_CXX_FLAGS=-fsigned-char)
+          fi
 
           ccache -z
 
