@@ -56,27 +56,38 @@ bool Protected(EntityType type) {
 	return directory;
 }
 
-[[nodiscard]] const ChineseConverter *Converter(bool traditional) {
+using Converters = std::array<std::unique_ptr<ChineseConverter>, 2>;
+
+[[nodiscard]] Converters &LoadedConverters() {
+	static auto result = Converters();
+	return result;
+}
+
+void LoadConverter(bool traditional) {
 	static auto loaded = std::array<std::once_flag, 2>();
-	static auto converters = std::array<std::unique_ptr<ChineseConverter>, 2>();
 	const auto index = traditional ? 1 : 0;
 	std::call_once(loaded[index], [&] {
 		const auto directory = DictionaryDirectory();
-		converters[index] = directory.isEmpty()
+		auto &converter = LoadedConverters()[index];
+		converter = directory.isEmpty()
 			? nullptr
 			: ChineseConverter::Load(directory, traditional);
-		if (!converters[index]) {
+		if (!converter) {
 			LOG(("Serein Chinese conversion: OpenCC could not be loaded."));
 		}
 	});
-	return converters[index].get();
+}
+
+[[nodiscard]] const ChineseConverter *Converter(bool traditional) {
+	LoadConverter(traditional);
+	return LoadedConverters()[traditional ? 1 : 0].get();
 }
 
 } // namespace
 
 void WarmUpChineseConversion(bool traditional) {
 	crl::async([=] {
-		Converter(traditional);
+		LoadConverter(traditional);
 	});
 }
 
