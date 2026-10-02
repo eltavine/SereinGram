@@ -151,7 +151,14 @@ message MessagesSettings {
 | 模块依赖方向 | `tools/serein/check_boundaries.py` 按 `policy/boundaries.json` 检查每个 `#include`：`schema`、`ports`、`adapters` 严格执行，其余目录适用宽松的 `serein/` 兜底规则 | 已实施 |
 | 功能矩阵格式 | `tools/serein/check_features.py`：`features.md` 每行的 ID 唯一且形如 `SG-<族>-<两位序号>`，状态只能是 Planned、In Progress、Implemented、Verified，优先级 P0–P3，来源只用约定缩写 | 已实施 |
 | 门面命名空间遮蔽 | `tools/serein/check_hook_namespaces.py`：生成的门面命名空间 `Serein::Hooks::<页>` 会遮蔽同名的 `Serein::<页>`；位于 `Serein::Hooks` 内、且包含了该门面的代码，只能用 `<页>::` 访问门面里声明的函数，其余名字必须写成 `Serein::<页>::` | 已实施 |
-| 工作流静态检查 | actionlint 1.7.12 检查 `.github/workflows/serein-*.yml` 的表达式、矩阵属性、`needs` 引用与 Action 输入（暂不启用 shellcheck：沿用上游的构建脚本有大量引号提示）；本地未安装 actionlint 时 `check_all.sh` 跳过并提示 | 已实施 |
+| 工作流静态检查 | actionlint 1.7.12（含 shellcheck）检查 `.github/workflows/serein-*.yml` 的表达式、矩阵属性、`needs` 引用、Action 输入与内嵌脚本；zizmor 1.16.3 检查工作流安全：第三方 Action 固定到提交哈希、检出不保留凭据、可复用工作流只接收需要的 Secrets、无模板注入；本地未安装 actionlint 时 `check_all.sh` 跳过并提示 | 已实施 |
+| 格式与风格 | `tools/serein/check_style.py`：自有文本文件为无 BOM 的 UTF-8、只用 LF、以单个换行结尾、无行尾空白，YAML、Python、proto、JSON 与 CMake 不用制表符缩进，`tools/serein/policy/` 的 JSON 为规范格式；Serein C++ 用制表符缩进、不连续空行、`&&` 与 `\|\|` 置于续行开头、带访问区段的类在 `};` 前空一行、使用嵌套命名空间写法、类外定义不重复 `[[nodiscard]]`、注释按单行限额（多行须以 `// WHY:` 开头且不超过三行，测试目录除外），并禁用 `QStringLiteral`、`(void)` 与 `static_cast<void>`、`Q_OS_LINUX`、`NULL` 以及生产代码中的 `_DEBUG` 分支 | 已实施 |
+| Python、Shell、YAML、文档与 proto 格式 | ruff 0.16.10 格式检查与 Lint（`tools/serein/ruff.toml`）；shellcheck；yamllint 1.37.1 严格模式（`tools/serein/yamllint.yml`）；markdownlint-cli2 0.19.1（`tools/serein/serein.markdownlint-cli2.jsonc`）；`buf format --diff --exit-code` | 已实施 |
+| 静态分析 | clang-tidy 21.1.1 按 `Telegram/SourceFiles/serein/.clang-tidy` 检查核心测试工程中的全部手写 Serein 编译单元（bugprone、clang-analyzer、performance 等），由 `tools/serein/run_clang_tidy.py` 并行运行；只统计 Serein 自有位置的诊断，生成代码与上游头文件除外，无法解析的编译单元同样判为失败 | 已实施 |
+| 密钥扫描 | gitleaks 8.30.1 扫描每次推送或 PR 新增的主线提交（`tools/serein/gitleaks.toml` 只放行打包说明中的占位凭据） | 已实施 |
+| 桌面元数据 | `desktop-file-validate` 校验桌面入口，`appstreamcli validate` 校验 AppStream 元数据 | 已实施 |
+| 启动冒烟测试 | `tools/serein/smoke_test.py`：三平台构建后以全新 `-workdir` 启动应用，要求日志出现启动行且进程在等待期后仍在运行；Linux 先用 `ldd` 确认运行库都能找到 | 已实施 |
+| 发布结构 | `tools/serein/release.py verify`：发布前的产物集合必须与 `tools/serein/policy/release_assets.json` 完全一致，并生成 `SHA256SUMS` 与 `release.json` | 已实施 |
 | 上游侵入预算 | `tools/serein/upstream_budget.py`，与 `policy/upstream.json` 记录的上游基线比较；预算默认只降不升；新功能需要新挂钩时，在同一提交中上调并在提交说明中写明增量与理由；同时统计上游文件直接包含非门面头文件的数量（已锁定为 0） | 已实施 |
 | schema 兼容 | `buf lint`；`tools/serein/proto_breaking.sh` 与推送前的提交或 PR 目标分支比较（`FILE` 级） | 已实施 |
 | 生成代码漂移 | `uv run tools/serein/codegen/generate.py --check` | 已实施 |
@@ -189,5 +196,5 @@ cmake --build out/serein-core-tests && ctest --test-dir out/serein-core-tests
 | 功能范围 | 包含可能与服务条款冲突的功能（SG-HIST-09、SG-PRIV-07、SG-PRIV-08），与其他增强一样默认关闭 |
 | proto3 方案 | 按 ADR-0002：proto3 + Buf + 自有生成器，不引入 protobuf 运行时 |
 | 文案 | 英文文案 `langs/serein/serein.strings` 由 `Telegram/cmake/serein_lang.cmake` 并入上游的语言代码生成，界面代码照常使用 `tr::lng_serein_*`；生成的键查找函数再经 `tools/serein/split_lang_keys.py` 按键名首字母拆分后编译（MSVC arm64 拒绝编译单个过大的函数）；其他语言的译文按界面语言从资源中加载，缺失的键回退英文 |
-| CI 缓存 | 整个仓库共用 10 GB 的 Actions 缓存，超出后按最久未访问淘汰：Windows 的依赖与 Qt 缓存在清理步骤之后保存（与上游一致），macOS 依赖缓存的键包含工具链指纹，Linux 缓存 Docker 层并只保留一份编译缓存；Windows 与 macOS 的依赖缓存同时包含 Debug 与 Release 版本，PR 与发布构建共用；发布流程中的 Windows arm64、Arch 与 Flatpak 构建不读写缓存，以免挤掉三个平台的缓存 |
+| CI 缓存 | 整个仓库共用 10 GB 的 Actions 缓存，超出后按最久未访问淘汰；分支与 PR 只能读取本身和默认分支的缓存，所以只有 PR 构建与默认分支上的构建写入缓存，其他分支上的发布构建只读取：Windows 的依赖与 Qt 缓存在清理步骤之后保存（与上游一致），macOS 依赖缓存的键包含工具链指纹，Linux 缓存 Docker 层并只保留一份编译缓存；Windows 与 macOS 的依赖缓存同时包含 Debug 与 Release 版本，PR 与发布构建共用；发布流程中的 Windows arm64、Arch 与 Flatpak 构建不读写缓存，以免挤掉三个平台的缓存 |
 | API 凭据 | 不使用官方 Telegram 客户端凭据；构建从仓库 Secrets 的 `SEREIN_API_ID` 与 `SEREIN_API_HASH` 注入，没有密钥的 fork 与 PR 构建回退到上游为开发构建公开提供的测试凭据（`TDESKTOP_API_TEST`） |

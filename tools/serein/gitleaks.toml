@@ -1,0 +1,9 @@
+title = "SereinGram"
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Placeholder credentials in the packaging instructions."
+regexTarget = "match"
+regexes = ['''SEREIN_API_HASH=0123456789abcdef''']
