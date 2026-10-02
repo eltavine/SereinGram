@@ -218,6 +218,16 @@ jobs:
         shell: bash
         run: sed -i 's/mingw-w64-x86_64-diffutils/diffutils/' "$TBUILD/$REPO_NAME/$PREPARE_PATH"
 
+      # SereinGram sends no crash reports, so the symbol dumper and the ATL it needs stay out.
+      - name: Skip the Windows symbol dumper.
+        shell: bash
+        run: |
+          sed -i -E -e '/windows.+dump_syms/d' -e '/dump_syms\.(gyp|vcxproj)/d' "$TBUILD/$REPO_NAME/$PREPARE_PATH"
+          if grep -n 'dump_syms' "$TBUILD/$REPO_NAME/$PREPARE_PATH" | grep -iv 'mac'; then
+            echo "prepare.py still builds the Windows symbol dumper." >&2
+            exit 1
+          fi
+
       # Debug and Release libraries, so both configurations share one cache.
       - name: Libraries.
         run: |
