@@ -79,6 +79,8 @@ jobs:
     env:
       CONFIG: ${{ inputs.config || 'Debug' }}
       ASSET_ARCH: ${{ (inputs.arch || 'x64') == 'arm64' && 'arm64' || 'x86_64' }}
+      # Only these runs write caches: every branch and pull request can read the default branch's.
+      SAVE_CACHE: ${{ github.event_name == 'pull_request' || github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
       PREPARE_PATH: "Telegram/build/prepare/prepare.py"
 
     defaults:
@@ -216,7 +218,7 @@ jobs:
           %TBUILD%\%REPO_NAME%\Telegram\build\prepare\win.bat silent ${{ matrix.qt }}
 
       - name: Save the ThirdParty cache.
-        if: ${{ !inputs.no_cache && steps.cache-third-party.outputs.cache-hit != 'true' }}
+        if: ${{ !inputs.no_cache && env.SAVE_CACHE == 'true' && steps.cache-third-party.outputs.cache-hit != 'true' }}
         uses: actions/cache/save@v6
         with:
           path: ${{ env.TBUILD }}\ThirdParty
@@ -241,7 +243,7 @@ jobs:
 
       # Saved after the cleanup, like upstream's post-job save, to leave build trees out.
       - name: Save the libraries cache.
-        if: ${{ !inputs.no_cache && steps.cache-libs.outputs.cache-hit != 'true' }}
+        if: ${{ !inputs.no_cache && env.SAVE_CACHE == 'true' && steps.cache-libs.outputs.cache-hit != 'true' }}
         uses: actions/cache/save@v6
         with:
           path: |
@@ -253,7 +255,7 @@ jobs:
           key: ${{ steps.cache-libs.outputs.cache-primary-key }}
 
       - name: Save the Qt cache.
-        if: ${{ !inputs.no_cache && steps.cache-qt.outputs.cache-hit != 'true' }}
+        if: ${{ !inputs.no_cache && env.SAVE_CACHE == 'true' && steps.cache-qt.outputs.cache-hit != 'true' }}
         uses: actions/cache/save@v6
         with:
           path: |
