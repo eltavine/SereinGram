@@ -120,9 +120,35 @@ class UpstreamBudgetTest(unittest.TestCase):
                 "source_files": 2,
                 "source_added_lines": 3,
                 "direct_include_files": 1,
+                "upstream_headers": 0,
             },
         )
         self.assertEqual(offenders, ["Telegram/SourceFiles/a.cpp"])
+
+    def test_counts_upstream_headers_used_by_serein(self):
+        self.write("Telegram/SourceFiles/data/data_session.h", "")
+        self.write("Telegram/SourceFiles/history/history.h", "")
+        self.write(
+            "Telegram/SourceFiles/serein/feature.cpp",
+            '#include "serein/core/options.h"\n'
+            '#include "data/data_session.h"\n'
+            '#include "base/basic_types.h"\n'
+            "#include <QtCore/QString>\n",
+        )
+        self.write("Telegram/SourceFiles/serein/view.h", '#include "data/data_session.h"\n')
+        self.write("Telegram/SourceFiles/serein/tests/t.cpp", '#include "history/history.h"\n')
+        git(self.root, "add", ".")
+        git(self.root, "commit", "-q", "-m", "serein")
+        self.write_policy(upstream_headers=1)
+        code, output = self.run_budget("--headers")
+        self.assertEqual(code, 0, output)
+        self.assertIn("upstream_headers            1 / 1", output)
+        self.assertIn("upstream header: data/data_session.h", output)
+        self.assertNotIn("history/history.h", output)
+        self.write_policy(upstream_headers=0)
+        code, output = self.run_budget()
+        self.assertEqual(code, 1)
+        self.assertIn("over budget: upstream_headers", output)
 
     def test_passes_within_budget(self):
         self.change_tree()

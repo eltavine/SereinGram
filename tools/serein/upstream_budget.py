@@ -3,6 +3,9 @@
 
 Every metric is compared with the recorded upstream base commit. Budgets
 only ratchet down: lower them in the policy as hooks are consolidated.
+The upstream_headers metric counts the distinct upstream application
+headers that SereinGram sources include, which bounds the code an upstream
+API change can break.
 """
 
 import argparse
@@ -12,7 +15,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from check_file_size import PolicyError, is_owned
+from check_file_size import PolicyError, is_owned, list_files
 from check_file_size import load_policy as load_owned_policy
 
 HERE = Path(__file__).resolve().parent
@@ -35,7 +38,9 @@ BUDGET_KEYS = (
     "source_files",
     "source_added_lines",
     "direct_include_files",
+    "upstream_headers",
 )
+SOURCES = (".h", ".hpp", ".cpp", ".mm", ".m")
 INCLUDE = re.compile(r'^\s*#\s*include\s+"([^"]+)"', re.MULTILINE)
 
 
@@ -124,6 +129,24 @@ def includes_own_header(path, policy):
     return False
 
 
+def upstream_headers(root, policy):
+    root = Path(root)
+    source_root = policy["source_root"]
+    own = tuple(policy["own_include_prefixes"])
+    owned = tuple(source_root + prefix for prefix in own)
+    result = set()
+    for name in list_files(root):
+        path = root / name
+        if not name.startswith(owned) or not name.endswith(SOURCES) or "/tests/" in name:
+            continue
+        if not path.is_file():
+            continue
+        for include in INCLUDE.findall(path.read_text(encoding="utf-8", errors="replace")):
+            if not include.startswith(own) and (root / source_root / include).is_file():
+                result.add(include)
+    return sorted(result)
+
+
 def measure(root, policy, owned):
     metrics = dict.fromkeys(BUDGET_KEYS, 0)
     offenders = []
@@ -140,6 +163,7 @@ def measure(root, policy, owned):
         if includes_own_header(Path(root) / path, policy):
             metrics["direct_include_files"] += 1
             offenders.append(path)
+    metrics["upstream_headers"] = len(upstream_headers(root, policy))
     return metrics, sorted(offenders)
 
 
@@ -150,6 +174,9 @@ def main(argv=None):
     parser.add_argument("--owned-policy", default=DEFAULT_OWNED_POLICY)
     parser.add_argument(
         "--list", action="store_true", help="list upstream files that include non-hook headers"
+    )
+    parser.add_argument(
+        "--headers", action="store_true", help="list upstream headers that SereinGram includes"
     )
     args = parser.parse_args(argv)
     try:
@@ -173,6 +200,9 @@ def main(argv=None):
     if args.list:
         for path in offenders:
             print(f"direct include: {path}")
+    if args.headers:
+        for header in upstream_headers(args.root, policy):
+            print(f"upstream header: {header}")
     for path, current, upstream in mismatches:
         print(
             f"Submodule {path} is staged at {current[:10]} but the upstream "
