@@ -51,23 +51,24 @@ def split(text):
             body.append(line)
     if label is not None or not count:
         return text
-    return "\n".join([
-        *lines[:start],
-        "namespace {",
-        "",
-        *helpers,
-        "} // namespace",
-        "",
-        *dispatch,
-        *lines[end:],
-    ])
+    return "\n".join(
+        [
+            *lines[:start],
+            "namespace {",
+            "",
+            *helpers,
+            "} // namespace",
+            "",
+            *dispatch,
+            *lines[end:],
+        ]
+    )
 
 
 def main(argv=None):
     args = sys.argv[1:] if argv is None else argv
     if len(args) != 2:
-        print("usage: split_lang_keys.py <lang_auto.cpp> <output>",
-              file=sys.stderr)
+        print("usage: split_lang_keys.py <lang_auto.cpp> <output>", file=sys.stderr)
         return 2
     source, target = Path(args[0]), Path(args[1])
     result = split(source.read_text(encoding="utf-8"))

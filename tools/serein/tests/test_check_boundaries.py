@@ -9,17 +9,23 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-import check_boundaries  # noqa: E402
+import check_boundaries
 
 POLICY = {
     "schema_version": 1,
     "source_root": "src/",
     "app_prefixes": ["styles/"],
     "modules": {
-        "serein/schema/": {"own": ["serein/schema/", "serein/core/options.h"],
-                           "app": False, "libraries": True},
-        "serein/ports/": {"own": ["serein/ports/", "serein/schema/"],
-                          "app": False, "libraries": False},
+        "serein/schema/": {
+            "own": ["serein/schema/", "serein/core/options.h"],
+            "app": False,
+            "libraries": True,
+        },
+        "serein/ports/": {
+            "own": ["serein/ports/", "serein/schema/"],
+            "app": False,
+            "libraries": False,
+        },
         "serein/": {"own": ["serein/"], "app": True, "libraries": True},
     },
 }
@@ -45,14 +51,15 @@ class CheckBoundariesTest(unittest.TestCase):
     def run_check(self):
         output = io.StringIO()
         with contextlib.redirect_stdout(output), contextlib.redirect_stderr(output):
-            code = check_boundaries.main(
-                ["--root", str(self.root), "--policy", str(self.policy)])
+            code = check_boundaries.main(["--root", str(self.root), "--policy", str(self.policy)])
         return code, output.getvalue()
 
     def test_allowed_includes_pass(self):
-        self.write("src/serein/schema/a.h",
-                   '#include "serein/schema/b.h"\n#include "serein/core/options.h"\n'
-                   '#include "base/basic_types.h"\n#include <QtCore/QString>\n')
+        self.write(
+            "src/serein/schema/a.h",
+            '#include "serein/schema/b.h"\n#include "serein/core/options.h"\n'
+            '#include "base/basic_types.h"\n#include <QtCore/QString>\n',
+        )
         self.write("src/serein/ports/p.h", '#include "serein/schema/a.h"\n')
         self.write("src/serein/chats/legacy.cpp", '#include "data/data_session.h"\n')
         code, output = self.run_check()

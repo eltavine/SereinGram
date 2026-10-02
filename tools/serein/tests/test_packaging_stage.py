@@ -19,9 +19,17 @@ class PackagingStageTest(unittest.TestCase):
         self.binary.write_text("#!/bin/sh\n", encoding="utf-8")
         self.stage = self.temp / "stage"
         subprocess.run(
-            ["bash", str(STAGE), str(self.binary),
-             str(ROOT / f"lib/xdg/{ID}.metainfo.xml"), str(self.stage)],
-            check=True, capture_output=True, text=True)
+            [
+                "bash",
+                str(STAGE),
+                str(self.binary),
+                str(ROOT / f"lib/xdg/{ID}.metainfo.xml"),
+                str(self.stage),
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
 
     def tearDown(self):
         self._temp.cleanup()

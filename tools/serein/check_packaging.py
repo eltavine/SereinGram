@@ -23,8 +23,7 @@ QT_ARCHIVE = re.compile(r"/qt-everywhere-src-([0-9.]+)\.tar\.xz$", re.M)
 
 
 def snap_value(text, part, key):
-    block = re.search(
-        rf"^  {re.escape(part)}:\n((?:    .*\n|\n)*)", text, re.M)
+    block = re.search(rf"^  {re.escape(part)}:\n((?:    .*\n|\n)*)", text, re.M)
     if not block:
         return None
     value = re.search(rf"^    {key}: (\S+)$", block.group(1), re.M)
@@ -32,8 +31,7 @@ def snap_value(text, part, key):
 
 
 def flatpak_commits(text, url):
-    return re.findall(
-        rf"url: {re.escape(url)}\n\s+commit: ([0-9a-f]{{40}})", text)
+    return re.findall(rf"url: {re.escape(url)}\n\s+commit: ([0-9a-f]{{40}})", text)
 
 
 def problems(root):
@@ -54,7 +52,8 @@ def problems(root):
             if commit != expected:
                 result.append(
                     f"{FLATPAK} pins {url} at {commit[:10]}, but {SNAP} "
-                    f"uses {expected[:10]} for {part}.")
+                    f"uses {expected[:10]} for {part}."
+                )
         if part == "tde2e":
             match = PKGBUILD_COMMIT.search(pkgbuild)
             if not match:
@@ -63,14 +62,14 @@ def problems(root):
                 result.append(
                     f"{PKGBUILD} pins tdlib {match.group(1)[:10]}, but "
                     f"{SNAP} builds tde2e from {expected[:10]}; update "
-                    "_td_commit.")
+                    "_td_commit."
+                )
     tag = snap_value(snap, "qt", "source-tag")
     archive = QT_ARCHIVE.search(flatpak)
     if not tag or not archive:
         result.append(f"Cannot compare the Qt version of {SNAP} and {FLATPAK}.")
     elif tag.removeprefix("v") != archive.group(1):
-        result.append(
-            f"{FLATPAK} builds Qt {archive.group(1)}, but {SNAP} uses {tag}.")
+        result.append(f"{FLATPAK} builds Qt {archive.group(1)}, but {SNAP} uses {tag}.")
     return result
 
 
@@ -89,15 +88,14 @@ def update(root):
         expected = snap_value(snap, part, "source-commit")
         if not expected or not re.fullmatch(r"[0-9a-f]{40}", expected):
             continue
-        source = re.compile(
-            rf"(url: {re.escape(url)}\n\s+commit: )([0-9a-f]{{40}})")
+        source = re.compile(rf"(url: {re.escape(url)}\n\s+commit: )([0-9a-f]{{40}})")
         stale = {match.group(2) for match in source.finditer(texts[FLATPAK])}
         if part == "tde2e":
             stale |= set(PKGBUILD_COMMIT.findall(texts[PKGBUILD]))
-            texts[PKGBUILD] = PKGBUILD_COMMIT.sub(
-                f"_td_commit={expected}", texts[PKGBUILD])
+            texts[PKGBUILD] = PKGBUILD_COMMIT.sub(f"_td_commit={expected}", texts[PKGBUILD])
         texts[FLATPAK] = source.sub(
-            lambda match: match.group(1) + expected, texts[FLATPAK])
+            lambda match, expected=expected: match.group(1) + expected, texts[FLATPAK]
+        )
         for commit in sorted(stale - {expected}):
             changed.append(f"{part} {commit[:10]} -> {expected[:10]}")
     for path, text in texts.items():
@@ -109,15 +107,17 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=ROOT)
     parser.add_argument(
-        "--update", action="store_true",
-        help="rewrite the commit pins from the snap recipe first")
+        "--update", action="store_true", help="rewrite the commit pins from the snap recipe first"
+    )
     args = parser.parse_args(argv)
     if args.update:
         for change in update(args.root):
             print(f"Updated {change}.")
             if change.startswith("tlottie "):
-                print("Regenerate packaging/flatpak/tlottie-cargo-sources.yml "
-                      "from the new tlottie Cargo.lock.")
+                print(
+                    "Regenerate packaging/flatpak/tlottie-cargo-sources.yml "
+                    "from the new tlottie Cargo.lock."
+                )
     found = problems(args.root)
     for problem in found:
         print(problem)

@@ -47,8 +47,7 @@ def stop(process):
 
 def run(binary, timeout, settle, workdir):
     command = [str(binary), "-workdir", str(workdir), "-debug"]
-    process = subprocess.Popen(command, stdout=subprocess.DEVNULL,
-                               stderr=subprocess.DEVNULL)
+    process = subprocess.Popen(command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     try:
         deadline = time.monotonic() + timeout
         while not launched(workdir):

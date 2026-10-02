@@ -6,7 +6,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-import smoke_test  # noqa: E402
+import smoke_test
 
 LAUNCHING = """#!/bin/sh
 echo "Launched version: 1.0" > "$2/log.txt"
@@ -38,18 +38,18 @@ class SmokeTest(unittest.TestCase):
 
     def test_passes_when_the_app_keeps_running(self):
         self.assertEqual(
-            smoke_test.main([str(self.script(LAUNCHING)), "--timeout", "10",
-                             "--settle", "1"]), 0)
+            smoke_test.main([str(self.script(LAUNCHING)), "--timeout", "10", "--settle", "1"]), 0
+        )
 
     def test_fails_when_the_app_exits(self):
         self.assertEqual(
-            smoke_test.main([str(self.script(CRASHING)), "--timeout", "10",
-                             "--settle", "2"]), 1)
+            smoke_test.main([str(self.script(CRASHING)), "--timeout", "10", "--settle", "2"]), 1
+        )
 
     def test_fails_without_the_launch_line(self):
         self.assertEqual(
-            smoke_test.main([str(self.script(SILENT)), "--timeout", "2",
-                             "--settle", "1"]), 1)
+            smoke_test.main([str(self.script(SILENT)), "--timeout", "2", "--settle", "1"]), 1
+        )
 
 
 if __name__ == "__main__":

@@ -8,13 +8,17 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-import upstream_sync  # noqa: E402
+import upstream_sync
 
 
 def git(root, *args):
     return subprocess.run(
         ["git", "-c", "user.name=t", "-c", "user.email=t@t", *args],
-        cwd=root, capture_output=True, check=True, text=True).stdout.strip()
+        cwd=root,
+        capture_output=True,
+        check=True,
+        text=True,
+    ).stdout.strip()
 
 
 def write(root, path, text):
@@ -41,22 +45,36 @@ class UpstreamSyncTest(unittest.TestCase):
         git(self.fork, "config", "user.email", "t@t")
         self.policy = self.fork / "tools/policy/upstream.json"
         self.owned = self.fork / "tools/policy/owned.json"
-        write(self.fork, "tools/policy/owned.json", json.dumps({
-            "schema_version": 1, "max_lines": 1000,
-            "owned": ["Telegram/SourceFiles/serein/", "tools/"],
-            "extensions": [".cpp", ".json"], "filenames": [],
-        }))
-        write(self.fork, "tools/policy/upstream.json", json.dumps({
-            "schema_version": 1,
-            "upstream": f"{self.upstream}#dev",
-            "base": self.base,
-            "source_root": "Telegram/SourceFiles/",
-            "owned_extra": [],
-            "own_include_prefixes": ["serein/"],
-            "hook_include_prefixes": ["serein/hooks/"],
-            "submodule_overrides": [],
-            "budget": dict.fromkeys(upstream_sync.upstream_budget.BUDGET_KEYS, 100),
-        }))
+        write(
+            self.fork,
+            "tools/policy/owned.json",
+            json.dumps(
+                {
+                    "schema_version": 1,
+                    "max_lines": 1000,
+                    "owned": ["Telegram/SourceFiles/serein/", "tools/"],
+                    "extensions": [".cpp", ".json"],
+                    "filenames": [],
+                }
+            ),
+        )
+        write(
+            self.fork,
+            "tools/policy/upstream.json",
+            json.dumps(
+                {
+                    "schema_version": 1,
+                    "upstream": f"{self.upstream}#dev",
+                    "base": self.base,
+                    "source_root": "Telegram/SourceFiles/",
+                    "owned_extra": [],
+                    "own_include_prefixes": ["serein/"],
+                    "hook_include_prefixes": ["serein/hooks/"],
+                    "submodule_overrides": [],
+                    "budget": dict.fromkeys(upstream_sync.upstream_budget.BUDGET_KEYS, 100),
+                }
+            ),
+        )
         write(self.fork, "Telegram/SourceFiles/serein/x.cpp", "int x;\n")
         write(self.fork, "Telegram/SourceFiles/a.cpp", "int a; // hook\n")
         git(self.fork, "add", ".")
@@ -90,9 +108,14 @@ class UpstreamSyncTest(unittest.TestCase):
         self.upstream_commit("Telegram/SourceFiles/a.cpp", "int a2;\n", "v3")
         conflicts, metrics = self.sync("v3")
         self.assertIsNone(metrics)
-        self.assertEqual(conflicts, {
-            "serein": [], "hooks": ["Telegram/SourceFiles/a.cpp"], "upstream": [],
-        })
+        self.assertEqual(
+            conflicts,
+            {
+                "serein": [],
+                "hooks": ["Telegram/SourceFiles/a.cpp"],
+                "upstream": [],
+            },
+        )
         self.assertEqual(json.loads(self.policy.read_text())["base"], self.base)
 
     def test_submodule_pointer_conflicts_take_the_newer_commit(self):
@@ -144,18 +167,20 @@ class UpstreamSyncTest(unittest.TestCase):
         git(self.fork, "pull", "-q", "--no-rebase", "--no-edit", "origin", "dev")
         flatpak = "packaging/flatpak/io.github.eltavine.SereinGram.yml"
         write(self.fork, "packaging/arch/PKGBUILD", f"_td_commit={old}\n")
-        write(self.fork, flatpak, "      - type: git\n"
-              "        url: https://github.com/tdlib/td.git\n"
-              f"        commit: {old}\n")
+        write(
+            self.fork,
+            flatpak,
+            "      - type: git\n"
+            "        url: https://github.com/tdlib/td.git\n"
+            f"        commit: {old}\n",
+        )
         git(self.fork, "add", ".")
         git(self.fork, "commit", "-q", "-m", "packaging")
         self.upstream_commit("snap/snapcraft.yaml", snap(new), "v5")
         conflicts, metrics = self.sync("v5")
         self.assertIsNone(conflicts)
         self.assertIsNotNone(metrics)
-        self.assertEqual(
-            (self.fork / "packaging/arch/PKGBUILD").read_text(),
-            f"_td_commit={new}\n")
+        self.assertEqual((self.fork / "packaging/arch/PKGBUILD").read_text(), f"_td_commit={new}\n")
         self.assertIn(f"commit: {new}", (self.fork / flatpak).read_text())
         message = git(self.fork, "log", "-1", "--format=%B")
         self.assertIn(f"tde2e {old[:10]} -> {new[:10]}", message)
@@ -198,8 +223,7 @@ class UpstreamSyncTest(unittest.TestCase):
         conflicts, metrics = self.sync("dev")
         self.assertIsNone(conflicts)
         self.assertIsNotNone(metrics)
-        self.assertEqual(
-            (self.fork / "Telegram/SourceFiles/b.cpp").read_text(), "int b3;\n")
+        self.assertEqual((self.fork / "Telegram/SourceFiles/b.cpp").read_text(), "int b3;\n")
 
     def test_current_baseline_is_reported(self):
         with self.assertRaisesRegex(upstream_sync.SyncError, "already"):
@@ -231,8 +255,9 @@ class UpstreamSyncTest(unittest.TestCase):
             self.sync("other")
 
     def test_branch_names_are_sanitized(self):
-        self.assertEqual(upstream_sync.branch_name("refs/tags/v6.3 beta"),
-                         "sync/refs-tags-v6.3-beta")
+        self.assertEqual(
+            upstream_sync.branch_name("refs/tags/v6.3 beta"), "sync/refs-tags-v6.3-beta"
+        )
 
 
 if __name__ == "__main__":

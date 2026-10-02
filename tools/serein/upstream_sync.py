@@ -19,7 +19,8 @@ from pathlib import Path
 
 import check_packaging
 import upstream_budget
-from check_file_size import PolicyError, is_owned, load_policy as load_owned_policy
+from check_file_size import PolicyError, is_owned
+from check_file_size import load_policy as load_owned_policy
 
 HERE = Path(__file__).resolve().parent
 REMOTE = "upstream"
@@ -30,8 +31,9 @@ class SyncError(Exception):
 
 
 def git(root, *args, check=True, stdin=None):
-    result = subprocess.run(["git", *args], cwd=root, capture_output=True,
-                            text=True, input=stdin)
+    result = subprocess.run(
+        ["git", *args], cwd=root, capture_output=True, text=True, input=stdin, check=False
+    )
     if check and result.returncode != 0:
         raise SyncError(f"git {' '.join(args)} failed: {result.stderr.strip()}")
     return result
@@ -67,14 +69,34 @@ def changed_gitlinks(root, old, new):
 def init_submodules(root, paths):
     for path in paths:
         if not (Path(root) / path / ".git").exists():
-            git(root, "-c", "protocol.file.allow=always", "submodule",
-                "update", "--init", "-q", "--", path, check=False)
+            git(
+                root,
+                "-c",
+                "protocol.file.allow=always",
+                "submodule",
+                "update",
+                "--init",
+                "-q",
+                "--",
+                path,
+                check=False,
+            )
 
 
 def checkout_submodules(root, paths):
     if paths:
-        git(root, "-c", "protocol.file.allow=always", "submodule", "update",
-            "--init", "-q", "--", *paths, check=False)
+        git(
+            root,
+            "-c",
+            "protocol.file.allow=always",
+            "submodule",
+            "update",
+            "--init",
+            "-q",
+            "--",
+            *paths,
+            check=False,
+        )
 
 
 def resolve_submodules(root, conflicts):
@@ -86,18 +108,19 @@ def resolve_submodules(root, conflicts):
             mode, sha, stage = meta.split()
             stages[stage] = (mode, sha)
         module = Path(root) / path
-        if ({mode for mode, _sha in stages.values()} != {"160000"}
-                or "2" not in stages or "3" not in stages
-                or not (module / ".git").exists()):
+        if (
+            {mode for mode, _sha in stages.values()} != {"160000"}
+            or "2" not in stages
+            or "3" not in stages
+            or not (module / ".git").exists()
+        ):
             remaining.append(path)
             continue
         ours, theirs = stages["2"][1], stages["3"][1]
         git(module, "fetch", "-q", "--no-tags", "origin", theirs, check=False)
-        if git(module, "merge-base", "--is-ancestor", ours, theirs,
-               check=False).returncode == 0:
+        if git(module, "merge-base", "--is-ancestor", ours, theirs, check=False).returncode == 0:
             chosen = theirs
-        elif git(module, "merge-base", "--is-ancestor", theirs, ours,
-                 check=False).returncode == 0:
+        elif git(module, "merge-base", "--is-ancestor", theirs, ours, check=False).returncode == 0:
             chosen = ours
         else:
             remaining.append(path)
@@ -141,15 +164,19 @@ def sync(root, ref, policy_path, owned_policy_path, url=None):
     if git(root, "merge-base", "--is-ancestor", old, new, check=False).returncode:
         raise SyncError(f"{ref} does not contain the current baseline {old[:12]}")
     patterns = owned + policy["owned_extra"]
-    hooked = {path for path, _added in upstream_budget.changed_files(root, old)
-              if not is_owned(path, patterns)}
+    hooked = {
+        path
+        for path, _added in upstream_budget.changed_files(root, old)
+        if not is_owned(path, patterns)
+    }
     links = changed_gitlinks(root, old, new)
     init_submodules(root, links)
     branch = branch_name(ref)
-    if git(root, "rev-parse", "-q", "--verify", f"refs/heads/{branch}",
-           check=False).returncode == 0:
-        if git(root, "merge-base", "--is-ancestor", branch, "HEAD",
-               check=False).returncode:
+    if (
+        git(root, "rev-parse", "-q", "--verify", f"refs/heads/{branch}", check=False).returncode
+        == 0
+    ):
+        if git(root, "merge-base", "--is-ancestor", branch, "HEAD", check=False).returncode:
             raise SyncError(f"{branch} has commits that HEAD does not contain")
         git(root, "branch", "-q", "-D", branch)
     git(root, "switch", "-q", "-c", branch)
@@ -162,15 +189,15 @@ def sync(root, ref, policy_path, owned_policy_path, url=None):
         return classify(conflicts, patterns, hooked), None
     checkout_submodules(root, links)
     policy["base"] = new
-    policy_path.write_text(json.dumps(policy, indent=2, ensure_ascii=False) + "\n",
-                           encoding="utf-8")
+    policy_path.write_text(
+        json.dumps(policy, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
     pins = check_packaging.update(root)
     if pins:
         git(root, "add", check_packaging.PKGBUILD, check_packaging.FLATPAK)
     metrics, _offenders = upstream_budget.measure(root, policy, owned)
     git(root, "add", str(policy_path.resolve().relative_to(root.resolve())))
-    git(root, "commit", "-q", "-F", "-",
-        stdin=commit_message(ref, old, new, metrics, pins))
+    git(root, "commit", "-q", "-F", "-", stdin=commit_message(ref, old, new, metrics, pins))
     return None, metrics
 
 
@@ -183,10 +210,8 @@ def main(argv=None):
     parser.add_argument("--owned-policy", default=upstream_budget.DEFAULT_OWNED_POLICY)
     args = parser.parse_args(argv)
     try:
-        conflicts, metrics = sync(args.root, args.ref, args.policy,
-                                  args.owned_policy, args.url)
-    except (SyncError, PolicyError, OSError, ValueError,
-            subprocess.CalledProcessError) as error:
+        conflicts, metrics = sync(args.root, args.ref, args.policy, args.owned_policy, args.url)
+    except (SyncError, PolicyError, OSError, ValueError, subprocess.CalledProcessError) as error:
         print(f"upstream sync failed: {error}", file=sys.stderr)
         return 2
     if conflicts is not None:

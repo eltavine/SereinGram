@@ -5,16 +5,25 @@ import re
 import sys
 from pathlib import Path
 
-TYPES = ("build", "chore", "ci", "docs", "feat", "fix", "perf", "refactor",
-         "revert", "style", "test")
-HEADER = re.compile(
-    r"^(?P<type>[a-z]+)(\((?P<scope>[^()]+)\))?(?P<breaking>!)?: (?P<subject>.+)$")
+TYPES = (
+    "build",
+    "chore",
+    "ci",
+    "docs",
+    "feat",
+    "fix",
+    "perf",
+    "refactor",
+    "revert",
+    "style",
+    "test",
+)
+HEADER = re.compile(r"^(?P<type>[a-z]+)(\((?P<scope>[^()]+)\))?(?P<breaking>!)?: (?P<subject>.+)$")
 PRINTABLE = re.compile(r"^[\t\n\r\x20-\x7e]*$")
 
 
 def problems(message):
-    lines = [line for line in message.splitlines()
-             if not line.startswith("#")]
+    lines = [line for line in message.splitlines() if not line.startswith("#")]
     while lines and not lines[-1].strip():
         lines.pop()
     if not lines:

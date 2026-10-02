@@ -12,19 +12,28 @@ import subprocess
 import sys
 from pathlib import Path
 
-from check_file_size import PolicyError, is_owned, load_policy as load_owned_policy
+from check_file_size import PolicyError, is_owned
+from check_file_size import load_policy as load_owned_policy
 
 HERE = Path(__file__).resolve().parent
 DEFAULT_POLICY = HERE / "policy" / "upstream.json"
 DEFAULT_OWNED_POLICY = HERE / "policy" / "file_size.json"
 POLICY_KEYS = {
-    "schema_version", "upstream", "base", "source_root", "owned_extra",
-    "own_include_prefixes", "hook_include_prefixes", "submodule_overrides",
+    "schema_version",
+    "upstream",
+    "base",
+    "source_root",
+    "owned_extra",
+    "own_include_prefixes",
+    "hook_include_prefixes",
+    "submodule_overrides",
     "budget",
 }
 BUDGET_KEYS = (
-    "all_files", "all_added_lines",
-    "source_files", "source_added_lines",
+    "all_files",
+    "all_added_lines",
+    "source_files",
+    "source_added_lines",
     "direct_include_files",
 )
 INCLUDE = re.compile(r'^\s*#\s*include\s+"([^"]+)"', re.MULTILINE)
@@ -48,11 +57,16 @@ def load_policy(path):
         value = budget[key]
         if not isinstance(value, int) or isinstance(value, bool) or value < 0:
             raise PolicyError(f"budget.{key} must be a non-negative integer")
-    for key in ("owned_extra", "own_include_prefixes", "hook_include_prefixes",
-                "submodule_overrides"):
+    for key in (
+        "owned_extra",
+        "own_include_prefixes",
+        "hook_include_prefixes",
+        "submodule_overrides",
+    ):
         values = policy[key]
         if not isinstance(values, list) or not all(
-                isinstance(value, str) and value for value in values):
+            isinstance(value, str) and value for value in values
+        ):
             raise PolicyError(f"{key} must be a list of non-empty strings")
     return policy
 
@@ -60,7 +74,10 @@ def load_policy(path):
 def changed_files(root, base):
     output = subprocess.run(
         ["git", "diff", "--numstat", "--no-renames", "-z", base, "--"],
-        cwd=root, capture_output=True, check=True).stdout.decode("utf-8")
+        cwd=root,
+        capture_output=True,
+        check=True,
+    ).stdout.decode("utf-8")
     for record in filter(None, output.split("\0")):
         added, _deleted, path = record.split("\t", 2)
         yield path, 0 if added == "-" else int(added)
@@ -79,7 +96,10 @@ def gitlinks(output, sha_field):
 def submodule_mismatches(root, policy):
     def run(*args):
         return subprocess.run(
-            ["git", *args], cwd=root, capture_output=True, check=True,
+            ["git", *args],
+            cwd=root,
+            capture_output=True,
+            check=True,
         ).stdout.decode("utf-8")
 
     upstream = gitlinks(run("ls-tree", "-r", policy["base"]), 2)
@@ -87,9 +107,8 @@ def submodule_mismatches(root, policy):
     return sorted(
         (path, staged[path], sha)
         for path, sha in upstream.items()
-        if path in staged
-        and staged[path] != sha
-        and path not in policy["submodule_overrides"])
+        if path in staged and staged[path] != sha and path not in policy["submodule_overrides"]
+    )
 
 
 def includes_own_header(path, policy):
@@ -129,8 +148,9 @@ def main(argv=None):
     parser.add_argument("--root", default=HERE.parents[1])
     parser.add_argument("--policy", default=DEFAULT_POLICY)
     parser.add_argument("--owned-policy", default=DEFAULT_OWNED_POLICY)
-    parser.add_argument("--list", action="store_true",
-                        help="list upstream files that include non-hook headers")
+    parser.add_argument(
+        "--list", action="store_true", help="list upstream files that include non-hook headers"
+    )
     args = parser.parse_args(argv)
     try:
         policy = load_policy(args.policy)
@@ -154,9 +174,11 @@ def main(argv=None):
         for path in offenders:
             print(f"direct include: {path}")
     for path, current, upstream in mismatches:
-        print(f"Submodule {path} is staged at {current[:10]} but the upstream "
-              f"base has {upstream[:10]}; run 'git submodule update {path}' "
-              "or list it in submodule_overrides.")
+        print(
+            f"Submodule {path} is staged at {current[:10]} but the upstream "
+            f"base has {upstream[:10]}; run 'git submodule update {path}' "
+            "or list it in submodule_overrides."
+        )
     if exceeded:
         print(f"Upstream intrusion over budget: {', '.join(exceeded)}.")
     return 1 if (exceeded or mismatches) else 0

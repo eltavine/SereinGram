@@ -72,8 +72,7 @@ def load_assets(path=POLICY):
 
 
 def verify(directory, assets):
-    present = {path.name for path in Path(directory).iterdir()
-               if path.is_file()}
+    present = {path.name for path in Path(directory).iterdir() if path.is_file()}
     expected = {asset["name"] for asset in assets}
     return sorted(expected - present), sorted(present - expected)
 
@@ -88,8 +87,7 @@ def sha256(path):
 
 def checksums(directory, assets):
     names = sorted(asset["name"] for asset in assets)
-    return "".join(f"{sha256(Path(directory) / name)}  {name}\n"
-                   for name in names)
+    return "".join(f"{sha256(Path(directory) / name)}  {name}\n" for name in names)
 
 
 def download_url(repo, tag, name):
@@ -100,15 +98,17 @@ def manifest(directory, assets, info):
     entries = []
     for asset in assets:
         path = Path(directory) / asset["name"]
-        entries.append({
-            "name": asset["name"],
-            "os": asset["os"],
-            "arch": asset["arch"],
-            "kind": asset["kind"],
-            "size": path.stat().st_size,
-            "sha256": sha256(path),
-            "url": download_url(info["repo"], info["tag"], asset["name"]),
-        })
+        entries.append(
+            {
+                "name": asset["name"],
+                "os": asset["os"],
+                "arch": asset["arch"],
+                "kind": asset["kind"],
+                "size": path.stat().st_size,
+                "sha256": sha256(path),
+                "url": download_url(info["repo"], info["tag"], asset["name"]),
+            }
+        )
     document = {
         "schema_version": 1,
         "channel": info["channel"],
@@ -131,15 +131,13 @@ def read_version(root=ROOT):
 
 def first_parent_log(root, previous, commit, limit):
     revision = f"{previous}..{commit}" if previous else commit
-    command = ["git", "log", "--first-parent",
-               "--format=%H%x1f%s%x1f%b%x1e", revision]
+    command = ["git", "log", "--first-parent", "--format=%H%x1f%s%x1f%b%x1e", revision]
     if not previous:
         command.insert(3, f"--max-count={limit}")
-    output = subprocess.run(command, cwd=root, check=True,
-                            capture_output=True, text=True).stdout
+    output = subprocess.run(command, cwd=root, check=True, capture_output=True, text=True).stdout
     commits = []
-    for record in output.split("\x1e"):
-        record = record.strip("\n")
+    for raw in output.split("\x1e"):
+        record = raw.strip("\n")
         if record:
             sha, subject, body = record.split("\x1f", 2)
             commits.append((sha, subject, body))
@@ -147,16 +145,13 @@ def first_parent_log(root, previous, commit, limit):
 
 
 def classify(commits):
-    groups = {key: [] for key in ("breaking", "feat", "fix", "perf",
-                                  "upstream", "other")}
+    groups = {key: [] for key in ("breaking", "feat", "fix", "perf", "upstream", "other")}
     for sha, subject, body in commits:
         match = HEADER.match(subject)
-        merge = match and match["scope"] == "upstream" and MERGE.match(
-            match["description"])
+        merge = match and match["scope"] == "upstream" and MERGE.match(match["description"])
         if merge:
             baseline = BASELINE.search(body)
-            groups["upstream"].append(
-                (sha, merge["ref"], baseline[2] if baseline else None))
+            groups["upstream"].append((sha, merge["ref"], baseline[2] if baseline else None))
             continue
         if not match:
             groups["other"].append((sha, None, subject))
@@ -191,28 +186,35 @@ def change_lines(repo, groups):
     if groups["upstream"]:
         lines += ["", "### Telegram Desktop", ""]
         for sha, ref, baseline in groups["upstream"]:
-            target = (f" up to [`{baseline[:10]}`]"
-                      f"({UPSTREAM}/commit/{baseline})" if baseline else "")
-            lines.append(f"- Merged Telegram Desktop `{ref}`{target} "
-                         f"({commit_link(repo, sha)})")
+            target = f" up to [`{baseline[:10]}`]({UPSTREAM}/commit/{baseline})" if baseline else ""
+            lines.append(f"- Merged Telegram Desktop `{ref}`{target} ({commit_link(repo, sha)})")
     if groups["other"]:
         count = len(groups["other"])
-        lines += ["", "<details>",
-                  f"<summary>{count} other changes "
-                  "(build, tooling, documentation)</summary>", ""]
+        lines += [
+            "",
+            "<details>",
+            f"<summary>{count} other changes (build, tooling, documentation)</summary>",
+            "",
+        ]
         lines += [entry_line(repo, entry) for entry in groups["other"]]
         lines += ["", "</details>"]
     return lines
 
 
 def download_lines(repo, tag, assets):
-    lines = ["", "## Downloads", "",
-             "| System | Architecture | Package | File |",
-             "| --- | --- | --- | --- |"]
+    lines = [
+        "",
+        "## Downloads",
+        "",
+        "| System | Architecture | Package | File |",
+        "| --- | --- | --- | --- |",
+    ]
     for asset in assets:
         url = download_url(repo, tag, asset["name"])
-        lines.append(f"| {SYSTEMS[asset['os']]} | {asset['arch']} "
-                     f"| {KINDS[asset['kind']]} | [{asset['name']}]({url}) |")
+        lines.append(
+            f"| {SYSTEMS[asset['os']]} | {asset['arch']} "
+            f"| {KINDS[asset['kind']]} | [{asset['name']}]({url}) |"
+        )
     return lines
 
 
@@ -229,8 +231,7 @@ def verify_lines():
         f"shasum -a 256 --ignore-missing -c {CHECKSUMS}   # macOS",
         "```",
         "",
-        "On Windows, compare `(Get-FileHash <file>).Hash` with the "
-        f"line in `{CHECKSUMS}`.",
+        f"On Windows, compare `(Get-FileHash <file>).Hash` with the line in `{CHECKSUMS}`.",
         "",
         "These builds are not signed with a developer certificate: on macOS "
         "open the app with Control-click and Open the first time, on "
@@ -256,10 +257,10 @@ def notes(commits, assets, info):
         lines.append(
             f"[`{previous[:7]}...{commit[:7]}`]"
             f"(https://github.com/{info['repo']}/compare/"
-            f"{previous}...{commit}), {len(commits)} commits.")
+            f"{previous}...{commit}), {len(commits)} commits."
+        )
     else:
-        lines.append(f"First build of this channel, latest {len(commits)} "
-                     "commits.")
+        lines.append(f"First build of this channel, latest {len(commits)} commits.")
     if commits:
         lines += change_lines(info["repo"], classify(commits))
     else:
@@ -279,8 +280,7 @@ def write(text, output):
 def add_info_arguments(parser, previous=False):
     parser.add_argument("--repo", required=True)
     parser.add_argument("--tag", required=True)
-    parser.add_argument("--channel", required=True,
-                        choices=("nightly", "release"))
+    parser.add_argument("--channel", required=True, choices=("nightly", "release"))
     parser.add_argument("--commit", required=True)
     parser.add_argument("--date", required=True)
     parser.add_argument("--version")
@@ -324,11 +324,9 @@ def main(argv=None):
         if args.command == "checksums":
             write(checksums(args.directory, assets), args.output)
         elif args.command == "manifest":
-            write(manifest(args.directory, assets, info_from(args)),
-                  args.output)
+            write(manifest(args.directory, assets, info_from(args)), args.output)
         else:
-            commits = first_parent_log(args.root, args.previous,
-                                       args.commit, args.limit)
+            commits = first_parent_log(args.root, args.previous, args.commit, args.limit)
             write(notes(commits, assets, info_from(args)), args.output)
     except (ReleaseError, OSError, subprocess.CalledProcessError) as error:
         print(f"release.py: {error}", file=sys.stderr)

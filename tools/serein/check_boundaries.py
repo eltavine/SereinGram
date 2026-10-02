@@ -41,7 +41,8 @@ def load_policy(path):
         if not isinstance(rules["app"], bool) or not isinstance(rules["libraries"], bool):
             raise PolicyError(f"module {name}: app and libraries must be booleans")
         if not isinstance(rules["own"], list) or not all(
-                isinstance(item, str) and item for item in rules["own"]):
+            isinstance(item, str) and item for item in rules["own"]
+        ):
             raise PolicyError(f"module {name}: own must list non-empty strings")
     return policy
 
@@ -52,8 +53,7 @@ def module_of(path, modules):
 
 
 def allowed_own(include, own):
-    return any(include == item or (item.endswith("/") and include.startswith(item))
-               for item in own)
+    return any(include == item or (item.endswith("/") and include.startswith(item)) for item in own)
 
 
 def classify(include, root, policy):
@@ -74,7 +74,7 @@ def find_violations(root, policy):
     for name in list_files(root):
         if not name.startswith(source_root) or not name.endswith(SOURCES):
             continue
-        relative = name[len(source_root):]
+        relative = name[len(source_root) :]
         module = module_of(relative, modules)
         full = Path(root) / name
         if module is None or not full.is_file():
@@ -108,7 +108,7 @@ def main(argv=None):
         print(f"cannot read sources: {error}", file=sys.stderr)
         return 2
     for path, include, reason in violations:
-        print(f"{path}: includes \"{include}\": {reason}")
+        print(f'{path}: includes "{include}": {reason}')
     if violations:
         print(f"{len(violations)} module boundary violation(s).")
         return 1

@@ -9,7 +9,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-import check_file_size  # noqa: E402
+import check_file_size
 
 
 class CheckFileSizeTest(unittest.TestCase):
@@ -42,8 +42,7 @@ class CheckFileSizeTest(unittest.TestCase):
     def run_check(self):
         output = io.StringIO()
         with contextlib.redirect_stdout(output), contextlib.redirect_stderr(output):
-            code = check_file_size.main(
-                ["--root", str(self.root), "--policy", str(self.policy)])
+            code = check_file_size.main(["--root", str(self.root), "--policy", str(self.policy)])
         return code, output.getvalue()
 
     def test_passes_at_limit(self):

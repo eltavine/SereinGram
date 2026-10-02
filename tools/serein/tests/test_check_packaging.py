@@ -5,7 +5,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-import check_packaging  # noqa: E402
+import check_packaging
 
 PINS = {
     "tde2e": "1" * 40,
@@ -28,16 +28,16 @@ class CheckPackagingTest(unittest.TestCase):
     def write(self, td=None, patches_second=None, qt="6.11.2"):
         snap = ["parts:"]
         for part, commit in PINS.items():
-            snap += [f"  {part}:", "    source-depth: 1",
-                     f"    source-commit: {commit}", ""]
+            snap += [f"  {part}:", "    source-depth: 1", f"    source-commit: {commit}", ""]
         snap += ["  qt:", "    source-tag: v6.11.2", "    plugin: cmake", ""]
         flatpak = [f"        url: https://download.qt.io/qt-everywhere-src-{qt}.tar.xz"]
         for part, url in check_packaging.FLATPAK_SOURCES.items():
-            flatpak += [f"      - type: git", f"        url: {url}",
-                        f"        commit: {PINS[part]}"]
-        flatpak += ["      - type: git",
-                    f"        url: {check_packaging.FLATPAK_SOURCES['patches']}",
-                    f"        commit: {patches_second or PINS['patches']}"]
+            flatpak += ["      - type: git", f"        url: {url}", f"        commit: {PINS[part]}"]
+        flatpak += [
+            "      - type: git",
+            f"        url: {check_packaging.FLATPAK_SOURCES['patches']}",
+            f"        commit: {patches_second or PINS['patches']}",
+        ]
         files = {
             check_packaging.SNAP: "\n".join(snap) + "\n",
             check_packaging.FLATPAK: "\n".join(flatpak) + "\n",
@@ -66,16 +66,23 @@ class CheckPackagingTest(unittest.TestCase):
     def test_reports_qt_version_drift(self):
         self.write(qt="6.11.1")
         found = check_packaging.problems(self.root)
-        self.assertEqual(found, [
-            f"{check_packaging.FLATPAK} builds Qt 6.11.1, but "
-            f"{check_packaging.SNAP} uses v6.11.2."])
+        self.assertEqual(
+            found,
+            [
+                f"{check_packaging.FLATPAK} builds Qt 6.11.1, but "
+                f"{check_packaging.SNAP} uses v6.11.2."
+            ],
+        )
 
     def test_update_moves_stale_pins(self):
         self.write(td=STALE, patches_second=STALE)
-        self.assertEqual(check_packaging.update(self.root), [
-            f"tde2e {STALE[:10]} -> {PINS['tde2e'][:10]}",
-            f"patches {STALE[:10]} -> {PINS['patches'][:10]}",
-        ])
+        self.assertEqual(
+            check_packaging.update(self.root),
+            [
+                f"tde2e {STALE[:10]} -> {PINS['tde2e'][:10]}",
+                f"patches {STALE[:10]} -> {PINS['patches'][:10]}",
+            ],
+        )
         self.assertEqual(check_packaging.problems(self.root), [])
         self.assertEqual(check_packaging.update(self.root), [])
 

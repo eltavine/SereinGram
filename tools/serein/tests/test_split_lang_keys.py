@@ -5,7 +5,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-import split_lang_keys  # noqa: E402
+import split_lang_keys
 
 GENERATED = """\
 namespace Lang {
@@ -46,21 +46,21 @@ class SplitLangKeysTest(unittest.TestCase):
         result = split_lang_keys.split(GENERATED)
         self.assertIn("ushort GetKeyIndexPart0(", result)
         self.assertIn("ushort GetKeyIndexPart1(", result)
-        self.assertIn("\t\tcase 'b': return GetKeyIndexPart0(size, data);",
-                      result)
-        self.assertIn("\t\tcase 'a': return GetKeyIndexPart1(size, data);",
-                      result)
+        self.assertIn("\t\tcase 'b': return GetKeyIndexPart0(size, data);", result)
+        self.assertIn("\t\tcase 'a': return GetKeyIndexPart1(size, data);", result)
         self.assertIn('if (!memcmp(data + 5, "bout", 4)) {', result)
         self.assertEqual(result.count("\treturn kKeysCount;"), 3)
-        self.assertLess(result.index("} // namespace\n"),
-                        result.index("ushort GetKeyIndex(QLatin1String"))
+        self.assertLess(
+            result.index("} // namespace\n"), result.index("ushort GetKeyIndex(QLatin1String")
+        )
         self.assertTrue(result.endswith("} // namespace Lang\n"))
         self.assertIn("bool IsTagReplaced", result)
 
     def test_keeps_nested_breaks_inside_the_parts(self):
         result = split_lang_keys.split(GENERATED)
-        part = result[result.index("ushort GetKeyIndexPart0("):
-                      result.index("ushort GetKeyIndexPart1(")]
+        part = result[
+            result.index("ushort GetKeyIndexPart0(") : result.index("ushort GetKeyIndexPart1(")
+        ]
         self.assertIn("\t\t\tbreak;", part)
         self.assertNotIn("\n\t\tbreak;", part)
 
@@ -84,10 +84,8 @@ class SplitLangKeysTest(unittest.TestCase):
             source = Path(temp) / "lang_auto.cpp"
             target = Path(temp) / "serein_lang_auto.cpp"
             source.write_text(GENERATED, encoding="utf-8")
-            self.assertEqual(
-                split_lang_keys.main([str(source), str(target)]), 0)
-            self.assertIn("GetKeyIndexPart1",
-                          target.read_text(encoding="utf-8"))
+            self.assertEqual(split_lang_keys.main([str(source), str(target)]), 0)
+            self.assertIn("GetKeyIndexPart1", target.read_text(encoding="utf-8"))
             self.assertEqual(split_lang_keys.main([str(source)]), 2)
 
 

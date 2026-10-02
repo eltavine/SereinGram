@@ -34,8 +34,10 @@ STREAKS = (
 def arc(center, radius, start, end, steps):
     (cx, cy) = center
     return [
-        (cx + radius * math.cos(start + (end - start) * i / steps),
-         cy + radius * math.sin(start + (end - start) * i / steps))
+        (
+            cx + radius * math.cos(start + (end - start) * i / steps),
+            cy + radius * math.sin(start + (end - start) * i / steps),
+        )
         for i in range(steps + 1)
     ]
 
@@ -45,10 +47,8 @@ def crescent():
     dx, dy = ix - ox, iy - oy
     distance = math.hypot(dx, dy)
     base = math.atan2(dy, dx)
-    outer = math.acos((big * big + distance * distance - small * small)
-                      / (2 * big * distance))
-    inner = math.acos((big * big - distance * distance - small * small)
-                      / (2 * distance * small))
+    outer = math.acos((big * big + distance * distance - small * small) / (2 * big * distance))
+    inner = math.acos((big * big - distance * distance - small * small) / (2 * distance * small))
     points = arc(OUTER[0], big, base + outer, base + 2 * math.pi - outer, 120)
     points += arc(INNER[0], small, base - inner, base - 2 * math.pi + inner, 80)[1:-1]
     return points
@@ -79,8 +79,7 @@ def glyph_mask(size, scale, origin):
     mask = Image.new("L", (size, size), 0)
     draw = ImageDraw.Draw(mask)
     for polygon in POLYGONS:
-        draw.polygon([(origin[0] + x * scale, origin[1] + y * scale)
-                      for x, y in polygon], fill=255)
+        draw.polygon([(origin[0] + x * scale, origin[1] + y * scale) for x, y in polygon], fill=255)
     return mask
 
 
@@ -89,7 +88,9 @@ def gradient(size, colors):
     column = Image.new("RGB", (1, size))
     for y in range(size):
         t = y / max(size - 1, 1)
-        column.putpixel((0, y), tuple(round(a + (b - a) * t) for a, b in zip(top, bottom)))
+        column.putpixel(
+            (0, y), tuple(round(a + (b - a) * t) for a, b in zip(top, bottom, strict=True))
+        )
     return column.resize((size, size))
 
 
@@ -124,16 +125,21 @@ def render_glyph(size):
 def svg(badge=None, size=24):
     paths = "".join(
         '<path fill="white" d="M' + " L".join(f"{x:.3f} {y:.3f}" for x, y in polygon) + 'Z"/>'
-        for polygon in POLYGONS)
-    circle = (f'<circle cx="20" cy="20" r="3.6" fill="{badge}"/>' if badge else "")
-    return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{size}" height="{size}" '
-            f'viewBox="0 0 24 24">{paths}{circle}</svg>\n')
+        for polygon in POLYGONS
+    )
+    circle = f'<circle cx="20" cy="20" r="3.6" fill="{badge}"/>' if badge else ""
+    return (
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{size}" height="{size}" '
+        f'viewBox="0 0 24 24">{paths}{circle}</svg>\n'
+    )
 
 
 def main():
     BRANDING.mkdir(parents=True, exist_ok=True)
-    squares = {size: render(size, DUSK, "square", 0.0977) for size in
-               (16, 32, 48, 64, 96, 128, 256, 512, 1024)}
+    squares = {
+        size: render(size, DUSK, "square", 0.0977)
+        for size in (16, 32, 48, 64, 96, 128, 256, 512, 1024)
+    }
     for size in (16, 32, 48, 64, 128, 256, 512):
         squares[size].save(ART / f"icon{size}.png")
         squares[size * 2].save(ART / f"icon{size}@2x.png")

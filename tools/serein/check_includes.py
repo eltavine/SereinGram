@@ -13,7 +13,7 @@ import sys
 from pathlib import Path
 
 INCLUDE = re.compile(r'^\s*#\s*include\s+"([^"]+)"', re.M)
-SYSTEM_INCLUDE = re.compile(r'^\s*#\s*include\s+<([^>]+)>', re.M)
+SYSTEM_INCLUDE = re.compile(r"^\s*#\s*include\s+<([^>]+)>", re.M)
 BANNED_SYSTEM = {
     "filesystem": "std::filesystem needs macOS 10.15; use QDir and QFileInfo",
 }
@@ -69,9 +69,7 @@ def problems(root):
             continue
         for include in SYSTEM_INCLUDE.findall(text):
             if include in BANNED_SYSTEM:
-                result.append(
-                    f"{path.relative_to(root)}: <{include}> "
-                    f"{BANNED_SYSTEM[include]}")
+                result.append(f"{path.relative_to(root)}: <{include}> {BANNED_SYSTEM[include]}")
     return result
 
 
