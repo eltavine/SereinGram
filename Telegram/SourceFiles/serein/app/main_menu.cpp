@@ -5,6 +5,7 @@
 #include "serein/hooks/ghost.h"
 #include "serein/schema/gen/settings/interface.h"
 #include "serein/schema/gen/settings/media.h"
+#include "data/data_user.h"
 #include "lang/lang_keys.h"
 #include "main/main_session.h"
 #include "settings/settings_common.h"
