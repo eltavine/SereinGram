@@ -204,6 +204,12 @@ class NotesTest(unittest.TestCase):
         )
         self.assertIn("sha256sum --ignore-missing -c SHA256SUMS", text)
 
+    def test_notes_explain_the_first_launch_of_unsigned_builds(self):
+        text = release.notes([], release.load_assets(), dict(INFO, previous=""))
+        verify = text.split("## Verify")[1]
+        self.assertIn("Open Anyway in System Settings > Privacy & Security", verify)
+        self.assertIn("More info and Run anyway", verify)
+
     def test_first_build_takes_the_latest_commits(self):
         self.build()
         commits = release.first_parent_log(self.root, "", "HEAD", 3)
