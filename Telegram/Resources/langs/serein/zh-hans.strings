@@ -112,9 +112,12 @@
 "lng_serein_denoise_voice_messages" = "降低语音消息的背景噪音";
 "lng_serein_denoise_voice_messages_note" = "录制的语音消息会经过群组通话所用的 RNNoise 降噪处理，处理在本设备上进行；更改后从下一次录音开始生效。";
 "lng_serein_story_posting" = "在本设备发布动态";
-"lng_serein_story_posting_note" = "在主菜单加入“发布动态”，并在你可以发布动态的频道菜单中加入“发布动态”。图片会放到 9:16 画布上，60 秒以内的视频按原样上传。";
+"lng_serein_story_posting_note" = "在主菜单加入“发布动态”，并在你可以发布动态的频道菜单中加入“发布动态”。动态查看器的菜单中，“编辑动态”可修改你能编辑的动态的说明和可见范围，“转发到我的动态”可转发他人的公开动态。图片会放到 9:16 画布上，60 秒以内的视频按原样上传，更长的视频会先打开视频编辑器选择片段。";
 "lng_serein_story_new" = "发布动态";
 "lng_serein_story_post_channel" = "发布动态";
+"lng_serein_story_edit" = "编辑动态";
+"lng_serein_story_edited" = "动态已更新。";
+"lng_serein_story_repost" = "转发到我的动态";
 "lng_serein_story_posting_as" = "以 {name} 的身份发布";
 "lng_serein_story_change" = "换一个文件";
 "lng_serein_story_audience" = "谁可以看";
@@ -134,6 +137,7 @@
 "lng_serein_story_posted" = "动态已发布。";
 "lng_serein_story_need_people" = "请至少选择一位可以看这条动态的人。";
 "lng_serein_story_video_too_long" = "动态视频最长 {seconds} 秒。";
+"lng_serein_story_trim_hint" = "动态视频最长 {seconds} 秒，请选择要发布的片段。";
 "lng_serein_story_unsupported" = "请选择一张图片或一段视频。";
 "lng_serein_story_error_limit" = "当前有效的动态数量已达上限。";
 "lng_serein_story_error_premium" = "发布更多动态需要 Telegram Premium。";

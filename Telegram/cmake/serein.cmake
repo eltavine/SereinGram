@@ -62,7 +62,10 @@ set(serein_sources
     serein/features/updates/checker.cpp
     serein/features/stories/audience.cpp
     serein/features/stories/canvas.cpp
+    serein/features/stories/common.cpp
     serein/features/stories/composer.cpp
+    serein/features/stories/editor.cpp
+    serein/features/stories/hooks.cpp
     serein/features/stories/publisher.cpp
     serein/app/ghost_menu.cpp
     serein/features/ghost/send.cpp

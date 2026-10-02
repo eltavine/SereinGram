@@ -2,19 +2,18 @@
 
 #include "apiwrap.h"
 #include "boxes/peer_list_controllers.h"
+#include "chat_helpers/compose/compose_show.h"
 #include "data/data_peer.h"
 #include "data/data_session.h"
 #include "data/data_user.h"
 #include "lang/lang_keys.h"
 #include "main/main_session.h"
-#include "main/session/session_show.h"
 #include "mtproto/mtproto_response.h"
 #include "settings/settings_common.h"
 #include "ui/vertical_list.h"
 #include "ui/widgets/buttons.h"
 #include "ui/widgets/checkbox.h"
 #include "ui/wrap/vertical_layout.h"
-#include "window/window_session_controller.h"
 #include "styles/style_settings.h"
 
 namespace Serein::Stories {
@@ -71,12 +70,12 @@ std::unique_ptr<PeerListRow> PeoplePicker::createRow(
 }
 
 void ChoosePeople(
-		not_null<Window::SessionController*> controller,
+		std::shared_ptr<ChatHelpers::Show> show,
 		rpl::producer<QString> title,
 		Users selected,
 		Fn<void(Users)> done) {
 	auto picker = std::make_unique<PeoplePicker>(
-		&controller->session(),
+		&show->session(),
 		std::move(title),
 		std::move(selected));
 	auto init = [=](not_null<PeerListBox*> box) {
@@ -92,33 +91,31 @@ void ChoosePeople(
 		});
 		box->addButton(tr::lng_cancel(), [=] { box->closeBox(); });
 	};
-	controller->show(Box<PeerListBox>(std::move(picker), std::move(init)));
+	show->showBox(Box<PeerListBox>(std::move(picker), std::move(init)));
 }
 
 void SaveCloseFriends(
-		not_null<Window::SessionController*> controller,
+		std::shared_ptr<ChatHelpers::Show> show,
 		const Users &users) {
 	auto ids = QVector<MTPlong>();
 	ids.reserve(int(users.size()));
 	for (const auto &user : users) {
 		ids.push_back(MTP_long(peerToUser(user->id).bare));
 	}
-	controller->session().api().request(MTPcontacts_EditCloseFriends(
+	show->session().api().request(MTPcontacts_EditCloseFriends(
 		MTP_vector<MTPlong>(std::move(ids))
-	)).done(crl::guard(controller, [=] {
-		controller->showToast(
-			tr::lng_serein_story_close_friends_saved(tr::now));
-	})).fail(crl::guard(controller, [=](const MTP::Error &error) {
-		MTP::ShowErrorFallback(controller->uiShow(), error);
-	})).send();
+	)).done([=] {
+		show->showToast(tr::lng_serein_story_close_friends_saved(tr::now));
+	}).fail([=](const MTP::Error &error) {
+		MTP::ShowErrorFallback(show, error);
+	}).send();
 }
 
-void EditCloseFriends(not_null<Window::SessionController*> controller) {
-	const auto session = &controller->session();
+void EditCloseFriends(std::shared_ptr<ChatHelpers::Show> show) {
+	const auto session = &show->session();
 	session->api().request(MTPcontacts_GetContacts(
 		MTP_long(0)
-	)).done(crl::guard(controller, [=](
-			const MTPcontacts_Contacts &result) {
+	)).done([=](const MTPcontacts_Contacts &result) {
 		auto selected = Users();
 		result.match([&](const MTPDcontacts_contacts &data) {
 			session->data().processUsers(data.vusers());
@@ -134,13 +131,13 @@ void EditCloseFriends(not_null<Window::SessionController*> controller) {
 		}, [](const MTPDcontacts_contactsNotModified &) {
 		});
 		ChoosePeople(
-			controller,
+			show,
 			tr::lng_serein_story_edit_close_friends(),
 			std::move(selected),
-			[=](Users users) { SaveCloseFriends(controller, users); });
-	})).fail(crl::guard(controller, [=](const MTP::Error &error) {
-		MTP::ShowErrorFallback(controller->uiShow(), error);
-	})).send();
+			[=](Users users) { SaveCloseFriends(show, users); });
+	}).fail([=](const MTP::Error &error) {
+		MTP::ShowErrorFallback(show, error);
+	}).send();
 }
 
 [[nodiscard]] const Users &PeopleOf(const AudienceValue &value) {
@@ -177,9 +174,23 @@ std::vector<AudienceRule> AudienceRulesFor(const AudienceValue &value) {
 	return AudienceRules(value.audience, ids);
 }
 
+AudienceValue AudienceValueFor(
+		not_null<Main::Session*> session,
+		const ParsedAudience &parsed) {
+	auto users = Users();
+	users.reserve(parsed.users.size());
+	for (const auto id : parsed.users) {
+		users.push_back(session->data().user(UserId(id)));
+	}
+	auto result = AudienceValue{ .audience = parsed.audience };
+	(TakesSelection(parsed.audience) ? result.selected : result.excluded)
+		= std::move(users);
+	return result;
+}
+
 void AddAudienceSection(
 		not_null<Ui::VerticalLayout*> container,
-		not_null<Window::SessionController*> controller,
+		std::shared_ptr<ChatHelpers::Show> show,
 		not_null<rpl::variable<AudienceValue>*> value) {
 	Ui::AddSubsectionTitle(container, tr::lng_serein_story_audience());
 	const auto group = std::make_shared<Ui::RadiobuttonGroup>(
@@ -218,12 +229,12 @@ void AddAudienceSection(
 	people->setClickedCallback([=] {
 		const auto current = value->current();
 		if (current.audience == Audience::CloseFriends) {
-			EditCloseFriends(controller);
+			EditCloseFriends(show);
 			return;
 		}
 		const auto selection = TakesSelection(current.audience);
 		ChoosePeople(
-			controller,
+			show,
 			selection
 				? tr::lng_serein_story_choose_people()
 				: tr::lng_serein_story_exclude(),

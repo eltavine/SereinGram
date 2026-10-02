@@ -67,6 +67,33 @@ std::vector<AudienceRule> AudienceRules(
 	return result;
 }
 
+ParsedAudience ParseAudience(const std::vector<AudienceRule> &rules) {
+	using Kind = AudienceRule::Kind;
+	const auto has = [&](Kind kind) {
+		return std::any_of(rules.begin(), rules.end(), [&](
+				const AudienceRule &rule) {
+			return rule.kind == kind;
+		});
+	};
+	const auto users = [&](Kind kind) {
+		auto result = std::vector<std::uint64_t>();
+		for (const auto &rule : rules) {
+			if (rule.kind == kind) {
+				result.insert(end(result), begin(rule.users), end(rule.users));
+			}
+		}
+		return result;
+	};
+	if (has(Kind::AllowCloseFriends)) {
+		return { Audience::CloseFriends };
+	} else if (has(Kind::AllowAll)) {
+		return { Audience::Everyone, users(Kind::DisallowUsers) };
+	} else if (has(Kind::AllowContacts)) {
+		return { Audience::Contacts, users(Kind::DisallowUsers) };
+	}
+	return { Audience::Selected, users(Kind::AllowUsers) };
+}
+
 std::vector<int> PeriodChoices(bool premium) {
 	if (!premium) {
 		return { kDefaultPeriod };

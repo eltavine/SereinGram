@@ -45,6 +45,18 @@ struct AudienceRule {
 	Audience audience,
 	const std::vector<std::uint64_t> &users);
 
+struct ParsedAudience {
+	Audience audience = Audience::Everyone;
+	std::vector<std::uint64_t> users;
+
+	friend bool operator==(
+		const ParsedAudience &,
+		const ParsedAudience &) = default;
+};
+
+[[nodiscard]] ParsedAudience ParseAudience(
+	const std::vector<AudienceRule> &rules);
+
 [[nodiscard]] std::vector<int> PeriodChoices(bool premium);
 [[nodiscard]] int EffectivePeriod(int seconds, bool premium);
 

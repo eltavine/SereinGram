@@ -8,6 +8,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "media/view/media_view_overlay_widget.h"
 #include "serein/hooks/gen/media.h"
 #include "serein/hooks/gen/privacy.h"
+#include "serein/hooks/media/story_menu.h"
 
 #include "apiwrap.h"
 #include "api/api_attached_stickers.h"
@@ -2364,6 +2365,7 @@ void OverlayWidget::fillContextMenuActions(
 			_stories->shareRequested();
 		}, &st::mediaMenuIconForward);
 	}
+	Serein::Hooks::Media::FillStoryMenu(addAction, uiShow(), story);
 	const auto canDelete = [&] {
 		if (story && story->canDelete()) {
 			return true;
