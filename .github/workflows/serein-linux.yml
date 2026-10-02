@@ -199,9 +199,11 @@ jobs:
             FLAGS=(-D CMAKE_C_FLAGS_RELEASE="-O2 -DNDEBUG -fpch-preprocess"
               -D CMAKE_CXX_FLAGS_RELEASE="-O2 -DNDEBUG -fpch-preprocess")
           fi
-          # Upstream code assumes the signed char of every other target.
+          # Upstream code assumes the signed char of every other target, and
+          # GCC reports inlined std::shared_ptr destructors as dangling on arm64.
           if [ "$ARCH" = arm64 ]; then
-            FLAGS+=(-D CMAKE_C_FLAGS=-fsigned-char -D CMAKE_CXX_FLAGS=-fsigned-char)
+            FLAGS+=(-D CMAKE_C_FLAGS=-fsigned-char
+              -D "CMAKE_CXX_FLAGS=-fsigned-char -Wno-error=dangling-pointer")
           fi
 
           ccache -z
