@@ -39,6 +39,7 @@ set(serein_test_sources
     serein/tests/test_credentials.cpp
     serein/tests/test_halfwidth.cpp
     serein/tests/test_text_entities.cpp
+    serein/tests/test_id_list.cpp
     serein/tests/test_history_entities.cpp
     serein/tests/text_entity_support.cpp
     serein/adapters/openssl/aes_gcm_cipher.cpp
@@ -66,6 +67,7 @@ set(serein_test_sources
     serein/compose/text_replacements.cpp
     serein/compose/validators.cpp
     serein/core/exchange.cpp
+    serein/core/id_list.cpp
     serein/interface/main_menu_model.cpp
     serein/interface/punctuation.cpp
     serein/menu/model.cpp

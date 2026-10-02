@@ -35,6 +35,7 @@
       "own": [
         "serein/features/ghost/model/",
         "serein/core/options.h",
+        "serein/core/id_list.h",
         "serein/schema/"
       ],
       "app": false,

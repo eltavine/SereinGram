@@ -1,5 +1,7 @@
 #include "serein/features/ghost/model/exceptions.h"
 
+#include "serein/core/id_list.h"
+
 #include <QtCore/QStringList>
 
 #include <algorithm>
@@ -9,26 +11,7 @@ namespace Serein::Ghost {
 namespace {
 
 [[nodiscard]] std::optional<std::vector<quint64>> Parse(const QString &value) {
-	auto result = std::vector<quint64>();
-	if (value.isEmpty()) {
-		return result;
-	}
-	const auto parts = value.split(u',');
-	if (parts.size() > kReadExceptionsLimit) {
-		return std::nullopt;
-	}
-	for (const auto &part : parts) {
-		auto ok = false;
-		const auto id = part.toULongLong(&ok);
-		if (!ok
-			|| !id
-			|| part != QString::number(id)
-			|| std::find(result.begin(), result.end(), id) != result.end()) {
-			return std::nullopt;
-		}
-		result.push_back(id);
-	}
-	return result;
+	return ParseIdList(value, kReadExceptionsLimit);
 }
 
 } // namespace

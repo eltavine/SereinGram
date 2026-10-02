@@ -1,6 +1,7 @@
 #include "serein/chats/recent.h"
 
 #include "serein/chats/options.h"
+#include "serein/core/id_list.h"
 
 #include <QtCore/QStringList>
 
@@ -9,24 +10,8 @@
 namespace Serein::Chats {
 
 std::vector<quint64> ParseRecentChats(const QString &value) {
-	auto result = std::vector<quint64>();
-	if (value.isEmpty()) {
-		return result;
-	}
-	for (const auto &part : value.split(u',')) {
-		auto valid = false;
-		const auto id = part.toULongLong(&valid);
-		if (!valid
-			|| !id
-			|| part != QString::number(id)
-			|| std::find(result.begin(), result.end(), id) != result.end()) {
-			return {};
-		}
-		result.push_back(id);
-	}
-	return (int(result.size()) <= kRecentChatsLimit)
-		? result
-		: std::vector<quint64>();
+	return ParseIdList(value, kRecentChatsLimit).value_or(
+		std::vector<quint64>());
 }
 
 bool ValidRecentChats(const QString &value) {

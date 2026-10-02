@@ -1,6 +1,7 @@
 #include "serein/chats/local_pins.h"
 
 #include "serein/chats/options.h"
+#include "serein/core/id_list.h"
 
 #include <QtCore/QStringList>
 
@@ -11,25 +12,7 @@ namespace Serein::Chats {
 namespace {
 
 [[nodiscard]] std::optional<std::vector<quint64>> Parse(const QString &value) {
-	auto result = std::vector<quint64>();
-	if (value.isEmpty()) {
-		return result;
-	}
-	for (const auto &part : value.split(u',')) {
-		auto valid = false;
-		const auto id = part.toULongLong(&valid);
-		if (!valid
-			|| !id
-			|| part != QString::number(id)
-			|| std::find(result.begin(), result.end(), id) != result.end()) {
-			return std::nullopt;
-		}
-		result.push_back(id);
-	}
-	if (int(result.size()) > kLocalPinsLimit) {
-		return std::nullopt;
-	}
-	return result;
+	return ParseIdList(value, kLocalPinsLimit);
 }
 
 } // namespace
