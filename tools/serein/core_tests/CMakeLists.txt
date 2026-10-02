@@ -17,6 +17,8 @@ include(${lib_loc}/cmake/serein_quirc.cmake)
 list(APPEND serein_test_sources ${serein_sql_test_sources})
 list(TRANSFORM serein_test_sources PREPEND ${src_loc}/)
 
+set_source_files_properties(${lib_loc}/ThirdParty/QR/cpp/qrcodegen.cpp
+    PROPERTIES COMPILE_OPTIONS -w)
 add_executable(test_serein
     ${serein_test_sources}
     ${lib_loc}/ThirdParty/QR/cpp/qrcodegen.cpp

@@ -370,19 +370,17 @@ if (DESKTOP_APP_TEST_APPS)
         message(STATUS "Serein: Qt Sql not found, history store tests skipped.")
     endif()
 
-    target_sources(test_serein PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/QR/cpp/qrcodegen.cpp)
     target_include_directories(test_serein PRIVATE
         ${src_loc}
         ${CMAKE_CURRENT_SOURCE_DIR}/lib_ui
-        ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/doctest
-        ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/QR/cpp)
+        ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/doctest)
 
     target_link_libraries(test_serein PRIVATE
         desktop-app::lib_base
         desktop-app::lib_crl
         desktop-app::external_openssl
         desktop-app::external_qt
+        desktop-app::external_qr_code_generator
         Serein::OpenCC
         Serein::Quirc
     )
