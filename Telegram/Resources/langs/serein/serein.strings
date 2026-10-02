@@ -485,6 +485,8 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_custom_doh" = "Custom DNS-over-HTTPS server";
 "lng_serein_custom_doh_hint" = "Host name of a server that answers the JSON API at /dns-query, for example dns.alidns.com. Leave empty to turn this off.";
 "lng_serein_custom_doh_about" = "Tried before Google and Cloudflare when Telegram looks up its fallback configuration and proxy domains over DNS-over-HTTPS. Useful where those resolvers are blocked.";
+"lng_serein_system_dns" = "Use system DNS";
+"lng_serein_system_dns_note" = "Proxy servers entered as domain names are resolved by the operating system instead of DNS-over-HTTPS through Google and Cloudflare. Turn this on if those services are blocked on your network and proxies with domain names keep timing out. While it is on, the custom DNS-over-HTTPS server is not used for proxies.";
 "lng_serein_faster_transfers" = "Faster uploads and downloads";
 "lng_serein_faster_transfers_about" = "Downloads start with several connections and the full transfer window, and uploads keep more data in flight on each connection. Helps on high-latency networks such as distant proxies; Telegram still limits the speed of each account.";
 "lng_serein_dc_status" = "Data center status";

@@ -34,6 +34,8 @@ namespace Serein::Hooks::ServiceSettings {
 [[nodiscard]] rpl::producer<bool> ProxyPausedByVpnValue();
 [[nodiscard]] QString CustomDoh();
 [[nodiscard]] rpl::producer<QString> CustomDohValue();
+[[nodiscard]] bool SystemDns();
+[[nodiscard]] rpl::producer<bool> SystemDnsValue();
 [[nodiscard]] bool FasterTransfers();
 [[nodiscard]] rpl::producer<bool> FasterTransfersValue();
 [[nodiscard]] bool AndroidWebApps();

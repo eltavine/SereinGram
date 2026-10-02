@@ -10,7 +10,7 @@
 
 namespace Serein::ServiceSettings {
 
-inline const auto kToggleRows = std::array<ToggleRow, 7>{ {
+inline const auto kToggleRows = std::array<ToggleRow, 8>{ {
 	{
 		&kTranslationContext,
 		tr::lng_serein_translation_context,
@@ -40,6 +40,12 @@ inline const auto kToggleRows = std::array<ToggleRow, 7>{ {
 		tr::lng_serein_proxy_vpn,
 		u"serein/services/pause-proxy-on-vpn"_q,
 		{ u"proxy"_q, u"VPN"_q },
+	},
+	{
+		&kSystemDns,
+		tr::lng_serein_system_dns,
+		u"serein/services/system-dns"_q,
+		{ u"DNS"_q, u"DoH"_q, u"proxy"_q, u"Google"_q },
 	},
 	{
 		&kFasterTransfers,
@@ -82,8 +88,10 @@ inline void AddLayout(
 	AddNote(builder, tr::lng_serein_proxy_vpn_about);
 	custom.customDoh();
 	AddToggle(builder, kToggleRows[5]);
-	AddNote(builder, tr::lng_serein_faster_transfers_about);
+	AddNote(builder, tr::lng_serein_system_dns_note);
 	AddToggle(builder, kToggleRows[6]);
+	AddNote(builder, tr::lng_serein_faster_transfers_about);
+	AddToggle(builder, kToggleRows[7]);
 	AddNote(builder, tr::lng_serein_android_web_apps_about);
 }
 

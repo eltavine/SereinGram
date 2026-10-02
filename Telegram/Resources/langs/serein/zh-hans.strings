@@ -481,6 +481,8 @@
 "lng_serein_custom_doh" = "自定义 DNS-over-HTTPS 服务器";
 "lng_serein_custom_doh_hint" = "填写在 /dns-query 提供 JSON 接口的服务器主机名，例如 dns.alidns.com。留空即关闭。";
 "lng_serein_custom_doh_about" = "Telegram 通过 DNS-over-HTTPS 查询备用配置与代理域名时，会先于 Google 与 Cloudflare 尝试该服务器，适用于这两者被屏蔽的网络。";
+"lng_serein_system_dns" = "使用系统 DNS";
+"lng_serein_system_dns_note" = "以域名填写的代理服务器改由操作系统解析，不再通过 Google 与 Cloudflare 的 DNS-over-HTTPS 查询。如果你的网络屏蔽了这些服务，导致以域名填写的代理一直连接超时，请打开此项。开启期间，自定义 DNS-over-HTTPS 服务器不再用于代理。";
 "lng_serein_faster_transfers" = "加快上传与下载";
 "lng_serein_faster_transfers_about" = "下载一开始就使用多条连接和完整的传输窗口，上传时每条连接可同时发送更多数据。适合延迟较高的网络（例如经远程代理连接）；Telegram 服务器仍会按账号限制速度。";
 "lng_serein_dc_status" = "数据中心状态";

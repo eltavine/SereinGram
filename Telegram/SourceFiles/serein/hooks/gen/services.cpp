@@ -94,6 +94,14 @@ rpl::producer<QString> CustomDohValue() {
 	return ForDevice().Value(Serein::ServiceSettings::kCustomDoh);
 }
 
+bool SystemDns() {
+	return ForDevice().Get(Serein::ServiceSettings::kSystemDns);
+}
+
+rpl::producer<bool> SystemDnsValue() {
+	return ForDevice().Value(Serein::ServiceSettings::kSystemDns);
+}
+
 bool FasterTransfers() {
 	return ForDevice().Get(Serein::ServiceSettings::kFasterTransfers);
 }

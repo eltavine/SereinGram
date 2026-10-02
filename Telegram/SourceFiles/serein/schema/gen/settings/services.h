@@ -96,6 +96,13 @@ inline const auto kCustomDoh = Option<QString>{
 		return (value == QString())
 			|| ((value.toUcs4().size() <= 253) && (Codec::Matches(value, QString::fromUtf8("^(([A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?\\.)+[A-Za-z]{2,63})?$"))));
 	} };
+inline constexpr auto kSystemDns = Option<bool>{
+	"serein.systemDns",
+	Scope::Device,
+	false,
+	Category::Services,
+	"lng_serein_system_dns",
+	0 };
 inline constexpr auto kFasterTransfers = Option<bool>{
 	"serein.fasterTransfers",
 	Scope::Device,
@@ -123,6 +130,7 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kPauseProxyOnVpn));
 	Expects(registry.Add(kProxyPausedByVpn));
 	Expects(registry.Add(kCustomDoh));
+	Expects(registry.Add(kSystemDns));
 	Expects(registry.Add(kFasterTransfers));
 	Expects(registry.Add(kAndroidWebApps));
 }

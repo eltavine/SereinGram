@@ -92,6 +92,15 @@ message ServicesSettings {
       pattern: "^(([A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?\\.)+[A-Za-z]{2,63})?$"
     }
   ];
+  optional bool system_dns = 14 [(serein.options.v1.field) = {
+    keywords: [
+      "DNS",
+      "DoH",
+      "proxy",
+      "Google"
+    ]
+    note: "lng_serein_system_dns_note"
+  }];
   optional bool faster_transfers = 13 [(serein.options.v1.field) = {
     title: "lng_serein_faster_transfers"
     keywords: [
