@@ -3561,6 +3561,15 @@ void InnerWidget::updateDialogRow(
 				}
 				updateRow(top + dialog->top(), dialog->height());
 			}
+			for (auto i = 0, count = communityRowCount(); i != count; ++i) {
+				const auto viewable = communityRowAt(i);
+				if (viewable->key() == row.key) {
+					updateRow(
+						communityRowAbsoluteTop(i),
+						viewable->height());
+					break;
+				}
+			}
 		}
 	} else if (_state == WidgetState::Filtered) {
 		if ((sections & UpdateRowSection::Filtered)
@@ -3976,6 +3985,8 @@ void InnerWidget::contextMenuEvent(QContextMenuEvent *e) {
 				if (const auto folder = _collapsedRows[_collapsedSelected]->folder) {
 					return { folder, FullMsgId() };
 				}
+			} else if (const auto viewable = communityRowAt(_communitySelected)) {
+				return { viewable->key(), FullMsgId() };
 			}
 		} else if (_state == WidgetState::Filtered) {
 			if (base::in_range(_filteredSelected, 0, _filterResults.size())) {
@@ -6487,7 +6498,7 @@ not_null<Ui::QuickActionContext*> InnerWidget::ensureQuickAction(int64 key) {
 
 int64 InnerWidget::calcSwipeKey(int top) {
 	top -= dialogsOffset();
-	if (top < 0) {
+	if (top < 0 || _state != WidgetState::Default) {
 		return 0;
 	}
 	for (auto it = _shownList->begin(); it != _shownList->end(); ++it) {
@@ -6495,8 +6506,8 @@ int64 InnerWidget::calcSwipeKey(int top) {
 		const auto from = row->top();
 		const auto to = from + row->height();
 		if (top >= from && top < to) {
-			if (const auto peer = row->key().peer()) {
-				return peer->id.value;
+			if (const auto history = row->key().history()) {
+				return history->peer->id.value;
 			}
 			return 0;
 		}
@@ -6504,22 +6515,25 @@ int64 InnerWidget::calcSwipeKey(int top) {
 	return 0;
 }
 
-void InnerWidget::prepareQuickAction(
+bool InnerWidget::prepareQuickAction(
 		int64 key,
 		Dialogs::Ui::QuickDialogAction action) {
 	Expects(key != 0);
 
+	const auto type = ResolveQuickDialogLabel(
+		session().data().history(PeerId(key)),
+		action,
+		_filterId);
+	if (type == Dialogs::Ui::QuickDialogActionLabel::Disabled) {
+		return false;
+	}
 	const auto context = ensureQuickAction(key);
-	auto name = ResolveQuickDialogLottieIconName(
-		ResolveQuickDialogLabel(
-			session().data().history(PeerId(key)),
-			action,
-			_filterId));
 	context->icon = Lottie::MakeIcon({
-		.name = std::move(name),
+		.name = ResolveQuickDialogLottieIconName(type),
 		.sizeOverride = Size(st::dialogsQuickActionSize),
 	});
 	context->action = action;
+	return true;
 }
 
 void InnerWidget::clearQuickActions() {
