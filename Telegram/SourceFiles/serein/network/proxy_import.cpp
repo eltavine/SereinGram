@@ -10,10 +10,6 @@
 #include "storage/localstorage.h"
 #include "ui/layers/show.h"
 
-#include <QtNetwork/QNetworkAccessManager>
-#include <QtNetwork/QNetworkReply>
-#include <QtNetwork/QNetworkRequest>
-
 namespace Serein::Network {
 namespace {
 
@@ -57,20 +53,17 @@ void UpdateProxySubscription(std::shared_ptr<Ui::Show> show) {
 		show->showToast(tr::lng_serein_proxy_subscription_invalid(tr::now));
 		return;
 	}
-	auto request = QNetworkRequest(url);
-	request.setRawHeader("User-Agent", "SereinGram");
-	request.setTransferTimeout(kRequestTimeout);
-	const auto reply = Adapters::SharedNetwork().get(request);
-	QObject::connect(reply, &QNetworkReply::finished, reply, [=] {
-		reply->deleteLater();
-		const auto body = reply->read(kSubscriptionMaximumSize + 1);
-		if (reply->error() != QNetworkReply::NoError
-			|| body.size() > kSubscriptionMaximumSize) {
+	Adapters::Download({
+		.url = url,
+		.maximumSize = kSubscriptionMaximumSize,
+		.timeout = kRequestTimeout,
+	}, [=](std::optional<QByteArray> body) {
+		if (!body) {
 			show->showToast(tr::lng_serein_proxy_subscription_failed(
 				tr::now));
 			return;
 		}
-		Import(show, body);
+		Import(show, *body);
 	});
 }
 

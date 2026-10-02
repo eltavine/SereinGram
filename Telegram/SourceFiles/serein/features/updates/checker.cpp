@@ -12,9 +12,7 @@
 
 #include <QtCore/QPointer>
 #include <QtCore/QTimer>
-#include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QNetworkReply>
-#include <QtNetwork/QNetworkRequest>
 
 namespace Serein::Updates {
 namespace {
@@ -37,27 +35,22 @@ private:
 		if (_reply || !Hooks::Interface::CheckUpdates()) {
 			return;
 		}
-		auto request = QNetworkRequest(QUrl(
-			u"https://api.github.com/repos/eltavine/SereinGram/releases/latest"_q));
-		request.setRawHeader("Accept", "application/vnd.github+json");
-		request.setRawHeader("User-Agent", "SereinGram");
-		request.setTransferTimeout(kRequestTimeout);
-		_reply = Adapters::SharedNetwork().get(request);
-		connect(_reply, &QNetworkReply::finished, this, [=] { finished(); });
+		_reply = Adapters::Download({
+			.url = QUrl(u"https://api.github.com/repos/eltavine/SereinGram/releases/latest"_q),
+			.maximumSize = kMaximumResponse,
+			.timeout = kRequestTimeout,
+			.headers = { { "Accept", "application/vnd.github+json" } },
+		}, crl::guard(this, [=](std::optional<QByteArray> body) {
+			finished(std::move(body));
+		}));
 	}
 
-	void finished() {
-		const auto reply = _reply.data();
+	void finished(std::optional<QByteArray> body) {
 		_reply = nullptr;
-		if (!reply) {
+		if (!body) {
 			return;
 		}
-		reply->deleteLater();
-		if (reply->error() != QNetworkReply::NoError) {
-			return;
-		}
-		const auto release = Updates::ParseLatestRelease(
-			reply->read(kMaximumResponse));
+		const auto release = Updates::ParseLatestRelease(*body);
 		if (!release
 			|| release->tag == _announced
 			|| !Updates::IsNewer(
