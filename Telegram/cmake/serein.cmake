@@ -56,6 +56,7 @@ set(serein_sources
     serein/app/ghost_menu.cpp
     serein/features/ghost/send.cpp
     serein/display/peer_id.cpp
+    serein/display/text_entities.cpp
     serein/display/view_refresher.cpp
     serein/interface/main_menu.cpp
     serein/interface/app_icon.cpp

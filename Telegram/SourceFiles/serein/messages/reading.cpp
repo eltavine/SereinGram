@@ -1,6 +1,7 @@
 #include "serein/hooks/messages/reading.h"
 
 #include "serein/hooks/compose/text.h"
+#include "serein/display/text_entities.h"
 #include "serein/messages/chinese.h"
 #include "serein/messages/chinese_warmup.h"
 #include "logs.h"
@@ -15,29 +16,6 @@
 
 namespace Serein::Messages {
 namespace {
-
-bool Protected(EntityType type) {
-	switch (type) {
-	case EntityType::Url:
-	case EntityType::CustomUrl:
-	case EntityType::Email:
-	case EntityType::Hashtag:
-	case EntityType::Cashtag:
-	case EntityType::Mention:
-	case EntityType::MentionName:
-	case EntityType::CustomEmoji:
-	case EntityType::BotCommand:
-	case EntityType::MediaTimestamp:
-	case EntityType::Phone:
-	case EntityType::BankCard:
-	case EntityType::Code:
-	case EntityType::Pre:
-	case EntityType::FormattedDate:
-		return true;
-	default:
-		return false;
-	}
-}
 
 [[nodiscard]] QString DictionaryDirectory() {
 	const auto directory = cWorkingDir() + u"tdata/serein/opencc-1.4.2"_q;
@@ -105,7 +83,7 @@ std::optional<TextWithEntities> ConvertChinese(
 			if (!entity.validForText(length)) {
 				return false;
 			}
-			if (Protected(entity.type())) {
+			if (Display::VerbatimEntity(entity.type())) {
 				std::fill(protectedPositions.begin() + entity.offset(),
 					protectedPositions.begin() + entity.offset() + entity.length(), true);
 			}

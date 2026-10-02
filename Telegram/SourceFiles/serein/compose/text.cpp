@@ -2,6 +2,7 @@
 
 #include "serein/compose/options.h"
 #include "serein/compose/spacing.h"
+#include "serein/display/text_entities.h"
 #include "ui/text/text_utilities.h"
 #include "ui/widgets/fields/input_field.h"
 #include "ui/widgets/popup_menu.h"
@@ -15,32 +16,6 @@
 #include <vector>
 
 namespace Serein::Compose {
-namespace {
-
-bool Protected(EntityType type) {
-	switch (type) {
-	case EntityType::Url:
-	case EntityType::CustomUrl:
-	case EntityType::Email:
-	case EntityType::Hashtag:
-	case EntityType::Cashtag:
-	case EntityType::Mention:
-	case EntityType::MentionName:
-	case EntityType::CustomEmoji:
-	case EntityType::BotCommand:
-	case EntityType::MediaTimestamp:
-	case EntityType::Phone:
-	case EntityType::BankCard:
-	case EntityType::Code:
-	case EntityType::Pre:
-	case EntityType::FormattedDate:
-		return true;
-	default:
-		return false;
-	}
-}
-
-} // namespace
 
 TextWithEntities AddChineseLatinSpacing(const TextWithEntities &text) {
 	const auto length = int(text.text.size());
@@ -55,7 +30,8 @@ TextWithEntities AddChineseLatinSpacing(const TextWithEntities &text) {
 	auto boundaries = std::vector<int>(length + 1);
 	const auto protect = [&](const EntitiesInText &entities) {
 		for (const auto &entity : entities) {
-			if (Protected(entity.type()) && entity.validForText(length)) {
+			if (Display::VerbatimEntity(entity.type())
+				&& entity.validForText(length)) {
 				++boundaries[entity.offset() + 1];
 				--boundaries[entity.offset() + entity.length()];
 			}
