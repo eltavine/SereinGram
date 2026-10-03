@@ -86,8 +86,8 @@ jobs:
           mkdir artifact
           mv sereingram_*.snap artifact/SereinGram-linux-x86_64.snap
           sudo snap install --dangerous artifact/SereinGram-linux-x86_64.snap
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq xvfb >/dev/null
+          tools/serein/retry.sh 3 30 sudo apt-get update -qq -o Acquire::Retries=3
+          tools/serein/retry.sh 3 30 sudo apt-get install -y -qq -o Acquire::Retries=3 xvfb >/dev/null
           # Strictly confined snaps see the home folder, not the host /tmp.
           mkdir -p "$HOME/smoke"
           TMPDIR="$HOME/smoke" xvfb-run -a python3 tools/serein/smoke_test.py /snap/bin/sereingram

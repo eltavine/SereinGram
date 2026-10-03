@@ -84,7 +84,7 @@ jobs:
 
       - name: Desktop entry and AppStream metadata validate.
         run: |
-          sudo apt-get update -o Acquire::Retries=3
+          tools/serein/retry.sh 3 30 sudo apt-get update -o Acquire::Retries=3
           tools/serein/retry.sh 3 30 sudo apt-get install -y -o Acquire::Retries=3 desktop-file-utils appstream
           desktop-file-validate lib/xdg/io.github.eltavine.SereinGram.desktop
           appstreamcli validate --no-net --explain lib/xdg/io.github.eltavine.SereinGram.metainfo.xml
@@ -216,7 +216,9 @@ jobs:
             Telegram/ThirdParty/quirc Telegram/ThirdParty/QR
 
       - name: Install OpenSSL headers.
-        run: sudo apt-get update && sudo apt-get install -y libssl-dev
+        run: |
+          tools/serein/retry.sh 3 30 sudo apt-get update -o Acquire::Retries=3
+          tools/serein/retry.sh 3 30 sudo apt-get install -y -o Acquire::Retries=3 libssl-dev
 
       - name: Set up Qt.
         uses: jurplel/install-qt-action@a9c63c7c123f3069cff414e7e482d95dfa9d8125 # v4.4.1
@@ -264,7 +266,9 @@ jobs:
             Telegram/ThirdParty/quirc Telegram/ThirdParty/QR
 
       - name: Install OpenSSL headers.
-        run: sudo apt-get update && sudo apt-get install -y libssl-dev
+        run: |
+          tools/serein/retry.sh 3 30 sudo apt-get update -o Acquire::Retries=3
+          tools/serein/retry.sh 3 30 sudo apt-get install -y -o Acquire::Retries=3 libssl-dev
 
       - name: Set up Qt.
         uses: jurplel/install-qt-action@a9c63c7c123f3069cff414e7e482d95dfa9d8125 # v4.4.1

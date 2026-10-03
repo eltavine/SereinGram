@@ -77,6 +77,6 @@ jobs:
         env:
           QT_XCB_GL_INTEGRATION: none
         run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq xvfb >/dev/null
+          tools/serein/retry.sh 3 30 sudo apt-get update -qq -o Acquire::Retries=3
+          tools/serein/retry.sh 3 30 sudo apt-get install -y -qq -o Acquire::Retries=3 xvfb >/dev/null
           xvfb-run -a python3 tools/serein/smoke_test.py result/bin/SereinGram
