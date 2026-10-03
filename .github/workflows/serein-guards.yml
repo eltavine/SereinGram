@@ -21,7 +21,7 @@ jobs:
 
     steps:
       - name: Clone.
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
@@ -53,7 +53,7 @@ jobs:
       - name: YAML passes yamllint.
         run: |
           git ls-files -z '.github/workflows/serein-*.yml' 'packaging/**/*.yml' 'packaging/**/*.yaml' \
-            crowdin.yml tools/serein/yamllint.yml \
+            crowdin.yml tools/serein/yamllint.yml tools/serein/zizmor.yml \
           | xargs -0 uvx yamllint@1.37.1 --strict -c tools/serein/yamllint.yml
 
       - name: Documentation passes markdownlint.
@@ -106,7 +106,7 @@ jobs:
             https://raw.githubusercontent.com/rhysd/actionlint/v1.7.12/scripts/download-actionlint.bash
           bash "$RUNNER_TEMP/download-actionlint.bash" 1.7.12
           ./actionlint .github/workflows/serein-*.yml
-          uvx zizmor@1.16.3 .github/workflows/serein-*.yml
+          uvx zizmor@1.30.1 --config tools/serein/zizmor.yml .github/workflows/serein-*.yml
 
       - name: Fetch comparison baselines.
         env:
@@ -150,13 +150,13 @@ jobs:
 
     steps:
       - name: Clone.
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
           fetch-depth: 200
 
       - name: Set up Node.
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 22
 
@@ -203,7 +203,7 @@ jobs:
 
     steps:
       - name: Clone.
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
@@ -251,7 +251,7 @@ jobs:
 
     steps:
       - name: Clone.
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 

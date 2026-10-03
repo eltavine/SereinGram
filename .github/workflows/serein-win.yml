@@ -150,7 +150,7 @@ jobs:
         run: echo "REPO_NAME=${GITHUB_REPOSITORY##*/}" >> "$GITHUB_ENV"
 
       - name: Clone.
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
           ref: ${{ inputs.ref }}
@@ -204,7 +204,7 @@ jobs:
       - name: ThirdParty cache.
         id: cache-third-party
         if: ${{ !inputs.no_cache }}
-        uses: actions/cache/restore@v6
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ${{ env.TBUILD }}\ThirdParty
           key: ${{ runner.OS }}-${{ runner.arch }}-third-party-${{ env.CACHE_KEY }}
@@ -213,7 +213,7 @@ jobs:
       - name: Libraries cache.
         id: cache-libs
         if: ${{ !inputs.no_cache }}
-        uses: actions/cache/restore@v6
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             ${{ env.LibrariesPath }}\*
@@ -229,7 +229,7 @@ jobs:
       - name: Qt cache.
         id: cache-qt
         if: ${{ !inputs.no_cache }}
-        uses: actions/cache/restore@v6
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             ${{ env.LibrariesPath }}\[qQ]t[_-]*
@@ -261,7 +261,7 @@ jobs:
 
       - name: Save the ThirdParty cache.
         if: ${{ !inputs.no_cache && env.SAVE_CACHE == 'true' && steps.cache-third-party.outputs.cache-hit != 'true' }}
-        uses: actions/cache/save@v6
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ${{ env.TBUILD }}\ThirdParty
           key: ${{ steps.cache-third-party.outputs.cache-primary-key }}
@@ -298,7 +298,7 @@ jobs:
       # Saved after the cleanup, like upstream's post-job save, to leave build trees out.
       - name: Save the libraries cache.
         if: ${{ !inputs.no_cache && env.SAVE_CACHE == 'true' && steps.cache-libs.outputs.cache-hit != 'true' }}
-        uses: actions/cache/save@v6
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             ${{ env.LibrariesPath }}\*
@@ -310,7 +310,7 @@ jobs:
 
       - name: Save the Qt cache.
         if: ${{ !inputs.no_cache && env.SAVE_CACHE == 'true' && steps.cache-qt.outputs.cache-hit != 'true' }}
-        uses: actions/cache/save@v6
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             ${{ env.LibrariesPath }}\[qQ]t[_-]*
@@ -393,7 +393,7 @@ jobs:
           python "$env:TBUILD\$env:REPO_NAME\tools\serein\smoke_test.py" "$target\SereinGram.exe"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         name: Upload artifact.
         with:
           name: SereinGram-windows-${{ env.ASSET_ARCH }}
