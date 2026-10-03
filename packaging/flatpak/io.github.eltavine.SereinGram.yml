@@ -220,6 +220,12 @@ modules:
     sources:
       - type: archive
         url: https://download.qt.io/archive/qt/6.11/6.11.2/single/qt-everywhere-src-6.11.2.tar.xz
+        mirror-urls:
+          - https://master.qt.io/archive/qt/6.11/6.11.2/single/qt-everywhere-src-6.11.2.tar.xz
+          - https://ftp.fau.de/qtproject/archive/qt/6.11/6.11.2/single/qt-everywhere-src-6.11.2.tar.xz
+          - https://mirrors.ocf.berkeley.edu/qt/archive/qt/6.11/6.11.2/single/qt-everywhere-src-6.11.2.tar.xz
+          - https://mirror.accum.se/mirror/qt.io/qtproject/archive/qt/6.11/6.11.2/single/qt-everywhere-src-6.11.2.tar.xz
+          - https://mirrors.dotsrc.org/qtproject/archive/qt/6.11/6.11.2/single/qt-everywhere-src-6.11.2.tar.xz
         sha256: 6dcfbca271d76a6502741a2c0dc6fc98ef7dd0b7b4cfd0abcebb285a86a26f33
       - type: git
         url: https://github.com/desktop-app/patches.git
