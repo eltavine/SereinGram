@@ -5,6 +5,7 @@
 #include "data/data_channel.h"
 #include "data/data_session.h"
 #include "lang/lang_keys.h"
+#include "main/main_account.h"
 #include "main/main_session.h"
 #include "main/session/session_show.h"
 #include "ui/layers/generic_box.h"
@@ -52,7 +53,13 @@ State &ForSession(not_null<Main::Session*> session) {
 		}
 	}, state->lifetime);
 	const auto inserted = states.emplace(session, std::move(state)).first;
-	session->lifetime().add([session] { States().erase(session); });
+	// History() asks for aliases inside Session(), before its lifetime exists.
+	session->account().sessionValue(
+	) | rpl::filter([=](Main::Session *value) {
+		return (value == session.get());
+	}) | rpl::take(1) | rpl::on_next([=] {
+		session->lifetime().add([session] { States().erase(session); });
+	}, inserted->second->lifetime);
 	return *inserted->second;
 }
 
