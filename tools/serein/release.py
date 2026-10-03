@@ -2,7 +2,8 @@
 
 The asset names come from policy/release_assets.json. Published names never
 change, so scripts, package managers and updaters can depend on them; new
-assets may be added, existing ones are not renamed or removed.
+assets may be added, existing ones are not renamed, and one is only removed
+by moving its name to the retired list.
 """
 
 import argparse
@@ -24,7 +25,8 @@ UPSTREAM = "https://github.com/telegramdesktop/tdesktop"
 NAME = re.compile(
     r"^SereinGram-(?P<os>windows|macos|linux)"
     r"-(?P<arch>x86_64|arm64|universal)"
-    r"(?:-[a-z0-9]+)?\.(?:exe|zip|dmg|tar\.xz|AppImage(?:\.zsync)?|deb|rpm|flatpak)$"
+    r"(?:-[a-z0-9]+)?"
+    r"(?:\.(?:exe|dmg|AppImage(?:\.zsync)?|deb|rpm|flatpak|snap|pkg\.tar\.zst))?$"
 )
 HEADER = re.compile(
     r"^(?P<type>[a-z]+)(?:\((?P<scope>[^()]+)\))?(?P<bang>!)?: "
@@ -41,12 +43,14 @@ SECTIONS = (
 SYSTEMS = {"windows": "Windows", "macos": "macOS", "linux": "Linux"}
 KINDS = {
     "installer": "Installer",
-    "portable": "Portable archive",
+    "portable": "Portable executable",
     "disk-image": "Disk image",
     "appimage": "AppImage",
     "deb": "Debian package",
     "rpm": "RPM package",
     "flatpak": "Flatpak bundle",
+    "snap": "Snap package",
+    "pacman": "Arch Linux package",
     "zsync": "AppImage delta update data",
 }
 UPDATE_DATA = {"zsync"}
@@ -56,14 +60,17 @@ class ReleaseError(Exception):
     pass
 
 
-def load_assets(path=POLICY):
+def load_policy(path=POLICY):
     data = json.loads(Path(path).read_text(encoding="utf-8"))
     if data.get("schema_version") != 1:
         raise ReleaseError(f"{path}: unsupported schema_version")
     assets = data["assets"]
+    retired = data.get("retired", [])
     names = [asset["name"] for asset in assets]
     if len(set(names)) != len(names):
         raise ReleaseError(f"{path}: duplicate asset names")
+    if len(set(retired)) != len(retired) or set(retired) & set(names):
+        raise ReleaseError(f"{path}: a retired name is repeated or still published")
     for asset in assets:
         match = NAME.match(asset["name"])
         if not match:
@@ -72,7 +79,11 @@ def load_assets(path=POLICY):
             raise ReleaseError(f"{asset['name']}: os or arch disagrees")
         if asset["kind"] not in KINDS:
             raise ReleaseError(f"{asset['name']}: unknown kind")
-    return assets
+    return assets, retired
+
+
+def load_assets(path=POLICY):
+    return load_policy(path)[0]
 
 
 def verify(directory, assets):
@@ -101,12 +112,17 @@ def uploaded(directory, release):
     return problems
 
 
-def compatibility(old_assets, new_assets):
+def compatibility(old_assets, new_assets, retired=()):
     current = {asset["name"]: asset for asset in new_assets}
     problems = []
     for asset in old_assets:
+        if asset["name"] in retired:
+            continue
         if asset["name"] not in current:
-            problems.append(f"{asset['name']}: a published asset cannot be removed or renamed")
+            problems.append(
+                f"{asset['name']}: a published asset cannot be removed or renamed"
+                " unless it is listed as retired"
+            )
         elif current[asset["name"]] != asset:
             problems.append(f"{asset['name']}: the os, arch and kind of an asset cannot change")
     return problems
@@ -284,7 +300,8 @@ def verify_lines():
         "These builds are not signed with a developer certificate. On macOS, "
         "open the app once, then choose Open Anyway in System Settings > "
         "Privacy & Security. On Windows, confirm the SmartScreen prompt with "
-        "More info and Run anyway.",
+        "More info and Run anyway. On Linux, make the downloaded portable "
+        "binary or AppImage executable with `chmod +x` first.",
     ]
 
 
@@ -324,17 +341,17 @@ def notes(commits, assets, info):
     return "\n".join(lines) + "\n"
 
 
-def check_compatibility(root, ref, assets):
+def check_compatibility(root, ref, assets, retired=()):
     old = None if re.fullmatch(r"0+", ref) else baseline_assets(root, ref)
     if old is None:
         print(f"No release asset list at {ref}; nothing to compare.")
         return 0
-    problems = compatibility(old, assets)
+    problems = compatibility(old, assets, retired)
     for problem in problems:
         print(problem, file=sys.stderr)
     if problems:
         return 1
-    print(f"The {len(old)} release assets of {ref} are all kept.")
+    print(f"The {len(old)} release assets of {ref} are all kept or retired.")
     return 0
 
 
@@ -397,9 +414,9 @@ def main(argv=None):
     command.add_argument("release_json", help="output of gh release view --json assets")
     args = parser.parse_args(argv)
     try:
-        assets = load_assets(args.assets)
+        assets, retired = load_policy(args.assets)
         if args.command == "compat":
-            return check_compatibility(args.root, args.baseline, assets)
+            return check_compatibility(args.root, args.baseline, assets, retired)
         if args.command == "uploaded":
             release = json.loads(Path(args.release_json).read_text(encoding="utf-8"))
             problems = uploaded(args.directory, release)

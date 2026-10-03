@@ -9,12 +9,12 @@ SereinGram 支持讨论度最高的七个 Linux 发行版：Ubuntu、Debian、Li
 | Linux Mint | `.deb` | 22.3 中用 apt 安装（x86_64） | |
 | Fedora | `.rpm` | 43 中用 dnf 安装 | Nobara；RHEL、Rocky Linux、AlmaLinux 8 起 |
 | openSUSE | `.rpm` | Tumbleweed、Leap 16.1 中用 zypper 安装 | |
-| Arch Linux | `packaging/arch/PKGBUILD`（系统库）；便携版、AppImage | PKGBUILD 构建并安装；便携版在 Arch 容器中检查动态库（x86_64） | Manjaro、EndeavourOS、CachyOS |
+| Arch Linux | `packaging/arch/PKGBUILD`（系统库）或 Release 附带的预构建包；便携版、AppImage | PKGBUILD 构建并安装；便携版在 Arch 容器中检查动态库（x86_64） | Manjaro、EndeavourOS、CachyOS |
 | NixOS | `flake.nix`（基于 nixpkgs 的 telegram-desktop 配方） | x86_64 与 aarch64 从源码构建并启动 | 任何装有 Nix 的发行版 |
 
 `.deb` 与 `.rpm` 的安装测试由 `tools/serein/linux_package_test.sh` 完成：在各发行版的容器中用系统包管理器安装，解析依赖后检查程序、桌面入口、AppStream 元数据、图标，以及程序需要的动态库都能找到。Linux 工作流对 x86_64 与 arm64 的每次构建都在单独的任务中运行它：每个发行版最多三次，每次换新容器，openSUSE 从第二次起停用原有镜像源、改从源站 `downloadcontent.opensuse.org` 下载；只有镜像或软件包仓库在每次尝试中都无法访问或超时，发行版才记为“无法判定”并给出警告，其余失败都让任务失败。
 
-所有发行版也都可以使用 Flatpak 单文件包、AppImage 或便携版压缩包（glibc 2.28 起）。AppImage 内嵌更新信息，可用 AppImageUpdate、AppImageLauncher 或 Gear Lever 增量更新。支持 Snap 的发行版还可以安装 Snap 包：`snap/snapcraft.yaml` 以 core24 构建，CI 工作流 `serein-snap.yml` 在配方改动时和每周构建、安装并启动它。
+所有发行版也都可以使用 Flatpak 单文件包、AppImage 或便携版可执行文件（glibc 2.28 起）。AppImage 内嵌更新信息，可用 AppImageUpdate、AppImageLauncher 或 Gear Lever 增量更新。支持 Snap 的发行版还可以安装 Snap 包：`snap/snapcraft.yaml` 以 core24 构建，CI 工作流 `serein-snap.yml` 在每次 Nightly、配方改动时和每周构建、安装并启动它，Nightly 与正式版都附带这个 Snap 包。
 
 ## 安装
 
@@ -40,7 +40,20 @@ sudo zypper install --allow-unsigned-rpm ./SereinGram-linux-x86_64.rpm
 
 arm64 设备把文件名中的 `x86_64` 换成 `arm64`。
 
-Arch Linux 可以直接使用 AppImage 或便携版，也可以用系统库从源码构建：
+便携版与 AppImage 是直接下载的可执行文件，下载后先加上执行权限：
+
+```sh
+chmod +x SereinGram-linux-x86_64-portable
+./SereinGram-linux-x86_64-portable
+```
+
+Arch Linux 可以直接使用 AppImage 或便携版，也可以安装 Release 附带的软件包（按构建时的 Arch 系统库链接）：
+
+```sh
+sudo pacman -U ./SereinGram-linux-x86_64.pkg.tar.zst
+```
+
+或者用系统库从源码构建：
 
 ```sh
 git clone https://github.com/eltavine/SereinGram.git

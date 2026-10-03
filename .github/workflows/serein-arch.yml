@@ -3,7 +3,6 @@ name: Serein Arch Linux.
 on:
   push:
     branches:
-      - develop
       - main
     paths:
       - 'packaging/arch/**'
@@ -11,9 +10,15 @@ on:
   schedule:
     - cron: '0 3 * * 1'
   workflow_dispatch:
+  workflow_call:
+    secrets:
+      SEREIN_API_ID:
+        required: false
+      SEREIN_API_HASH:
+        required: false
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}-arch
   cancel-in-progress: false
 
 permissions:
@@ -82,9 +87,16 @@ jobs:
             exit 1
           fi
 
+      - name: Name the package.
+        run: |
+          mkdir artifact
+          mv SereinGram/packaging/arch/sereingram-desktop-git-*.pkg.tar.zst \
+            artifact/SereinGram-linux-x86_64.pkg.tar.zst
+
       - name: Upload the package.
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: SereinGram Arch Linux package
-          path: SereinGram/packaging/arch/sereingram-desktop-git-*.pkg.tar.zst
+          path: artifact/SereinGram-linux-x86_64.pkg.tar.zst
+          archive: false
           if-no-files-found: error
+          retention-days: 3

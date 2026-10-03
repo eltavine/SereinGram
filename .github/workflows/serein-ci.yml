@@ -1,0 +1,112 @@
+name: Serein CI.
+
+on:
+  workflow_call:
+    inputs:
+      channel:
+        type: string
+        default: ''
+    secrets:
+      SEREIN_API_ID:
+        required: false
+      SEREIN_API_HASH:
+        required: false
+
+permissions:
+  contents: read
+
+jobs:
+
+  guards:
+    name: Guards
+    uses: ./.github/workflows/serein-guards.yml
+
+  windows-x86_64:
+    name: Windows x86_64
+    uses: ./.github/workflows/serein-win.yml
+    secrets:
+      SEREIN_API_ID: ${{ secrets.SEREIN_API_ID }}
+      SEREIN_API_HASH: ${{ secrets.SEREIN_API_HASH }}
+    with:
+      arch: x64
+      config: Release
+      ref: ${{ github.sha }}
+      channel: ${{ inputs.channel }}
+
+  windows-arm64:
+    name: Windows arm64
+    uses: ./.github/workflows/serein-win.yml
+    secrets:
+      SEREIN_API_ID: ${{ secrets.SEREIN_API_ID }}
+      SEREIN_API_HASH: ${{ secrets.SEREIN_API_HASH }}
+    with:
+      arch: arm64
+      config: Release
+      ref: ${{ github.sha }}
+      channel: ${{ inputs.channel }}
+      no_cache: true
+
+  macos:
+    name: macOS
+    uses: ./.github/workflows/serein-mac.yml
+    secrets:
+      SEREIN_API_ID: ${{ secrets.SEREIN_API_ID }}
+      SEREIN_API_HASH: ${{ secrets.SEREIN_API_HASH }}
+    with:
+      config: Release
+      ref: ${{ github.sha }}
+      channel: ${{ inputs.channel }}
+
+  linux:
+    name: Linux x86_64
+    uses: ./.github/workflows/serein-linux.yml
+    permissions:
+      contents: read
+      actions: write
+    secrets:
+      SEREIN_API_ID: ${{ secrets.SEREIN_API_ID }}
+      SEREIN_API_HASH: ${{ secrets.SEREIN_API_HASH }}
+    with:
+      config: Release
+      ref: ${{ github.sha }}
+      channel: ${{ inputs.channel }}
+
+  linux-arm64:
+    name: Linux arm64
+    uses: ./.github/workflows/serein-linux.yml
+    permissions:
+      contents: read
+      actions: write
+    secrets:
+      SEREIN_API_ID: ${{ secrets.SEREIN_API_ID }}
+      SEREIN_API_HASH: ${{ secrets.SEREIN_API_HASH }}
+    with:
+      arch: arm64
+      config: Release
+      ref: ${{ github.sha }}
+      channel: ${{ inputs.channel }}
+
+  flatpak:
+    name: Flatpak
+    uses: ./.github/workflows/serein-flatpak.yml
+    secrets:
+      SEREIN_API_ID: ${{ secrets.SEREIN_API_ID }}
+      SEREIN_API_HASH: ${{ secrets.SEREIN_API_HASH }}
+
+  snap:
+    name: Snap
+    uses: ./.github/workflows/serein-snap.yml
+    secrets:
+      SEREIN_API_ID: ${{ secrets.SEREIN_API_ID }}
+      SEREIN_API_HASH: ${{ secrets.SEREIN_API_HASH }}
+
+  arch:
+    name: Arch Linux
+    uses: ./.github/workflows/serein-arch.yml
+    secrets:
+      SEREIN_API_ID: ${{ secrets.SEREIN_API_ID }}
+      SEREIN_API_HASH: ${{ secrets.SEREIN_API_HASH }}
+
+  nix:
+    name: Nix
+    uses: ./.github/workflows/serein-nix.yml

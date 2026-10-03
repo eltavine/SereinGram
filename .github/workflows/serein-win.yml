@@ -3,7 +3,6 @@ name: Serein Windows.
 on:
   push:
     branches:
-      - develop
       - main
     paths-ignore:
       - 'docs/**'
@@ -371,9 +370,8 @@ jobs:
         run: |
           $out = "$env:TBUILD\$env:REPO_NAME\out\$env:BUILD_CONFIG"
           $base = "SereinGram-windows-$env:ASSET_ARCH"
-          New-Item -ItemType Directory -Force -Path artifact, portable\SereinGram | Out-Null
-          Copy-Item "$out\SereinGram.exe" portable\SereinGram\
-          Compress-Archive -Path portable\SereinGram -DestinationPath "artifact\$base-portable.zip"
+          New-Item -ItemType Directory -Force -Path artifact | Out-Null
+          Copy-Item "$out\SereinGram.exe" "artifact\$base-portable.exe"
           $setup = @(Get-ChildItem "$out\tsetup-*.exe")
           if ($setup.Count -ne 1) { throw "Expected one installer, found $($setup.Count)." }
           Move-Item $setup[0].FullName "artifact\$base-setup.exe"
@@ -383,9 +381,6 @@ jobs:
         shell: pwsh
         run: |
           $base = "artifact\SereinGram-windows-$env:ASSET_ARCH"
-          $portable = Join-Path $env:RUNNER_TEMP 'portable-check'
-          Expand-Archive "$base-portable.zip" -DestinationPath $portable
-          if (-not (Test-Path "$portable\SereinGram\SereinGram.exe")) { throw 'The portable archive lacks SereinGram.exe.' }
           $target = Join-Path $env:RUNNER_TEMP 'SereinGramInstall'
           $install = Start-Process -FilePath "$base-setup.exe" -Wait -PassThru `
             -ArgumentList '/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', '/SP-', "/DIR=$target"
@@ -393,10 +388,18 @@ jobs:
           python "$env:TBUILD\$env:REPO_NAME\tools\serein\smoke_test.py" "$target\SereinGram.exe"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        name: Upload artifact.
+      - name: Upload the installer.
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: SereinGram-windows-${{ env.ASSET_ARCH }}
-          path: artifact\
+          path: artifact/SereinGram-windows-${{ env.ASSET_ARCH }}-setup.exe
+          archive: false
+          if-no-files-found: error
+          retention-days: 3
+
+      - name: Upload the portable executable.
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          path: artifact/SereinGram-windows-${{ env.ASSET_ARCH }}-portable.exe
+          archive: false
           if-no-files-found: error
           retention-days: 3

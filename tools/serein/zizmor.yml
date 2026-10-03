@@ -2,6 +2,8 @@ rules:
   # actionlint 1.7.12 rejects the $/ self-repository syntax, so the release calls keep ./ paths.
   self-repository:
     ignore:
+      - serein-ci.yml
+      - serein-nightly.yml
       - serein-release.yml
   # The Windows build keeps upstream's cmd steps, which zizmor cannot analyse.
   misfeature:

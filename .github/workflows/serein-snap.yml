@@ -3,7 +3,6 @@ name: Serein Snap.
 on:
   push:
     branches:
-      - develop
       - main
     paths:
       - 'snap/**'
@@ -11,9 +10,15 @@ on:
   schedule:
     - cron: '0 1 * * 1'
   workflow_dispatch:
+  workflow_call:
+    secrets:
+      SEREIN_API_ID:
+        required: false
+      SEREIN_API_HASH:
+        required: false
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}-snap
   cancel-in-progress: false
 
 permissions:
@@ -92,10 +97,10 @@ jobs:
           mkdir -p "$HOME/smoke"
           TMPDIR="$HOME/smoke" xvfb-run -a python3 tools/serein/smoke_test.py /snap/bin/sereingram
 
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        name: Upload artifact.
+      - name: Upload the snap.
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: SereinGram-linux-x86_64-snap
-          path: artifact/
+          path: artifact/SereinGram-linux-x86_64.snap
+          archive: false
           if-no-files-found: error
           retention-days: 3

@@ -19,15 +19,15 @@ limit=${SEREIN_PACKAGE_TEST_LIMIT:-600}
 unreachable=75
 broken=70
 
-for extension in deb rpm tar.xz; do
-	if [ ! -f "$artifacts/SereinGram-linux-$arch.$extension" ]; then
-		echo "$artifacts has no SereinGram-linux-$arch.$extension." >&2
+for suffix in .deb .rpm -portable; do
+	if [ ! -f "$artifacts/SereinGram-linux-$arch$suffix" ]; then
+		echo "$artifacts has no SereinGram-linux-$arch$suffix." >&2
 		exit 2
 	fi
 done
 deb="/artifact/SereinGram-linux-$arch.deb"
 rpm="/artifact/SereinGram-linux-$arch.rpm"
-tarball="/artifact/SereinGram-linux-$arch.tar.xz"
+portable="/artifact/SereinGram-linux-$arch-portable"
 
 refresh() {
 	"$@" || exit "$unreachable"
@@ -182,9 +182,7 @@ if [ "$arch" = x86_64 ]; then
 	check "Linux Mint 22.3" linuxmintd/mint22.3-amd64 "$apt"
 	check "Arch Linux" archlinux:latest "refresh pacman -Sy --noconfirm
 pacman -S --noconfirm --needed cairo fontconfig freetype2 glib2 pango >/dev/null
-mkdir -p /opt
-tar -xJf $tarball -C /opt
-test -x /opt/SereinGram/SereinGram || exit $broken
+install -Dm755 $portable /opt/SereinGram/SereinGram
 if ldd /opt/SereinGram/SereinGram | grep 'not found'; then exit $broken; fi"
 fi
 

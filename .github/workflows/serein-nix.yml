@@ -3,7 +3,6 @@ name: Serein Nix.
 on:
   push:
     branches:
-      - develop
       - main
     paths:
       - 'flake.nix'
@@ -13,9 +12,10 @@ on:
   schedule:
     - cron: '0 2 * * 1'
   workflow_dispatch:
+  workflow_call:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}-nix
   cancel-in-progress: false
 
 permissions:

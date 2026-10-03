@@ -39,12 +39,15 @@ def git(root, *args, message=None):
 
 class AssetsTest(unittest.TestCase):
     def test_policy_follows_the_naming_rule(self):
-        assets = release.load_assets()
+        assets, retired = release.load_policy()
         names = [asset["name"] for asset in assets]
         self.assertIn("SereinGram-linux-x86_64.AppImage", names)
         for arch in ("universal", "arm64", "x86_64"):
             self.assertIn(f"SereinGram-macos-{arch}.dmg", names)
         self.assertEqual(len(names), len(set(names)))
+        self.assertIn("SereinGram-windows-x86_64-portable.exe", names)
+        self.assertIn("SereinGram-linux-arm64-portable", names)
+        self.assertIn("SereinGram-linux-x86_64.tar.xz", retired)
 
     def test_rejects_names_outside_the_rule(self):
         for name in (
@@ -52,8 +55,27 @@ class AssetsTest(unittest.TestCase):
             "Serein-linux-x86_64.deb",
             "SereinGram-linux-amd64.deb",
             "SereinGram-linux-x86_64.tar.gz",
+            "SereinGram-linux-x86_64.tar.xz",
+            "SereinGram-windows-x86_64-portable.zip",
         ):
             self.assertIsNone(release.NAME.match(name), name)
+
+    def test_accepts_raw_binaries_and_packages(self):
+        for name in (
+            "SereinGram-linux-x86_64-portable",
+            "SereinGram-windows-arm64-portable.exe",
+            "SereinGram-linux-x86_64.snap",
+            "SereinGram-linux-x86_64.pkg.tar.zst",
+        ):
+            self.assertTrue(release.NAME.match(name), name)
+
+    def test_rejects_a_retired_name_that_is_still_published(self):
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "assets.json"
+            document = {"schema_version": 1, "assets": [DEB_ASSET], "retired": [DEB_ASSET["name"]]}
+            path.write_text(json.dumps(document))
+            with self.assertRaises(release.ReleaseError):
+                release.load_policy(path)
 
     def test_rejects_disagreeing_metadata(self):
         with tempfile.TemporaryDirectory() as temp:
@@ -91,9 +113,12 @@ class CompatibilityTest(unittest.TestCase):
         self.assertEqual(release.compatibility([DEB_ASSET], [DEB_ASSET, extra]), [])
 
     def test_rejects_removed_or_changed_assets(self):
-        self.assertTrue(release.compatibility([DEB_ASSET], [])[0].endswith("renamed"))
+        self.assertIn("cannot be removed", release.compatibility([DEB_ASSET], [])[0])
         changed = dict(DEB_ASSET, kind="rpm")
         self.assertIn("cannot change", release.compatibility([DEB_ASSET], [changed])[0])
+
+    def test_allows_removing_a_retired_asset(self):
+        self.assertEqual(release.compatibility([DEB_ASSET], [], [DEB_ASSET["name"]]), [])
 
     def test_compares_with_a_git_baseline(self):
         with tempfile.TemporaryDirectory() as temp:
@@ -106,6 +131,7 @@ class CompatibilityTest(unittest.TestCase):
             git(root, "commit", "-q", message="chore: assets")
             self.assertEqual(release.check_compatibility(root, "HEAD", [DEB_ASSET]), 0)
             self.assertEqual(release.check_compatibility(root, "HEAD", []), 1)
+            self.assertEqual(release.check_compatibility(root, "HEAD", [], [DEB_ASSET["name"]]), 0)
             self.assertEqual(release.check_compatibility(root, "0" * 40, []), 0)
 
 
@@ -298,6 +324,7 @@ class NotesTest(unittest.TestCase):
         verify = text.split("## Verify")[1]
         self.assertIn("Open Anyway in System Settings > Privacy & Security", verify)
         self.assertIn("More info and Run anyway", verify)
+        self.assertIn("`chmod +x`", verify)
 
     def test_notes_announce_test_credentials_first(self):
         text = release.notes(

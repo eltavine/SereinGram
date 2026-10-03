@@ -110,8 +110,8 @@ class Harness(unittest.TestCase):
         )
 
     def run_test(self, arch="arm64", plan=None):
-        for extension in ("deb", "rpm", "tar.xz"):
-            (self.artifacts / f"SereinGram-linux-{arch}.{extension}").write_bytes(b"x")
+        for suffix in (".deb", ".rpm", "-portable"):
+            (self.artifacts / f"SereinGram-linux-{arch}{suffix}").write_bytes(b"x")
         return subprocess.run(
             ["bash", str(SCRIPT), str(self.artifacts), arch],
             capture_output=True,

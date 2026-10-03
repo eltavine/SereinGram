@@ -10,7 +10,7 @@
 | 上游侵入 | 当前数值与上限由 `tools/serein/upstream_budget.py` 输出，上限记录在 `tools/serein/policy/upstream.json`；直接包含内部头文件的上游文件锁定为 0 |
 | 设置页 | 布局、开关、数值、单选与文本行由 proto 生成；手写设置页只保留自定义控件 |
 | 结构化配置 | 链接、快捷回复、过滤、主菜单、消息菜单、服务与历史记录均由 proto3 声明，生成编解码器校验 |
-| 构建 | 三平台工作流在 PR 中构建 Debug 应用并运行 `test_serein` 与启动冒烟测试；`serein-release.yml` 每天调用同一批工作流构建 Release 矩阵（含 Windows arm64 与 Flatpak arm64）并发布 Nightly；Arch 与 Flatpak 工作流在各自文件改动与每周定时时运行；核心测试与守卫在每次推送时运行 |
+| 构建 | 三平台工作流在 PR 与 `main` 推送时构建 Debug 应用并运行 `test_serein` 与启动冒烟测试；每次推送到 `develop`，`serein-nightly.yml` 通过 `serein-ci.yml` 运行守卫与核心测试、Release 矩阵（含 Windows arm64 与 Flatpak arm64）、Snap、Arch Linux 与 Nix，全部通过后更新固定的 Nightly；正式版由 `serein-release.yml` 手动运行同一套 CI 后发布草稿；打包工作流另在各自文件于 `main` 上改动时与每周定时运行 |
 
 上游刻意不带 protobuf 运行时：cld3 用手写头文件替代生成代码（`cmake/external/cld3`），WebRTC 以 `WEBRTC_ENABLE_PROTOBUF=0` 构建。静态 Qt 只初始化 `qtbase`、`qtimageformats`、`qtshadertools`、`qtsvg`，但没有关闭 Qt SQL，Qt 自带的 SQLite 驱动可用。
 
@@ -203,5 +203,5 @@ cmake --build out/serein-core-tests && ctest --test-dir out/serein-core-tests
 | 功能范围 | 包含可能与服务条款冲突的功能（SG-HIST-09、SG-PRIV-08），与其他增强一样默认关闭 |
 | proto3 方案 | 按 ADR-0002：proto3 + Buf + 自有生成器，不引入 protobuf 运行时 |
 | 文案 | 英文文案 `langs/serein/serein.strings` 由 `Telegram/cmake/serein_lang.cmake` 并入上游的语言代码生成，界面代码照常使用 `tr::lng_serein_*`；生成的键查找函数再经 `tools/serein/split_lang_keys.py` 按键名首字母拆分后编译（MSVC arm64 拒绝编译单个过大的函数）；其他语言的译文按界面语言从资源中加载，缺失的键回退英文 |
-| CI 缓存 | 整个仓库共用 10 GB 的 Actions 缓存，超出后按最久未访问淘汰；默认分支是开发分支 `develop`，`main` 只接收发布合并；分支与 PR 能读取默认分支的缓存，所以只有 `develop` 上的构建（每次推送的 Debug 构建与 Nightly 的 Release 构建）写入缓存，PR 与 `main` 上的构建只读取：Windows 的依赖与 Qt 缓存在清理步骤之后保存（与上游一致），macOS 依赖缓存的键包含工具链指纹，Linux 缓存 Docker 层并只保留一份编译缓存；Windows 与 macOS 的依赖缓存同时包含 Debug 与 Release 版本，PR 与发布构建共用；发布流程中的 Windows arm64、Arch 与 Flatpak 构建不读写缓存，以免挤掉三个平台的缓存 |
+| CI 缓存 | 整个仓库共用 10 GB 的 Actions 缓存，超出后按最久未访问淘汰；默认分支是开发分支 `develop`，`main` 只接收发布合并；分支与 PR 能读取默认分支的缓存，所以只有 `develop` 上的构建（每次推送触发的 Nightly Release 构建）写入缓存，PR 与 `main` 上的构建只读取：Windows 的依赖与 Qt 缓存在清理步骤之后保存（与上游一致），macOS 依赖缓存的键包含工具链指纹，Linux 缓存 Docker 层并只保留一份编译缓存；Windows 与 macOS 的依赖缓存同时包含 Debug 与 Release 版本，PR 与发布构建共用；发布流程中的 Windows arm64、Arch、Flatpak、Snap 与 Nix 构建不读写缓存，以免挤掉三个平台的缓存 |
 | API 凭据 | 不使用官方 Telegram 客户端凭据；构建从仓库 Secrets 的 `SEREIN_API_ID` 与 `SEREIN_API_HASH` 注入，没有密钥的 fork 与 PR 构建回退到上游为开发构建公开提供的测试凭据（`TDESKTOP_API_TEST`） |

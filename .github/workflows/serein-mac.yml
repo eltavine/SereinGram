@@ -3,7 +3,6 @@ name: Serein MacOS.
 on:
   push:
     branches:
-      - develop
       - main
     paths-ignore:
       - 'docs/**'
@@ -278,10 +277,26 @@ jobs:
             "$retry" 5 5 hdiutil detach "$mount" || hdiutil detach -force "$mount"
           done
 
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        name: Upload artifact.
+      - name: Upload the universal disk image.
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: SereinGram-macos
-          path: artifact/
+          path: artifact/SereinGram-macos-universal.dmg
+          archive: false
+          if-no-files-found: error
+          retention-days: 3
+
+      - name: Upload the arm64 disk image.
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          path: artifact/SereinGram-macos-arm64.dmg
+          archive: false
+          if-no-files-found: error
+          retention-days: 3
+
+      - name: Upload the x86_64 disk image.
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          path: artifact/SereinGram-macos-x86_64.dmg
+          archive: false
           if-no-files-found: error
           retention-days: 3

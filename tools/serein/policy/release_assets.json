@@ -8,7 +8,7 @@
       "kind": "installer"
     },
     {
-      "name": "SereinGram-windows-x86_64-portable.zip",
+      "name": "SereinGram-windows-x86_64-portable.exe",
       "os": "windows",
       "arch": "x86_64",
       "kind": "portable"
@@ -20,7 +20,7 @@
       "kind": "installer"
     },
     {
-      "name": "SereinGram-windows-arm64-portable.zip",
+      "name": "SereinGram-windows-arm64-portable.exe",
       "os": "windows",
       "arch": "arm64",
       "kind": "portable"
@@ -44,7 +44,7 @@
       "kind": "disk-image"
     },
     {
-      "name": "SereinGram-linux-x86_64.tar.xz",
+      "name": "SereinGram-linux-x86_64-portable",
       "os": "linux",
       "arch": "x86_64",
       "kind": "portable"
@@ -80,7 +80,19 @@
       "kind": "flatpak"
     },
     {
-      "name": "SereinGram-linux-arm64.tar.xz",
+      "name": "SereinGram-linux-x86_64.snap",
+      "os": "linux",
+      "arch": "x86_64",
+      "kind": "snap"
+    },
+    {
+      "name": "SereinGram-linux-x86_64.pkg.tar.zst",
+      "os": "linux",
+      "arch": "x86_64",
+      "kind": "pacman"
+    },
+    {
+      "name": "SereinGram-linux-arm64-portable",
       "os": "linux",
       "arch": "arm64",
       "kind": "portable"
@@ -115,5 +127,11 @@
       "arch": "arm64",
       "kind": "flatpak"
     }
+  ],
+  "retired": [
+    "SereinGram-linux-arm64.tar.xz",
+    "SereinGram-linux-x86_64.tar.xz",
+    "SereinGram-windows-arm64-portable.zip",
+    "SereinGram-windows-x86_64-portable.zip"
   ]
 }
