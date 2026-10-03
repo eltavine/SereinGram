@@ -333,6 +333,7 @@
         "serein/features/ghost/model/",
         "serein/features/history/",
         "serein/features/presets/model/",
+        "serein/features/updates/checker.h",
         "serein/features/quiet_hours/model/",
         "serein/features/keyword_alerts/model/",
         "serein/filters/",

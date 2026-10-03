@@ -220,7 +220,7 @@ const auto kMeta = BuildHelper({
 	.id = ConfigSection::Id(),
 	.parentId = HomeId(),
 	.title = &tr::lng_serein_config_title,
-	.icon = &st::menuIconChatBubble,
+	.icon = &st::menuIconStorage,
 }, [](SectionBuilder &builder) {
 	const auto controller = builder.controller();
 	builder.addDividerText(tr::lng_serein_config_scope());

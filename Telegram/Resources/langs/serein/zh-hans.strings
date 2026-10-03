@@ -357,6 +357,15 @@
 "lng_serein_update_available" = "SereinGram {version} 已在 GitHub 发布。";
 "lng_serein_update_download" = "SereinGram {version} 已在 GitHub 发布。{link}";
 "lng_serein_update_download_link" = "下载";
+"lng_serein_home_appearance" = "外观";
+"lng_serein_home_tools" = "发送与工具";
+"lng_serein_home_privacy" = "隐私与数据";
+"lng_serein_home_about" = "关于";
+"lng_serein_update_check_now" = "检查更新";
+"lng_serein_update_checking" = "正在检查…";
+"lng_serein_update_latest" = "SereinGram 已是最新版本。";
+"lng_serein_update_failed" = "无法检查更新，请稍后再试。";
+"lng_serein_update_ready" = "有可用更新";
 "lng_serein_startup_folder" = "启动时打开的文件夹";
 "lng_serein_startup_folder_last" = "上次打开的文件夹";
 "lng_serein_startup_folder_specific" = "指定文件夹";

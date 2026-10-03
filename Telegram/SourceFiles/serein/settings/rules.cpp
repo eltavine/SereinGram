@@ -37,7 +37,7 @@ const auto kMeta = BuildHelper({
 	.id = RulesSection::Id(),
 	.parentId = HomeId(),
 	.title = &tr::lng_serein_rules,
-	.icon = &st::menuIconChatBubble,
+	.icon = &st::menuIconTagFilter,
 }, [](SectionBuilder &builder) {
 	const auto controller = builder.controller();
 	builder.addButton({

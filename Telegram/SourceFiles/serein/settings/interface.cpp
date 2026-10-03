@@ -157,7 +157,7 @@ const auto kMeta = BuildHelper({
 	.id = InterfaceSection::Id(),
 	.parentId = HomeId(),
 	.title = &tr::lng_serein_interface,
-	.icon = &st::menuIconChatBubble,
+	.icon = &st::menuIconPalette,
 }, [](SectionBuilder &builder) {
 	const auto controller = builder.controller();
 	Interface::AddLayout(builder, {

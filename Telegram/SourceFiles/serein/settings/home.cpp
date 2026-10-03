@@ -15,6 +15,7 @@
 #include "serein/settings/page.h"
 #include "serein/settings/gen/ghost_rows.h"
 #include "serein/settings/gen/history_rows.h"
+#include "serein/features/updates/checker.h"
 
 #include "boxes/about_box.h"
 #include "core/click_handler_types.h"
@@ -23,6 +24,7 @@
 #include "settings/settings_builder.h"
 #include "settings/settings_common_session.h"
 #include "ui/vertical_list.h"
+#include "ui/widgets/buttons.h"
 #include "window/window_session_controller.h"
 #include "styles/style_menu_icons.h"
 #include "styles/style_serein.h"
@@ -101,18 +103,94 @@ void AddFeatured(SectionBuilder &builder) {
 	}
 }
 
-const auto kMeta = BuildHelper({
-	.id = Home::Id(),
-	.parentId = MainId(),
-	.title = &tr::lng_serein_settings,
-	.icon = &st::menuIconSerein,
-}, [](SectionBuilder &builder) {
-	builder.addButton({
+struct PageButton {
+	tr::phrase<> title;
+	Settings::Type (*id)();
+	not_null<const style::icon*> icon;
+	QStringList keywords;
+};
+
+void AddGroup(
+		SectionBuilder &builder,
+		rpl::producer<QString> title,
+		std::initializer_list<PageButton> pages) {
+	builder.addDivider();
+	builder.addSkip();
+	builder.addSubsectionTitle(std::move(title));
+	for (const auto &page : pages) {
+		builder.addSectionButton({
+			.title = page.title(),
+			.targetSection = page.id(),
+			.icon = { page.icon },
+			.keywords = page.keywords,
+		});
+	}
+	builder.addSkip();
+}
+
+void AddVersion(SectionBuilder &builder) {
+	using Update = std::optional<Updates::AvailableUpdate>;
+	const auto latest = std::make_shared<Update>();
+	const auto version = tr::lng_settings_current_version(
+		tr::now,
+		lt_version,
+		currentVersionShortText());
+	const auto button = builder.addButton({
+		.id = u"serein/home/version"_q,
 		.title = tr::lng_serein_settings(),
 		.icon = { &st::menuIconSerein },
-		.label = rpl::single(tr::lng_settings_current_version(
-			tr::now, lt_version, currentVersionShortText())),
+		.label = Updates::AvailableValue() | rpl::map([=](const Update &update) {
+			return update ? tr::lng_serein_update_ready(tr::now) : version;
+		}),
+		.onClick = [=] {
+			UrlClickHandler::Open(!*latest
+				? Updates::ReleasesUrl()
+				: (*latest)->download.isEmpty()
+				? (*latest)->page
+				: (*latest)->download);
+		},
+		.keywords = { u"version"_q, u"changelog"_q, u"release"_q },
 	});
+	if (button) {
+		Updates::AvailableValue(
+		) | rpl::on_next([=](const Update &update) {
+			*latest = update;
+		}, button->lifetime());
+	}
+}
+
+void AddUpdateCheck(SectionBuilder &builder) {
+	if (!Updates::UpdateChecksAvailable()) {
+		return;
+	}
+	const auto controller = builder.controller();
+	builder.addButton({
+		.id = u"serein/home/check-updates"_q,
+		.title = tr::lng_serein_update_check_now(),
+		.icon = { &st::menuIconDownload },
+		.label = Updates::CheckingValue() | rpl::map([](bool checking) {
+			return checking ? tr::lng_serein_update_checking(tr::now) : QString();
+		}),
+		.onClick = [=] {
+			Updates::CheckForUpdatesNow(crl::guard(controller, [=](
+					Updates::CheckResult result) {
+				if (result == Updates::CheckResult::UpToDate) {
+					controller->showToast(tr::lng_serein_update_latest(tr::now));
+				} else if (result == Updates::CheckResult::Failed) {
+					controller->showToast(tr::lng_serein_update_failed(tr::now));
+				}
+			}));
+		},
+		.keywords = { u"update"_q, u"version"_q, u"GitHub"_q },
+	});
+}
+
+void AddAbout(SectionBuilder &builder) {
+	builder.addDivider();
+	builder.addSkip();
+	builder.addSubsectionTitle(tr::lng_serein_home_about());
+	AddVersion(builder);
+	AddUpdateCheck(builder);
 	builder.addButton({
 		.title = tr::lng_serein_source_code(),
 		.icon = { &st::menuIconLink },
@@ -123,76 +201,52 @@ const auto kMeta = BuildHelper({
 	const auto controller = builder.controller();
 	builder.addButton({
 		.title = tr::lng_serein_licenses(),
-		.icon = { &st::menuIconInfo },
+		.icon = { &st::menuIconFile },
 		.onClick = [=] {
 			if (controller) {
 				ShowLicenses(controller);
 			}
 		},
 	});
-	builder.addDivider();
+	builder.addSkip();
+}
+
+const auto kMeta = BuildHelper({
+	.id = Home::Id(),
+	.parentId = MainId(),
+	.title = &tr::lng_serein_settings,
+	.icon = &st::menuIconSerein,
+}, [](SectionBuilder &builder) {
+	builder.addSkip();
 	AddFeatured(builder);
-	builder.addDivider();
-	builder.addSectionButton({
-		.title = tr::lng_serein_interface(),
-		.targetSection = InterfaceId(),
-		.icon = { &st::menuIconChatBubble },
-		.keywords = { u"interface"_q, u"appearance"_q },
+	builder.addSkip();
+	AddGroup(builder, tr::lng_serein_home_appearance(), {
+		{ tr::lng_serein_interface, InterfaceId, &st::menuIconPalette,
+			{ u"interface"_q, u"appearance"_q } },
+		{ tr::lng_serein_messages, MessagesId, &st::menuIconChatBubble,
+			{ u"messages"_q, u"time"_q } },
+		{ tr::lng_serein_chats, ChatsId, &st::menuIconChats,
+			{ u"chats"_q, u"list"_q } },
+		{ tr::lng_serein_media, MediaId, &st::menuIconPhoto,
+			{ u"media"_q, u"sticker"_q, u"emoji"_q } },
+		{ tr::lng_serein_menu, MenuId, &st::menuIconReorder,
+			{ u"menu"_q, u"actions"_q } },
 	});
-	builder.addSectionButton({
-		.title = tr::lng_serein_messages(),
-		.targetSection = MessagesId(),
-		.icon = { &st::menuIconChatBubble },
-		.keywords = { u"messages"_q, u"time"_q },
+	AddGroup(builder, tr::lng_serein_home_tools(), {
+		{ tr::lng_serein_compose, ComposeId, &st::menuIconEdit,
+			{ u"compose"_q, u"send"_q } },
+		{ tr::lng_serein_services, ServicesId, &st::menuIconTranslate,
+			{ u"translation"_q, u"AI"_q, u"service"_q } },
+		{ tr::lng_serein_rules, RulesId, &st::menuIconTagFilter,
+			{ u"filter"_q, u"link"_q } },
 	});
-	builder.addSectionButton({
-		.title = tr::lng_serein_chats(),
-		.targetSection = ChatsId(),
-		.icon = { &st::menuIconChatBubble },
-		.keywords = { u"chats"_q, u"list"_q },
+	AddGroup(builder, tr::lng_serein_home_privacy(), {
+		{ tr::lng_serein_privacy, PrivacyId, &st::menuIconLock,
+			{ u"privacy"_q, u"phone"_q } },
+		{ tr::lng_serein_config_title, ConfigId, &st::menuIconStorage,
+			{ u"backup"_q, u"import"_q, u"export"_q } },
 	});
-	builder.addSectionButton({
-		.title = tr::lng_serein_compose(),
-		.targetSection = ComposeId(),
-		.icon = { &st::menuIconChatBubble },
-		.keywords = { u"compose"_q, u"send"_q },
-	});
-	builder.addSectionButton({
-		.title = tr::lng_serein_media(),
-		.targetSection = MediaId(),
-		.icon = { &st::menuIconChatBubble },
-		.keywords = { u"media"_q, u"sticker"_q, u"emoji"_q },
-	});
-	builder.addSectionButton({
-		.title = tr::lng_serein_menu(),
-		.targetSection = MenuId(),
-		.icon = { &st::menuIconChatBubble },
-		.keywords = { u"menu"_q, u"actions"_q },
-	});
-	builder.addSectionButton({
-		.title = tr::lng_serein_privacy(),
-		.targetSection = PrivacyId(),
-		.icon = { &st::menuIconLock },
-		.keywords = { u"privacy"_q, u"phone"_q },
-	});
-	builder.addSectionButton({
-		.title = tr::lng_serein_services(),
-		.targetSection = ServicesId(),
-		.icon = { &st::menuIconTranslate },
-		.keywords = { u"translation"_q, u"AI"_q, u"service"_q },
-	});
-	builder.addSectionButton({
-		.title = tr::lng_serein_rules(),
-		.targetSection = RulesId(),
-		.icon = { &st::menuIconChatBubble },
-		.keywords = { u"filter"_q, u"link"_q },
-	});
-	builder.addSectionButton({
-		.title = tr::lng_serein_config_title(),
-		.targetSection = ConfigId(),
-		.icon = { &st::menuIconChatBubble },
-		.keywords = { u"backup"_q, u"import"_q, u"export"_q },
-	});
+	AddAbout(builder);
 	builder.addDividerText(tr::lng_serein_settings_note());
 });
 

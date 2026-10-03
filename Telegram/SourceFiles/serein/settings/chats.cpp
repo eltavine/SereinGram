@@ -155,7 +155,7 @@ const auto kMeta = BuildHelper({
 	.id = ChatsSection::Id(),
 	.parentId = HomeId(),
 	.title = &tr::lng_serein_chats,
-	.icon = &st::menuIconChatBubble,
+	.icon = &st::menuIconChats,
 }, [](SectionBuilder &builder) {
 	const auto controller = builder.controller();
 	Chats::AddLayout(builder, {

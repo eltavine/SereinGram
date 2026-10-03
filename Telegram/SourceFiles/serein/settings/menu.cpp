@@ -123,7 +123,7 @@ const auto kMeta = BuildHelper({
 	.id = MenuSection::Id(),
 	.parentId = HomeId(),
 	.title = &tr::lng_serein_menu,
-	.icon = &st::menuIconChatBubble,
+	.icon = &st::menuIconReorder,
 }, [](SectionBuilder &builder) {
 	const auto controller = builder.controller();
 	Menu::AddLayout(builder, {

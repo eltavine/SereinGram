@@ -156,7 +156,7 @@ const auto kMeta = BuildHelper({
 	.id = ComposeSection::Id(),
 	.parentId = HomeId(),
 	.title = &tr::lng_serein_compose,
-	.icon = &st::menuIconChatBubble,
+	.icon = &st::menuIconEdit,
 }, [](SectionBuilder &builder) {
 	const auto controller = builder.controller();
 	Compose::AddLayout(builder, {

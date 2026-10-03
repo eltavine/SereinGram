@@ -41,7 +41,7 @@ const auto kMeta = BuildHelper({
 	.id = MediaSection::Id(),
 	.parentId = HomeId(),
 	.title = &tr::lng_serein_media,
-	.icon = &st::menuIconChatBubble,
+	.icon = &st::menuIconPhoto,
 }, [](SectionBuilder &builder) {
 	const auto controller = builder.controller();
 	Media::AddLayout(builder);
