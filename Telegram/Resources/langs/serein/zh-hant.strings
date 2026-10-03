@@ -820,6 +820,8 @@
 "lng_serein_menu_history_include" = "恢復記錄此對話的歷史";
 "lng_serein_menu_button_data" = "按鈕資料";
 "lng_serein_menu_details" = "訊息詳情";
+"lng_serein_menu_copy_markdown" = "複製為 Markdown";
+"lng_serein_markdown_copied" = "已複製為 Markdown。";
 "lng_serein_menu_select_range" = "選擇區間";
 "lng_serein_menu_unpin_selected" = "取消置頂所選訊息";
 "lng_serein_details_message_id" = "訊息 ID";

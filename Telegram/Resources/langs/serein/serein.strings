@@ -824,6 +824,8 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_menu_history_include" = "Save this chat's history again";
 "lng_serein_menu_button_data" = "Button data";
 "lng_serein_menu_details" = "Message details";
+"lng_serein_menu_copy_markdown" = "Copy as Markdown";
+"lng_serein_markdown_copied" = "Copied as Markdown.";
 "lng_serein_menu_select_range" = "Select range";
 "lng_serein_menu_unpin_selected" = "Unpin selected messages";
 "lng_serein_details_message_id" = "Message ID";

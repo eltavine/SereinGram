@@ -117,6 +117,7 @@ set(serein_sources
     serein/menu/rating.cpp
     serein/menu/media.cpp
     serein/menu/buttons.cpp
+    serein/messages/markdown_menu.cpp
     serein/menu/details.cpp
     serein/menu/model.cpp
     serein/menu/repeat.cpp
@@ -130,6 +131,7 @@ set(serein_sources
     serein/media/sticker_rounding.cpp
     serein/media/voice_denoise.cpp
     serein/messages/format.cpp
+    serein/messages/markdown.cpp
     serein/messages/content.cpp
     serein/messages/dates.cpp
     serein/messages/persian_calendar.cpp

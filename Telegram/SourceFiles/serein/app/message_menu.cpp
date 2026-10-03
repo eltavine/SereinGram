@@ -12,6 +12,7 @@
 #include "serein/menu/rating.h"
 #include "serein/menu/reminder.h"
 #include "serein/menu/repeat.h"
+#include "serein/messages/markdown_menu.h"
 #include "serein/messages/reading_menu.h"
 #include "serein/snapshot/snapshot.h"
 
@@ -66,6 +67,7 @@ void RegisterMessageMenu() {
 	AddItemAction(HistoryFeature::InsertHistoryExclusionAction);
 	AddItemAction(Menu::InsertButtonDataAction);
 	AddItemAction(Menu::InsertDetailsAction);
+	AddItemAction(Messages::InsertCopyMarkdownAction);
 	AddItemAction(Filters::InsertHideMessageAction);
 }
 

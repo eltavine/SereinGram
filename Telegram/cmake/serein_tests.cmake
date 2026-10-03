@@ -6,6 +6,7 @@ set(serein_test_sources
     serein/tests/test_options.cpp
     serein/tests/test_exchange.cpp
     serein/tests/test_presets.cpp
+    serein/tests/test_markdown.cpp
     serein/tests/test_spacing.cpp
     serein/tests/test_services.cpp
     serein/tests/test_updates.cpp
@@ -65,6 +66,7 @@ set(serein_test_sources
     serein/chats/reading_positions.cpp
     serein/chats/local_pins.cpp
     serein/messages/chinese.cpp
+    serein/messages/markdown.cpp
     serein/messages/persian_calendar.cpp
     serein/privacy/alias_rules.cpp
     serein/privacy/recorders.cpp

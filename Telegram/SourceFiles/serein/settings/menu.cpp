@@ -87,6 +87,7 @@ const style::icon *Icon(Menu::ActionId id) {
 	case Menu::ActionId::DeletedMessages: return &st::menuIconRestore;
 	case Menu::ActionId::ReadUntilHere: return &st::menuIconMarkRead;
 	case Menu::ActionId::HistoryExclusion: return &st::menuIconBlock;
+	case Menu::ActionId::CopyMarkdown: return &st::menuIconCopy;
 	case Menu::ActionId::ButtonData:
 	case Menu::ActionId::MessageDetails: return &st::menuIconInfo;
 	case Menu::ActionId::SelectRange: return &st::menuIconSelect;
