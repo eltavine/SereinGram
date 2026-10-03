@@ -46,12 +46,28 @@ rpl::producer<bool> AutoTranslateChatsValue(gsl::not_null<Main::Session*> sessio
 	return ForAccount(session).Value(Serein::ServiceSettings::kAutoTranslateChats);
 }
 
+QByteArray SendTranslations(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Get(Serein::ServiceSettings::kSendTranslations);
+}
+
+rpl::producer<QByteArray> SendTranslationsValue(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Value(Serein::ServiceSettings::kSendTranslations);
+}
+
 bool InstantViewTranslation() {
 	return ForDevice().Get(Serein::ServiceSettings::kInstantViewTranslation);
 }
 
 rpl::producer<bool> InstantViewTranslationValue() {
 	return ForDevice().Value(Serein::ServiceSettings::kInstantViewTranslation);
+}
+
+int AutoTranscribe(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Get(Serein::ServiceSettings::kAutoTranscribe);
+}
+
+rpl::producer<int> AutoTranscribeValue(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Value(Serein::ServiceSettings::kAutoTranscribe);
 }
 
 QString ProxySubscription() {

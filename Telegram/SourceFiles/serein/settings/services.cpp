@@ -10,6 +10,7 @@
 #include "serein/settings/services_network.h"
 #include "serein/settings/gen/services_rows.h"
 #include "serein/settings/page.h"
+#include "serein/settings/send_translations.h"
 #include "platform/platform_translate_provider.h"
 #include "settings/settings_builder.h"
 #include "settings/settings_common_session.h"
@@ -219,6 +220,7 @@ const auto kMeta = BuildHelper({
 				builder.addDividerText(rpl::single(SystemAiStatusText(aiStatus)));
 			}
 		},
+		.sendTranslations = [&] { AddSendTranslations(builder); },
 		.proxySubscription = [&] { AddProxySubscriptionRow(builder); },
 		.proxyNotes = [&] { AddProxyToolRows(builder); },
 		.customDoh = [&] { AddCustomDohRow(builder); },

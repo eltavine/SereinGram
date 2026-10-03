@@ -418,6 +418,9 @@ TEST_CASE("Options") {
 		HistorySettings::kHistorySaveEdits.scope,
 		HistorySettings::kHistoryExcludedPeers.scope,
 		ServiceSettings::kAutoTranslateChats.scope,
+		ServiceSettings::kSendTranslations.scope,
+		ServiceSettings::kAutoTranscribe.scope,
+		Filters::kKeywordAlerts.scope,
 	};
 	Require(std::ranges::all_of(accountScoped, [](Scope scope) {
 		return scope == Scope::Account;

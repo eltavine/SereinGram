@@ -28,6 +28,7 @@ set(serein_sources
     serein/features/quiet_hours/model/schedule.cpp
     serein/features/keyword_alerts/model/keywords.cpp
     serein/features/notifications/review.cpp
+    serein/features/send_translation/model/languages.cpp
     serein/features/history/deleted_marks.cpp
     serein/features/history/media_store.cpp
     serein/features/history/model/recorder.cpp
@@ -179,6 +180,7 @@ set(serein_sources
     serein/settings/presets.cpp
     serein/settings/quiet_hours.cpp
     serein/settings/keyword_alerts.cpp
+    serein/settings/send_translations.cpp
     serein/settings/media.cpp
     serein/settings/menu.cpp
     serein/settings/privacy.cpp
@@ -197,6 +199,8 @@ set(serein_sources
     serein/links/preview.cpp
     serein/services/translation_context.cpp
     serein/services/draft_translation.cpp
+    serein/services/send_translation.cpp
+    serein/services/auto_transcription.cpp
     serein/services/summary.cpp
     serein/services/summary_protocol.cpp
     serein/network/dc_status.cpp

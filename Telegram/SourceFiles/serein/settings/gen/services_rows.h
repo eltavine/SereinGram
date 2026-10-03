@@ -64,6 +64,7 @@ inline const auto kToggleRows = std::array<ToggleRow, 8>{ {
 struct CustomRows {
 	CustomRow services;
 	CustomRow preferSystemAi;
+	CustomRow sendTranslations;
 	CustomRow proxySubscription;
 	CustomRow proxyNotes;
 	CustomRow customDoh;
@@ -80,8 +81,18 @@ inline void AddLayout(
 	AddNote(builder, tr::lng_serein_chat_translation_about);
 	AddToggle(builder, kToggleRows[2]);
 	AddNote(builder, tr::lng_serein_auto_translate_chats_about);
+	custom.sendTranslations();
 	AddToggle(builder, kToggleRows[3]);
 	AddNote(builder, tr::lng_serein_instant_view_translation_about);
+	AddChoice(builder, {
+		.option = &kAutoTranscribe,
+		.title = tr::lng_serein_auto_transcribe,
+		.id = u"serein/services/auto-transcribe"_q,
+		.keywords = { u"voice"_q, u"transcribe"_q, u"speech"_q, u"automatic"_q },
+		.values = { 0, 1, 2 },
+		.labels = { tr::lng_serein_auto_transcribe_off, tr::lng_serein_auto_transcribe_private, tr::lng_serein_auto_transcribe_all },
+	});
+	AddNote(builder, tr::lng_serein_auto_transcribe_about);
 	custom.proxySubscription();
 	custom.proxyNotes();
 	AddToggle(builder, kToggleRows[4]);

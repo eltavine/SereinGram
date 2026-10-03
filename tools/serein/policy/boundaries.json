@@ -299,7 +299,8 @@
         "serein/ports/",
         "serein/hooks/",
         "serein/display/",
-        "serein/adapters/qtnetwork/"
+        "serein/adapters/qtnetwork/",
+        "serein/features/send_translation/model/"
       ],
       "app": true,
       "libraries": true
@@ -405,6 +406,15 @@
         "serein/hooks/"
       ],
       "app": true,
+      "libraries": true
+    },
+    "serein/features/send_translation/model/": {
+      "own": [
+        "serein/features/send_translation/model/",
+        "serein/schema/",
+        "serein/core/"
+      ],
+      "app": false,
       "libraries": true
     }
   }

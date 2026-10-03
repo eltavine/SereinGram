@@ -1,6 +1,5 @@
 #include "serein/hooks/services/transcription.h"
-
-#include "api/api_transcribes.h"
+#include "serein/services/external_transcription.h"
 
 #include "apiwrap.h"
 #include "api/api_transcribes.h"
@@ -34,6 +33,42 @@ namespace {
 
 constexpr auto kMaximumText = 16384;
 constexpr auto kMaximumEntries = 128;
+constexpr auto kMaximumAudio = 24 * 1024 * 1024;
+
+[[nodiscard]] QByteArray ReadAudio(
+		not_null<DocumentData*> document,
+		const std::shared_ptr<Data::DocumentMedia> &media) {
+	auto bytes = media->bytes();
+	if (!bytes.isEmpty()) {
+		return bytes;
+	}
+	const auto location = document->location(true);
+	if (!location.isEmpty() && location.accessEnable()) {
+		auto file = QFile(location.name());
+		if (file.open(QIODevice::ReadOnly)) {
+			bytes = file.read(kMaximumAudio + 1);
+		}
+		location.accessDisable();
+	}
+	return bytes;
+}
+
+[[nodiscard]] QString AudioName(not_null<DocumentData*> document) {
+	return document->isVideoMessage() ? u"audio.mp4"_q : u"audio.ogg"_q;
+}
+
+[[nodiscard]] std::optional<QString> ParseTranscription(
+		const QByteArray &body) {
+	const auto value = QJsonDocument::fromJson(body).object().value(u"text"_q);
+	const auto text = value.toString();
+	if (!value.isString()
+		|| text.isEmpty()
+		|| text.size() > kMaximumText
+		|| text.contains(QChar(0))) {
+		return std::nullopt;
+	}
+	return text;
+}
 
 [[nodiscard]] bool TranscriptionServiceSelected() {
 	const auto config = Services();
@@ -231,6 +266,52 @@ const Entry *TranscriptionOverride(not_null<HistoryItem*> item) {
 template const Api::Transcribes::Entry *
 TranscriptionOverride<Api::Transcribes::Entry>(not_null<HistoryItem*> item);
 
+ExternalTranscription TranscribeExternally(
+		not_null<HistoryItem*> item,
+		ServiceRequest &request,
+		Fn<void(bool stored)> done) {
+	const auto session = &item->history()->session();
+	auto &external = ExternalTranscriptions::For(session);
+	const auto config = Services();
+	const auto service = config
+		? FindService(*config, config->transcription)
+		: std::nullopt;
+	const auto media = item->media();
+	const auto document = media ? media->document() : nullptr;
+	if (!external.selected()
+		|| !service
+		|| service->kind != ServiceKind::Transcription
+		|| !document
+		|| media->ttlSeconds()
+		|| external.find(item)
+		|| document->size > kMaximumAudio) {
+		return ExternalTranscription::Unavailable;
+	}
+	auto bytes = ReadAudio(document, document->createMediaView());
+	if (bytes.isEmpty()) {
+		document->save(item->fullId(), QString());
+		return ExternalTranscription::Downloading;
+	}
+	const auto id = item->fullId();
+	const auto documentId = document->id;
+	const auto serviceConfig = ForDevice().Get(kServicesConfig);
+	const auto generation = external.generation(document->isVideoMessage());
+	request.audio(*service, std::move(bytes), AudioName(document), [=](
+			ServiceResult response) {
+		const auto text = (response.error == ServiceError::None)
+			? ParseTranscription(response.body)
+			: std::nullopt;
+		const auto item = text ? session->data().message(id) : nullptr;
+		done(item && ExternalTranscriptions::For(session).set(
+			item,
+			documentId,
+			serviceConfig,
+			generation,
+			*text));
+	});
+	return ExternalTranscription::Started;
+}
+
 void ShowCustomTranscription(
 		std::shared_ptr<Main::SessionShow> show,
 		not_null<HistoryItem*> item,
@@ -305,22 +386,11 @@ void ShowCustomTranscription(
 				box->showToast(tr::lng_serein_transcribe_missing(tr::now));
 				return;
 			}
-			auto bytes = state->media->bytes();
-			constexpr auto limit = 24 * 1024 * 1024;
-			if (document->size > limit) {
+			if (document->size > kMaximumAudio) {
 				label->setText(ServiceErrorText(ServiceError::TooLarge));
 				return;
 			}
-			if (bytes.isEmpty()) {
-				const auto location = document->location(true);
-				if (!location.isEmpty() && location.accessEnable()) {
-					auto file = QFile(location.name());
-					if (file.open(QIODevice::ReadOnly)) {
-						bytes = file.read(limit + 1);
-					}
-					location.accessDisable();
-				}
-			}
+			auto bytes = ReadAudio(document, state->media);
 			if (bytes.isEmpty()) {
 				document->save(item->fullId(), QString());
 				label->setText(tr::lng_serein_transcribe_download(tr::now));
@@ -331,28 +401,25 @@ void ShowCustomTranscription(
 			state->loading = true;
 			label->setText(tr::lng_contacts_loading(tr::now));
 			state->request.audio(*service, std::move(bytes),
-				document->isVideoMessage() ? u"audio.mp4"_q : u"audio.ogg"_q,
+				AudioName(document),
 				crl::guard(box, [=](ServiceResult response) {
 					state->loading = false;
 					if (response.error != ServiceError::None) {
 						label->setText(ServiceErrorText(response.error, response.status));
 						return;
 					}
-					const auto value = QJsonDocument::fromJson(
-						response.body).object().value(u"text"_q);
-					if (!value.isString() || value.toString().isEmpty()
-						|| value.toString().size() > 16384
-						|| value.toString().contains(QChar(0))) {
+					const auto text = ParseTranscription(response.body);
+					if (!text) {
 						label->setText(ServiceErrorText(ServiceError::Response));
 						return;
 					}
 					const auto item = show->session().data().message(id);
 					if (!item || !ExternalTranscriptions::For(session).set(
-							item, documentId, serviceConfig, generation, value.toString())) {
+							item, documentId, serviceConfig, generation, *text)) {
 						label->setText(tr::lng_serein_transcribe_missing(tr::now));
 						return;
 					}
-					state->result = value.toString();
+					state->result = *text;
 					label->setText(state->result);
 				}));
 		});

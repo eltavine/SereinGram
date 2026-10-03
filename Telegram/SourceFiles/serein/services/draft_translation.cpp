@@ -15,9 +15,45 @@
 namespace Serein {
 namespace {
 
+[[nodiscard]] Ui::TranslateBoxContentError BoxError(
+		Ui::TranslateProviderError error) {
+	using Error = Ui::TranslateProviderError;
+	using Result = Ui::TranslateBoxContentError;
+	return (error == Error::None)
+		? Result::None
+		: (error == Error::LocalLanguagePackMissing)
+		? Result::LocalLanguagePackMissing
+		: Result::Unknown;
+}
+
 void ShowDraftTranslation(
 		std::shared_ptr<Main::SessionShow> show,
 		not_null<Ui::InputField*> field) {
+	ShowTranslationBox(show, field, Ui::ChooseTranslateTo(LanguageId()), [=](
+			not_null<Ui::GenericBox*> box,
+			TextWithTags original,
+			Fn<std::optional<TextWithEntities>()> result) {
+		box->addButton(tr::lng_serein_translate_apply(), crl::guard(field, [=] {
+			const auto translation = result();
+			if (!translation) {
+				return;
+			} else if (field->getTextWithTags() != original) {
+				box->showToast(tr::lng_serein_draft_changed(tr::now));
+				return;
+			}
+			ApplyTranslation(field, *translation);
+			box->closeBox();
+		}));
+	});
+}
+
+} // namespace
+
+void ShowTranslationBox(
+		std::shared_ptr<Main::SessionShow> show,
+		not_null<Ui::InputField*> field,
+		LanguageId to,
+		TranslationButtons buttons) {
 	const auto original = field->getTextWithTags();
 	show->showBox(Box([=](not_null<Ui::GenericBox*> box) {
 		struct State {
@@ -26,7 +62,7 @@ void ShowDraftTranslation(
 			rpl::variable<LanguageId> to;
 		};
 		const auto state = box->lifetime().make_state<State>();
-		state->to = Ui::ChooseTranslateTo(LanguageId());
+		state->to = to;
 		const auto text = TextWithEntities{
 			original.text,
 			TextUtilities::ConvertTextTagsToEntities(original.tags),
@@ -52,37 +88,23 @@ void ShowDraftTranslation(
 						state->result = response.text;
 						done({
 							.text = std::move(response.text),
-							.error = response.error
-								== Ui::TranslateProviderError::None
-								? Ui::TranslateBoxContentError::None
-								: response.error
-									== Ui::TranslateProviderError::LocalLanguagePackMissing
-								? Ui::TranslateBoxContentError::LocalLanguagePackMissing
-								: Ui::TranslateBoxContentError::Unknown,
+							.error = BoxError(response.error),
 						});
 					}));
 			},
 		});
-		box->addButton(tr::lng_serein_translate_apply(),
-			crl::guard(field, [=] {
-				if (!state->result) {
-					return;
-				}
-				if (field->getTextWithTags() != original) {
-					box->showToast(tr::lng_serein_draft_changed(tr::now));
-					return;
-				}
-				field->setTextWithTags({
-					state->result->text,
-					TextUtilities::ConvertEntitiesToTextTags(
-						state->result->entities),
-				});
-				box->closeBox();
-			}));
+		buttons(box, original, [=] { return state->result; });
 	}));
 }
 
-} // namespace
+void ApplyTranslation(
+		not_null<Ui::InputField*> field,
+		const TextWithEntities &translation) {
+	field->setTextWithTags({
+		translation.text,
+		TextUtilities::ConvertEntitiesToTextTags(translation.entities),
+	});
+}
 
 void InstallDraftTranslation(
 		not_null<Ui::InputField*> field,

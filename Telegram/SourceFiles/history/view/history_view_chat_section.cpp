@@ -2374,6 +2374,13 @@ void ChatWidget::send(Api::SendOptions options) {
 			return;
 		}
 	}
+	if (Serein::Compose::TranslateBeforeSend(
+			controller()->uiShow(),
+			_peer,
+			_composeControls->fieldForMention(),
+			crl::guard(this, [=] { send(options); }))) {
+		return;
+	}
 
 	sendTextWithTags(
 		_composeControls->getTextWithAppliedMarkdown(),

@@ -9,6 +9,7 @@ set(serein_test_sources
     serein/tests/test_markdown.cpp
     serein/tests/test_quiet_hours.cpp
     serein/tests/test_keyword_alerts.cpp
+    serein/tests/test_send_translations.cpp
     serein/tests/test_spacing.cpp
     serein/tests/test_services.cpp
     serein/tests/test_updates.cpp
@@ -57,6 +58,7 @@ set(serein_test_sources
     serein/features/presets/model/catalog.cpp
     serein/features/quiet_hours/model/schedule.cpp
     serein/features/keyword_alerts/model/keywords.cpp
+    serein/features/send_translation/model/languages.cpp
     serein/features/history/entities.cpp
     serein/display/text_entities.cpp
     serein/features/history/media_store.cpp

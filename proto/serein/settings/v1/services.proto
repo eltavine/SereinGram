@@ -50,6 +50,17 @@ message ServicesSettings {
     ]
     note: "lng_serein_auto_translate_chats_about"
   }];
+  optional bytes send_translations = 15 [(serein.options.v1.field) = {
+    scope: SCOPE_ACCOUNT
+    title: "lng_serein_send_translation"
+    keywords: [
+      "translate",
+      "send",
+      "outgoing"
+    ]
+    custom_ui: true
+    validator: "ValidSendTranslationsBytes"
+  }];
   optional bool instant_view_translation = 12 [(serein.options.v1.field) = {
     keywords: [
       "translate",
@@ -58,6 +69,29 @@ message ServicesSettings {
     ]
     note: "lng_serein_instant_view_translation_about"
   }];
+  optional int32 auto_transcribe = 16 [
+    (serein.options.v1.field) = {
+      scope: SCOPE_ACCOUNT
+      keywords: [
+        "voice",
+        "transcribe",
+        "speech",
+        "automatic"
+      ]
+      note: "lng_serein_auto_transcribe_about"
+      choice: {
+        labels: [
+          "lng_serein_auto_transcribe_off",
+          "lng_serein_auto_transcribe_private",
+          "lng_serein_auto_transcribe_all"
+        ]
+      }
+    },
+    (buf.validate.field).int32 = {
+      gte: 0
+      lte: 2
+    }
+  ];
   optional string proxy_subscription = 3 [
     (serein.options.v1.field) = {
       title: "lng_serein_proxy_subscription"
