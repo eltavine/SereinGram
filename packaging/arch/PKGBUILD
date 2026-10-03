@@ -112,6 +112,14 @@ build() {
     warning 'Building with the test-only credentials (SEREIN_API_TEST=1).'
     credentials=(-DTDESKTOP_API_TEST=ON)
   fi
+  local published=()
+  if [[ -n $SEREIN_BUILD_PACKAGE ]]; then
+    published=(
+      -DSEREIN_BUILD_PACKAGE="$SEREIN_BUILD_PACKAGE"
+      -DSEREIN_BUILD_CHANNEL="$SEREIN_BUILD_CHANNEL"
+      -DSEREIN_BUILD_COMMIT="$SEREIN_BUILD_COMMIT"
+    )
+  fi
 
   cmake -S td -B td/build -G Ninja \
     -DCMAKE_BUILD_TYPE=None \
@@ -125,7 +133,8 @@ build() {
     -DCMAKE_BUILD_TYPE=None \
     -DCMAKE_INSTALL_PREFIX=/usr \
     -Dtde2e_DIR="$srcdir/td/install/lib/cmake/tde2e" \
-    "${credentials[@]}"
+    "${credentials[@]}" \
+    "${published[@]}"
   cmake --build build
 }
 

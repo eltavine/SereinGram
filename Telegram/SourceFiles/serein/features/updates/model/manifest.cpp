@@ -99,4 +99,15 @@ const ReleaseAsset *ChooseAsset(
 	return find(u"universal"_q);
 }
 
+QString LinuxInstallKind(const LinuxInstall &install) {
+	if (!install.buildPackage.isEmpty()) {
+		return install.buildPackage;
+	} else if (install.appImage) {
+		return u"appimage"_q;
+	} else if (install.directory == u"/usr/bin"_q) {
+		return install.dpkg ? u"deb"_q : u"rpm"_q;
+	}
+	return u"portable"_q;
+}
+
 } // namespace Serein::Updates

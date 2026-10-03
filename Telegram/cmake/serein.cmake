@@ -349,7 +349,12 @@ if (TARGET desktop-app::external_rnnoise)
     target_compile_definitions(Telegram PRIVATE SEREIN_HAVE_RNNOISE)
 endif()
 
-if (DESKTOP_APP_USE_PACKAGED)
+set(SEREIN_BUILD_PACKAGE "" CACHE STRING
+    "Release asset kind of a packaged build published on GitHub: flatpak, snap or pacman")
+if (NOT SEREIN_BUILD_PACKAGE MATCHES "^(flatpak|snap|pacman)?$")
+    message(FATAL_ERROR "SEREIN_BUILD_PACKAGE must be empty, flatpak, snap or pacman.")
+endif()
+if (DESKTOP_APP_USE_PACKAGED AND SEREIN_BUILD_PACKAGE STREQUAL "")
     target_compile_definitions(Telegram PRIVATE SEREIN_SYSTEM_PACKAGE)
 endif()
 
@@ -373,6 +378,7 @@ namespace Serein {
 
 const char kBuildChannel[] = "@SEREIN_BUILD_CHANNEL@";
 const char kBuildCommit[] = "@SEREIN_BUILD_COMMIT@";
+const char kBuildPackage[] = "@SEREIN_BUILD_PACKAGE@";
 
 } // namespace Serein
 ]]

@@ -1,5 +1,6 @@
 #include "serein/features/updates/install_target.h"
 
+#include "serein/core/build_info.h"
 #include "base/platform/base_platform_info.h"
 
 #include <QtCore/QCoreApplication>
@@ -25,15 +26,12 @@ namespace {
 }
 
 [[nodiscard]] QString LinuxKind() {
-	const auto directory = QCoreApplication::applicationDirPath();
-	if (qEnvironmentVariableIsSet("APPIMAGE")) {
-		return u"appimage"_q;
-	} else if (QFile::exists(u"/.flatpak-info"_q)) {
-		return u"flatpak"_q;
-	} else if (directory.startsWith(u"/usr/"_q)) {
-		return QFile::exists(u"/usr/bin/dpkg"_q) ? u"deb"_q : u"rpm"_q;
-	}
-	return u"portable"_q;
+	return LinuxInstallKind({
+		.buildPackage = QString::fromLatin1(kBuildPackage),
+		.directory = QCoreApplication::applicationDirPath(),
+		.appImage = qEnvironmentVariableIsSet("APPIMAGE"),
+		.dpkg = QFile::exists(u"/usr/bin/dpkg"_q),
+	});
 }
 
 } // namespace

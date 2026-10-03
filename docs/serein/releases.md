@@ -84,7 +84,7 @@ macOS 的三个磁盘映像来自同一次通用构建：单架构版本对应�
 
 ## 3a. 应用内更新
 
-界面设置“在 GitHub 上检查更新”开启时（系统软件包构建不检查），应用在启动 30 秒后及每 24 小时下载一次清单：Nightly 构建读取 `releases/download/nightly/release.json`，提交与自身不同即提示；其他构建读取 `releases/latest/download/release.json`，按 `QVersionNumber` 比较版本，带后缀的版本视为预发布。两个地址都是 GitHub 的静态下载地址，不受 REST API 频率限制。提示中给出发布页，以及与当前安装方式相符的产物的直接下载链接：Windows 按应用目录中是否有 Inno Setup 卸载程序区分安装版与便携版，macOS 优先同架构的磁盘映像、其次通用版，Linux 依次识别 AppImage、Flatpak、`/usr` 下的 deb 或 rpm 软件包与便携版；找不到相符的产物时只给出发布页。应用不在后台下载或替换自身。
+界面设置“在 GitHub 上检查更新”开启时，应用在启动 30 秒后及每 24 小时下载一次清单。以系统库构建的软件包默认由包管理器更新、不检查；但 CI 为 GitHub 发布构建的 Flatpak、Snap 与 Arch 软件包没有软件源更新它们，构建时以 `SEREIN_BUILD_PACKAGE` 写入自己的产物类型（`flatpak`、`snap`、`pacman`）并同样检查，Nightly 中的这三种包也带有渠道与构建提交。Nightly 构建读取 `releases/download/nightly/release.json`，提交与自身不同即提示；其他构建读取 `releases/latest/download/release.json`，按 `QVersionNumber` 比较版本，带后缀的版本视为预发布。两个地址都是 GitHub 的静态下载地址，不受 REST API 频率限制。提示中给出发布页，以及与当前安装方式相符的产物的直接下载链接：Windows 按应用目录中是否有 Inno Setup 卸载程序区分安装版与便携版，macOS 优先同架构的磁盘映像、其次通用版，Linux 先用构建时写入的产物类型，其余依次识别 AppImage、装在 `/usr/bin` 的 deb 或 rpm 软件包（有 `dpkg` 时为 deb）与便携版；找不到相符的产物时只给出发布页。应用不在后台下载或替换自身。
 
 AppImage 内嵌 AppImage 规范的更新信息 `gh-releases-zsync|<所有者>|<仓库>|<nightly 或 latest>|SereinGram-linux-<架构>.AppImage.zsync`，Release 同时附带 `.zsync` 文件，因此 AppImageUpdate、AppImageLauncher 与 Gear Lever 等工具可以只下载变化的部分完成更新。
 

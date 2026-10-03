@@ -11,6 +11,10 @@ on:
     - cron: '0 3 * * 1'
   workflow_dispatch:
   workflow_call:
+    inputs:
+      channel:
+        type: string
+        default: ''
     secrets:
       SEREIN_API_ID:
         required: false
@@ -49,10 +53,14 @@ jobs:
         env:
           SEREIN_API_ID: ${{ secrets.SEREIN_API_ID }}
           SEREIN_API_HASH: ${{ secrets.SEREIN_API_HASH }}
+          CHANNEL: ${{ inputs.channel }}
         run: |
           # Without the repository secrets, build with the test-only credentials.
           if [ -z "$SEREIN_API_ID" ]; then
             export SEREIN_API_TEST=1
+          fi
+          if [ -n "$CHANNEL" ]; then
+            export SEREIN_BUILD_PACKAGE=pacman SEREIN_BUILD_CHANNEL="$CHANNEL" SEREIN_BUILD_COMMIT="$GITHUB_SHA"
           fi
           useradd --create-home builder
           echo 'builder ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/builder
@@ -68,7 +76,7 @@ jobs:
           sed -i "s|git+https://github.com/eltavine/SereinGram.git#branch=develop|git+file://$GITHUB_WORKSPACE/SereinGram#commit=$GITHUB_SHA|" PKGBUILD
           grep -q "#commit=$GITHUB_SHA" PKGBUILD
           sudo -u builder \
-            --preserve-env=SEREIN_API_ID,SEREIN_API_HASH,SEREIN_API_TEST \
+            --preserve-env=SEREIN_API_ID,SEREIN_API_HASH,SEREIN_API_TEST,SEREIN_BUILD_PACKAGE,SEREIN_BUILD_CHANNEL,SEREIN_BUILD_COMMIT \
             makepkg --config "$config" --syncdeps --noconfirm
 
       - name: Install and check the package.

@@ -11,6 +11,10 @@ on:
     - cron: '0 1 * * 1'
   workflow_dispatch:
   workflow_call:
+    inputs:
+      channel:
+        type: string
+        default: ''
     secrets:
       SEREIN_API_ID:
         required: false
@@ -54,16 +58,22 @@ jobs:
           lvm-span-mountpoint: /var/snap/lxd/common/lxd/storage-pools/default/containers
 
       # The recipe never carries credentials; they are added to this copy only.
-      - name: Choose the API credentials.
+      - name: Choose the API credentials and the release channel.
         env:
           SEREIN_API_ID: ${{ secrets.SEREIN_API_ID }}
           SEREIN_API_HASH: ${{ secrets.SEREIN_API_HASH }}
+          CHANNEL: ${{ inputs.channel }}
         run: |
           if [ -n "$SEREIN_API_ID" ] && [ -n "$SEREIN_API_HASH" ]; then
             set -- "-DTDESKTOP_API_ID=$SEREIN_API_ID" "-DTDESKTOP_API_HASH=$SEREIN_API_HASH"
           else
             echo "::notice::The repository secrets are missing; building with the test-only credentials."
             set -- -DTDESKTOP_API_TEST=ON
+          fi
+          credentials=$#
+          if [ -n "$CHANNEL" ]; then
+            set -- "$@" -DSEREIN_BUILD_PACKAGE=snap \
+              "-DSEREIN_BUILD_CHANNEL=$CHANNEL" "-DSEREIN_BUILD_COMMIT=$GITHUB_SHA"
           fi
           # Every CMake part has the same install prefix line; only the app gets the flags.
           python3 - "$@" <<'EOF'
@@ -75,7 +85,8 @@ jobs:
           lines[prefix + 1:prefix + 1] = ["      - " + flag for flag in sys.argv[1:]]
           path.write_text("\n".join(lines))
           EOF
-          test "$(grep -c -e '-DTDESKTOP_API_' snap/snapcraft.yaml)" -eq "$#"
+          test "$(grep -c -e '-DTDESKTOP_API_' snap/snapcraft.yaml)" -eq "$credentials"
+          test "$(grep -c -e '-DSEREIN_BUILD_' snap/snapcraft.yaml)" -eq "$(($# - credentials))"
 
       # The recipe takes the snap version from `git describe --tags`; the tag stays local.
       - name: Tag the app version.

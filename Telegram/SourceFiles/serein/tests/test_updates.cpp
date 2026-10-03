@@ -92,6 +92,29 @@ TEST_CASE("UpdateManifest") {
 	}
 }
 
+TEST_CASE("UpdateLinuxInstall") {
+	const auto kind = [](
+			const char *package,
+			const char *directory,
+			bool appImage,
+			bool dpkg) {
+		return LinuxInstallKind({
+			.buildPackage = QString::fromLatin1(package),
+			.directory = QString::fromLatin1(directory),
+			.appImage = appImage,
+			.dpkg = dpkg,
+		});
+	};
+	CHECK(kind("snap", "/snap/sereingram/x1/usr/bin", false, true) == u"snap"_q);
+	CHECK(kind("pacman", "/usr/bin", false, false) == u"pacman"_q);
+	CHECK(kind("flatpak", "/app/bin", false, false) == u"flatpak"_q);
+	CHECK(kind("", "/tmp/.mount_Serein/usr/bin", true, true) == u"appimage"_q);
+	CHECK(kind("", "/usr/bin", false, true) == u"deb"_q);
+	CHECK(kind("", "/usr/bin", false, false) == u"rpm"_q);
+	CHECK(kind("", "/usr/local/bin", false, true) == u"portable"_q);
+	CHECK(kind("", "/home/user/Downloads", false, false) == u"portable"_q);
+}
+
 TEST_CASE("UpdateVersions") {
 	CHECK(IsNewer(u"v7.2.10.1"_q, u"7.2.10"_q));
 	CHECK(IsNewer(u"7.3"_q, u"7.2.10"_q));

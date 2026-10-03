@@ -92,6 +92,9 @@ jobs:
     secrets:
       SEREIN_API_ID: ${{ secrets.SEREIN_API_ID }}
       SEREIN_API_HASH: ${{ secrets.SEREIN_API_HASH }}
+    with:
+      ref: ${{ github.sha }}
+      channel: ${{ inputs.channel }}
 
   snap:
     name: Snap
@@ -99,6 +102,8 @@ jobs:
     secrets:
       SEREIN_API_ID: ${{ secrets.SEREIN_API_ID }}
       SEREIN_API_HASH: ${{ secrets.SEREIN_API_HASH }}
+    with:
+      channel: ${{ inputs.channel }}
 
   arch:
     name: Arch Linux
@@ -106,6 +111,8 @@ jobs:
     secrets:
       SEREIN_API_ID: ${{ secrets.SEREIN_API_ID }}
       SEREIN_API_HASH: ${{ secrets.SEREIN_API_HASH }}
+    with:
+      channel: ${{ inputs.channel }}
 
   nix:
     name: Nix

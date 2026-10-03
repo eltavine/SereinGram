@@ -34,6 +34,13 @@ struct InstallTarget {
 	QString kind;
 };
 
+struct LinuxInstall {
+	QString buildPackage;
+	QString directory;
+	bool appImage = false;
+	bool dpkg = false;
+};
+
 inline constexpr auto kManifestSchema = 1;
 
 [[nodiscard]] std::optional<ReleaseManifest> ParseManifest(
@@ -41,5 +48,6 @@ inline constexpr auto kManifestSchema = 1;
 [[nodiscard]] const ReleaseAsset *ChooseAsset(
 	const ReleaseManifest &manifest,
 	const InstallTarget &target);
+[[nodiscard]] QString LinuxInstallKind(const LinuxInstall &install);
 
 } // namespace Serein::Updates

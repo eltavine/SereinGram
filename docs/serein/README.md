@@ -46,7 +46,7 @@ Linux 发行版打包：
 - `flake.nix` 与 `packaging/nix/package.nix`：基于 nixpkgs 的 telegram-desktop 配方构建，CI 工作流 `serein-nix.yml` 在 x86_64 与 aarch64 上构建并启动。
 - `snap/snapcraft.yaml`：core24 上的 Snap 配方，CI 工作流 `serein-snap.yml` 构建、安装并启动；配方不含凭据，构建时才加入。
 - `tools/serein/linux_package_test.sh`：在 Ubuntu、Debian、Linux Mint、Fedora、openSUSE 与 Arch Linux 的容器中安装软件包并检查文件与动态库，镜像源的偶发故障会重试。
-- 打包者必须使用自己的 API 凭据：PKGBUILD 读取环境变量 `SEREIN_API_ID` 与 `SEREIN_API_HASH`，Flatpak 读取被忽略的 `Telegram/build/api_credentials.local.cmake`，Nix 包通过 `apiId` 与 `apiHash` 参数传入，Snap 在构建用的配方副本中加入；`check_packaging.py` 拒绝在已提交的配方中写入凭据；缺少凭据时构建报错。以系统库构建时不检查 GitHub 更新，由包管理器负责更新。
+- 打包者必须使用自己的 API 凭据：PKGBUILD 读取环境变量 `SEREIN_API_ID` 与 `SEREIN_API_HASH`，Flatpak 读取被忽略的 `Telegram/build/api_credentials.local.cmake`，Nix 包通过 `apiId` 与 `apiHash` 参数传入，Snap 在构建用的配方副本中加入；`check_packaging.py` 拒绝在已提交的配方中写入凭据；缺少凭据时构建报错。以系统库构建时不检查 GitHub 更新，由包管理器负责更新；CI 为 GitHub 发布构建的 Flatpak、Snap 与 Arch 软件包以 `SEREIN_BUILD_PACKAGE` 写入产物类型，仍检查 GitHub 更新。
 - `tools/serein/check_packaging.py` 要求两份配方锁定的依赖版本与 `snap/snapcraft.yaml` 一致。`upstream_sync.py` 合并上游后自动改写两份配方中 tdlib、tg_owt、tlottie 与 patches 的提交（也可运行 `check_packaging.py --update`）；Qt 版本变化需要新的源码包校验值，tlottie 提交变化需要重新生成 `tlottie-cargo-sources.yml`，这两项由检查报出后手动更新。
 
 ## 3. 标识与状态

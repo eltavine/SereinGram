@@ -18,6 +18,9 @@ on:
       ref:
         type: string
         default: ''
+      channel:
+        type: string
+        default: ''
     secrets:
       SEREIN_API_ID:
         required: false
@@ -64,10 +67,12 @@ jobs:
           ref: ${{ inputs.ref }}
           submodules: recursive
 
-      - name: Provide the API credentials.
+      - name: Provide the API credentials and the release channel.
         env:
           SEREIN_API_ID: ${{ secrets.SEREIN_API_ID }}
           SEREIN_API_HASH: ${{ secrets.SEREIN_API_HASH }}
+          CHANNEL: ${{ inputs.channel }}
+          COMMIT: ${{ inputs.ref || github.sha }}
         run: |
           file=Telegram/build/api_credentials.local.cmake
           if [ -n "$SEREIN_API_ID" ]; then
@@ -76,6 +81,12 @@ jobs:
           else
             # Without the repository secrets, build with the test-only credentials.
             echo 'set(TDESKTOP_API_TEST ON CACHE BOOL "" FORCE)' > "$file"
+          fi
+          if [ -n "$CHANNEL" ]; then
+            printf 'set(%s %s CACHE STRING "" FORCE)\n' \
+              SEREIN_BUILD_PACKAGE flatpak \
+              SEREIN_BUILD_CHANNEL "$CHANNEL" \
+              SEREIN_BUILD_COMMIT "$COMMIT" >> "$file"
           fi
 
       - name: Build the bundle.
