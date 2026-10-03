@@ -2,6 +2,7 @@
 
 #include "serein/chats/recent_tracking.h"
 
+#include "serein/hooks/interface/shortcuts.h"
 #include "serein/features/ghost/model/policy.h"
 #include "serein/privacy/options.h"
 #include "core/application.h"
@@ -71,3 +72,25 @@ void StartShortcuts() {
 }
 
 } // namespace Serein::App
+
+namespace Serein::Hooks {
+
+std::vector<ShortcutEntry> ShortcutEntries() {
+	using Command = Shortcuts::Command;
+	auto result = std::vector<ShortcutEntry>();
+	result.push_back({
+		Command::SereinToggleGhostMode,
+		tr::lng_serein_shortcut_ghost(),
+	});
+	result.push_back({
+		Command::SereinToggleDemoMode,
+		tr::lng_serein_shortcut_presentation(),
+	});
+	result.push_back({
+		Command::SereinRecentChats,
+		tr::lng_serein_shortcut_recent_chats(),
+	});
+	return result;
+}
+
+} // namespace Serein::Hooks

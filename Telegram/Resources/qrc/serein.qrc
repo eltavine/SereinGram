@@ -1,5 +1,12 @@
 <RCC>
   <qresource prefix="/serein">
+    <file alias="presets/catalog.json">../serein/presets/catalog.json</file>
+    <file alias="presets/clean.json">../serein/presets/clean.json</file>
+    <file alias="presets/privacy.json">../serein/presets/privacy.json</file>
+    <file alias="presets/history.json">../serein/presets/history.json</file>
+    <file alias="presets/reader.json">../serein/presets/reader.json</file>
+    <file alias="presets/details.json">../serein/presets/details.json</file>
+    <file alias="presets/chinese.json">../serein/presets/chinese.json</file>
     <file alias="regdate_points.json">../serein/regdate_points.json</file>
     <file alias="licenses/regdate_points.txt">../serein/regdate_points.LICENSE</file>
     <file alias="licenses/rapidjson.txt">../serein/licenses/rapidjson.txt</file>

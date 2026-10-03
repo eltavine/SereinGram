@@ -48,6 +48,7 @@ target_compile_definitions(test_serein PRIVATE
     SEREIN_LANG_SOURCE_DIR="${lib_loc}/Resources/langs"
     SEREIN_OPENCC_DICTIONARY_DIR="${lib_loc}/ThirdParty/OpenCC/data/dictionary"
     SEREIN_REGDATE_POINTS="${lib_loc}/Resources/serein/regdate_points.json"
+    SEREIN_PRESETS_DIR="${lib_loc}/Resources/serein/presets"
     SEREIN_HAVE_QT_SQL
 )
 

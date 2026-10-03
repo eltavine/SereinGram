@@ -13,6 +13,7 @@
 #include "serein/schema/gen/settings/privacy.h"
 #include "serein/schema/gen/settings/services.h"
 #include "serein/schema/gen/settings/snapshot.h"
+#include "serein/tests/full_registry.h"
 #include "serein/tests/require.h"
 
 #include <doctest/doctest.h>
@@ -62,20 +63,7 @@ void RequireKey(bool value, const char *message, std::string_view key) {
 
 TEST_CASE("NeutralDefaults") {
 	using namespace Serein;
-	auto registry = Registry();
-	Chats::RegisterOptions(registry);
-	Compose::RegisterOptions(registry);
-	Filters::RegisterOptions(registry);
-	Ghost::RegisterOptions(registry);
-	HistorySettings::RegisterOptions(registry);
-	Interface::RegisterOptions(registry);
-	Links::RegisterOptions(registry);
-	Media::RegisterOptions(registry);
-	Menu::RegisterOptions(registry);
-	Messages::RegisterOptions(registry);
-	Privacy::RegisterOptions(registry);
-	ServiceSettings::RegisterOptions(registry);
-	Snapshot::RegisterOptions(registry);
+	const auto registry = Tests::FullRegistry();
 	auto inert = std::size_t();
 	for (const auto &entry : registry.All()) {
 		const auto listed = kInertDefaults.contains(entry.key);

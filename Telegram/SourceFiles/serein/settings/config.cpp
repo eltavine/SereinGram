@@ -1,4 +1,5 @@
 #include "serein/settings/config.h"
+#include "serein/settings/exchange_preview.h"
 
 #include "serein/core/exchange.h"
 #include "serein/hooks/core/language.h"
@@ -56,12 +57,12 @@ public:
 
 };
 
-QString Title(const OptionInfo &info) {
-	const auto key = QByteArray(info.titleKey.data(), info.titleKey.size());
-	const auto index = Lang::GetKeyIndex(QLatin1String(key));
-	return (index == Lang::kKeysCount)
-		? QString::fromUtf8(key)
-		: LocalizedValue(Lang::GetInstance(), index);
+[[nodiscard]] ExchangeExport ExportAll(
+		not_null<Window::SessionController*> controller) {
+	return Exchange::Export(
+		ForDevice(),
+		AccountOptions(controller),
+		RegisteredOptions());
 }
 
 Settings::Type CategorySection(Category category) {
@@ -79,54 +80,26 @@ Settings::Type CategorySection(Category category) {
 	Unexpected("Invalid Serein option category.");
 }
 
-void AddText(not_null<Ui::GenericBox*> box, const QString &text) {
-	const auto label = box->addRow(object_ptr<Ui::FlatLabel>(
-		box, text, st::boxLabel));
-	label->setSelectable(true);
-	label->setBreakEverywhere(true);
-}
-
-QString ValueText(const OptionInfo &info, const QByteArray &raw) {
-	const auto value = raw.isEmpty() ? info.fallbackRaw : raw;
-	if (info.type == OptionInfo::ValueType::Boolean) {
-		return (value == "1")
-			? tr::lng_serein_config_on(tr::now)
-			: tr::lng_serein_config_off(tr::now);
-	}
-	auto result = (info.type == OptionInfo::ValueType::String)
-		? QString::fromUtf8(value.mid(1))
-		: QString::fromUtf8(value);
-	constexpr auto kPreviewLength = 120;
-	if (result.size() > kPreviewLength) {
-		result.truncate(kPreviewLength);
-		if (result.back().isHighSurrogate()) {
-			result.chop(1);
-		}
-		result += QChar(0x2026);
-	}
-	return result;
-}
-
 void ShowModified(not_null<Window::SessionController*> controller) {
-	const auto exported = Exchange::Export(ForDevice(), RegisteredOptions());
-	const auto values = QJsonDocument::fromJson(exported.data
-		).object().value(u"options"_q).toObject();
+	const auto root = QJsonDocument::fromJson(ExportAll(controller).data).object();
+	auto keys = root.value(u"options"_q).toObject().keys();
+	keys += root.value(u"account"_q).toObject().keys();
 	const auto entries = SearchRegistry::Instance().collectAll(
 		&controller->session());
 	controller->show(Box([=](not_null<Ui::GenericBox*> box) {
 		box->setTitle(tr::lng_serein_config_modified());
-		AddText(box, tr::lng_serein_config_modified_about(tr::now));
-		if (values.isEmpty()) {
-			AddText(box, tr::lng_serein_config_no_changes(tr::now));
+		AddSelectableText(box, tr::lng_serein_config_modified_about(tr::now));
+		if (keys.isEmpty()) {
+			AddSelectableText(box, tr::lng_serein_config_no_changes(tr::now));
 		}
-		for (auto i = values.begin(); i != values.end(); ++i) {
-			const auto encodedKey = i.key().toUtf8();
+		for (const auto &key : keys) {
+			const auto encodedKey = key.toUtf8();
 			const auto info = RegisteredOptions().Find(std::string_view(
 				encodedKey.constData(), encodedKey.size()));
 			if (!info) {
 				continue;
 			}
-			const auto title = Title(*info);
+			const auto title = OptionTitle(*info);
 			const auto fallback = CategorySection(info->category);
 			const auto found = ranges::find_if(entries, [&](const SearchEntry &entry) {
 				return entry.section == fallback && entry.title == title;
@@ -135,7 +108,7 @@ void ShowModified(not_null<Window::SessionController*> controller) {
 				? found->section : fallback;
 			const auto id = (found != entries.end()) ? found->id : QString();
 			const auto button = box->addRow(object_ptr<Ui::SettingsButton>(
-				box, rpl::single(title), st::settingsButtonNoIcon));
+				box, rpl::single(ScopedOptionTitle(*info)), st::settingsButtonNoIcon));
 			button->setClickedCallback(crl::guard(controller, [=] {
 				box->closeBox();
 				if (!id.isEmpty()) {
@@ -148,73 +121,16 @@ void ShowModified(not_null<Window::SessionController*> controller) {
 	}));
 }
 
-struct PlanTexts {
-	tr::phrase<> title;
-	tr::phrase<> about;
-	tr::phrase<> apply;
-	tr::phrase<> done;
-};
-
-void ShowPlan(
-		not_null<Window::SessionController*> controller,
-		const ExchangePlan &plan,
-		const PlanTexts &texts) {
-	if (!plan.error.isEmpty()) {
-		controller->showToast(plan.error);
-		return;
-	}
-	controller->show(Box([=](not_null<Ui::GenericBox*> box) {
-		box->setTitle(texts.title());
-		AddText(box, texts.about(tr::now));
-		AddText(box, tr::lng_serein_config_changes(
-			tr::now, lt_amount, QString::number(plan.changes.size())));
-		for (const auto &change : plan.changes) {
-			const auto encodedKey = change.key.toUtf8();
-			const auto info = RegisteredOptions().Find(std::string_view(
-				encodedKey.constData(), encodedKey.size()));
-			if (info) {
-				AddText(box, Title(*info) + u"\n"_q
-					+ ValueText(*info, change.before)
-					+ u" → "_q + ValueText(*info, change.after));
-			}
-		}
-		if (!plan.skippedKeys.isEmpty()) {
-			AddText(box, tr::lng_serein_config_unknown(
-				tr::now, lt_amount, QString::number(plan.skippedKeys.size()))
-				+ u"\n"_q + plan.skippedKeys.mid(0, 20).join('\n'));
-		}
-		if (!plan.changes.empty()) {
-			box->addButton(texts.apply(),
-				crl::guard(controller, [=] {
-					const auto result = Exchange::Apply(
-						ForDevice(), RegisteredOptions(), plan);
-					if (!result.applied) {
-						box->showToast(result.error);
-						return;
-					}
-					box->closeBox();
-					controller->showToast(texts.done(tr::now));
-					if (ranges::any_of(plan.changes, [](const ExchangeChange &change) {
-						const auto key = change.key.toUtf8();
-						const auto info = RegisteredOptions().Find(std::string_view(
-							key.constData(), key.size()));
-						return info && (info->flags
-							& static_cast<unsigned>(Flag::RequiresRestart));
-					})) {
-						ShowRestartPrompt(controller);
-					}
-				}));
-		}
-		box->addButton(tr::lng_cancel(), [=] { box->closeBox(); });
-	}));
-}
-
 void ShowImport(
 		not_null<Window::SessionController*> controller,
 		const QByteArray &bytes) {
-	ShowPlan(
+	ShowExchangePreview(
 		controller,
-		Exchange::PlanImport(ForDevice(), RegisteredOptions(), bytes),
+		Exchange::PlanImport(
+			ForDevice(),
+			AccountOptions(controller),
+			RegisteredOptions(),
+			bytes),
 		{
 			.title = tr::lng_serein_config_preview,
 			.about = tr::lng_serein_config_import_about,
@@ -224,12 +140,15 @@ void ShowImport(
 }
 
 void ShowReset(not_null<Window::SessionController*> controller) {
-	const auto plan = Exchange::PlanReset(ForDevice(), RegisteredOptions());
+	const auto plan = Exchange::PlanReset(
+		ForDevice(),
+		AccountOptions(controller),
+		RegisteredOptions());
 	if (plan.error.isEmpty() && plan.changes.empty()) {
 		controller->showToast(tr::lng_serein_config_no_changes(tr::now));
 		return;
 	}
-	ShowPlan(controller, plan, {
+	ShowExchangePreview(controller, plan, {
 		.title = tr::lng_serein_config_reset,
 		.about = tr::lng_serein_config_reset_about,
 		.apply = tr::lng_serein_config_reset_apply,
@@ -238,7 +157,7 @@ void ShowReset(not_null<Window::SessionController*> controller) {
 }
 
 void Export(not_null<Window::SessionController*> controller) {
-	const auto exported = Exchange::Export(ForDevice(), RegisteredOptions());
+	const auto exported = ExportAll(controller);
 	if (!exported.invalidKeys.isEmpty()) {
 		controller->showToast(tr::lng_serein_config_invalid(tr::now));
 		return;
@@ -263,7 +182,7 @@ void Import(not_null<Window::SessionController*> controller) {
 }
 
 void BackUp(not_null<Window::SessionController*> controller) {
-	const auto exported = Exchange::Export(ForDevice(), RegisteredOptions());
+	const auto exported = ExportAll(controller);
 	if (!exported.invalidKeys.isEmpty()) {
 		controller->showToast(tr::lng_serein_config_invalid(tr::now));
 		return;

@@ -158,4 +158,12 @@ rpl::producer<bool> CheckUpdatesValue() {
 	return ForDevice().Value(Serein::Interface::kCheckUpdates);
 }
 
+bool PresetsOffered() {
+	return ForDevice().Get(Serein::Interface::kPresetsOffered);
+}
+
+rpl::producer<bool> PresetsOfferedValue() {
+	return ForDevice().Value(Serein::Interface::kPresetsOffered);
+}
+
 } // namespace Serein::Hooks::Interface

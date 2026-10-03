@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "options": {
+    "serein.searchOwnChatsOnly": true,
+    "serein.hideSharePhonePrompt": true,
+    "serein.showSessionDetails": true
+  },
+  "account": {
+    "serein.ghostMode": true
+  }
+}

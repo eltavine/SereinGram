@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "options": {},
+  "account": {
+    "serein.historySaveDeleted": true,
+    "serein.historyKeepDeletedInPlace": true,
+    "serein.historySaveEdits": true,
+    "serein.historyKeepExpiredMedia": true
+  }
+}

@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "settings/sections/settings_shortcuts.h"
+#include "serein/hooks/interface/shortcuts.h"
 
 #include "base/event_filter.h"
 #include "core/application.h"
@@ -198,7 +199,7 @@ struct SetupShortcutsResult {
 		Fn<void(S::Command command)> showMenuFor;
 	};
 	const auto state = content->lifetime().make_state<State>();
-	const auto labeled = Entries();
+	const auto labeled = Serein::Hooks::WithShortcutEntries(Entries());
 	auto &entries = state->entries = ranges::views::all(
 		labeled
 	) | ranges::views::transform([](Labeled labeled) {

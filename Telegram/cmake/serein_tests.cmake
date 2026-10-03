@@ -4,6 +4,8 @@ set(serein_test_sources
     serein/tests/test_main.cpp
     serein/tests/test_lang.cpp
     serein/tests/test_options.cpp
+    serein/tests/test_exchange.cpp
+    serein/tests/test_presets.cpp
     serein/tests/test_spacing.cpp
     serein/tests/test_services.cpp
     serein/tests/test_updates.cpp
@@ -49,6 +51,7 @@ set(serein_test_sources
     serein/adapters/openssl/aes_gcm_cipher.cpp
     serein/features/ghost/model/policy.cpp
     serein/features/ghost/model/exceptions.cpp
+    serein/features/presets/model/catalog.cpp
     serein/features/history/entities.cpp
     serein/display/text_entities.cpp
     serein/features/history/media_store.cpp

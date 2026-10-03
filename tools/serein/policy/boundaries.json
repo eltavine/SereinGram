@@ -330,6 +330,7 @@
         "serein/compose/",
         "serein/features/ghost/model/",
         "serein/features/history/",
+        "serein/features/presets/model/",
         "serein/filters/",
         "serein/interface/",
         "serein/links/",
@@ -365,6 +366,13 @@
         "serein/"
       ],
       "app": true,
+      "libraries": true
+    },
+    "serein/features/presets/model/": {
+      "own": [
+        "serein/features/presets/model/"
+      ],
+      "app": false,
       "libraries": true
     }
   }

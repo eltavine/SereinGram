@@ -15,6 +15,7 @@
 #include "serein/schema/gen/settings/ghost.h"
 #include "serein/schema/gen/settings/history.h"
 #include "serein/hooks/messages/time_format.h"
+#include "serein/tests/memory_prefs.h"
 #include "serein/tests/require.h"
 
 #include <doctest/doctest.h>
@@ -30,22 +31,7 @@
 
 namespace {
 
-class MemoryPrefs final : public Serein::RawPrefs {
-public:
-	[[nodiscard]] QByteArray read(std::string_view key) override {
-		const auto found = values.find(std::string(key));
-		return (found == values.end()) ? QByteArray() : found->second;
-	}
-	void write(std::string_view key, const QByteArray &value) override {
-		values[std::string(key)] = value;
-	}
-	void clear(std::string_view key) override {
-		values.erase(std::string(key));
-	}
-
-	std::map<std::string, QByteArray> values;
-
-};
+using Serein::Tests::MemoryPrefs;
 
 [[nodiscard]] bool ValidPercent(const int &value) {
 	return value >= 0 && value <= 100;
@@ -201,7 +187,10 @@ TEST_CASE("Options") {
 		Flag::RefreshDialogList), "stories use widget refresh");
 	auto interface = Registry();
 	Interface::RegisterOptions(interface);
-	Require(interface.All().size() == 19, "interface option count");
+	Require(interface.All().size() == 20, "interface option count");
+	Require(interface.HasFlag(Interface::kPresetsOffered.key, Flag::Hidden)
+		&& Interface::kPresetsOffered.scope == Scope::Device,
+		"the preset offer must stay internal device state");
 	Require(!Interface::kMoreAccounts.fallback
 		&& Interface::kMoreAccounts.scope == Scope::Device,
 		"more accounts must be a device opt-in");

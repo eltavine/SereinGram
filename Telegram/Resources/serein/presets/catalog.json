@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "presets": [
+    "clean",
+    "privacy",
+    "history",
+    "reader",
+    "details",
+    "chinese"
+  ]
+}

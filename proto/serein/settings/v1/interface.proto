@@ -225,4 +225,5 @@ message InterfaceSettings {
     default_bool: true
     custom_ui: true
   }];
+  optional bool presets_offered = 20 [(serein.options.v1.field) = {hidden: true}];
 }

@@ -23,6 +23,7 @@ set(serein_sources
     serein/schema/codec.cpp
     serein/features/ghost/model/policy.cpp
     serein/features/ghost/model/exceptions.cpp
+    serein/features/presets/model/catalog.cpp
     serein/features/history/deleted_marks.cpp
     serein/features/history/media_store.cpp
     serein/features/history/model/recorder.cpp
@@ -168,6 +169,8 @@ set(serein_sources
     serein/settings/compose.cpp
     serein/settings/cloud_backup.cpp
     serein/settings/config.cpp
+    serein/settings/exchange_preview.cpp
+    serein/settings/presets.cpp
     serein/settings/media.cpp
     serein/settings/menu.cpp
     serein/settings/privacy.cpp
@@ -398,6 +401,7 @@ if (DESKTOP_APP_TEST_APPS)
         SEREIN_LANG_SOURCE_DIR="${res_loc}/langs"
         SEREIN_OPENCC_DICTIONARY_DIR="${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/OpenCC/data/dictionary"
         SEREIN_REGDATE_POINTS="${res_loc}/serein/regdate_points.json"
+        SEREIN_PRESETS_DIR="${res_loc}/serein/presets"
     )
 
     set_target_properties(test_serein PROPERTIES

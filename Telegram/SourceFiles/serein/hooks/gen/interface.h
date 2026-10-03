@@ -44,5 +44,7 @@ namespace Serein::Hooks::Interface {
 [[nodiscard]] rpl::producer<bool> MoreAccountsValue();
 [[nodiscard]] bool CheckUpdates();
 [[nodiscard]] rpl::producer<bool> CheckUpdatesValue();
+[[nodiscard]] bool PresetsOffered();
+[[nodiscard]] rpl::producer<bool> PresetsOfferedValue();
 
 } // namespace Serein::Hooks::Interface

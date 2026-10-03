@@ -9,8 +9,12 @@
 #include "serein/settings/media.h"
 #include "serein/settings/privacy.h"
 #include "serein/settings/services.h"
+#include "serein/settings/presets.h"
 #include "serein/settings/rules.h"
+#include "serein/settings/subpages.h"
 #include "serein/settings/page.h"
+#include "serein/settings/gen/ghost_rows.h"
+#include "serein/settings/gen/history_rows.h"
 
 #include "boxes/about_box.h"
 #include "core/click_handler_types.h"
@@ -41,6 +45,62 @@ public:
 
 };
 
+[[nodiscard]] rpl::producer<QString> StateLabel(rpl::producer<bool> on) {
+	return rpl::conditional(
+		std::move(on),
+		tr::lng_serein_config_on(),
+		tr::lng_serein_config_off());
+}
+
+void AddFeatured(SectionBuilder &builder) {
+	using namespace rpl::mappers;
+	const auto controller = builder.controller();
+	auto &account = ForAccount(builder.session());
+	builder.addButton({
+		.id = u"serein/home/ghost"_q,
+		.title = (*Ghost::kSubpageTitle)(),
+		.icon = { Ghost::kSubpageIcon },
+		.label = StateLabel(rpl::combine(
+			account.Value(Ghost::kGhostMode),
+			ForDevice().Value(Ghost::kGhostAllAccounts)) | rpl::map(_1 || _2)),
+		.onClick = [=] {
+			if (controller) {
+				controller->showSettings(GhostId());
+			}
+		},
+		.keywords = { u"ghost"_q, u"stealth"_q, u"online"_q, u"read"_q },
+	});
+	builder.addButton({
+		.id = u"serein/home/history"_q,
+		.title = (*HistorySettings::kSubpageTitle)(),
+		.icon = { HistorySettings::kSubpageIcon },
+		.label = StateLabel(rpl::combine(
+			account.Value(HistorySettings::kHistorySaveDeleted),
+			account.Value(HistorySettings::kHistorySaveEdits)
+		) | rpl::map(_1 || _2)),
+		.onClick = [=] {
+			if (controller) {
+				controller->showSettings(HistoryId());
+			}
+		},
+		.keywords = { u"deleted"_q, u"edited"_q, u"history"_q },
+	});
+	builder.addButton({
+		.id = u"serein/home/presets"_q,
+		.title = tr::lng_serein_presets(),
+		.icon = { &st::menuIconCustomize },
+		.onClick = [=] {
+			if (controller) {
+				Presets::ShowPresets(controller);
+			}
+		},
+		.keywords = { u"preset"_q, u"setup"_q, u"quick"_q },
+	});
+	if (controller) {
+		crl::on_main(controller, [=] { Presets::OfferPresetsOnce(controller); });
+	}
+}
+
 const auto kMeta = BuildHelper({
 	.id = Home::Id(),
 	.parentId = MainId(),
@@ -70,6 +130,9 @@ const auto kMeta = BuildHelper({
 			}
 		},
 	});
+	builder.addDivider();
+	AddFeatured(builder);
+	builder.addDivider();
 	builder.addSectionButton({
 		.title = tr::lng_serein_interface(),
 		.targetSection = InterfaceId(),

@@ -161,6 +161,13 @@ inline constexpr auto kCheckUpdates = Option<bool>{
 	Category::Interface,
 	"lng_serein_check_updates",
 	0 };
+inline constexpr auto kPresetsOffered = Option<bool>{
+	"serein.presetsOffered",
+	Scope::Device,
+	false,
+	Category::Interface,
+	"lng_serein_presets_offered",
+	static_cast<unsigned>(Flag::Hidden) };
 
 inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kBubbleRoundness));
@@ -182,6 +189,7 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kHalfwidthUiPunctuation));
 	Expects(registry.Add(kMoreAccounts));
 	Expects(registry.Add(kCheckUpdates));
+	Expects(registry.Add(kPresetsOffered));
 }
 
 } // namespace Serein::Interface

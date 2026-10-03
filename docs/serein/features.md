@@ -52,10 +52,12 @@ Nagram 的品牌政策要求分支使用不同品牌并替换 Nagram 名称与�
 | SG-CORE-05 | 功能模块注册与生命周期（应用、会话、窗口作用域）：应用与会话作用域已由 `serein/app/modules.cpp` 模块表统一分发（对话排序已从上游窗口构造函数移到会话作用域）；窗口作用域由 `Serein::Hooks::OnWindowStarted` 分发，首个使用者是最近会话记录；主菜单条目统一由 `Serein::Hooks::FillMainMenu` 添加 | D | Implemented | P0 |
 | SG-CORE-06 | 设置页与搜索索引由 schema 元数据生成（开关、选项、数值、文本、子页）：开关行、小标题、说明、依赖开关与自定义行位置已由 proto 生成 `AddLayout`，界面、聊天、消息、写作、菜单、媒体、隐私（含幽灵与历史）与服务八页已迁移（服务页的普通开关与说明由生成器产生，来源选择、系统 AI、服务列表、代理工具与 DoH 为自定义行）；数值输入行（范围取自 gte/lte 规则，0 的文字与复数格式由 `number` 选项声明）已生成；单选行（按序语言键或 `in` 规则加后缀）已生成；文本行（`text` 选项声明占位语言键，未设置时行标签显示占位文字，`disabled_by` 使该行在对应开关打开时隐藏）已生成，“已编辑/已删除标记文字”已改用生成行；子页由页面选项 `subpage` 声明标题、图标与搜索关键词，生成父页上的入口按钮 `AddSubpageButton` 以及分区标题、图标常量，分区类本身沿用各页相同的手写样板；幽灵模式与“已删除与已编辑消息”已拆成隐私页下的子页 | D | Implemented | P0 |
 | SG-CORE-07 | 英文、简体、繁体内置文案与一致性检查 | Ni Na | Implemented | P0 |
-| SG-CORE-08 | 配置管理：已修改项、导出、导入差异预览、诊断信息（J01–J04）；“备份到收藏夹”把本设备设置的导出文件 `sereingram-settings.json` 带固定标签发送到收藏夹，“从收藏夹恢复”按标签搜索收藏夹中的文档、取最新的同名备份下载后进入同一个导入差异预览，换设备时不必重新配置，系统凭据库中的密钥不在其中；“恢复默认设置”先列出本设备上所有已修改的可导出设置及其当前值，确认后一次恢复为默认值，按账号保存的设置不受影响 | Ni Na | Implemented | P1 |
+| SG-CORE-08 | 配置管理：已修改项、导出、导入差异预览、诊断信息（J01–J04）；导出、备份与恢复包含本设备的设置和当前账号的设置（幽灵模式、消息历史、过滤规则等，按账号保存的内部状态除外）：只有本设备设置时导出文件仍是第 1 版格式，含账号设置时为第 2 版并多一个 `account` 部分，导入同时接受两版，账号部分只写入当前账号，导入预览中账号设置标注“（本账号）”；“备份到收藏夹”把导出文件 `sereingram-settings.json` 带固定标签发送到收藏夹，“从收藏夹恢复”按标签搜索收藏夹中的文档、取最新的同名备份下载后进入同一个导入差异预览，换设备时不必重新配置，系统凭据库中的密钥不在其中；“恢复默认设置”先列出本设备与当前账号所有已修改的可导出设置及其当前值，确认后一次恢复为默认值，其他账号的设置不受影响 | Ni Na | Implemented | P1 |
 | SG-CORE-09 | 守卫：源文件 ≤ 1000 行、模块依赖方向、上游侵入预算、生成代码漂移 | D | Implemented | P0 |
 | SG-CORE-10 | 测试：纯逻辑单元测试与 `-testagent` 界面场景（核心测试基于 doctest，每个测试文件用 `TEST_CASE` 自注册，用例单独报告并可按名称筛选） | D | Implemented | P0 |
 | SG-CORE-11 | 更多界面语言的社区翻译平台接入（Serein 字符串按界面语言加载任意 `langs/serein/<语言代码>.strings`，缺失的键回退英文，CMake 扫描目录自动生成资源清单；核心测试要求中文译文完整、其他译文的键与占位符与英文一致；`crowdin.yml` 与同步工作流 `serein-crowdin.yml` 已就绪：在 GitHub Secrets 中配置 Crowdin 项目 ID 与访问令牌后，英文源文件改动时上传，每周下载译文并向 develop 提交 PR） | Ad Na | Implemented | P3 |
+| SG-CORE-12 | 一键预设与首次引导（SereinGram 设置首页“快速设置”列出预设：清爽界面、隐私优先、保留删除与编辑记录、频道阅读、技术细节、中文排版；每套预设是 `Telegram/Resources/serein/presets/` 中与导出文件同格式的 JSON，目录由 `catalog.json` 列出，标题与说明取自 `lng_serein_preset_<id>` 文案，新增预设无需改代码；套用时走与导入相同的差异预览，确认后才写入，已全部生效时直接提示；第一次打开 SereinGram 设置时弹出一次欢迎框说明默认全部关闭并可选择预设，是否已提示记在本设备的内部设置中；核心测试逐个用完整的选项注册表预演每套预设，键名失效、取值不合法或缺少三语文案都会失败） | D | Implemented | P1 |
+| SG-CORE-13 | 设置首页常用入口（SereinGram 设置首页直接列出“幽灵模式”与“已删除与已编辑消息”，右侧显示当前账号的开启状态并随设置变化更新，点击进入对应子页） | D | Implemented | P1 |
 
 ## GHOST 幽灵模式
 
@@ -112,7 +114,7 @@ Nagram 的品牌政策要求分支使用不同品牌并替换 Nagram 名称与�
 | ID | 功能 | 来源 | 状态 | 优先级 |
 | --- | --- | --- | --- | --- |
 | SG-PRIV-01 | 主播模式：截屏录屏排除窗口，遮盖会话列表、标题与通知（G02） | Ad Ni | Implemented | P1 |
-| SG-PRIV-02 | 主播模式快捷键与菜单、托盘入口（主菜单开关与托盘菜单“开启/关闭演示模式”已接入，随界面设置“主菜单与托盘菜单中的 SereinGram 快捷入口”出现，该设置默认关闭；托盘项由 `serein/app/tray_menu.cpp` 提供；快捷键命令 `serein_toggle_presentation_mode` 与 `serein_toggle_ghost_mode` 默认不绑定按键，可在 `shortcuts-custom.json` 中绑定，切换后提示当前状态） | Ad | Implemented | P1 |
+| SG-PRIV-02 | 主播模式快捷键与菜单、托盘入口（主菜单开关与托盘菜单“开启/关闭演示模式”已接入，随界面设置“主菜单与托盘菜单中的 SereinGram 快捷入口”出现，该设置默认关闭；托盘项由 `serein/app/tray_menu.cpp` 提供；快捷键命令 `serein_toggle_presentation_mode`、`serein_toggle_ghost_mode` 与 `serein_recent_chats` 默认不绑定按键，列在 Telegram 设置的“快捷键”页末尾，可直接录制按键（也可在 `shortcuts-custom.json` 中绑定），切换后提示当前状态） | Ad | Implemented | P1 |
 | SG-PRIV-03 | 遮盖本机手机号（G01） | Ni Na | Implemented | P1 |
 | SG-PRIV-04 | 本地备注名称（隐私设置“对话本地名称”默认关闭；开启后资料菜单出现“设置本地名称”，本地名称替换用户、群组与频道在本设备上的显示；关闭时保留已保存的名称但不显示，切换时刷新已加载对象的名称） | Ni | Implemented | P2 |
 | SG-PRIV-05 | 默认隐藏赞助消息与代理赞助频道（B10、B11） | Ad Ni | Implemented | P1 |
