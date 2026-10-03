@@ -100,8 +100,9 @@ jobs:
       # Not CONFIG: MSYS2's pacman-key reads that variable as its config file.
       BUILD_CONFIG: ${{ inputs.config || 'Debug' }}
       ASSET_ARCH: ${{ (inputs.arch || 'x64') == 'arm64' && 'arm64' || 'x86_64' }}
-      # Only these runs write caches: every branch and pull request can read the default branch's.
-      SAVE_CACHE: ${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
+      # WHY: only default-branch runs write caches, which every branch and pull request can read.
+      # A schedule event has no repository payload, but scheduled runs only start on the default branch.
+      SAVE_CACHE: ${{ github.event_name == 'schedule' || github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
       PREPARE_PATH: "Telegram/build/prepare/prepare.py"
 
     defaults:
