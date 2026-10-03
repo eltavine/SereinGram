@@ -65,15 +65,15 @@ void SendTranslationsBox(
 
 void AddSendTranslations(::Settings::Builder::SectionBuilder &builder) {
 	const auto controller = builder.controller();
+	const auto session = builder.session();
 	builder.addButton({
 		.id = u"serein/services/send-translation"_q,
 		.title = tr::lng_serein_send_translation(),
 		.st = &st::settingsButtonNoIcon,
-		.label = ForAccount(&controller->session()).Value(
+		.label = ForAccount(session).Value(
 			ServiceSettings::kSendTranslations
 		) | rpl::map([=](const QByteArray &) {
-			const auto count = SendTranslationPeers(
-				&controller->session()).size();
+			const auto count = SendTranslationPeers(session).size();
 			return count
 				? QString::number(count)
 				: tr::lng_serein_config_off(tr::now);

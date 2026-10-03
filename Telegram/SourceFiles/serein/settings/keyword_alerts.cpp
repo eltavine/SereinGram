@@ -97,7 +97,7 @@ void KeywordAlertsBox(
 
 void AddKeywordAlerts(::Settings::Builder::SectionBuilder &builder) {
 	const auto controller = builder.controller();
-	const auto session = &controller->session();
+	const auto session = builder.session();
 	builder.addButton({
 		.id = u"serein/rules/keyword-alerts"_q,
 		.title = tr::lng_serein_keyword_alerts(),

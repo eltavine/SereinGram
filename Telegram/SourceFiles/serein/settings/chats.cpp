@@ -160,7 +160,7 @@ const auto kMeta = BuildHelper({
 	const auto controller = builder.controller();
 	Chats::AddLayout(builder, {
 		.startupFolderMode = [&] {
-			const auto session = &controller->session();
+			const auto session = builder.session();
 			builder.addButton({
 				.id = u"serein/chats/startup-folder"_q,
 				.title = tr::lng_serein_startup_folder(),
@@ -195,7 +195,7 @@ const auto kMeta = BuildHelper({
 			});
 		},
 		.hiddenFolderIds = [&] {
-			const auto session = &controller->session();
+			const auto session = builder.session();
 			builder.addButton({
 				.id = u"serein/chats/hidden-folders"_q,
 				.title = tr::lng_serein_hidden_folders(),

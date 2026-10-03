@@ -65,7 +65,7 @@ void ReadExceptionsBox(
 
 void AddReadExceptionsRow(::Settings::Builder::SectionBuilder &builder) {
 	const auto controller = builder.controller();
-	const auto session = &controller->session();
+	const auto session = builder.session();
 	builder.addButton({
 		.id = u"serein/ghost/read-exceptions"_q,
 		.title = tr::lng_serein_ghost_read_exceptions(),

@@ -67,6 +67,9 @@ jobs:
       - name: Module boundaries hold.
         run: python3 tools/serein/check_boundaries.py
 
+      - name: Settings sections build for the settings search.
+        run: python3 tools/serein/check_settings_index.py
+
       - name: Feature matrix uses defined statuses.
         run: python3 tools/serein/check_features.py
 
