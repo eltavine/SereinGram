@@ -17,6 +17,7 @@ set(serein_sources
     serein/compose/validators.cpp
     serein/app/language.cpp
     serein/core/exchange.cpp
+    serein/core/patterns.cpp
     serein/core/id_list.cpp
     serein/app/options.cpp
     serein/adapters/tdesktop/prefs.cpp

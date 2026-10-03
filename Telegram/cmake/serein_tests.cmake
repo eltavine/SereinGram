@@ -80,6 +80,7 @@ set(serein_test_sources
     serein/privacy/qr_decode.cpp
     serein/compose/validators.cpp
     serein/core/exchange.cpp
+    serein/core/patterns.cpp
     serein/core/id_list.cpp
     serein/interface/main_menu_model.cpp
     serein/interface/punctuation.cpp
