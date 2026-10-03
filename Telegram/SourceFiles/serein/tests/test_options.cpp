@@ -187,7 +187,10 @@ TEST_CASE("Options") {
 		Flag::RefreshDialogList), "stories use widget refresh");
 	auto interface = Registry();
 	Interface::RegisterOptions(interface);
-	Require(interface.All().size() == 20, "interface option count");
+	Require(interface.All().size() == 21, "interface option count");
+	Require(interface.HasFlag(Interface::kQuietHours.key, Flag::Exportable)
+		&& Interface::kQuietHours.fallback.isEmpty(),
+		"quiet hours must start off and travel with exported settings");
 	Require(interface.HasFlag(Interface::kPresetsOffered.key, Flag::Hidden)
 		&& Interface::kPresetsOffered.scope == Scope::Device,
 		"the preset offer must stay internal device state");

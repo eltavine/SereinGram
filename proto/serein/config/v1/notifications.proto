@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package serein.config.v1;
+
+import "buf/validate/validate.proto";
+import "serein/options/v1/options.proto";
+
+option (serein.options.v1.file) = {cpp_namespace: "Notifications"};
+
+// A daily period without notifications; a period that ends before it starts
+// runs past midnight and belongs to the day on which it starts.
+message QuietHours {
+  option (serein.options.v1.document) = {
+    version: 1
+    validator: "ValidQuietHours"
+  };
+  option (serein.options.v1.codec) = {require_fields: true};
+
+  bool enabled = 1;
+  int32 start_minute = 2 [(buf.validate.field).int32 = {
+    gte: 0
+    lte: 1439
+  }];
+  int32 end_minute = 3 [(buf.validate.field).int32 = {
+    gte: 0
+    lte: 1439
+  }];
+  // ISO weekdays from 1 (Monday) to 7; empty means every day.
+  repeated int32 weekdays = 4 [(buf.validate.field).repeated.max_items = 7];
+  bool allow_contacts = 5;
+  bool allow_pinned = 6;
+  bool allow_mentions = 7;
+  bool allow_keywords = 8;
+}
+
+// Words and patterns that notify even in muted chats.
+message KeywordAlerts {
+  option (serein.options.v1.document) = {
+    version: 1
+    validator: "ValidKeywordAlerts"
+  };
+  option (serein.options.v1.codec) = {require_fields: true};
+
+  bool enabled = 1;
+  repeated KeywordRule rules = 2 [(buf.validate.field).repeated.max_items = 50];
+  bool include_channels = 3;
+}
+
+message KeywordRule {
+  option (serein.options.v1.codec) = {require_fields: true};
+
+  string pattern = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  bool regex = 2;
+  bool case_sensitive = 3;
+}

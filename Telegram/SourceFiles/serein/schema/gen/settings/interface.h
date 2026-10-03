@@ -6,6 +6,7 @@
 namespace Serein::Interface {
 
 [[nodiscard]] bool ValidMainMenuBytes(const QByteArray &value);
+[[nodiscard]] bool ValidQuietHoursBytes(const QByteArray &value);
 
 inline constexpr auto kBubbleRoundness = Option<int>{
 	"serein.bubbleRoundness",
@@ -126,6 +127,14 @@ inline constexpr auto kCenterTopNotifications = Option<bool>{
 	Category::Interface,
 	"lng_serein_center_top_notifications",
 	0 };
+inline const auto kQuietHours = Option<QByteArray>{
+	"serein.quietHours",
+	Scope::Device,
+	QByteArray(),
+	Category::Interface,
+	"lng_serein_quiet_hours",
+	0,
+	&ValidQuietHoursBytes };
 inline constexpr auto kMenuShortcuts = Option<bool>{
 	"serein.menuShortcuts",
 	Scope::Device,
@@ -184,6 +193,7 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kNotificationDelay));
 	Expects(registry.Add(kOtherDeviceNotificationDelay));
 	Expects(registry.Add(kCenterTopNotifications));
+	Expects(registry.Add(kQuietHours));
 	Expects(registry.Add(kMenuShortcuts));
 	Expects(registry.Add(kGlobalShortcut));
 	Expects(registry.Add(kHalfwidthUiPunctuation));

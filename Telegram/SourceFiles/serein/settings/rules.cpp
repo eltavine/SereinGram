@@ -1,6 +1,7 @@
 #include "serein/settings/rules.h"
 
 #include "serein/settings/home.h"
+#include "serein/settings/keyword_alerts.h"
 #include "serein/filters/settings.h"
 #include "serein/links/settings.h"
 #include "serein/settings/page.h"
@@ -57,6 +58,7 @@ const auto kMeta = BuildHelper({
 		},
 		.keywords = { u"link"_q, u"URL"_q },
 	});
+	Filters::AddKeywordAlerts(builder);
 });
 
 const SectionBuildMethod RulesSection::kBuild = kMeta.build;

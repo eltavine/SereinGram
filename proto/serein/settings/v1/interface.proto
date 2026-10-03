@@ -161,6 +161,17 @@ message InterfaceSettings {
     ]
     note: "lng_serein_center_top_notifications_note"
   }];
+  optional bytes quiet_hours = 21 [(serein.options.v1.field) = {
+    title: "lng_serein_quiet_hours"
+    keywords: [
+      "quiet",
+      "do not disturb",
+      "schedule",
+      "night"
+    ]
+    custom_ui: true
+    validator: "ValidQuietHoursBytes"
+  }];
   optional bool menu_shortcuts = 18 [(serein.options.v1.field) = {
     keywords: [
       "main menu",

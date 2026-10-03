@@ -34,6 +34,8 @@ namespace Serein::Hooks::Interface {
 [[nodiscard]] rpl::producer<int> OtherDeviceNotificationDelayValue();
 [[nodiscard]] bool CenterTopNotifications();
 [[nodiscard]] rpl::producer<bool> CenterTopNotificationsValue();
+[[nodiscard]] QByteArray QuietHours();
+[[nodiscard]] rpl::producer<QByteArray> QuietHoursValue();
 [[nodiscard]] bool MenuShortcuts();
 [[nodiscard]] rpl::producer<bool> MenuShortcutsValue();
 [[nodiscard]] QByteArray GlobalShortcut();

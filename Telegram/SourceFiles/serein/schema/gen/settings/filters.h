@@ -9,6 +9,7 @@ namespace Serein::Filters {
 [[nodiscard]] bool Validate(const QByteArray &value);
 [[nodiscard]] bool ValidRuleList(const QByteArray &value);
 [[nodiscard]] bool ValidHiddenMessages(const QString &value);
+[[nodiscard]] bool ValidKeywordAlertsBytes(const QByteArray &value);
 
 inline const auto kRules = Option<QByteArray>{
 	"serein.filters",
@@ -45,12 +46,21 @@ inline const auto kHiddenMessages = Option<QString>{
 	"lng_serein_hidden_messages",
 	static_cast<unsigned>(Flag::RefreshMessageView),
 	&ValidHiddenMessages };
+inline const auto kKeywordAlerts = Option<QByteArray>{
+	"serein.keywordAlerts",
+	Scope::Account,
+	QByteArray(),
+	Category::Rules,
+	"lng_serein_keyword_alerts",
+	0,
+	&ValidKeywordAlertsBytes };
 
 inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kRules));
 	Expects(registry.Add(kRuleSubscription));
 	Expects(registry.Add(kSubscribedRules));
 	Expects(registry.Add(kHiddenMessages));
+	Expects(registry.Add(kKeywordAlerts));
 }
 
 } // namespace Serein::Filters

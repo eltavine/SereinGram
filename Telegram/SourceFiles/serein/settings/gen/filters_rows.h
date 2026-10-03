@@ -15,6 +15,7 @@ struct CustomRows {
 	CustomRow filters;
 	CustomRow ruleSubscription;
 	CustomRow hiddenMessages;
+	CustomRow keywordAlerts;
 };
 
 inline void AddLayout(
@@ -23,6 +24,7 @@ inline void AddLayout(
 	custom.filters();
 	custom.ruleSubscription();
 	custom.hiddenMessages();
+	custom.keywordAlerts();
 }
 
 } // namespace Serein::Filters

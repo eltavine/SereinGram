@@ -25,6 +25,9 @@ set(serein_sources
     serein/features/ghost/model/policy.cpp
     serein/features/ghost/model/exceptions.cpp
     serein/features/presets/model/catalog.cpp
+    serein/features/quiet_hours/model/schedule.cpp
+    serein/features/keyword_alerts/model/keywords.cpp
+    serein/features/notifications/review.cpp
     serein/features/history/deleted_marks.cpp
     serein/features/history/media_store.cpp
     serein/features/history/model/recorder.cpp
@@ -174,6 +177,8 @@ set(serein_sources
     serein/settings/config.cpp
     serein/settings/exchange_preview.cpp
     serein/settings/presets.cpp
+    serein/settings/quiet_hours.cpp
+    serein/settings/keyword_alerts.cpp
     serein/settings/media.cpp
     serein/settings/menu.cpp
     serein/settings/privacy.cpp

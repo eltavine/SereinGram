@@ -118,6 +118,14 @@ rpl::producer<bool> CenterTopNotificationsValue() {
 	return ForDevice().Value(Serein::Interface::kCenterTopNotifications);
 }
 
+QByteArray QuietHours() {
+	return ForDevice().Get(Serein::Interface::kQuietHours);
+}
+
+rpl::producer<QByteArray> QuietHoursValue() {
+	return ForDevice().Value(Serein::Interface::kQuietHours);
+}
+
 bool MenuShortcuts() {
 	return ForDevice().Get(Serein::Interface::kMenuShortcuts);
 }

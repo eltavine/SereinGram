@@ -8,6 +8,7 @@
 #include "serein/interface/app_icon.h"
 #include "serein/settings/gen/interface_rows.h"
 #include "serein/settings/home.h"
+#include "serein/settings/quiet_hours.h"
 #include "serein/settings/restart.h"
 #include "serein/settings/page.h"
 #include "lang/lang_keys.h"
@@ -223,6 +224,7 @@ const auto kMeta = BuildHelper({
 				tr::lng_serein_other_device_notification_delay(),
 				u"serein/interface/other-device-notification-delay"_q);
 		},
+		.quietHours = [&] { Interface::AddQuietHours(builder); },
 		.globalShortcut = [&] {
 			builder.addButton({
 				.id = u"serein/interface/global-shortcut"_q,

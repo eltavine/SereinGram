@@ -331,6 +331,8 @@
         "serein/features/ghost/model/",
         "serein/features/history/",
         "serein/features/presets/model/",
+        "serein/features/quiet_hours/model/",
+        "serein/features/keyword_alerts/model/",
         "serein/filters/",
         "serein/interface/",
         "serein/links/",
@@ -373,6 +375,36 @@
         "serein/features/presets/model/"
       ],
       "app": false,
+      "libraries": true
+    },
+    "serein/features/quiet_hours/model/": {
+      "own": [
+        "serein/features/quiet_hours/model/",
+        "serein/schema/",
+        "serein/core/"
+      ],
+      "app": false,
+      "libraries": true
+    },
+    "serein/features/keyword_alerts/model/": {
+      "own": [
+        "serein/features/keyword_alerts/model/",
+        "serein/schema/",
+        "serein/core/"
+      ],
+      "app": false,
+      "libraries": true
+    },
+    "serein/features/notifications/": {
+      "own": [
+        "serein/features/notifications/",
+        "serein/features/quiet_hours/model/",
+        "serein/features/keyword_alerts/model/",
+        "serein/core/",
+        "serein/schema/",
+        "serein/hooks/"
+      ],
+      "app": true,
       "libraries": true
     }
   }

@@ -368,6 +368,10 @@ System::SkipState System::computeSkipState(
 	if (notifyBy) {
 		notifySettings->request(notifyBy);
 	}
+	const auto review = Serein::Interface::ReviewNotification(item, messageType);
+	if (review) {
+		return withSilent(*review ? SkipState::DontSkip : SkipState::Skip);
+	}
 
 	if (messageType && notifySettings->muteUnknown(thread)) {
 		return { SkipState::Unknown };

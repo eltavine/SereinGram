@@ -44,4 +44,15 @@ message FilterSettings {
     validator: "ValidHiddenMessages"
     refresh: REFRESH_MESSAGE_VIEW
   }];
+  optional bytes keyword_alerts = 5 [(serein.options.v1.field) = {
+    title: "lng_serein_keyword_alerts"
+    keywords: [
+      "keyword",
+      "alert",
+      "notification",
+      "mention"
+    ]
+    custom_ui: true
+    validator: "ValidKeywordAlertsBytes"
+  }];
 }
