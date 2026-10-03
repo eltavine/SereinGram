@@ -302,7 +302,7 @@ jobs:
 
       # Keeping one compiler cache per configuration leaves the platform caches inside the quota.
       - name: Drop older Telegram Desktop caches.
-        if: steps.save-tdesktop.outcome == 'success'
+        if: "!cancelled() && steps.save-tdesktop.outcome == 'success'"
         continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
