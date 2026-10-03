@@ -398,10 +398,6 @@ jobs:
           APPIMAGE_EXTRACT_AND_RUN: 1
         run: xvfb-run -a python3 tools/serein/smoke_test.py "artifact/SereinGram-linux-$ARCH.AppImage"
 
-      # The packages must install with their declared dependencies on clean systems.
-      - name: Package integration test.
-        run: tools/serein/linux_package_test.sh artifact "$ARCH"
-
       - uses: actions/upload-artifact@v7
         name: Upload artifact.
         with:
@@ -409,3 +405,32 @@ jobs:
           path: artifact/
           if-no-files-found: error
           retention-days: 3
+
+  # WHY: the distribution test depends on outside mirrors; in its own job a
+  # failure there is re-run in minutes without rebuilding, and a release still
+  # waits for it because the calling job only succeeds with both.
+  packages:
+    name: ${{ inputs.arch == 'arm64' && 'Linux packages (arm64)' || 'Linux packages' }}
+    needs: linux
+    runs-on: ${{ inputs.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-24.04' }}
+    timeout-minutes: 120
+    env:
+      ARCH: ${{ inputs.arch || 'x86_64' }}
+
+    steps:
+      - name: Clone.
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+          ref: ${{ inputs.ref }}
+          sparse-checkout: tools/serein
+
+      - name: Download the packages.
+        uses: actions/download-artifact@v8
+        with:
+          name: SereinGram-linux-${{ env.ARCH }}
+          path: artifact
+
+      # The packages must install with their declared dependencies on clean systems.
+      - name: Package integration test.
+        run: tools/serein/linux_package_test.sh artifact "$ARCH"
