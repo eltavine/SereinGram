@@ -149,26 +149,15 @@ jobs:
           preinstalled-runtimes: true
 
       - name: Set up Docker Buildx.
-        id: setup-buildx
         uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
 
       - name: Libraries cache.
         id: cache-libs
         uses: actions/cache/restore@v6
         with:
-          path: |
-            ${{ runner.temp }}/.buildx-cache
-            ${{ runner.temp }}/.mount-cache
+          path: ${{ runner.temp }}/.buildx-cache
           key: ${{ runner.OS }}-${{ env.KEY_ARCH }}libs-v2-${{ hashFiles('Telegram/build/docker/centos_env/**') }}
           restore-keys: ${{ runner.OS }}-${{ env.KEY_ARCH }}libs-
-
-      - name: Restore Docker cache mounts.
-        uses: reproducible-containers/buildkit-cache-dance@5422eac04292c961a382e0f584ea0f03ad9da723
-        with:
-          builder: ${{ steps.setup-buildx.outputs.name }}
-          cache-dir: ${{ runner.temp }}/.mount-cache
-          dockerfile: Telegram/build/docker/centos_env/Dockerfile
-          skip-extraction: ${{ steps.cache-libs.outputs.cache-hit }}
 
       # The builder keeps the finished layers, so a second attempt resumes after a network error.
       - name: Libraries.
@@ -205,9 +194,7 @@ jobs:
         if: env.SAVE_CACHE == 'true' && steps.cache-libs.outputs.cache-hit != 'true'
         uses: actions/cache/save@v6
         with:
-          path: |
-            ${{ runner.temp }}/.buildx-cache
-            ${{ runner.temp }}/.mount-cache
+          path: ${{ runner.temp }}/.buildx-cache
           key: ${{ steps.cache-libs.outputs.cache-primary-key }}
 
       - name: Restore Telegram Desktop cache.
