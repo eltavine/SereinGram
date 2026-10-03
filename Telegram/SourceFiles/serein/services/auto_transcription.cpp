@@ -8,6 +8,7 @@
 #include "api/api_transcribes.h"
 #include "apiwrap.h"
 #include "data/data_document.h"
+#include "data/data_document_media.h"
 #include "data/data_peer.h"
 #include "data/data_session.h"
 #include "history/history.h"
@@ -48,13 +49,18 @@ public:
 	explicit AutoTranscriber(not_null<Main::Session*> session);
 
 private:
+	struct Queued {
+		std::shared_ptr<Data::DocumentMedia> media;
+		int downloads = 0;
+	};
+
 	void added(not_null<HistoryItem*> item);
 	void next();
 
 	const not_null<Main::Session*> _session;
 	ServiceRequest _request;
 	std::deque<FullMsgId> _queue;
-	base::flat_map<FullMsgId, int> _attempts;
+	base::flat_map<FullMsgId, Queued> _queued;
 	FullMsgId _active;
 	rpl::lifetime _lifetime;
 
@@ -86,9 +92,13 @@ void AutoTranscriber::added(not_null<HistoryItem*> item) {
 			transcribes.toggle(item);
 		}
 		return;
-	} else if (int(_queue.size()) >= kMaxQueued) {
+	} else if (int(_queue.size()) >= kMaxQueued
+		|| _queued.contains(item->fullId())) {
 		return;
 	}
+	_queued.emplace(item->fullId(), Queued{
+		.media = item->media()->document()->createMediaView(),
+	});
 	_queue.push_back(item->fullId());
 	next();
 }
@@ -99,22 +109,26 @@ void AutoTranscriber::next() {
 		const auto id = _queue.front();
 		_queue.pop_front();
 		const auto item = _session->data().message(id);
-		if (!item) {
-			_attempts.remove(id);
+		const auto i = _queued.find(id);
+		if (!item || i == end(_queued)) {
+			_queued.remove(id);
 			continue;
 		}
-		const auto result = TranscribeExternally(item, _request, [=](bool) {
+		const auto media = i->second.media;
+		const auto result = TranscribeExternally(item, media, _request, [=](
+				bool) {
 			_active = FullMsgId();
 			next();
 		});
 		if (result == ExternalTranscription::Started) {
-			_attempts.remove(id);
+			_queued.erase(i);
 			_active = id;
 		} else if (result == ExternalTranscription::Downloading
-			&& ++_attempts[id] <= kMaxDownloadWaits) {
+			&& (media->owner()->loading()
+				|| ++i->second.downloads <= kMaxDownloadWaits)) {
 			downloading.push_back(id);
 		} else {
-			_attempts.remove(id);
+			_queued.erase(i);
 		}
 	}
 	_queue.insert(end(_queue), begin(downloading), end(downloading));

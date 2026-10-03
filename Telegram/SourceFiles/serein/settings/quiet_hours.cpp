@@ -85,8 +85,8 @@ not_null<Ui::TimeInput*> AddTime(
 		st::scheduleTimeSeparatorPadding);
 	input->resizeToWidth(st::autolockTimeWidth);
 	row->widthValue() | rpl::on_next([=](int width) {
-		row->resize(width, std::max(input->height(), title->height()));
 		title->resizeToWidth(width - input->width());
+		row->resize(width, std::max(input->height(), title->height()));
 		title->moveToLeft(0, (row->height() - title->height()) / 2);
 		input->moveToRight(0, 0, width);
 	}, row->lifetime());

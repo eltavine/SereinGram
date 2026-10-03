@@ -31,8 +31,10 @@ template <typename Document, typename Read>
 		return false;
 	}
 	const auto history = item->history();
+	const auto raw = ForAccount(&history->session()).Get(
+		Filters::kKeywordAlerts);
 	const auto &config = Cached<Notifications::KeywordAlerts>(
-		ForAccount(&history->session()).Get(Filters::kKeywordAlerts),
+		raw,
 		Notifications::ReadKeywordAlerts);
 	return Notifications::Matches(
 		config,
@@ -44,8 +46,9 @@ template <typename Document, typename Read>
 		not_null<HistoryItem*> item,
 		bool message,
 		bool keywordMatch) {
+	const auto raw = ForDevice().Get(kQuietHours);
 	const auto &config = Cached<Notifications::QuietHours>(
-		ForDevice().Get(kQuietHours),
+		raw,
 		Notifications::ReadQuietHours);
 	if (!config.enabled) {
 		return false;

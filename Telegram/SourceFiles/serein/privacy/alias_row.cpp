@@ -5,6 +5,7 @@
 #include "data/data_peer.h"
 #include "lang/lang_keys.h"
 #include "settings/settings_common.h"
+#include "ui/widgets/buttons.h"
 #include "window/window_session_controller.h"
 
 #include "styles/style_settings.h"

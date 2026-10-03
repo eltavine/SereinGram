@@ -4,7 +4,13 @@
 
 #include <gsl/pointers>
 
+#include <memory>
+
 class HistoryItem;
+
+namespace Data {
+class DocumentMedia;
+} // namespace Data
 
 namespace Serein {
 
@@ -18,6 +24,7 @@ enum class ExternalTranscription {
 
 [[nodiscard]] ExternalTranscription TranscribeExternally(
 	gsl::not_null<HistoryItem*> item,
+	const std::shared_ptr<Data::DocumentMedia> &media,
 	ServiceRequest &request,
 	Fn<void(bool stored)> done);
 

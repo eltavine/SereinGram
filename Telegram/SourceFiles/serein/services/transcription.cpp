@@ -268,6 +268,7 @@ TranscriptionOverride<Api::Transcribes::Entry>(not_null<HistoryItem*> item);
 
 ExternalTranscription TranscribeExternally(
 		not_null<HistoryItem*> item,
+		const std::shared_ptr<Data::DocumentMedia> &media,
 		ServiceRequest &request,
 		Fn<void(bool stored)> done) {
 	const auto session = &item->history()->session();
@@ -276,20 +277,23 @@ ExternalTranscription TranscribeExternally(
 	const auto service = config
 		? FindService(*config, config->transcription)
 		: std::nullopt;
-	const auto media = item->media();
-	const auto document = media ? media->document() : nullptr;
+	const auto attached = item->media();
+	const auto document = attached ? attached->document() : nullptr;
 	if (!external.selected()
 		|| !service
 		|| service->kind != ServiceKind::Transcription
 		|| !document
-		|| media->ttlSeconds()
+		|| media->owner().get() != document
+		|| attached->ttlSeconds()
 		|| external.find(item)
 		|| document->size > kMaximumAudio) {
 		return ExternalTranscription::Unavailable;
 	}
-	auto bytes = ReadAudio(document, document->createMediaView());
+	auto bytes = ReadAudio(document, media);
 	if (bytes.isEmpty()) {
-		document->save(item->fullId(), QString());
+		if (!document->loading()) {
+			document->save(item->fullId(), QString());
+		}
 		return ExternalTranscription::Downloading;
 	}
 	const auto id = item->fullId();

@@ -14,6 +14,7 @@
 #include "main/session/session_show.h"
 #include "settings/settings_common.h"
 #include "ui/layers/generic_box.h"
+#include "ui/widgets/buttons.h"
 #include "ui/widgets/fields/input_field.h"
 #include "ui/widgets/labels.h"
 #include "window/window_session_controller.h"
