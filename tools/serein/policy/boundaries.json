@@ -173,7 +173,8 @@
         "serein/schema/",
         "serein/ports/",
         "serein/hooks/",
-        "serein/display/"
+        "serein/display/",
+        "serein/features/cleanup/model/"
       ],
       "app": true,
       "libraries": true
@@ -413,6 +414,13 @@
         "serein/features/send_translation/model/",
         "serein/schema/",
         "serein/core/"
+      ],
+      "app": false,
+      "libraries": true
+    },
+    "serein/features/cleanup/model/": {
+      "own": [
+        "serein/features/cleanup/model/"
       ],
       "app": false,
       "libraries": true

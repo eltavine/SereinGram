@@ -1,6 +1,7 @@
 #pragma once
 
 #include "base/basic_types.h"
+#include "serein/ports/chat_settings.h"
 
 #include <memory>
 #include <gsl/pointers>
@@ -20,5 +21,6 @@ namespace Serein {
 void ChooseSendTranslation(
 	std::shared_ptr<Main::SessionShow> show,
 	gsl::not_null<PeerData*> peer);
+void AddSendTranslationRow(const ChatSettingsContext &context);
 
 } // namespace Serein

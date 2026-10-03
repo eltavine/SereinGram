@@ -3,9 +3,11 @@
 #include "serein/admin/delete_mine.h"
 #include "serein/admin/shortcuts.h"
 #include "serein/admin/upgrade.h"
+#include "serein/chats/chat_settings.h"
 #include "serein/chats/local_pins.h"
 #include "serein/chats/options.h"
 #include "serein/chats/quick_actions.h"
+#include "serein/features/history/chat_row.h"
 #include "serein/features/history/viewer.h"
 #include "serein/features/stories/composer.h"
 #include "serein/filters/model.h"
@@ -13,10 +15,14 @@
 #include "serein/services/summary.h"
 #include "serein/hooks/privacy/alias.h"
 #include "serein/hooks/ghost.h"
+#include "serein/features/ghost/chat_row.h"
 #include "serein/features/ghost/model/exceptions.h"
 #include "serein/schema/gen/settings/ghost.h"
 #include "serein/schema/gen/settings/media.h"
+#include "serein/media/bulk_download.h"
+#include "serein/privacy/alias_row.h"
 #include "serein/privacy/options.h"
+#include "serein/services/send_translation.h"
 #include "data/data_forum_topic.h"
 #include "data/data_histories.h"
 #include "data/data_peer.h"
@@ -27,9 +33,20 @@
 #include "window/window_session_controller.h"
 #include "styles/style_menu_icons.h"
 
+#include <array>
+
 namespace Serein::Hooks {
 
 namespace {
+
+constexpr auto kChatSettingsRows = std::array<ChatSettingsRow, 6>{
+	&Serein::AddSendTranslationRow,
+	&Serein::Ghost::AddReadReceiptRow,
+	&Serein::HistoryFeature::AddRecordingRow,
+	&Serein::Chats::AddLocalPinRow,
+	&Serein::Privacy::AddAliasRow,
+	&Serein::Media::AddMediaDownloadRow,
+};
 
 void FillReadExceptionAction(
 		const Ui::Menu::MenuCallback &addAction,
@@ -66,6 +83,11 @@ void FillHistoryMenu(
 		gsl::not_null<PeerData*> peer,
 		Data::ForumTopic *topic) {
 	const auto weak = base::make_weak(topic);
+	if (!topic && ForDevice().Get(Chats::kChatSettingsMenu)) {
+		addAction(tr::lng_serein_chat_settings(tr::now), [=] {
+			Chats::ShowChatSettings(controller, peer, kChatSettingsRows);
+		}, &st::menuIconSettings);
+	}
 	if (ForDevice().Get(Chats::kChatQuickActions)) {
 		addAction(tr::lng_serein_jump_to_beginning(tr::now), [=] {
 			if (!topic) {

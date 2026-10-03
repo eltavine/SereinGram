@@ -206,6 +206,13 @@ inline constexpr auto kLocalPinning = Option<bool>{
 	Category::Chats,
 	"lng_serein_local_pinning",
 	0 };
+inline constexpr auto kChatSettingsMenu = Option<bool>{
+	"serein.chatSettingsMenu",
+	Scope::Device,
+	false,
+	Category::Chats,
+	"lng_serein_chat_settings_menu",
+	0 };
 inline const auto kRecentChats = Option<QString>{
 	"serein.recentChats",
 	Scope::Account,
@@ -257,6 +264,7 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kChatQuickActions));
 	Expects(registry.Add(kManagementShortcuts));
 	Expects(registry.Add(kLocalPinning));
+	Expects(registry.Add(kChatSettingsMenu));
 	Expects(registry.Add(kRecentChats));
 	Expects(registry.Add(kReadingPositions));
 	Expects(registry.Add(kLocalPins));

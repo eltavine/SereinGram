@@ -12,11 +12,14 @@
 #include "lang/lang_keys.h"
 #include "main/main_session.h"
 #include "main/session/session_show.h"
+#include "settings/settings_common.h"
 #include "ui/layers/generic_box.h"
 #include "ui/widgets/fields/input_field.h"
 #include "ui/widgets/labels.h"
+#include "window/window_session_controller.h"
 
 #include "styles/style_layers.h"
+#include "styles/style_settings.h"
 
 namespace Serein {
 namespace {
@@ -118,6 +121,24 @@ void ChooseSendTranslation(
 		});
 		box->addButton(tr::lng_cancel(), [=] { box->closeBox(); });
 	}));
+}
+
+void AddSendTranslationRow(const ChatSettingsContext &context) {
+	const auto controller = context.controller;
+	const auto peer = context.peer;
+	::Settings::AddButtonWithLabel(
+		context.container,
+		tr::lng_serein_send_translation_language(),
+		ForAccount(&peer->session()).Value(
+			ServiceSettings::kSendTranslations
+		) | rpl::map([=](const QByteArray &) {
+			const auto name = SendTranslationName(peer);
+			return name.isEmpty() ? tr::lng_serein_config_off(tr::now) : name;
+		}),
+		st::settingsButtonNoIcon
+	)->setClickedCallback([=] {
+		ChooseSendTranslation(controller->uiShow(), peer);
+	});
 }
 
 } // namespace Serein

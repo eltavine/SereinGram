@@ -147,7 +147,8 @@ TEST_CASE("Options") {
 		"unknown refresh option");
 	auto chats = Registry();
 	Chats::RegisterOptions(chats);
-	Require(chats.All().size() == 28, "chat option count");
+	Require(chats.All().size() == 29, "chat option count");
+	Require(!Chats::kChatSettingsMenu.fallback, "the chat settings entry is opt-in");
 	Require(!Chats::kLocalPinning.fallback
 		&& Chats::kLocalPins.scope == Scope::Account
 		&& Chats::kLocalPins.validate(QString::fromLatin1("7,9"))

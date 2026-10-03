@@ -247,6 +247,14 @@ message ChatsSettings {
     ]
     note: "lng_serein_local_pinning_note"
   }];
+  optional bool chat_settings_menu = 29 [(serein.options.v1.field) = {
+    keywords: [
+      "chat",
+      "menu",
+      "settings"
+    ]
+    note: "lng_serein_chat_settings_menu_note"
+  }];
   // Serialized peer ids of recently opened chats, newest first.
   optional string recent_chats = 19 [(serein.options.v1.field) = {
     hidden: true

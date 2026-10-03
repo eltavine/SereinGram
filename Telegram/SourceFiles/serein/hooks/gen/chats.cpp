@@ -206,6 +206,14 @@ rpl::producer<bool> LocalPinningValue() {
 	return ForDevice().Value(Serein::Chats::kLocalPinning);
 }
 
+bool ChatSettingsMenu() {
+	return ForDevice().Get(Serein::Chats::kChatSettingsMenu);
+}
+
+rpl::producer<bool> ChatSettingsMenuValue() {
+	return ForDevice().Value(Serein::Chats::kChatSettingsMenu);
+}
+
 QString RecentChats(gsl::not_null<Main::Session*> session) {
 	return ForAccount(session).Get(Serein::Chats::kRecentChats);
 }

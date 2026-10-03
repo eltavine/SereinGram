@@ -1,5 +1,6 @@
 #include "serein/settings/chats.h"
 
+#include "serein/chats/cleanup.h"
 #include "serein/chats/options.h"
 #include "serein/hooks/chats/sort.h"
 #include "serein/core/options.h"
@@ -210,6 +211,13 @@ const auto kMeta = BuildHelper({
 				.keywords = { u"folder"_q, u"hide"_q, u"tabs"_q },
 			});
 		},
+	});
+	builder.addButton({
+		.id = u"serein/chats/cleanup"_q,
+		.title = tr::lng_serein_cleanup(),
+		.st = &st::settingsButtonNoIcon,
+		.onClick = [=] { Chats::ShowChatCleanup(controller); },
+		.keywords = { u"clean"_q, u"deleted"_q, u"inactive"_q, u"bot"_q },
 	});
 });
 

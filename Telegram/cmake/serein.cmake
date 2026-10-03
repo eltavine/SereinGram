@@ -29,6 +29,7 @@ set(serein_sources
     serein/features/keyword_alerts/model/keywords.cpp
     serein/features/notifications/review.cpp
     serein/features/send_translation/model/languages.cpp
+    serein/features/cleanup/model/candidates.cpp
     serein/features/history/deleted_marks.cpp
     serein/features/history/media_store.cpp
     serein/features/history/model/recorder.cpp
@@ -201,6 +202,12 @@ set(serein_sources
     serein/services/draft_translation.cpp
     serein/services/send_translation.cpp
     serein/services/auto_transcription.cpp
+    serein/chats/chat_settings.cpp
+    serein/features/ghost/chat_row.cpp
+    serein/features/history/chat_row.cpp
+    serein/privacy/alias_row.cpp
+    serein/media/bulk_download.cpp
+    serein/chats/cleanup.cpp
     serein/services/summary.cpp
     serein/services/summary_protocol.cpp
     serein/network/dc_status.cpp
