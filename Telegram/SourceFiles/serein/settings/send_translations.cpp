@@ -43,7 +43,7 @@ void SendTranslationsBox(
 				tr::lng_serein_send_translation_empty(),
 				st::boxLabel));
 		}
-		for (const auto peer : peers) {
+		for (const auto &peer : peers) {
 			const auto row = rows->add(object_ptr<Ui::SettingsButton>(
 				rows,
 				rpl::single(RowText(peer)),
