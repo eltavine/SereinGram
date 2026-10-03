@@ -18,7 +18,6 @@
 #include "ui/layers/generic_box.h"
 #include "ui/widgets/checkbox.h"
 #include "ui/widgets/labels.h"
-#include "window/window_peer_menu.h"
 #include "window/window_session_controller.h"
 
 #include "styles/style_layers.h"
@@ -80,13 +79,10 @@ struct Candidate {
 	Unexpected("Category in Chats::Title.");
 }
 
-void Apply(
-		not_null<Window::SessionController*> controller,
-		not_null<History*> history,
-		bool remove) {
+void Apply(not_null<History*> history, bool remove) {
 	const auto peer = history->peer;
 	if (!remove) {
-		Window::ToggleHistoryArchived(controller->uiShow(), history, true);
+		peer->session().api().toggleHistoryArchived(history, true, [] {});
 	} else if (const auto channel = peer->asChannel()) {
 		peer->session().api().leaveChannel(channel);
 	} else {
@@ -150,7 +146,7 @@ void CleanupBox(
 			state->timer.cancel();
 			return;
 		}
-		Apply(controller, state->queue.front(), state->remove);
+		Apply(state->queue.front(), state->remove);
 		state->queue.pop_front();
 		progress->setText(tr::lng_serein_cleanup_progress(
 			tr::now,

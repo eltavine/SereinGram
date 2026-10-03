@@ -7,6 +7,7 @@
 #include "lang/lang_keys.h"
 #include "settings/settings_builder.h"
 #include "ui/layers/generic_box.h"
+#include "ui/ui_utility.h"
 #include "ui/widgets/checkbox.h"
 #include "ui/widgets/labels.h"
 #include "ui/widgets/time_input.h"

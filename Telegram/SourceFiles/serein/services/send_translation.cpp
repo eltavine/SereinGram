@@ -150,7 +150,9 @@ bool TranslateBeforeSend(
 		not_null<PeerData*> peer,
 		Ui::InputField *field,
 		Fn<void()> resend) {
-	if (!field || field->empty()) {
+	if (!field
+		|| field->empty()
+		|| field->getLastText().startsWith(u'/')) {
 		return false;
 	}
 	const auto language = Language(peer);
