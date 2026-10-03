@@ -36,7 +36,8 @@ class AssetsTest(unittest.TestCase):
         assets = release.load_assets()
         names = [asset["name"] for asset in assets]
         self.assertIn("SereinGram-linux-x86_64.AppImage", names)
-        self.assertIn("SereinGram-macos-universal.dmg", names)
+        for arch in ("universal", "arm64", "x86_64"):
+            self.assertIn(f"SereinGram-macos-{arch}.dmg", names)
         self.assertEqual(len(names), len(set(names)))
 
     def test_rejects_names_outside_the_rule(self):

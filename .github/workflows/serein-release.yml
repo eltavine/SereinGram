@@ -126,7 +126,7 @@ jobs:
       no_cache: true
 
   macos:
-    name: macOS universal
+    name: macOS
     needs: plan
     if: needs.plan.outputs.build == 'true'
     uses: ./.github/workflows/serein-mac.yml

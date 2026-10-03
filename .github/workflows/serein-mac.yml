@@ -203,32 +203,84 @@ jobs:
           python3 "$REPO_NAME/tools/serein/smoke_test.py" \
             "$REPO_NAME/out/$CONFIG/SereinGram.app/Contents/MacOS/SereinGram"
 
-      - name: Name the artifacts.
+      # WHY: the universal app already holds both builds, so the smaller
+      # single-architecture apps are copies of it with one slice kept, signed
+      # again because thinning changes the code that the signature covers.
+      - name: Single-architecture apps.
         run: |
+          for arch in arm64 x86_64; do
+            app="$RUNNER_TEMP/$arch/SereinGram.app"
+            mkdir -p "$RUNNER_TEMP/$arch"
+            ditto "$REPO_NAME/out/$CONFIG/SereinGram.app" "$app"
+            find "$app" -type f -print0 | while IFS= read -r -d '' file; do
+              archs=$(lipo -archs "$file" 2>/dev/null) || continue
+              case "$archs" in
+                *' '*) lipo "$file" -thin "$arch" -output "$file" ;;
+              esac
+            done
+            test "$(lipo -archs "$app/Contents/MacOS/SereinGram")" = "$arch"
+            codesign --force --deep --sign - "$app"
+            codesign --verify --deep --strict "$app"
+          done
+
+      - name: Disk images.
+        run: |
+          retry="$REPO_NAME/tools/serein/retry.sh"
           mkdir artifact
-          hdiutil create -volname SereinGram \
-            -srcfolder "$REPO_NAME/out/$CONFIG/SereinGram.app" \
-            -ov -format UDZO artifact/SereinGram-macos-universal.dmg
+          for flavor in universal arm64 x86_64; do
+            app="$RUNNER_TEMP/$flavor/SereinGram.app"
+            if [ "$flavor" = universal ]; then
+              app="$REPO_NAME/out/$CONFIG/SereinGram.app"
+            fi
+            "$retry" 5 10 hdiutil create -volname SereinGram -srcfolder "$app" \
+              -ov -format UDZO "artifact/SereinGram-macos-$flavor.dmg"
+          done
+
+      - name: Rosetta for the x86_64 app.
+        continue-on-error: true
+        timeout-minutes: 10
+        run: |
+          if ! arch -x86_64 /usr/bin/true 2>/dev/null; then
+            sudo softwareupdate --install-rosetta --agree-to-license
+          fi
+          arch -x86_64 /usr/bin/true
+          echo "ROSETTA=true" >> "$GITHUB_ENV"
 
       - name: Disk image integration test.
+        timeout-minutes: 30
         run: |
-          mount=$(mktemp -d)
-          hdiutil attach -nobrowse -readonly -mountpoint "$mount" artifact/SereinGram-macos-universal.dmg
-          codesign --verify --deep --strict "$mount/SereinGram.app"
-          python3 "$REPO_NAME/tools/serein/smoke_test.py" "$mount/SereinGram.app/Contents/MacOS/SereinGram"
-          # System services may still scan the app that just ran from the volume.
-          for _ in 1 2 3 4 5; do
-            if hdiutil detach "$mount"; then
-              exit 0
+          retry="$REPO_NAME/tools/serein/retry.sh"
+          smoke="$REPO_NAME/tools/serein/smoke_test.py"
+          for flavor in universal arm64 x86_64; do
+            expected=$flavor
+            if [ "$flavor" = universal ]; then
+              expected="arm64 x86_64"
             fi
-            sleep 5
+            mount=$(mktemp -d)
+            "$retry" 5 10 hdiutil attach -nobrowse -readonly -mountpoint "$mount" \
+              "artifact/SereinGram-macos-$flavor.dmg"
+            binary="$mount/SereinGram.app/Contents/MacOS/SereinGram"
+            codesign --verify --deep --strict "$mount/SereinGram.app"
+            archs=$(lipo -archs "$binary" | tr ' ' '\n' | sort | xargs)
+            if [ "$archs" != "$expected" ]; then
+              echo "::error::SereinGram-macos-$flavor.dmg holds $archs instead of $expected."
+              exit 1
+            fi
+            if [ "$flavor" != x86_64 ]; then
+              python3 "$smoke" "$binary"
+            elif [ "${ROSETTA:-}" = true ]; then
+              python3 "$smoke" --timeout 300 "$binary"
+            else
+              echo "::warning::Rosetta 2 could not be installed, so the x86_64 app was not launched."
+            fi
+            # System services may still scan the app that just ran from the volume.
+            "$retry" 5 5 hdiutil detach "$mount" || hdiutil detach -force "$mount"
           done
-          hdiutil detach -force "$mount"
 
       - uses: actions/upload-artifact@v7
         name: Upload artifact.
         with:
-          name: SereinGram-macos-universal
+          name: SereinGram-macos
           path: artifact/
           if-no-files-found: error
           retention-days: 3

@@ -32,6 +32,18 @@
       "kind": "disk-image"
     },
     {
+      "name": "SereinGram-macos-arm64.dmg",
+      "os": "macos",
+      "arch": "arm64",
+      "kind": "disk-image"
+    },
+    {
+      "name": "SereinGram-macos-x86_64.dmg",
+      "os": "macos",
+      "arch": "x86_64",
+      "kind": "disk-image"
+    },
+    {
       "name": "SereinGram-linux-x86_64.tar.xz",
       "os": "linux",
       "arch": "x86_64",
