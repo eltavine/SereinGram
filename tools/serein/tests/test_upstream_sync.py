@@ -6,9 +6,15 @@ import tempfile
 import unittest
 from pathlib import Path
 
+import git_env
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import upstream_sync
+
+
+def setUpModule():
+    git_env.disable_background_maintenance()
 
 
 def git(root, *args):

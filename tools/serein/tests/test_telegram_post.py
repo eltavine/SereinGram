@@ -8,6 +8,8 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
+import git_env
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import release
@@ -30,6 +32,10 @@ plan = json.loads(os.environ.get("FAKE_CURL_PLAN", "{}")).get(method, [])
 default = {"ok": True, "result": {"message_id": 7}}
 print(json.dumps(plan[min(count, len(plan)) - 1] if plan else default))
 """
+
+
+def setUpModule():
+    git_env.disable_background_maintenance()
 
 
 def git(root, *args):

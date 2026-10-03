@@ -6,6 +6,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
+import git_env
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import release
@@ -26,6 +28,10 @@ NOTICE = (
     "built with Telegram Desktop\u2019s public test credentials, so login may be limited or "
     "fail. A new Nightly will be published automatically once credentials are configured."
 )
+
+
+def setUpModule():
+    git_env.disable_background_maintenance()
 
 
 def git(root, *args, message=None):
