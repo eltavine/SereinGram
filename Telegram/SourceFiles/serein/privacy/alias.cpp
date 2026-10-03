@@ -1,4 +1,6 @@
 #include "serein/privacy/alias.h"
+
+#include "serein/core/session_lifetime.h"
 #include "serein/privacy/options.h"
 
 #include "data/data_peer.h"
@@ -54,12 +56,11 @@ State &ForSession(not_null<Main::Session*> session) {
 	}, state->lifetime);
 	const auto inserted = states.emplace(session, std::move(state)).first;
 	// History() asks for aliases inside Session(), before its lifetime exists.
-	session->account().sessionValue(
-	) | rpl::filter([=](Main::Session *value) {
-		return (value == session.get());
-	}) | rpl::take(1) | rpl::on_next([=] {
-		session->lifetime().add([session] { States().erase(session); });
-	}, inserted->second->lifetime);
+	details::BindSessionCleanup(
+		session,
+		session->account().sessionValue(),
+		[session] { States().erase(session); },
+		inserted->second->lifetime);
 	return *inserted->second;
 }
 
