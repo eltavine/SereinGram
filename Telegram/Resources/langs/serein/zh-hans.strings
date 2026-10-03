@@ -355,6 +355,8 @@
 "lng_serein_check_updates" = "在 GitHub 上检查更新";
 "lng_serein_updates_system_package" = "此版本由系统的包管理器负责更新。";
 "lng_serein_update_available" = "SereinGram {version} 已在 GitHub 发布。";
+"lng_serein_update_download" = "SereinGram {version} 已在 GitHub 发布。{link}";
+"lng_serein_update_download_link" = "下载";
 "lng_serein_startup_folder" = "启动时打开的文件夹";
 "lng_serein_startup_folder_last" = "上次打开的文件夹";
 "lng_serein_startup_folder_specific" = "指定文件夹";

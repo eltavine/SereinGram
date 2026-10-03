@@ -14,7 +14,7 @@ SereinGram 支持讨论度最高的七个 Linux 发行版：Ubuntu、Debian、Li
 
 `.deb` 与 `.rpm` 的安装测试由 `tools/serein/linux_package_test.sh` 完成：在各发行版的容器中用系统包管理器安装，解析依赖后检查程序、桌面入口、AppStream 元数据、图标，以及程序需要的动态库都能找到。Linux 工作流对 x86_64 与 arm64 的每次构建都在单独的任务中运行它：每个发行版最多三次，每次换新容器，openSUSE 从第二次起停用原有镜像源、改从源站 `downloadcontent.opensuse.org` 下载；只有镜像或软件包仓库在每次尝试中都无法访问或超时，发行版才记为“无法判定”并给出警告，其余失败都让任务失败。
 
-所有发行版也都可以使用 Flatpak 单文件包、AppImage 或便携版压缩包（glibc 2.28 起）。支持 Snap 的发行版还可以安装 Snap 包：`snap/snapcraft.yaml` 以 core24 构建，CI 工作流 `serein-snap.yml` 在配方改动时和每周构建、安装并启动它。
+所有发行版也都可以使用 Flatpak 单文件包、AppImage 或便携版压缩包（glibc 2.28 起）。AppImage 内嵌更新信息，可用 AppImageUpdate、AppImageLauncher 或 Gear Lever 增量更新。支持 Snap 的发行版还可以安装 Snap 包：`snap/snapcraft.yaml` 以 core24 构建，CI 工作流 `serein-snap.yml` 在配方改动时和每周构建、安装并启动它。
 
 ## 安装
 

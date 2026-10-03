@@ -10,6 +10,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import release
 
+FIXTURE = Path(__file__).resolve().parent / "fixtures" / "release_manifest.json"
 INFO = {
     "repo": "owner/SereinGram",
     "tag": "nightly",
@@ -156,6 +157,39 @@ class FilesTest(unittest.TestCase):
             "https://github.com/owner/SereinGram/releases/"
             "download/nightly/SereinGram-linux-x86_64.deb",
         )
+
+    def test_manifest_keeps_what_the_client_reads(self):
+        fixture = json.loads(FIXTURE.read_text(encoding="utf-8"))
+        data = json.loads(release.manifest(self.dir, self.assets, INFO))
+        self.assertEqual(data["schema_version"], fixture["schema_version"])
+        self.assertLessEqual(fixture.keys(), data.keys())
+        self.assertLessEqual(fixture["assets"][0].keys(), data["assets"][0].keys())
+        for asset in fixture["assets"]:
+            self.assertIn(asset["kind"], release.KINDS)
+            self.assertTrue(release.NAME.match(asset["name"]), asset["name"])
+
+    def test_download_table_leaves_out_update_data(self):
+        lines = release.download_lines(
+            "owner/SereinGram",
+            "nightly",
+            [
+                {
+                    "name": "SereinGram-linux-x86_64.AppImage",
+                    "os": "linux",
+                    "arch": "x86_64",
+                    "kind": "appimage",
+                },
+                {
+                    "name": "SereinGram-linux-x86_64.AppImage.zsync",
+                    "os": "linux",
+                    "arch": "x86_64",
+                    "kind": "zsync",
+                },
+            ],
+        )
+        text = "\n".join(lines)
+        self.assertIn("[SereinGram-linux-x86_64.AppImage]", text)
+        self.assertNotIn(".zsync", text)
 
 
 class UploadedTest(unittest.TestCase):

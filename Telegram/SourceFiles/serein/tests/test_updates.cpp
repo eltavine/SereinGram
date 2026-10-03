@@ -1,67 +1,107 @@
-#include "serein/features/updates/model/release.h"
-#include "base/basic_types.h"
-#include "serein/tests/require.h"
+#include "serein/features/updates/model/manifest.h"
+#include "serein/features/updates/model/version.h"
+
+#include <QtCore/QFile>
+#include <QtCore/QJsonArray>
+#include <QtCore/QJsonDocument>
+#include <QtCore/QJsonObject>
 
 #include <doctest/doctest.h>
-#include <iostream>
 
-TEST_CASE("Updates") {
-	using namespace Serein::Updates;
-	const auto release = ParseLatestRelease(R"({
-		"tag_name": "v7.2.11",
-		"html_url": "https://github.com/eltavine/SereinGram/releases/tag/v7.2.11",
-		"draft": false,
-		"prerelease": false
-	})");
-	Require(release && release->tag == u"v7.2.11"_q
-		&& release->url.startsWith(u"https://github.com/"_q),
-		"latest release not parsed");
-	for (const auto &bad : {
-		R"({"tag_name":"v8","html_url":"https://github.com/a/b","prerelease":true})",
-		R"({"tag_name":"v8","html_url":"https://github.com/a/b","draft":true})",
-		R"({"tag_name":"v8","html_url":"http://github.com/a/b"})",
-		R"({"tag_name":"v8","html_url":"https://evil.example/a/b"})",
-		R"({"tag_name":"nightly","html_url":"https://github.com/a/b"})",
-	}) {
-		Require(!ParseLatestRelease(bad), "unsafe or unstable release accepted");
-	}
-	const auto nightly = ParseNightlyRelease(R"({
-		"tag_name": "nightly",
-		"target_commitish": "0123456789abcdef0123456789abcdef01234567",
-		"html_url": "https://github.com/eltavine/SereinGram/releases/tag/nightly",
-		"draft": false,
-		"prerelease": true
-	})");
-	Require(nightly
-		&& nightly->commit == u"0123456789abcdef0123456789abcdef01234567"_q
-		&& nightly->url.startsWith(u"https://github.com/"_q),
-		"nightly release not parsed");
-	for (const auto &bad : {
-		R"({"tag_name": "v8",
-			"target_commitish": "0123456789abcdef0123456789abcdef01234567",
-			"html_url": "https://github.com/a/b"})",
-		R"({"tag_name": "nightly",
-			"target_commitish": "develop",
-			"html_url": "https://github.com/a/b"})",
-		R"({"tag_name": "nightly",
-			"target_commitish": "0123456789abcdef0123456789abcdef01234567",
-			"html_url": "https://github.com/a/b",
-			"draft": true})",
-		R"({"tag_name": "nightly",
-			"target_commitish": "0123456789abcdef0123456789abcdef01234567",
-			"html_url": "https://evil.example/a/b"})",
-	}) {
-		Require(!ParseNightlyRelease(bad), "unexpected nightly release accepted");
-	}
-	Require(VersionParts(u"v7.2.10.1"_q) == std::vector<int>{ 7, 2, 10, 1 },
-		"four part version not parsed");
-	Require(VersionParts(u"7.2.10-beta"_q) == std::vector<int>{ 7, 2, 10 },
-		"version suffix not ignored");
-	Require(VersionParts(u"beta"_q).empty(), "version without numbers parsed");
-	Require(IsNewer(u"v7.2.10.1"_q, u"7.2.10"_q), "extra part not newer");
-	Require(IsNewer(u"7.3"_q, u"7.2.10"_q), "minor bump not newer");
-	Require(!IsNewer(u"7.2.10"_q, u"7.2.10"_q), "same version newer");
-	Require(!IsNewer(u"7.2.9"_q, u"7.2.10"_q), "older version newer");
-	Require(!IsNewer(u"beta"_q, u"7.2.10"_q), "invalid version newer");
-	std::cout << "PASS: Serein update checks" << std::endl;
+namespace Serein::Updates {
+namespace {
+
+[[nodiscard]] QJsonObject Fixture() {
+	auto file = QFile(QString::fromUtf8(SEREIN_RELEASE_FIXTURE));
+	REQUIRE(file.open(QIODevice::ReadOnly));
+	return QJsonDocument::fromJson(file.readAll()).object();
 }
+
+[[nodiscard]] std::optional<ReleaseManifest> Parse(const QJsonObject &root) {
+	return ParseManifest(QJsonDocument(root).toJson());
+}
+
+[[nodiscard]] QJsonObject WithAsset(QJsonObject root, QJsonObject asset) {
+	root.insert(u"assets"_q, QJsonArray{ asset });
+	return root;
+}
+
+} // namespace
+
+TEST_CASE("UpdateManifest") {
+	const auto fixture = Fixture();
+	SUBCASE("the published manifest parses") {
+		const auto manifest = Parse(fixture);
+		REQUIRE(manifest);
+		CHECK(manifest->channel == u"nightly"_q);
+		CHECK(manifest->tag == u"nightly"_q);
+		CHECK(manifest->version == u"7.2.10"_q);
+		CHECK(manifest->commit.size() == 40);
+		CHECK(manifest->assets.size() == 5);
+	}
+	SUBCASE("the asset follows the install") {
+		const auto manifest = Parse(fixture);
+		REQUIRE(manifest);
+		const auto name = [&](const char *os, const char *arch, const char *kind) {
+			const auto asset = ChooseAsset(*manifest, {
+				QString::fromLatin1(os),
+				QString::fromLatin1(arch),
+				QString::fromLatin1(kind),
+			});
+			return asset ? asset->name : QString();
+		};
+		CHECK(name("macos", "arm64", "disk-image")
+			== u"SereinGram-macos-arm64.dmg"_q);
+		CHECK(name("macos", "x86_64", "disk-image")
+			== u"SereinGram-macos-universal.dmg"_q);
+		CHECK(name("windows", "x86_64", "installer")
+			== u"SereinGram-windows-x86_64-setup.exe"_q);
+		CHECK(name("linux", "x86_64", "appimage")
+			== u"SereinGram-linux-x86_64.AppImage"_q);
+		CHECK(name("windows", "arm64", "installer").isEmpty());
+		CHECK(name("linux", "x86_64", "deb").isEmpty());
+	}
+	SUBCASE("additions are ignored and other schemas are refused") {
+		auto root = fixture;
+		root.insert(u"added_later"_q, QJsonObject{ { u"x"_q, 1 } });
+		CHECK(Parse(root));
+		root.insert(u"schema_version"_q, 2);
+		CHECK(!Parse(root));
+		root = fixture;
+		root.insert(u"commit"_q, u"develop"_q);
+		CHECK(!Parse(root));
+		root = fixture;
+		root.insert(u"tag"_q, u"../nightly"_q);
+		CHECK(!Parse(root));
+	}
+	SUBCASE("unsafe assets are dropped") {
+		const auto asset = fixture.value(u"assets"_q).toArray().at(0).toObject();
+		const auto dropped = [&](const QString &key, const QJsonValue &value) {
+			auto changed = asset;
+			changed.insert(key, value);
+			const auto manifest = Parse(WithAsset(fixture, changed));
+			return manifest && manifest->assets.empty();
+		};
+		CHECK(!dropped(u"os"_q, u"windows"_q));
+		CHECK(dropped(u"url"_q, u"https://example.com/SereinGram-a.exe"_q));
+		CHECK(dropped(u"url"_q, u"http://github.com/o/r/SereinGram-a.exe"_q));
+		CHECK(dropped(u"name"_q, u"SereinGram-other.exe"_q));
+		CHECK(dropped(u"sha256"_q, u"abc"_q));
+		CHECK(dropped(u"size"_q, 0));
+		CHECK(dropped(u"kind"_q, u"Installer"_q));
+	}
+}
+
+TEST_CASE("UpdateVersions") {
+	CHECK(IsNewer(u"v7.2.10.1"_q, u"7.2.10"_q));
+	CHECK(IsNewer(u"7.3"_q, u"7.2.10"_q));
+	CHECK(IsNewer(u"7.2.10"_q, u"7.2.10-beta"_q));
+	CHECK(!IsNewer(u"7.2.10"_q, u"7.2.10"_q));
+	CHECK(!IsNewer(u"7.2.10.0"_q, u"7.2.10"_q));
+	CHECK(!IsNewer(u"7.2.10-beta"_q, u"7.2.10"_q));
+	CHECK(!IsNewer(u"7.2.9"_q, u"7.2.10"_q));
+	CHECK(!IsNewer(u"beta"_q, u"7.2.10"_q));
+	CHECK(!IsNewer(u"7.3"_q, u""_q));
+}
+
+} // namespace Serein::Updates

@@ -33,7 +33,8 @@ set(serein_sources
     serein/features/history/deleted_marks.cpp
     serein/features/history/media_store.cpp
     serein/features/history/model/recorder.cpp
-    serein/features/updates/model/release.cpp
+    serein/features/updates/model/manifest.cpp
+    serein/features/updates/model/version.cpp
     serein/features/regdate/model/estimate.cpp
     serein/features/stories/model/post.cpp
     serein/adapters/openssl/aes_gcm_cipher.cpp
@@ -67,6 +68,7 @@ set(serein_sources
     serein/features/history/viewer.cpp
     serein/app/tray_menu.cpp
     serein/features/updates/checker.cpp
+    serein/features/updates/install_target.cpp
     serein/features/stories/audience.cpp
     serein/features/stories/canvas.cpp
     serein/features/stories/common.cpp
@@ -421,6 +423,7 @@ if (DESKTOP_APP_TEST_APPS)
         SEREIN_OPENCC_DICTIONARY_DIR="${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/OpenCC/data/dictionary"
         SEREIN_REGDATE_POINTS="${res_loc}/serein/regdate_points.json"
         SEREIN_PRESETS_DIR="${res_loc}/serein/presets"
+        SEREIN_RELEASE_FIXTURE="${CMAKE_CURRENT_SOURCE_DIR}/../tools/serein/tests/fixtures/release_manifest.json"
     )
 
     set_target_properties(test_serein PROPERTIES

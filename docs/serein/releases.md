@@ -34,11 +34,13 @@
 | macOS | x86_64 | `SereinGram-macos-x86_64.dmg` | Intel 处理器专用应用，只含 x86_64 代码 |
 | Linux | x86_64 | `SereinGram-linux-x86_64.tar.xz` | 便携版，`SereinGram/SereinGram`（glibc 2.28 起） |
 | Linux | x86_64 | `SereinGram-linux-x86_64.AppImage` | AppImage |
+| Linux | x86_64 | `SereinGram-linux-x86_64.AppImage.zsync` | AppImage 增量更新数据，不在下载表中列出 |
 | Linux | x86_64 | `SereinGram-linux-x86_64.deb` | Debian、Ubuntu 软件包 |
 | Linux | x86_64 | `SereinGram-linux-x86_64.rpm` | Fedora、openSUSE 等软件包 |
 | Linux | x86_64 | `SereinGram-linux-x86_64.flatpak` | Flatpak 单文件包（GNOME 51 运行时） |
 | Linux | arm64 | `SereinGram-linux-arm64.tar.xz` | 便携版，`SereinGram/SereinGram`（glibc 2.28 起） |
 | Linux | arm64 | `SereinGram-linux-arm64.AppImage` | AppImage |
+| Linux | arm64 | `SereinGram-linux-arm64.AppImage.zsync` | AppImage 增量更新数据，不在下载表中列出 |
 | Linux | arm64 | `SereinGram-linux-arm64.deb` | Debian、Ubuntu 软件包 |
 | Linux | arm64 | `SereinGram-linux-arm64.rpm` | Fedora、openSUSE 等软件包 |
 | Linux | arm64 | `SereinGram-linux-arm64.flatpak` | Flatpak 单文件包（GNOME 51 运行时） |
@@ -74,7 +76,15 @@ macOS 的三个磁盘映像来自同一次通用构建：单架构版本对应�
 }
 ```
 
-`channel` 为 `nightly` 或 `release`；`version` 是构建所基于的 Telegram Desktop 版本；`kind` 取值 `installer`、`portable`、`disk-image`、`appimage`、`deb`、`rpm`、`flatpak`。新增字段只追加，不改变已有字段的含义。
+`channel` 为 `nightly` 或 `release`；`version` 是构建所基于的 Telegram Desktop 版本；`kind` 取值 `installer`、`portable`、`disk-image`、`appimage`、`deb`、`rpm`、`flatpak`、`zsync`。
+
+`release.json` 也是应用内更新检查的接口，因此按兼容契约演进：只追加字段与 `kind` 取值，不删除、不改名、不改变已有字段的含义；需要不兼容的改动时发布新的文件名，并继续发布 `schema_version` 为 1 的 `release.json`。客户端忽略不认识的字段，拒绝其他 `schema_version`，并逐项丢弃不安全的产物（非 github.com 的 HTTPS 链接、链接与文件名不符、哈希或大小无效）。`tools/serein/tests/fixtures/release_manifest.json` 同时被发布脚本的测试与客户端的核心测试使用，任一端改动契约都会让测试失败。
+
+## 3a. 应用内更新
+
+界面设置“在 GitHub 上检查更新”开启时（系统软件包构建不检查），应用在启动 30 秒后及每 24 小时下载一次清单：Nightly 构建读取 `releases/download/nightly/release.json`，提交与自身不同即提示；其他构建读取 `releases/latest/download/release.json`，按 `QVersionNumber` 比较版本，带后缀的版本视为预发布。两个地址都是 GitHub 的静态下载地址，不受 REST API 频率限制。提示中给出发布页，以及与当前安装方式相符的产物的直接下载链接：Windows 按应用目录中是否有 Inno Setup 卸载程序区分安装版与便携版，macOS 优先同架构的磁盘映像、其次通用版，Linux 依次识别 AppImage、Flatpak、`/usr` 下的 deb 或 rpm 软件包与便携版；找不到相符的产物时只给出发布页。应用不在后台下载或替换自身。
+
+AppImage 内嵌 AppImage 规范的更新信息 `gh-releases-zsync|<所有者>|<仓库>|<nightly 或 latest>|SereinGram-linux-<架构>.AppImage.zsync`，Release 同时附带 `.zsync` 文件，因此 AppImageUpdate、AppImageLauncher 与 Gear Lever 等工具可以只下载变化的部分完成更新。
 
 ## 4. 发布页内容
 

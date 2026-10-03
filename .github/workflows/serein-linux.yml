@@ -362,9 +362,18 @@ jobs:
           sed '/^DBusActivatable=/d' lib/xdg/io.github.eltavine.SereinGram.desktop \
             > "$app/io.github.eltavine.SereinGram.desktop"
           ln -s usr/bin/SereinGram "$app/AppRun"
-          output="artifact/SereinGram-linux-$ARCH.AppImage"
-          ARCH=$APPIMAGE_ARCH "$tool" --appimage-extract-and-run --runtime-file "$runtime" \
-            "$app" "$output"
+          retry=tools/serein/retry.sh
+          "$retry" 3 30 sudo apt-get update -q
+          "$retry" 3 30 sudo apt-get install -y -q --no-install-recommends zsync
+          release=nightly
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            release=latest
+          fi
+          name="SereinGram-linux-$ARCH.AppImage"
+          update="gh-releases-zsync|${GITHUB_REPOSITORY%%/*}|${GITHUB_REPOSITORY#*/}|$release|$name.zsync"
+          (cd artifact && ARCH=$APPIMAGE_ARCH "$tool" --appimage-extract-and-run \
+            --runtime-file "$runtime" --updateinformation "$update" "$app" "$name")
+          test -s "artifact/$name.zsync"
 
       - name: Debian and RPM packages.
         env:

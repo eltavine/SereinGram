@@ -65,7 +65,8 @@ set(serein_test_sources
     serein/display/text_entities.cpp
     serein/features/history/media_store.cpp
     serein/features/history/model/recorder.cpp
-    serein/features/updates/model/release.cpp
+    serein/features/updates/model/manifest.cpp
+    serein/features/updates/model/version.cpp
     serein/features/regdate/model/estimate.cpp
     serein/features/stories/model/post.cpp
     serein/schema/codec.cpp

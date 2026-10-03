@@ -355,6 +355,8 @@
 "lng_serein_check_updates" = "在 GitHub 上檢查更新";
 "lng_serein_updates_system_package" = "此版本由系統的套件管理員負責更新。";
 "lng_serein_update_available" = "SereinGram {version} 已在 GitHub 發佈。";
+"lng_serein_update_download" = "SereinGram {version} 已在 GitHub 發佈。{link}";
+"lng_serein_update_download_link" = "下載";
 "lng_serein_startup_folder" = "啟動時開啟的資料夾";
 "lng_serein_startup_folder_last" = "上次開啟的資料夾";
 "lng_serein_startup_folder_specific" = "指定資料夾";

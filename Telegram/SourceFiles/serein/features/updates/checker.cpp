@@ -4,7 +4,9 @@
 #include "serein/core/build_flags.h"
 #include "serein/core/build_info.h"
 
-#include "serein/features/updates/model/release.h"
+#include "serein/features/updates/install_target.h"
+#include "serein/features/updates/model/manifest.h"
+#include "serein/features/updates/model/version.h"
 #include "serein/hooks/gen/interface.h"
 #include "core/application.h"
 #include "core/version.h"
@@ -23,13 +25,31 @@ namespace {
 constexpr auto kFirstCheckDelay = 30 * 1000;
 constexpr auto kCheckInterval = 24 * 60 * 60 * 1000;
 constexpr auto kRequestTimeout = 30 * 1000;
-constexpr auto kMaximumResponse = qint64(1024 * 1024);
-constexpr auto kLatestUrl = "https://api.github.com/repos/eltavine/SereinGram/releases/latest";
-constexpr auto kNightlyUrl = "https://api.github.com/repos/eltavine/SereinGram/releases/tags/nightly";
+constexpr auto kToastDuration = crl::time(12000);
+constexpr auto kMaximumResponse = qint64(256 * 1024);
+constexpr auto kReleases = "https://github.com/eltavine/SereinGram/releases/";
 
 [[nodiscard]] bool FollowsNightly() {
 	return (std::string_view(kBuildChannel) == "nightly")
 		&& (std::string_view(kBuildCommit).size() == 40);
+}
+
+[[nodiscard]] QString Releases(const QString &path) {
+	return QString::fromLatin1(kReleases) + path;
+}
+
+[[nodiscard]] std::optional<QString> NewRelease(
+		const ReleaseManifest &manifest) {
+	if (FollowsNightly()) {
+		return (manifest.channel == u"nightly"_q
+			&& manifest.commit != QLatin1String(kBuildCommit))
+			? std::make_optional(manifest.commit)
+			: std::nullopt;
+	}
+	return (manifest.channel == u"release"_q
+		&& IsNewer(manifest.version, QString::fromLatin1(AppVersionStr)))
+		? std::make_optional(manifest.tag)
+		: std::nullopt;
 }
 
 class Checker final : public QObject {
@@ -46,11 +66,11 @@ private:
 			return;
 		}
 		_reply = Adapters::Download({
-			.url = QUrl(QString::fromLatin1(
-				FollowsNightly() ? kNightlyUrl : kLatestUrl)),
+			.url = QUrl(Releases(FollowsNightly()
+				? u"download/nightly/release.json"_q
+				: u"latest/download/release.json"_q)),
 			.maximumSize = kMaximumResponse,
 			.timeout = kRequestTimeout,
-			.headers = { { "Accept", "application/vnd.github+json" } },
 		}, crl::guard(this, [=](std::optional<QByteArray> body) {
 			finished(std::move(body));
 		}));
@@ -58,42 +78,35 @@ private:
 
 	void finished(std::optional<QByteArray> body) {
 		_reply = nullptr;
-		if (!body) {
-			return;
-		} else if (FollowsNightly()) {
-			const auto nightly = Updates::ParseNightlyRelease(*body);
-			if (nightly && nightly->commit != QLatin1String(kBuildCommit)) {
-				announce(
-					nightly->commit,
-					u"Nightly (%1)"_q.arg(nightly->commit.left(7)),
-					nightly->url);
-			}
+		const auto manifest = body ? ParseManifest(*body) : std::nullopt;
+		const auto id = manifest ? NewRelease(*manifest) : std::nullopt;
+		if (!id || *id == _announced) {
 			return;
 		}
-		const auto release = Updates::ParseLatestRelease(*body);
-		if (release
-			&& Updates::IsNewer(
-				release->tag,
-				QString::fromLatin1(AppVersionStr))) {
-			announce(release->tag, release->tag, release->url);
-		}
-	}
-
-	void announce(
-			const QString &id,
-			const QString &version,
-			const QString &url) {
-		if (id == _announced) {
+		_announced = *id;
+		const auto version = FollowsNightly()
+			? u"Nightly (%1)"_q.arg(manifest->commit.left(7))
+			: manifest->version;
+		const auto page = tr::link(version, Releases(u"tag/"_q + manifest->tag));
+		const auto asset = ChooseAsset(*manifest, CurrentInstall());
+		const auto window = Core::App().activePrimaryWindow();
+		if (!window) {
 			return;
-		}
-		_announced = id;
-		if (const auto window = Core::App().activePrimaryWindow()) {
+		} else if (!asset) {
 			window->showToast(tr::lng_serein_update_available(
 				tr::now,
 				lt_version,
-				tr::link(version, url),
-				tr::marked));
+				page,
+				tr::marked), kToastDuration);
+			return;
 		}
+		window->showToast(tr::lng_serein_update_download(
+			tr::now,
+			lt_version,
+			page,
+			lt_link,
+			tr::link(tr::lng_serein_update_download_link(tr::now), asset->url),
+			tr::marked), kToastDuration);
 	}
 
 	QTimer _timer;

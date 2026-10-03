@@ -24,7 +24,7 @@ UPSTREAM = "https://github.com/telegramdesktop/tdesktop"
 NAME = re.compile(
     r"^SereinGram-(?P<os>windows|macos|linux)"
     r"-(?P<arch>x86_64|arm64|universal)"
-    r"(?:-[a-z0-9]+)?\.(?:exe|zip|dmg|tar\.xz|AppImage|deb|rpm|flatpak)$"
+    r"(?:-[a-z0-9]+)?\.(?:exe|zip|dmg|tar\.xz|AppImage(?:\.zsync)?|deb|rpm|flatpak)$"
 )
 HEADER = re.compile(
     r"^(?P<type>[a-z]+)(?:\((?P<scope>[^()]+)\))?(?P<bang>!)?: "
@@ -47,7 +47,9 @@ KINDS = {
     "deb": "Debian package",
     "rpm": "RPM package",
     "flatpak": "Flatpak bundle",
+    "zsync": "AppImage delta update data",
 }
+UPDATE_DATA = {"zsync"}
 
 
 class ReleaseError(Exception):
@@ -255,7 +257,7 @@ def download_lines(repo, tag, assets):
         "| System | Architecture | Package | File |",
         "| --- | --- | --- | --- |",
     ]
-    for asset in assets:
+    for asset in (asset for asset in assets if asset["kind"] not in UPDATE_DATA):
         url = download_url(repo, tag, asset["name"])
         lines.append(
             f"| {SYSTEMS[asset['os']]} | {asset['arch']} "
