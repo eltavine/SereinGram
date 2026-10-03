@@ -26,15 +26,15 @@ std::optional<SendTranslations> WithSendLanguage(
 		SendTranslations config,
 		uint64 peer,
 		const QString &language) {
-	if (!peer) {
+	const auto key = Key(peer);
+	const auto full = !config.languages.contains(key)
+		&& config.languages.size() >= kMaxSendTranslations;
+	if (!peer || (!language.isEmpty() && full)) {
 		return std::nullopt;
 	} else if (language.isEmpty()) {
-		config.languages.erase(Key(peer));
-	} else if (config.languages.contains(Key(peer))
-		|| config.languages.size() < kMaxSendTranslations) {
-		config.languages[Key(peer)] = language;
+		config.languages.erase(key);
 	} else {
-		return std::nullopt;
+		config.languages[key] = language;
 	}
 	return ParseSendTranslations(SerializeSendTranslations(config))
 		? std::make_optional(std::move(config))
