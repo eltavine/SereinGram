@@ -20,6 +20,11 @@ INFO = {
     "previous": "b" * 40,
     "since": "the previous nightly",
 }
+NOTICE = (
+    "SereinGram does not yet have developer API credentials configured. This Nightly is "
+    "built with Telegram Desktop\u2019s public test credentials, so login may be limited or "
+    "fail. A new Nightly will be published automatically once credentials are configured."
+)
 
 
 def git(root, *args, message=None):
@@ -266,8 +271,8 @@ class NotesTest(unittest.TestCase):
         )
         notice = "\n".join(release.credentials_notice())
         self.assertTrue(text.startswith(notice))
-        self.assertIn("please be patient", notice)
-        self.assertLess(text.index("please be patient"), text.index("**SereinGram"))
+        self.assertEqual(notice.removeprefix("> ").replace("**", "").strip(), NOTICE)
+        self.assertLess(text.index("public test credentials"), text.index("**SereinGram Nightly**"))
         plain = release.notes([], release.load_assets(), dict(INFO, previous=""))
         self.assertNotIn("test credentials", plain)
         self.assertTrue(plain.startswith("**SereinGram Nightly**"))
@@ -311,7 +316,7 @@ class NotesTest(unittest.TestCase):
         )
         self.assertEqual(code, 0)
         self.assertIn("**SereinGram Nightly**", output.read_text())
-        self.assertNotIn("please be patient", output.read_text())
+        self.assertNotIn("public test credentials", output.read_text())
 
     def test_main_passes_the_test_credentials_flag(self):
         _, head = self.build()
