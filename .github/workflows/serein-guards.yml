@@ -32,7 +32,7 @@ jobs:
           version: 1.72.0
 
       - name: Set up uv.
-        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6.8.0
+        uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
 
       - name: Tool self-tests.
         run: uv run --with jinja2==3.1.6 python -m unittest discover -s tools/serein/tests -v
@@ -225,7 +225,7 @@ jobs:
           cache: true
 
       - name: Set up uv.
-        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6.8.0
+        uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
 
       # Same warnings as the Linux platform build, which fails on any of them.
       - name: Build.
