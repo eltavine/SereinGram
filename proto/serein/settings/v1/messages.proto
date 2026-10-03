@@ -10,6 +10,14 @@ message MessagesSettings {
     cpp_namespace: "Messages"
     scope: SCOPE_DEVICE
     category: CATEGORY_MESSAGES
+    subpage: {
+      title: "lng_serein_messages"
+      icon: "menuIconChatBubble"
+      keywords: [
+        "messages",
+        "time"
+      ]
+    }
   };
 
   optional bool seconds_in_messages = 1 [(serein.options.v1.field) = {
@@ -263,6 +271,15 @@ message MessagesSettings {
     note: "lng_serein_private_activities_note"
   }];
   optional bool reading_spacing = 25 [(serein.options.v1.field) = {
+    section: {
+      title: "lng_serein_section_reading"
+      id: "reading"
+      keywords: [
+        "reading",
+        "Chinese",
+        "spacing"
+      ]
+    }
     keywords: [
       "reading",
       "spacing"

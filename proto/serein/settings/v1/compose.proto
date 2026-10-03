@@ -10,6 +10,14 @@ message ComposeSettings {
     cpp_namespace: "Compose"
     scope: SCOPE_DEVICE
     category: CATEGORY_COMPOSE
+    subpage: {
+      title: "lng_serein_compose"
+      icon: "menuIconEdit"
+      keywords: [
+        "compose",
+        "send"
+      ]
+    }
   };
 
   optional bool hide_attach_button = 1 [(serein.options.v1.field) = {
@@ -103,6 +111,12 @@ message ComposeSettings {
       "draft"
     ]
   }];
+  optional bool mention_menu = 29 [(serein.options.v1.field) = {
+    keywords: [
+      "mention",
+      "format"
+    ]
+  }];
   optional int32 input_placeholder_mode = 15 [
     (serein.options.v1.field) = {
       title: "lng_serein_input_placeholder"
@@ -134,11 +148,17 @@ message ComposeSettings {
     }
     keywords: ["Markdown"]
   }];
-  optional bool disable_link_preview = 17 [(serein.options.v1.field) = {
+  optional bool format_toolbar = 31 [(serein.options.v1.field) = {
     keywords: [
-      "link",
-      "preview"
+      "format",
+      "toolbar",
+      "bold",
+      "selection"
     ]
+  }];
+  optional string default_code_language = 20 [(buf.validate.field).string = {
+    max_len: 32
+    pattern: "^[A-Za-z0-9+-]*$"
   }];
   optional bool space_on_send = 18 [(serein.options.v1.field) = {
     keywords: [
@@ -152,62 +172,21 @@ message ComposeSettings {
       "edit"
     ]
   }];
-  optional bool mention_menu = 29 [(serein.options.v1.field) = {
-    keywords: [
-      "mention",
-      "format"
-    ]
-  }];
-  optional bool remember_forward_options = 33 [(serein.options.v1.field) = {
-    keywords: [
-      "forward",
-      "sender",
-      "names",
-      "captions",
-      "remember"
-    ]
-    note: "lng_serein_remember_forward_options_note"
-  }];
-  optional int32 last_forward_options = 34 [
-    (serein.options.v1.field) = {
-      title: "lng_serein_remember_forward_options"
-      hidden: true
-    },
-    (buf.validate.field).int32 = {
-      in: [
-        0,
-        1,
-        2
+  optional bool draft_translation = 32 [(serein.options.v1.field) = {
+    section: {
+      title: "lng_serein_section_writing_tools"
+      id: "writing-tools"
+      keywords: [
+        "replies",
+        "replacements",
+        "translate"
       ]
     }
-  ];
-  optional bool caption_above_media = 35 [(serein.options.v1.field) = {
-    keywords: [
-      "caption",
-      "above",
-      "media",
-      "photo",
-      "video"
-    ]
-  }];
-  optional bool draft_translation = 32 [(serein.options.v1.field) = {
     keywords: [
       "translate",
       "draft",
       "message field"
     ]
-  }];
-  optional bool format_toolbar = 31 [(serein.options.v1.field) = {
-    keywords: [
-      "format",
-      "toolbar",
-      "bold",
-      "selection"
-    ]
-  }];
-  optional string default_code_language = 20 [(buf.validate.field).string = {
-    max_len: 32
-    pattern: "^[A-Za-z0-9+-]*$"
   }];
   optional bytes quick_replies = 21 [(serein.options.v1.field) = {
     validator: "ValidQuickReplies"
@@ -221,6 +200,42 @@ message ComposeSettings {
     title: "lng_serein_link_inline_bots"
     custom_ui: true
     validator: "ValidLinkInlineBotsBytes"
+  }];
+  optional bool disable_link_preview = 17 [(serein.options.v1.field) = {
+    section: {
+      title: "lng_serein_sending"
+      id: "sending"
+      keywords: ["send"]
+    }
+    keywords: [
+      "link",
+      "preview"
+    ]
+  }];
+  optional bool caption_above_media = 35 [(serein.options.v1.field) = {
+    keywords: [
+      "caption",
+      "above",
+      "media",
+      "photo",
+      "video"
+    ]
+  }];
+  optional bool send_silently = 28 [(serein.options.v1.field) = {
+    keywords: [
+      "silent",
+      "notification",
+      "send"
+    ]
+  }];
+  optional bool owner_send_as = 37 [(serein.options.v1.field) = {
+    keywords: [
+      "anonymous",
+      "send as",
+      "owner"
+    ]
+    note: "lng_serein_owner_send_as_note"
+    refresh: [REFRESH_COMPOSE_BUTTONS]
   }];
   optional bool confirm_sticker = 22 [(serein.options.v1.field) = {
     section: {
@@ -272,25 +287,27 @@ message ComposeSettings {
       "order"
     ]
   }];
-  optional bool send_silently = 28 [(serein.options.v1.field) = {
-    section: {
-      title: "lng_serein_sending"
-      id: "sending"
-      keywords: ["send"]
+  optional bool remember_forward_options = 33 [(serein.options.v1.field) = {
+    keywords: [
+      "forward",
+      "sender",
+      "names",
+      "captions",
+      "remember"
+    ]
+    note: "lng_serein_remember_forward_options_note"
+  }];
+  optional int32 last_forward_options = 34 [
+    (serein.options.v1.field) = {
+      title: "lng_serein_remember_forward_options"
+      hidden: true
+    },
+    (buf.validate.field).int32 = {
+      in: [
+        0,
+        1,
+        2
+      ]
     }
-    keywords: [
-      "silent",
-      "notification",
-      "send"
-    ]
-  }];
-  optional bool owner_send_as = 37 [(serein.options.v1.field) = {
-    keywords: [
-      "anonymous",
-      "send as",
-      "owner"
-    ]
-    note: "lng_serein_owner_send_as_note"
-    refresh: [REFRESH_COMPOSE_BUTTONS]
-  }];
+  ];
 }

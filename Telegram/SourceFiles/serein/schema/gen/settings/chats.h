@@ -30,6 +30,14 @@ inline constexpr auto kPreviewLines = Option<int>{
 		return (value == 0)
 			|| ((value >= 0) && (value <= 3));
 	} };
+inline constexpr auto kChatSort = Option<int>{
+	"serein.chatSort",
+	Scope::Device,
+	0,
+	Category::Chats,
+	"lng_serein_chat_sort",
+	0,
+	&ValidChatSort };
 inline constexpr auto kHideSavedAndArchivedPreviews = Option<bool>{
 	"serein.hideSavedAndArchivedPreviews",
 	Scope::Device,
@@ -62,28 +70,6 @@ inline constexpr auto kStartupFolderMode = Option<int>{
 		return (value == 0)
 			|| ((value >= 0) && (value <= 2));
 	} };
-inline constexpr auto kStartupFolderId = Option<int>{
-	"serein.startupFolderId",
-	Scope::Account,
-	0,
-	Category::Chats,
-	"lng_serein_startup_folder",
-	static_cast<unsigned>(Flag::Hidden),
-	[](const int &value) {
-		return (value == 0)
-			|| ((value >= 0));
-	} };
-inline constexpr auto kLastOpenedFolderId = Option<int>{
-	"serein.lastOpenedFolderId",
-	Scope::Account,
-	0,
-	Category::Chats,
-	"lng_serein_startup_folder",
-	static_cast<unsigned>(Flag::Hidden),
-	[](const int &value) {
-		return (value == 0)
-			|| ((value >= 0));
-	} };
 inline constexpr auto kHideAllChatsFolder = Option<bool>{
 	"serein.hideAllChatsFolder",
 	Scope::Device,
@@ -105,21 +91,6 @@ inline constexpr auto kHideFolderUnreadCounters = Option<bool>{
 	Category::Chats,
 	"lng_serein_hide_folder_unread_counters",
 	0 };
-inline constexpr auto kChatSort = Option<int>{
-	"serein.chatSort",
-	Scope::Device,
-	0,
-	Category::Chats,
-	"lng_serein_chat_sort",
-	0,
-	&ValidChatSort };
-inline constexpr auto kManagedFolderFilter = Option<bool>{
-	"serein.managedFolderFilter",
-	Scope::Device,
-	false,
-	Category::Chats,
-	"lng_serein_managed_folder_filter",
-	static_cast<unsigned>(Flag::RequiresRestart) };
 inline const auto kHiddenFolderIds = Option<QString>{
 	"serein.hiddenFolderIds",
 	Scope::Account,
@@ -128,14 +99,13 @@ inline const auto kHiddenFolderIds = Option<QString>{
 	"lng_serein_hidden_folders",
 	0,
 	&ValidHiddenFolderIds };
-inline const auto kManagedFolderIds = Option<QString>{
-	"serein.managedFolderIds",
-	Scope::Account,
-	QString(),
+inline constexpr auto kManagedFolderFilter = Option<bool>{
+	"serein.managedFolderFilter",
+	Scope::Device,
+	false,
 	Category::Chats,
-	"lng_serein_managed_only",
-	static_cast<unsigned>(Flag::Hidden),
-	&ValidManagedFolderIds };
+	"lng_serein_managed_folder_filter",
+	static_cast<unsigned>(Flag::RequiresRestart) };
 inline constexpr auto kHideSponsoredMessages = Option<bool>{
 	"serein.hideSponsoredMessages",
 	Scope::Device,
@@ -213,6 +183,36 @@ inline constexpr auto kChatSettingsMenu = Option<bool>{
 	Category::Chats,
 	"lng_serein_chat_settings_menu",
 	0 };
+inline constexpr auto kStartupFolderId = Option<int>{
+	"serein.startupFolderId",
+	Scope::Account,
+	0,
+	Category::Chats,
+	"lng_serein_startup_folder",
+	static_cast<unsigned>(Flag::Hidden),
+	[](const int &value) {
+		return (value == 0)
+			|| ((value >= 0));
+	} };
+inline constexpr auto kLastOpenedFolderId = Option<int>{
+	"serein.lastOpenedFolderId",
+	Scope::Account,
+	0,
+	Category::Chats,
+	"lng_serein_startup_folder",
+	static_cast<unsigned>(Flag::Hidden),
+	[](const int &value) {
+		return (value == 0)
+			|| ((value >= 0));
+	} };
+inline const auto kManagedFolderIds = Option<QString>{
+	"serein.managedFolderIds",
+	Scope::Account,
+	QString(),
+	Category::Chats,
+	"lng_serein_managed_only",
+	static_cast<unsigned>(Flag::Hidden),
+	&ValidManagedFolderIds };
 inline const auto kRecentChats = Option<QString>{
 	"serein.recentChats",
 	Scope::Account,
@@ -241,19 +241,16 @@ inline const auto kLocalPins = Option<QString>{
 inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kCompactList));
 	Expects(registry.Add(kPreviewLines));
+	Expects(registry.Add(kChatSort));
 	Expects(registry.Add(kHideSavedAndArchivedPreviews));
 	Expects(registry.Add(kHideStories));
 	Expects(registry.Add(kSearchOwnChatsOnly));
 	Expects(registry.Add(kStartupFolderMode));
-	Expects(registry.Add(kStartupFolderId));
-	Expects(registry.Add(kLastOpenedFolderId));
 	Expects(registry.Add(kHideAllChatsFolder));
 	Expects(registry.Add(kShowArchiveInFolders));
 	Expects(registry.Add(kHideFolderUnreadCounters));
-	Expects(registry.Add(kChatSort));
-	Expects(registry.Add(kManagedFolderFilter));
 	Expects(registry.Add(kHiddenFolderIds));
-	Expects(registry.Add(kManagedFolderIds));
+	Expects(registry.Add(kManagedFolderFilter));
 	Expects(registry.Add(kHideSponsoredMessages));
 	Expects(registry.Add(kHideProxySponsor));
 	Expects(registry.Add(kHidePremiumPromotions));
@@ -265,6 +262,9 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kManagementShortcuts));
 	Expects(registry.Add(kLocalPinning));
 	Expects(registry.Add(kChatSettingsMenu));
+	Expects(registry.Add(kStartupFolderId));
+	Expects(registry.Add(kLastOpenedFolderId));
+	Expects(registry.Add(kManagedFolderIds));
 	Expects(registry.Add(kRecentChats));
 	Expects(registry.Add(kReadingPositions));
 	Expects(registry.Add(kLocalPins));

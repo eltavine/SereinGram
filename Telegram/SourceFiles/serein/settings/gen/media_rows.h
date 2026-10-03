@@ -5,6 +5,7 @@
 #include "lang/lang_keys.h"
 #include "serein/schema/gen/settings/media.h"
 #include "serein/settings/rows.h"
+#include "styles/style_menu_icons.h"
 
 #include <array>
 
@@ -42,12 +43,6 @@ inline const auto kToggleRows = std::array<ToggleRow, 15>{ {
 		{ u"recommended"_q, u"emoji"_q },
 	},
 	{
-		&kHideGifCategories,
-		tr::lng_serein_hide_gif_categories,
-		u"serein/media/hide-gif-categories"_q,
-		{ u"GIF"_q, u"categories"_q },
-	},
-	{
 		&kHideGreetingSticker,
 		tr::lng_serein_hide_greeting_sticker,
 		u"serein/media/hide-greeting-sticker"_q,
@@ -58,6 +53,12 @@ inline const auto kToggleRows = std::array<ToggleRow, 15>{ {
 		tr::lng_serein_sticker_pack_author,
 		u"serein/media/sticker-pack-author"_q,
 		{ u"sticker"_q, u"emoji"_q, u"pack"_q, u"author"_q, u"creator"_q },
+	},
+	{
+		&kHideGifCategories,
+		tr::lng_serein_hide_gif_categories,
+		u"serein/media/hide-gif-categories"_q,
+		{ u"GIF"_q, u"categories"_q },
 	},
 	{
 		&kDisableVideoAutoplay,
@@ -72,6 +73,12 @@ inline const auto kToggleRows = std::array<ToggleRow, 15>{ {
 		{ u"GIF"_q, u"playback"_q, u"controls"_q },
 	},
 	{
+		&kMp4FilePreview,
+		tr::lng_serein_mp4_file_preview,
+		u"serein/media/mp4-file-preview"_q,
+		{ u"MP4"_q, u"file"_q, u"preview"_q },
+	},
+	{
 		&kForceClickPreview,
 		tr::lng_serein_force_click_preview,
 		u"serein/media/force-click-preview"_q,
@@ -82,12 +89,6 @@ inline const auto kToggleRows = std::array<ToggleRow, 15>{ {
 		tr::lng_serein_downloads_per_chat,
 		u"serein/media/downloads-per-chat"_q,
 		{ u"download"_q, u"folder"_q, u"chat"_q, u"channel"_q, u"organize"_q },
-	},
-	{
-		&kMp4FilePreview,
-		tr::lng_serein_mp4_file_preview,
-		u"serein/media/mp4-file-preview"_q,
-		{ u"MP4"_q, u"file"_q, u"preview"_q },
 	},
 	{
 		&kDenoiseVoiceMessages,
@@ -105,6 +106,11 @@ inline const auto kToggleRows = std::array<ToggleRow, 15>{ {
 
 inline void AddLayout(
 		::Settings::Builder::SectionBuilder &builder) {
+	AddSection(builder, {
+		u"serein/media/stickers"_q,
+		tr::lng_serein_section_stickers,
+		{ u"sticker"_q, u"emoji"_q },
+	});
 	AddChoice(builder, {
 		.option = &kStickerScale,
 		.title = tr::lng_serein_sticker_scale,
@@ -129,7 +135,6 @@ inline void AddLayout(
 	AddToggle(builder, kToggleRows[4]);
 	AddToggle(builder, kToggleRows[5]);
 	AddToggle(builder, kToggleRows[6]);
-	AddToggle(builder, kToggleRows[7]);
 	AddText(builder, {
 		.option = &kStickerAuthorBot,
 		.title = tr::lng_serein_sticker_author_bot,
@@ -137,18 +142,43 @@ inline void AddLayout(
 		.keywords = { u"sticker"_q, u"author"_q, u"bot"_q, u"lookup"_q },
 		.placeholder = tr::lng_serein_sticker_author_bot_placeholder,
 	});
-	AddNote(builder, tr::lng_serein_sticker_author_bot_note);
+	EndSection(builder, tr::lng_serein_sticker_author_bot_note);
+	AddSection(builder, {
+		u"serein/media/gifs-videos"_q,
+		tr::lng_serein_section_gifs_videos,
+		{ u"GIF"_q, u"video"_q },
+	});
+	AddToggle(builder, kToggleRows[7]);
 	AddToggle(builder, kToggleRows[8]);
 	AddToggle(builder, kToggleRows[9]);
 	AddToggle(builder, kToggleRows[10]);
-	AddNote(builder, tr::lng_serein_force_click_preview_note);
 	AddToggle(builder, kToggleRows[11]);
-	AddNote(builder, tr::lng_serein_downloads_per_chat_note);
+	EndSection(builder, tr::lng_serein_force_click_preview_note);
+	AddSection(builder, {
+		u"serein/media/more-media"_q,
+		tr::lng_serein_section_more_media,
+		{ u"files"_q, u"voice"_q, u"stories"_q },
+	});
 	AddToggle(builder, kToggleRows[12]);
+	AddNote(builder, tr::lng_serein_downloads_per_chat_note);
 	AddToggle(builder, kToggleRows[13]);
 	AddNote(builder, tr::lng_serein_denoise_voice_messages_note);
 	AddToggle(builder, kToggleRows[14]);
-	AddNote(builder, tr::lng_serein_story_posting_note);
+	EndSection(builder, tr::lng_serein_story_posting_note);
+}
+
+inline constexpr auto kSubpageTitle = &tr::lng_serein_media;
+inline const auto kSubpageIcon = &st::menuIconPhoto;
+
+inline void AddSubpageButton(
+		::Settings::Builder::SectionBuilder &builder,
+		::Settings::Type section) {
+	builder.addSectionButton({
+		.title = (*kSubpageTitle)(),
+		.targetSection = section,
+		.icon = { kSubpageIcon },
+		.keywords = { u"media"_q, u"sticker"_q, u"emoji"_q },
+	});
 }
 
 } // namespace Serein::Media

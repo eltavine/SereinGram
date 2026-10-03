@@ -44,11 +44,19 @@ public:
 const auto kMeta = BuildHelper({
 	.id = PrivacySection::Id(),
 	.parentId = HomeId(),
-	.title = &tr::lng_serein_privacy,
-	.icon = &st::menuIconLock,
+	.title = Privacy::kSubpageTitle,
+	.icon = Privacy::kSubpageIcon,
 }, [](SectionBuilder &builder) {
+	builder.addSkip();
 	Ghost::AddSubpageButton(builder, GhostId());
 	HistorySettings::AddSubpageButton(builder, HistoryId());
+	EndSection(builder);
+	Privacy::AddLayout(builder);
+	AddSection(builder, {
+		u"serein/privacy/account-tools"_q,
+		tr::lng_serein_section_account_tools,
+		{ u"phone"_q, u"QR"_q, u"blocked"_q },
+	});
 	const auto session = builder.session();
 	const auto button = builder.addButton({
 		.id = u"serein/privacy/hide-my-phone"_q,
@@ -64,20 +72,7 @@ const auto kMeta = BuildHelper({
 			session->saveSettingsDelayed();
 		}, button->lifetime());
 	}
-	Privacy::AddLayout(builder);
 	const auto controller = builder.controller();
-	builder.addButton({
-		.id = u"serein/privacy/qr-scan"_q,
-		.title = tr::lng_serein_qr_scan(),
-		.st = &st::settingsButtonNoIcon,
-		.onClick = [=] {
-			if (controller) {
-				Privacy::ShowQrScanner(controller);
-			}
-		},
-		.keywords = { u"QR"_q, u"login"_q, u"scan"_q },
-	});
-	builder.addDividerText(tr::lng_serein_qr_scan_about());
 	builder.addButton({
 		.id = u"serein/privacy/unblock-all"_q,
 		.title = tr::lng_serein_unblock_all(),
@@ -89,6 +84,18 @@ const auto kMeta = BuildHelper({
 		},
 		.keywords = { u"blocked"_q, u"unblock"_q },
 	});
+	builder.addButton({
+		.id = u"serein/privacy/qr-scan"_q,
+		.title = tr::lng_serein_qr_scan(),
+		.st = &st::settingsButtonNoIcon,
+		.onClick = [=] {
+			if (controller) {
+				Privacy::ShowQrScanner(controller);
+			}
+		},
+		.keywords = { u"QR"_q, u"login"_q, u"scan"_q },
+	});
+	EndSection(builder, tr::lng_serein_qr_scan_about);
 });
 
 const SectionBuildMethod PrivacySection::kBuild = kMeta.build;

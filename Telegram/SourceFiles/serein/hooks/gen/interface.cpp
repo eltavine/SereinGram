@@ -86,12 +86,12 @@ rpl::producer<QByteArray> MainMenuConfigValue() {
 	return ForDevice().Value(Serein::Interface::kMainMenuConfig);
 }
 
-bool HideAppIconBadge() {
-	return ForDevice().Get(Serein::Interface::kHideAppIconBadge);
+bool MenuShortcuts() {
+	return ForDevice().Get(Serein::Interface::kMenuShortcuts);
 }
 
-rpl::producer<bool> HideAppIconBadgeValue() {
-	return ForDevice().Value(Serein::Interface::kHideAppIconBadge);
+rpl::producer<bool> MenuShortcutsValue() {
+	return ForDevice().Value(Serein::Interface::kMenuShortcuts);
 }
 
 int NotificationDelay() {
@@ -126,12 +126,12 @@ rpl::producer<QByteArray> QuietHoursValue() {
 	return ForDevice().Value(Serein::Interface::kQuietHours);
 }
 
-bool MenuShortcuts() {
-	return ForDevice().Get(Serein::Interface::kMenuShortcuts);
+bool HideAppIconBadge() {
+	return ForDevice().Get(Serein::Interface::kHideAppIconBadge);
 }
 
-rpl::producer<bool> MenuShortcutsValue() {
-	return ForDevice().Value(Serein::Interface::kMenuShortcuts);
+rpl::producer<bool> HideAppIconBadgeValue() {
+	return ForDevice().Value(Serein::Interface::kHideAppIconBadge);
 }
 
 QByteArray GlobalShortcut() {

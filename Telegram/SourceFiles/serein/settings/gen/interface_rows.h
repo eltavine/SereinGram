@@ -5,6 +5,7 @@
 #include "lang/lang_keys.h"
 #include "serein/schema/gen/settings/interface.h"
 #include "serein/settings/rows.h"
+#include "styles/style_menu_icons.h"
 
 #include <array>
 
@@ -42,10 +43,10 @@ inline const auto kToggleRows = std::array<ToggleRow, 10>{ {
 		{ u"chat"_q, u"theme"_q, u"wallpaper"_q },
 	},
 	{
-		&kHideAppIconBadge,
-		tr::lng_serein_hide_app_icon_badge,
-		u"serein/interface/hide-app-icon-badge"_q,
-		{ u"dock"_q, u"icon"_q, u"badge"_q },
+		&kMenuShortcuts,
+		tr::lng_serein_menu_shortcuts,
+		u"serein/interface/menu-shortcuts"_q,
+		{ u"main menu"_q, u"tray"_q, u"ghost"_q, u"presentation"_q, u"recent chats"_q },
 	},
 	{
 		&kCenterTopNotifications,
@@ -54,10 +55,10 @@ inline const auto kToggleRows = std::array<ToggleRow, 10>{ {
 		{ u"notification"_q, u"position"_q, u"center"_q },
 	},
 	{
-		&kMenuShortcuts,
-		tr::lng_serein_menu_shortcuts,
-		u"serein/interface/menu-shortcuts"_q,
-		{ u"main menu"_q, u"tray"_q, u"ghost"_q, u"presentation"_q, u"recent chats"_q },
+		&kHideAppIconBadge,
+		tr::lng_serein_hide_app_icon_badge,
+		u"serein/interface/hide-app-icon-badge"_q,
+		{ u"dock"_q, u"icon"_q, u"badge"_q },
 	},
 	{
 		&kHalfwidthUiPunctuation,
@@ -96,6 +97,7 @@ inline void AddLayout(
 	custom.bubbleRoundness();
 	custom.avatarRoundness();
 	custom.uniformAvatarShapes();
+	EndSection(builder);
 	AddSection(builder, {
 		u"serein/interface/message-style"_q,
 		tr::lng_serein_message_style,
@@ -119,45 +121,52 @@ inline void AddLayout(
 	AddToggle(builder, kToggleRows[2]);
 	AddToggle(builder, kToggleRows[3]);
 	AddToggle(builder, kToggleRows[4]);
+	EndSection(builder);
 	AddSection(builder, {
 		u"serein/interface/main-menu-heading"_q,
 		tr::lng_serein_main_menu,
 		{ u"menu"_q, u"title"_q },
 	});
 	custom.mainMenu();
-	AddSection(builder, {
-		u"serein/interface/window-notification"_q,
-		tr::lng_serein_window_notification,
-		{ u"window"_q, u"notification"_q },
-	});
 	AddToggle(builder, kToggleRows[5]);
+	EndSection(builder, tr::lng_serein_menu_shortcuts_note);
+	AddSection(builder, {
+		u"serein/interface/notifications"_q,
+		tr::lng_serein_section_notifications,
+		{ u"notification"_q, u"window"_q },
+	});
 	custom.notificationDelay();
 	custom.otherDeviceNotificationDelay();
 	AddToggle(builder, kToggleRows[6]);
 	AddNote(builder, tr::lng_serein_center_top_notifications_note);
 	custom.quietHours();
 	AddToggle(builder, kToggleRows[7]);
-	AddNote(builder, tr::lng_serein_menu_shortcuts_note);
+	EndSection(builder);
+	AddSection(builder, {
+		u"serein/interface/app"_q,
+		tr::lng_serein_section_app,
+		{ u"shortcut"_q, u"accounts"_q, u"updates"_q },
+	});
 	custom.globalShortcut();
-	AddSection(builder, {
-		u"serein/interface/text"_q,
-		tr::lng_serein_ui_text,
-		{ u"text"_q, u"punctuation"_q },
-	});
 	AddToggle(builder, kToggleRows[8]);
-	AddSection(builder, {
-		u"serein/interface/accounts"_q,
-		tr::lng_serein_accounts,
-		{ u"accounts"_q },
-	});
 	AddToggle(builder, kToggleRows[9]);
 	AddNote(builder, tr::lng_serein_more_accounts_note);
-	AddSection(builder, {
-		u"serein/interface/updates"_q,
-		tr::lng_serein_updates,
-		{ u"updates"_q },
-	});
 	custom.checkUpdates();
+	EndSection(builder);
+}
+
+inline constexpr auto kSubpageTitle = &tr::lng_serein_interface;
+inline const auto kSubpageIcon = &st::menuIconPalette;
+
+inline void AddSubpageButton(
+		::Settings::Builder::SectionBuilder &builder,
+		::Settings::Type section) {
+	builder.addSectionButton({
+		.title = (*kSubpageTitle)(),
+		.targetSection = section,
+		.icon = { kSubpageIcon },
+		.keywords = { u"interface"_q, u"appearance"_q },
+	});
 }
 
 } // namespace Serein::Interface

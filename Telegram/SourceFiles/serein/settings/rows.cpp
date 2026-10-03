@@ -243,6 +243,7 @@ void AddText(
 void AddSection(
 		::Settings::Builder::SectionBuilder &builder,
 		const SectionRow &row) {
+	builder.addSkip();
 	builder.addSubsectionTitle({
 		.id = row.id,
 		.title = row.title(),
@@ -254,6 +255,19 @@ void AddNote(
 		::Settings::Builder::SectionBuilder &builder,
 		tr::phrase<> text) {
 	builder.addDividerText(text());
+	builder.addSkip();
+}
+
+void EndSection(::Settings::Builder::SectionBuilder &builder) {
+	builder.addSkip();
+	builder.addDivider();
+}
+
+void EndSection(
+		::Settings::Builder::SectionBuilder &builder,
+		tr::phrase<> note) {
+	builder.addSkip();
+	builder.addDividerText(note());
 }
 
 } // namespace Serein

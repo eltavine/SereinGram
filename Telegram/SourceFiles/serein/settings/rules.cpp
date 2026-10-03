@@ -1,6 +1,7 @@
 #include "serein/settings/rules.h"
 
 #include "serein/settings/home.h"
+#include "serein/settings/gen/filters_rows.h"
 #include "serein/settings/keyword_alerts.h"
 #include "serein/filters/settings.h"
 #include "serein/links/settings.h"
@@ -36,10 +37,11 @@ public:
 const auto kMeta = BuildHelper({
 	.id = RulesSection::Id(),
 	.parentId = HomeId(),
-	.title = &tr::lng_serein_rules,
-	.icon = &st::menuIconTagFilter,
+	.title = Filters::kSubpageTitle,
+	.icon = Filters::kSubpageIcon,
 }, [](SectionBuilder &builder) {
 	const auto controller = builder.controller();
+	builder.addSkip();
 	builder.addButton({
 		.id = u"serein/rules/messages"_q,
 		.title = tr::lng_serein_filters(),
@@ -49,6 +51,8 @@ const auto kMeta = BuildHelper({
 		},
 		.keywords = { u"filter"_q, u"regex"_q },
 	});
+	EndSection(builder, tr::lng_serein_rules_filters_about);
+	builder.addSkip();
 	builder.addButton({
 		.id = u"serein/rules/links"_q,
 		.title = tr::lng_serein_link_rules(),
@@ -58,7 +62,10 @@ const auto kMeta = BuildHelper({
 		},
 		.keywords = { u"link"_q, u"URL"_q },
 	});
+	EndSection(builder, tr::lng_serein_rules_links_about);
+	builder.addSkip();
 	Filters::AddKeywordAlerts(builder);
+	EndSection(builder, tr::lng_serein_rules_alerts_about);
 });
 
 const SectionBuildMethod RulesSection::kBuild = kMeta.build;

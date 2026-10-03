@@ -62,14 +62,6 @@ rpl::producer<bool> HideRecommendedEmojiValue() {
 	return ForDevice().Value(Serein::Media::kHideRecommendedEmoji);
 }
 
-bool HideGifCategories() {
-	return ForDevice().Get(Serein::Media::kHideGifCategories);
-}
-
-rpl::producer<bool> HideGifCategoriesValue() {
-	return ForDevice().Value(Serein::Media::kHideGifCategories);
-}
-
 bool HideGreetingSticker() {
 	return ForDevice().Get(Serein::Media::kHideGreetingSticker);
 }
@@ -94,6 +86,14 @@ rpl::producer<QString> StickerAuthorBotValue() {
 	return ForDevice().Value(Serein::Media::kStickerAuthorBot);
 }
 
+bool HideGifCategories() {
+	return ForDevice().Get(Serein::Media::kHideGifCategories);
+}
+
+rpl::producer<bool> HideGifCategoriesValue() {
+	return ForDevice().Value(Serein::Media::kHideGifCategories);
+}
+
 bool DisableVideoAutoplay() {
 	return ForDevice().Get(Serein::Media::kDisableVideoAutoplay);
 }
@@ -110,6 +110,14 @@ rpl::producer<bool> GifPlaybackControlsValue() {
 	return ForDevice().Value(Serein::Media::kGifPlaybackControls);
 }
 
+bool Mp4FilePreview() {
+	return ForDevice().Get(Serein::Media::kMp4FilePreview);
+}
+
+rpl::producer<bool> Mp4FilePreviewValue() {
+	return ForDevice().Value(Serein::Media::kMp4FilePreview);
+}
+
 bool ForceClickPreview() {
 	return ForDevice().Get(Serein::Media::kForceClickPreview);
 }
@@ -124,14 +132,6 @@ bool DownloadsPerChat() {
 
 rpl::producer<bool> DownloadsPerChatValue() {
 	return ForDevice().Value(Serein::Media::kDownloadsPerChat);
-}
-
-bool Mp4FilePreview() {
-	return ForDevice().Get(Serein::Media::kMp4FilePreview);
-}
-
-rpl::producer<bool> Mp4FilePreviewValue() {
-	return ForDevice().Value(Serein::Media::kMp4FilePreview);
 }
 
 bool DenoiseVoiceMessages() {

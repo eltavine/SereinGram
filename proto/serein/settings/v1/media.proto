@@ -10,10 +10,27 @@ message MediaSettings {
     cpp_namespace: "Media"
     scope: SCOPE_DEVICE
     category: CATEGORY_MEDIA
+    subpage: {
+      title: "lng_serein_media"
+      icon: "menuIconPhoto"
+      keywords: [
+        "media",
+        "sticker",
+        "emoji"
+      ]
+    }
   };
 
   optional int32 sticker_scale = 1 [
     (serein.options.v1.field) = {
+      section: {
+        title: "lng_serein_section_stickers"
+        id: "stickers"
+        keywords: [
+          "sticker",
+          "emoji"
+        ]
+      }
       refresh: REFRESH_MESSAGE_VIEW
       default_int: 100
       keywords: [
@@ -81,12 +98,6 @@ message MediaSettings {
       "emoji"
     ]
   }];
-  optional bool hide_gif_categories = 7 [(serein.options.v1.field) = {
-    keywords: [
-      "GIF",
-      "categories"
-    ]
-  }];
   optional bool hide_greeting_sticker = 8 [(serein.options.v1.field) = {
     keywords: [
       "greeting",
@@ -119,6 +130,20 @@ message MediaSettings {
       pattern: "^(@?[A-Za-z][A-Za-z0-9_]{3,31})?$"
     }
   ];
+  optional bool hide_gif_categories = 7 [(serein.options.v1.field) = {
+    section: {
+      title: "lng_serein_section_gifs_videos"
+      id: "gifs-videos"
+      keywords: [
+        "GIF",
+        "video"
+      ]
+    }
+    keywords: [
+      "GIF",
+      "categories"
+    ]
+  }];
   optional bool disable_video_autoplay = 9 [(serein.options.v1.field) = {
     keywords: [
       "video",
@@ -133,6 +158,13 @@ message MediaSettings {
       "controls"
     ]
   }];
+  optional bool mp4_file_preview = 11 [(serein.options.v1.field) = {
+    keywords: [
+      "MP4",
+      "file",
+      "preview"
+    ]
+  }];
   optional bool force_click_preview = 15 [(serein.options.v1.field) = {
     keywords: [
       "Force Click",
@@ -144,6 +176,15 @@ message MediaSettings {
     note: "lng_serein_force_click_preview_note"
   }];
   optional bool downloads_per_chat = 17 [(serein.options.v1.field) = {
+    section: {
+      title: "lng_serein_section_more_media"
+      id: "more-media"
+      keywords: [
+        "files",
+        "voice",
+        "stories"
+      ]
+    }
     keywords: [
       "download",
       "folder",
@@ -152,13 +193,6 @@ message MediaSettings {
       "organize"
     ]
     note: "lng_serein_downloads_per_chat_note"
-  }];
-  optional bool mp4_file_preview = 11 [(serein.options.v1.field) = {
-    keywords: [
-      "MP4",
-      "file",
-      "preview"
-    ]
   }];
   optional bool denoise_voice_messages = 12 [(serein.options.v1.field) = {
     keywords: [

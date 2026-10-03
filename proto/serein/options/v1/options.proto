@@ -112,6 +112,10 @@ message Section {
   // Search id suffix below serein/<page>/.
   string id = 2;
   repeated string keywords = 3;
+  // Lang key of the explanation that closes the section.
+  string note = 4;
+  // Name of a custom row the page draws at the end of the section.
+  string extra = 5;
 }
 
 // A file annotated with file options gets C++ types and JSON codecs.

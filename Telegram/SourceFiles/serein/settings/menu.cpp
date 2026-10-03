@@ -122,8 +122,8 @@ void VisibilityBox(not_null<Ui::GenericBox*> box, Menu::ActionId id) {
 const auto kMeta = BuildHelper({
 	.id = MenuSection::Id(),
 	.parentId = HomeId(),
-	.title = &tr::lng_serein_menu,
-	.icon = &st::menuIconReorder,
+	.title = Menu::kSubpageTitle,
+	.icon = Menu::kSubpageIcon,
 }, [](SectionBuilder &builder) {
 	const auto controller = builder.controller();
 	Menu::AddLayout(builder, {

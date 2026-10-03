@@ -155,8 +155,8 @@ void LinkInlineBotsBox(not_null<Ui::GenericBox*> box) {
 const auto kMeta = BuildHelper({
 	.id = ComposeSection::Id(),
 	.parentId = HomeId(),
-	.title = &tr::lng_serein_compose,
-	.icon = &st::menuIconEdit,
+	.title = Compose::kSubpageTitle,
+	.icon = Compose::kSubpageIcon,
 }, [](SectionBuilder &builder) {
 	const auto controller = builder.controller();
 	Compose::AddLayout(builder, {

@@ -5,6 +5,7 @@
 #include "lang/lang_keys.h"
 #include "serein/schema/gen/settings/chats.h"
 #include "serein/settings/rows.h"
+#include "styles/style_menu_icons.h"
 
 #include <array>
 
@@ -128,9 +129,10 @@ inline const auto kToggleRows = std::array<ToggleRow, 19>{ {
 } };
 
 struct CustomRows {
-	CustomRow startupFolderMode;
 	CustomRow chatSort;
+	CustomRow startupFolderMode;
 	CustomRow hiddenFolderIds;
+	CustomRow cleanup;
 };
 
 inline void AddLayout(
@@ -150,10 +152,11 @@ inline void AddLayout(
 		.values = { 0, 1, 2, 3 },
 		.labels = { tr::lng_serein_preview_follow, tr::lng_serein_preview_one, tr::lng_serein_preview_two, tr::lng_serein_preview_three },
 	});
+	custom.chatSort();
 	AddToggle(builder, kToggleRows[1]);
 	AddToggle(builder, kToggleRows[2]);
 	AddToggle(builder, kToggleRows[3]);
-	AddNote(builder, tr::lng_serein_search_own_chats_only_note);
+	EndSection(builder, tr::lng_serein_search_own_chats_only_note);
 	AddSection(builder, {
 		u"serein/chats/folders"_q,
 		tr::lng_serein_folders,
@@ -163,15 +166,9 @@ inline void AddLayout(
 	AddToggle(builder, kToggleRows[4]);
 	AddToggle(builder, kToggleRows[5]);
 	AddToggle(builder, kToggleRows[6]);
-	AddSection(builder, {
-		u"serein/chats/sorting"_q,
-		tr::lng_serein_sorting,
-		{ u"sort"_q, u"order"_q },
-	});
-	custom.chatSort();
-	AddToggle(builder, kToggleRows[7]);
-	AddNote(builder, tr::lng_serein_managed_folder_filter_note);
 	custom.hiddenFolderIds();
+	AddToggle(builder, kToggleRows[7]);
+	EndSection(builder, tr::lng_serein_managed_folder_filter_note);
 	AddSection(builder, {
 		u"serein/chats/promotions"_q,
 		tr::lng_serein_promotions,
@@ -181,6 +178,7 @@ inline void AddLayout(
 	AddToggle(builder, kToggleRows[9]);
 	AddToggle(builder, kToggleRows[10]);
 	AddToggle(builder, kToggleRows[11]);
+	EndSection(builder);
 	AddSection(builder, {
 		u"serein/chats/scroll-navigation"_q,
 		tr::lng_serein_scroll_navigation,
@@ -189,7 +187,12 @@ inline void AddLayout(
 	AddToggle(builder, kToggleRows[12]);
 	AddToggle(builder, kToggleRows[13]);
 	AddToggle(builder, kToggleRows[14]);
-	AddNote(builder, tr::lng_serein_remember_reading_position_note);
+	EndSection(builder, tr::lng_serein_remember_reading_position_note);
+	AddSection(builder, {
+		u"serein/chats/chat-tools"_q,
+		tr::lng_serein_section_chat_tools,
+		{ u"menu"_q, u"tools"_q, u"pin"_q },
+	});
 	AddToggle(builder, kToggleRows[15]);
 	AddNote(builder, tr::lng_serein_chat_quick_actions_note);
 	AddToggle(builder, kToggleRows[16]);
@@ -198,6 +201,22 @@ inline void AddLayout(
 	AddNote(builder, tr::lng_serein_local_pinning_note);
 	AddToggle(builder, kToggleRows[18]);
 	AddNote(builder, tr::lng_serein_chat_settings_menu_note);
+	custom.cleanup();
+	EndSection(builder);
+}
+
+inline constexpr auto kSubpageTitle = &tr::lng_serein_chats;
+inline const auto kSubpageIcon = &st::menuIconChats;
+
+inline void AddSubpageButton(
+		::Settings::Builder::SectionBuilder &builder,
+		::Settings::Type section) {
+	builder.addSectionButton({
+		.title = (*kSubpageTitle)(),
+		.targetSection = section,
+		.icon = { kSubpageIcon },
+		.keywords = { u"chats"_q, u"list"_q },
+	});
 }
 
 } // namespace Serein::Chats

@@ -10,6 +10,14 @@ message ChatsSettings {
     cpp_namespace: "Chats"
     scope: SCOPE_DEVICE
     category: CATEGORY_CHATS
+    subpage: {
+      title: "lng_serein_chats"
+      icon: "menuIconChats"
+      keywords: [
+        "chats",
+        "list"
+      ]
+    }
   };
 
   optional bool chat_list_compact = 1 [(serein.options.v1.field) = {
@@ -51,6 +59,7 @@ message ChatsSettings {
       lte: 3
     }
   ];
+  optional int32 chat_sort = 11 [(serein.options.v1.field) = {validator: "ValidChatSort"}];
   optional bool hide_saved_and_archived_previews = 3 [(serein.options.v1.field) = {
     keywords: [
       "saved",
@@ -86,22 +95,6 @@ message ChatsSettings {
       lte: 2
     }
   ];
-  optional int32 startup_folder_id = 9 [
-    (serein.options.v1.field) = {
-      hidden: true
-      title: "lng_serein_startup_folder"
-      scope: SCOPE_ACCOUNT
-    },
-    (buf.validate.field).int32 = {gte: 0}
-  ];
-  optional int32 last_opened_folder_id = 10 [
-    (serein.options.v1.field) = {
-      hidden: true
-      title: "lng_serein_startup_folder"
-      scope: SCOPE_ACCOUNT
-    },
-    (buf.validate.field).int32 = {gte: 0}
-  ];
   optional bool hide_all_chats_folder = 5 [(serein.options.v1.field) = {
     keywords: [
       "all chats",
@@ -121,28 +114,6 @@ message ChatsSettings {
       "folders"
     ]
   }];
-  optional int32 chat_sort = 11 [(serein.options.v1.field) = {
-    section: {
-      title: "lng_serein_sorting"
-      id: "sorting"
-      keywords: [
-        "sort",
-        "order"
-      ]
-    }
-    validator: "ValidChatSort"
-  }];
-  optional bool managed_folder_filter = 26 [(serein.options.v1.field) = {
-    keywords: [
-      "folder",
-      "admin",
-      "manage",
-      "groups",
-      "channels"
-    ]
-    note: "lng_serein_managed_folder_filter_note"
-    restart: true
-  }];
   optional string hidden_folder_ids = 27 [(serein.options.v1.field) = {
     title: "lng_serein_hidden_folders"
     keywords: [
@@ -155,11 +126,16 @@ message ChatsSettings {
     custom_ui: true
     validator: "ValidHiddenFolderIds"
   }];
-  optional string managed_folder_ids = 12 [(serein.options.v1.field) = {
-    hidden: true
-    title: "lng_serein_managed_only"
-    scope: SCOPE_ACCOUNT
-    validator: "ValidManagedFolderIds"
+  optional bool managed_folder_filter = 26 [(serein.options.v1.field) = {
+    keywords: [
+      "folder",
+      "admin",
+      "manage",
+      "groups",
+      "channels"
+    ]
+    note: "lng_serein_managed_folder_filter_note"
+    restart: true
   }];
   optional bool hide_sponsored_messages = 13 [(serein.options.v1.field) = {
     section: {
@@ -222,6 +198,16 @@ message ChatsSettings {
     note: "lng_serein_remember_reading_position_note"
   }];
   optional bool chat_quick_actions = 22 [(serein.options.v1.field) = {
+    section: {
+      title: "lng_serein_section_chat_tools"
+      id: "chat-tools"
+      keywords: [
+        "menu",
+        "tools",
+        "pin"
+      ]
+      extra: "cleanup"
+    }
     keywords: [
       "toolbar",
       "search",
@@ -254,6 +240,28 @@ message ChatsSettings {
       "settings"
     ]
     note: "lng_serein_chat_settings_menu_note"
+  }];
+  optional int32 startup_folder_id = 9 [
+    (serein.options.v1.field) = {
+      hidden: true
+      title: "lng_serein_startup_folder"
+      scope: SCOPE_ACCOUNT
+    },
+    (buf.validate.field).int32 = {gte: 0}
+  ];
+  optional int32 last_opened_folder_id = 10 [
+    (serein.options.v1.field) = {
+      hidden: true
+      title: "lng_serein_startup_folder"
+      scope: SCOPE_ACCOUNT
+    },
+    (buf.validate.field).int32 = {gte: 0}
+  ];
+  optional string managed_folder_ids = 12 [(serein.options.v1.field) = {
+    hidden: true
+    title: "lng_serein_managed_only"
+    scope: SCOPE_ACCOUNT
+    validator: "ValidManagedFolderIds"
   }];
   // Serialized peer ids of recently opened chats, newest first.
   optional string recent_chats = 19 [(serein.options.v1.field) = {

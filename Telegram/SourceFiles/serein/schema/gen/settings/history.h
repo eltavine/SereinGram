@@ -14,6 +14,20 @@ inline constexpr auto kHistorySaveDeleted = Option<bool>{
 	Category::Privacy,
 	"lng_serein_history_save_deleted",
 	0 };
+inline constexpr auto kHistorySaveEdits = Option<bool>{
+	"serein.historySaveEdits",
+	Scope::Account,
+	false,
+	Category::Privacy,
+	"lng_serein_history_save_edits",
+	0 };
+inline constexpr auto kHistoryIncludeBots = Option<bool>{
+	"serein.historyIncludeBots",
+	Scope::Account,
+	false,
+	Category::Privacy,
+	"lng_serein_history_include_bots",
+	0 };
 inline constexpr auto kHistoryKeepDeletedInPlace = Option<bool>{
 	"serein.historyKeepDeletedInPlace",
 	Scope::Account,
@@ -34,20 +48,6 @@ inline constexpr auto kHistoryKeepRemovedChats = Option<bool>{
 	false,
 	Category::Privacy,
 	"lng_serein_history_keep_removed_chats",
-	0 };
-inline constexpr auto kHistorySaveEdits = Option<bool>{
-	"serein.historySaveEdits",
-	Scope::Account,
-	false,
-	Category::Privacy,
-	"lng_serein_history_save_edits",
-	0 };
-inline constexpr auto kHistoryIncludeBots = Option<bool>{
-	"serein.historyIncludeBots",
-	Scope::Account,
-	false,
-	Category::Privacy,
-	"lng_serein_history_include_bots",
 	0 };
 inline constexpr auto kHistoryRetentionDays = Option<int>{
 	"serein.historyRetentionDays",
@@ -82,11 +82,11 @@ inline const auto kHistoryExcludedPeers = Option<QByteArray>{
 
 inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kHistorySaveDeleted));
+	Expects(registry.Add(kHistorySaveEdits));
+	Expects(registry.Add(kHistoryIncludeBots));
 	Expects(registry.Add(kHistoryKeepDeletedInPlace));
 	Expects(registry.Add(kHistoryKeepExpiredMedia));
 	Expects(registry.Add(kHistoryKeepRemovedChats));
-	Expects(registry.Add(kHistorySaveEdits));
-	Expects(registry.Add(kHistoryIncludeBots));
 	Expects(registry.Add(kHistoryRetentionDays));
 	Expects(registry.Add(kHistoryMaxRecords));
 	Expects(registry.Add(kHistoryExcludedPeers));

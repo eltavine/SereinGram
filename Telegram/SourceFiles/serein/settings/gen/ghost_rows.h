@@ -89,18 +89,29 @@ inline void AddLayout(
 		const CustomRows &custom) {
 	AddToggle(builder, kToggleRows[0]);
 	AddToggle(builder, kToggleRows[1]);
-	AddNote(builder, tr::lng_serein_ghost_all_accounts_note);
+	EndSection(builder, tr::lng_serein_ghost_all_accounts_note);
+	AddSection(builder, {
+		u"serein/ghost/hide"_q,
+		tr::lng_serein_section_ghost_hide,
+		{ u"hide"_q, u"online"_q, u"typing"_q },
+	});
 	AddToggle(builder, kToggleRows[2]);
 	AddToggle(builder, kToggleRows[3]);
 	AddToggle(builder, kToggleRows[4]);
 	AddToggle(builder, kToggleRows[5]);
 	AddToggle(builder, kToggleRows[6]);
+	EndSection(builder, tr::lng_serein_section_ghost_hide_note);
+	AddSection(builder, {
+		u"serein/ghost/behavior"_q,
+		tr::lng_serein_section_ghost_behavior,
+		{ u"read"_q, u"send"_q, u"scheduled"_q },
+	});
 	AddToggle(builder, kToggleRows[7]);
 	AddToggle(builder, kToggleRows[8]);
+	custom.readReceiptExceptions();
 	AddToggle(builder, kToggleRows[9]);
 	AddToggle(builder, kToggleRows[10]);
-	AddNote(builder, tr::lng_serein_ghost_note);
-	custom.readReceiptExceptions();
+	EndSection(builder, tr::lng_serein_ghost_note);
 }
 
 inline constexpr auto kSubpageTitle = &tr::lng_serein_ghost_mode;

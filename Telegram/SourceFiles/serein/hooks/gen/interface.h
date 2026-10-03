@@ -26,8 +26,8 @@ namespace Serein::Hooks::Interface {
 [[nodiscard]] rpl::producer<bool> IgnoreChatThemeValue();
 [[nodiscard]] QByteArray MainMenuConfig();
 [[nodiscard]] rpl::producer<QByteArray> MainMenuConfigValue();
-[[nodiscard]] bool HideAppIconBadge();
-[[nodiscard]] rpl::producer<bool> HideAppIconBadgeValue();
+[[nodiscard]] bool MenuShortcuts();
+[[nodiscard]] rpl::producer<bool> MenuShortcutsValue();
 [[nodiscard]] int NotificationDelay();
 [[nodiscard]] rpl::producer<int> NotificationDelayValue();
 [[nodiscard]] int OtherDeviceNotificationDelay();
@@ -36,8 +36,8 @@ namespace Serein::Hooks::Interface {
 [[nodiscard]] rpl::producer<bool> CenterTopNotificationsValue();
 [[nodiscard]] QByteArray QuietHours();
 [[nodiscard]] rpl::producer<QByteArray> QuietHoursValue();
-[[nodiscard]] bool MenuShortcuts();
-[[nodiscard]] rpl::producer<bool> MenuShortcutsValue();
+[[nodiscard]] bool HideAppIconBadge();
+[[nodiscard]] rpl::producer<bool> HideAppIconBadgeValue();
 [[nodiscard]] QByteArray GlobalShortcut();
 [[nodiscard]] rpl::producer<QByteArray> GlobalShortcutValue();
 [[nodiscard]] bool HalfwidthUiPunctuation();

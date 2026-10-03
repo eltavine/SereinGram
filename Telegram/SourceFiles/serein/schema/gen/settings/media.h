@@ -63,13 +63,6 @@ inline constexpr auto kHideRecommendedEmoji = Option<bool>{
 	Category::Media,
 	"lng_serein_hide_recommended_emoji",
 	0 };
-inline constexpr auto kHideGifCategories = Option<bool>{
-	"serein.hideGifCategories",
-	Scope::Device,
-	false,
-	Category::Media,
-	"lng_serein_hide_gif_categories",
-	0 };
 inline constexpr auto kHideGreetingSticker = Option<bool>{
 	"serein.hideGreetingSticker",
 	Scope::Device,
@@ -95,6 +88,13 @@ inline const auto kStickerAuthorBot = Option<QString>{
 		return (value == QString())
 			|| ((value.toUcs4().size() <= 33) && (Codec::Matches(value, QString::fromUtf8("^(@?[A-Za-z][A-Za-z0-9_]{3,31})?$"))));
 	} };
+inline constexpr auto kHideGifCategories = Option<bool>{
+	"serein.hideGifCategories",
+	Scope::Device,
+	false,
+	Category::Media,
+	"lng_serein_hide_gif_categories",
+	0 };
 inline constexpr auto kDisableVideoAutoplay = Option<bool>{
 	"serein.disableVideoAutoplay",
 	Scope::Device,
@@ -109,6 +109,13 @@ inline constexpr auto kGifPlaybackControls = Option<bool>{
 	Category::Media,
 	"lng_serein_gif_playback_controls",
 	0 };
+inline constexpr auto kMp4FilePreview = Option<bool>{
+	"serein.mp4FilePreview",
+	Scope::Device,
+	false,
+	Category::Media,
+	"lng_serein_mp4_file_preview",
+	0 };
 inline constexpr auto kForceClickPreview = Option<bool>{
 	"serein.forceClickPreview",
 	Scope::Device,
@@ -122,13 +129,6 @@ inline constexpr auto kDownloadsPerChat = Option<bool>{
 	false,
 	Category::Media,
 	"lng_serein_downloads_per_chat",
-	0 };
-inline constexpr auto kMp4FilePreview = Option<bool>{
-	"serein.mp4FilePreview",
-	Scope::Device,
-	false,
-	Category::Media,
-	"lng_serein_mp4_file_preview",
 	0 };
 inline constexpr auto kDenoiseVoiceMessages = Option<bool>{
 	"serein.denoiseVoiceMessages",
@@ -153,15 +153,15 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kHideGroupStickers));
 	Expects(registry.Add(kHideRecommendedStickers));
 	Expects(registry.Add(kHideRecommendedEmoji));
-	Expects(registry.Add(kHideGifCategories));
 	Expects(registry.Add(kHideGreetingSticker));
 	Expects(registry.Add(kStickerPackAuthor));
 	Expects(registry.Add(kStickerAuthorBot));
+	Expects(registry.Add(kHideGifCategories));
 	Expects(registry.Add(kDisableVideoAutoplay));
 	Expects(registry.Add(kGifPlaybackControls));
+	Expects(registry.Add(kMp4FilePreview));
 	Expects(registry.Add(kForceClickPreview));
 	Expects(registry.Add(kDownloadsPerChat));
-	Expects(registry.Add(kMp4FilePreview));
 	Expects(registry.Add(kDenoiseVoiceMessages));
 	Expects(registry.Add(kStoryPosting));
 }

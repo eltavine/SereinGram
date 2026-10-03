@@ -5,6 +5,7 @@
 #include "lang/lang_keys.h"
 #include "serein/schema/gen/settings/privacy.h"
 #include "serein/settings/rows.h"
+#include "styles/style_menu_icons.h"
 
 #include <array>
 
@@ -28,18 +29,6 @@ inline const auto kToggleRows = std::array<ToggleRow, 13>{ {
 		tr::lng_serein_lock_settings,
 		u"serein/privacy/lock-settings"_q,
 		{ u"lock"_q, u"passcode"_q, u"settings"_q },
-	},
-	{
-		&kHideReadTime,
-		tr::lng_serein_hide_read_time,
-		u"serein/privacy/hide-read-time"_q,
-		{ u"read"_q, u"time"_q },
-	},
-	{
-		&kHideSharePhonePrompt,
-		tr::lng_serein_hide_share_phone_prompt,
-		u"serein/privacy/hide-share-phone-prompt"_q,
-		{ u"share"_q, u"phone"_q },
 	},
 	{
 		&kShowProfileDc,
@@ -78,6 +67,18 @@ inline const auto kToggleRows = std::array<ToggleRow, 13>{ {
 		{ u"profile"_q, u"gifts"_q },
 	},
 	{
+		&kHideReadTime,
+		tr::lng_serein_hide_read_time,
+		u"serein/privacy/hide-read-time"_q,
+		{ u"read"_q, u"time"_q },
+	},
+	{
+		&kHideSharePhonePrompt,
+		tr::lng_serein_hide_share_phone_prompt,
+		u"serein/privacy/hide-share-phone-prompt"_q,
+		{ u"share"_q, u"phone"_q },
+	},
+	{
 		&kHideCreateTodo,
 		tr::lng_serein_hide_create_todo,
 		u"serein/privacy/hide-create-todo"_q,
@@ -93,14 +94,22 @@ inline const auto kToggleRows = std::array<ToggleRow, 13>{ {
 
 inline void AddLayout(
 		::Settings::Builder::SectionBuilder &builder) {
+	AddSection(builder, {
+		u"serein/privacy/screen"_q,
+		tr::lng_serein_section_screen,
+		{ u"streamer"_q, u"screen"_q, u"lock"_q },
+	});
 	AddToggle(builder, kToggleRows[0]);
 	AddNote(builder, tr::lng_serein_demo_mode_note);
 	AddToggle(builder, kToggleRows[1]);
 	AddNote(builder, tr::lng_serein_auto_demo_mode_note);
 	AddToggle(builder, kToggleRows[2]);
-	AddNote(builder, tr::lng_serein_lock_settings_note);
-	AddToggle(builder, kToggleRows[3]);
-	AddToggle(builder, kToggleRows[4]);
+	EndSection(builder, tr::lng_serein_lock_settings_note);
+	AddSection(builder, {
+		u"serein/privacy/profiles"_q,
+		tr::lng_serein_section_profiles,
+		{ u"profile"_q, u"ID"_q },
+	});
 	AddChoice(builder, {
 		.option = &kProfileIdFormat,
 		.title = tr::lng_serein_profile_id_format,
@@ -109,19 +118,41 @@ inline void AddLayout(
 		.values = { 0, 1, 2 },
 		.labels = { tr::lng_serein_id_off, tr::lng_serein_id_bot_api, tr::lng_serein_id_raw },
 	});
-	AddToggle(builder, kToggleRows[5]);
-	AddToggle(builder, kToggleRows[6]);
+	AddToggle(builder, kToggleRows[3]);
+	AddToggle(builder, kToggleRows[4]);
 	AddNote(builder, tr::lng_serein_registration_date_note);
-	AddToggle(builder, kToggleRows[7]);
+	AddToggle(builder, kToggleRows[5]);
 	AddNote(builder, tr::lng_serein_contact_status_note);
-	AddToggle(builder, kToggleRows[8]);
+	AddToggle(builder, kToggleRows[6]);
 	AddNote(builder, tr::lng_serein_session_details_note);
-	AddToggle(builder, kToggleRows[9]);
+	AddToggle(builder, kToggleRows[7]);
 	AddNote(builder, tr::lng_serein_local_names_note);
+	AddToggle(builder, kToggleRows[8]);
+	EndSection(builder);
+	AddSection(builder, {
+		u"serein/privacy/prompts"_q,
+		tr::lng_serein_section_prompts,
+		{ u"prompt"_q, u"protected"_q },
+	});
+	AddToggle(builder, kToggleRows[9]);
 	AddToggle(builder, kToggleRows[10]);
 	AddToggle(builder, kToggleRows[11]);
 	AddToggle(builder, kToggleRows[12]);
-	AddNote(builder, tr::lng_serein_save_protected_content_note);
+	EndSection(builder, tr::lng_serein_save_protected_content_note);
+}
+
+inline constexpr auto kSubpageTitle = &tr::lng_serein_privacy;
+inline const auto kSubpageIcon = &st::menuIconLock;
+
+inline void AddSubpageButton(
+		::Settings::Builder::SectionBuilder &builder,
+		::Settings::Type section) {
+	builder.addSectionButton({
+		.title = (*kSubpageTitle)(),
+		.targetSection = section,
+		.icon = { kSubpageIcon },
+		.keywords = { u"privacy"_q, u"phone"_q },
+	});
 }
 
 } // namespace Serein::Privacy

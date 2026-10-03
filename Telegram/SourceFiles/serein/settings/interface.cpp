@@ -156,8 +156,8 @@ void AddDelay(
 const auto kMeta = BuildHelper({
 	.id = InterfaceSection::Id(),
 	.parentId = HomeId(),
-	.title = &tr::lng_serein_interface,
-	.icon = &st::menuIconPalette,
+	.title = Interface::kSubpageTitle,
+	.icon = Interface::kSubpageIcon,
 }, [](SectionBuilder &builder) {
 	const auto controller = builder.controller();
 	Interface::AddLayout(builder, {
@@ -245,7 +245,6 @@ const auto kMeta = BuildHelper({
 		},
 		.checkUpdates = [&] {
 			if (kSystemPackage) {
-				AddNote(builder, tr::lng_serein_updates_system_package);
 				return;
 			}
 			AddToggle(builder, {

@@ -38,6 +38,16 @@ message GhostSettings {
     note: "lng_serein_ghost_all_accounts_note"
   }];
   optional bool ghost_hide_read_receipts = 2 [(serein.options.v1.field) = {
+    section: {
+      title: "lng_serein_section_ghost_hide"
+      id: "hide"
+      keywords: [
+        "hide",
+        "online",
+        "typing"
+      ]
+      note: "lng_serein_section_ghost_hide_note"
+    }
     default_bool: true
     keywords: [
       "ghost",
@@ -73,6 +83,15 @@ message GhostSettings {
     ]
   }];
   optional bool ghost_mark_read_after_sending = 7 [(serein.options.v1.field) = {
+    section: {
+      title: "lng_serein_section_ghost_behavior"
+      id: "behavior"
+      keywords: [
+        "read",
+        "send",
+        "scheduled"
+      ]
+    }
     keywords: [
       "ghost",
       "read",
@@ -85,6 +104,17 @@ message GhostSettings {
       "read",
       "mark as read"
     ]
+  }];
+  optional string read_receipt_exceptions = 11 [(serein.options.v1.field) = {
+    title: "lng_serein_ghost_read_exceptions"
+    keywords: [
+      "ghost",
+      "read",
+      "receipts",
+      "exceptions"
+    ]
+    custom_ui: true
+    validator: "ValidReadReceiptExceptions"
   }];
   optional bool ghost_send_silently = 12 [(serein.options.v1.field) = {
     keywords: [
@@ -101,16 +131,5 @@ message GhostSettings {
       "send"
     ]
     note: "lng_serein_ghost_note"
-  }];
-  optional string read_receipt_exceptions = 11 [(serein.options.v1.field) = {
-    title: "lng_serein_ghost_read_exceptions"
-    keywords: [
-      "ghost",
-      "read",
-      "receipts",
-      "exceptions"
-    ]
-    custom_ui: true
-    validator: "ValidReadReceiptExceptions"
   }];
 }

@@ -98,7 +98,10 @@ public:
 		if (_reply) {
 			return;
 		}
-		_checking = true;
+		_state = UpdateState{
+			.status = Status::Checking,
+			.update = _state.current().update,
+		};
 		_reply = Adapters::Download({
 			.url = QUrl(Releases(FollowsNightly()
 				? u"download/nightly/release.json"_q
@@ -110,18 +113,13 @@ public:
 		}));
 	}
 
-	[[nodiscard]] rpl::producer<bool> checking() const {
-		return _checking.value();
-	}
-	[[nodiscard]] auto available() const
-	-> rpl::producer<std::optional<AvailableUpdate>> {
-		return _available.value();
+	[[nodiscard]] rpl::producer<UpdateState> state() const {
+		return _state.value();
 	}
 
 private:
 	void finished(std::optional<QByteArray> body) {
 		_reply = nullptr;
-		_checking = false;
 		const auto manifest = body ? ParseManifest(*body) : std::nullopt;
 		const auto update = manifest ? NewRelease(*manifest) : std::nullopt;
 		const auto result = !manifest
@@ -129,9 +127,14 @@ private:
 			: update
 			? CheckResult::Available
 			: CheckResult::UpToDate;
-		if (manifest) {
-			_available = update;
-		}
+		_state = UpdateState{
+			.status = !manifest
+				? Status::Failed
+				: update
+				? Status::Available
+				: Status::UpToDate,
+			.update = manifest ? update : _state.current().update,
+		};
 		const auto manual = !_waiting.empty();
 		const auto announce = base::take(_announce);
 		if (update && (manual || (announce && update->id != _announced))) {
@@ -148,8 +151,7 @@ private:
 	QTimer _timer;
 	QPointer<QNetworkReply> _reply;
 	std::vector<Fn<void(CheckResult)>> _waiting;
-	rpl::variable<bool> _checking = false;
-	rpl::variable<std::optional<AvailableUpdate>> _available;
+	rpl::variable<UpdateState> _state;
 	QString _announced;
 	bool _announce = false;
 
@@ -181,18 +183,13 @@ void CheckForUpdatesNow(Fn<void(CheckResult)> done) {
 	}
 }
 
-rpl::producer<bool> CheckingValue() {
+rpl::producer<UpdateState> StateValue() {
 	if (!Instance) {
-		return rpl::single(false);
+		return rpl::single(UpdateState{
+			.status = kSystemPackage ? Status::Managed : Status::Unknown,
+		});
 	}
-	return Instance->checking();
-}
-
-rpl::producer<std::optional<AvailableUpdate>> AvailableValue() {
-	if (!Instance) {
-		return rpl::single(std::optional<AvailableUpdate>());
-	}
-	return Instance->available();
+	return Instance->state();
 }
 
 } // namespace Serein::Updates

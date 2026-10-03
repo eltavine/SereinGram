@@ -11,10 +11,6 @@ namespace Serein::Hooks::Privacy {
 [[nodiscard]] rpl::producer<bool> AutoDemoModeValue();
 [[nodiscard]] bool LockSettings();
 [[nodiscard]] rpl::producer<bool> LockSettingsValue();
-[[nodiscard]] bool HideReadTime();
-[[nodiscard]] rpl::producer<bool> HideReadTimeValue();
-[[nodiscard]] bool HideSharePhonePrompt();
-[[nodiscard]] rpl::producer<bool> HideSharePhonePromptValue();
 [[nodiscard]] int ProfileIdFormat();
 [[nodiscard]] rpl::producer<int> ProfileIdFormatValue();
 [[nodiscard]] bool ShowProfileDc();
@@ -29,6 +25,10 @@ namespace Serein::Hooks::Privacy {
 [[nodiscard]] rpl::producer<bool> LocalNamesValue();
 [[nodiscard]] bool HideProfileGifts();
 [[nodiscard]] rpl::producer<bool> HideProfileGiftsValue();
+[[nodiscard]] bool HideReadTime();
+[[nodiscard]] rpl::producer<bool> HideReadTimeValue();
+[[nodiscard]] bool HideSharePhonePrompt();
+[[nodiscard]] rpl::producer<bool> HideSharePhonePromptValue();
 [[nodiscard]] bool HideCreateTodo();
 [[nodiscard]] rpl::producer<bool> HideCreateTodoValue();
 [[nodiscard]] bool SaveProtectedContent();

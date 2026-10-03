@@ -332,6 +332,19 @@ def build_subpage(subpage, where):
 def build_layout(message, options, stem, where):
     by_name = {option.name: option for option in options}
     rows, layout, customs = [], [], []
+    current = None
+
+    def close():
+        if current is None and not layout:
+            return
+        note, extra = current or ("", "")
+        if extra:
+            customs.append(extra)
+            layout.append(LayoutItem("custom", member=extra))
+        if not note and layout and layout[-1].kind == "note":
+            note = layout.pop().title
+        layout.append(LayoutItem("end", title=note))
+
     for item, option in zip(message.get("field", []), options, strict=True):
         if "Hidden" in option.flags:
             continue
@@ -342,6 +355,11 @@ def build_layout(message, options, stem, where):
             for required in ("title", "id"):
                 if not section.get(required):
                     raise SchemaError(f"{place}: section '{required}' is required")
+            extra = section.get("extra", "")
+            if extra and not re.fullmatch(r"[a-z][A-Za-z0-9]*", extra):
+                raise SchemaError(f"{place}: section extra must be a lowerCamel name")
+            close()
+            current = (section.get("note", ""), extra)
             layout.append(
                 LayoutItem(
                     "section",
@@ -382,6 +400,10 @@ def build_layout(message, options, stem, where):
             layout.append(LayoutItem("custom", member=member))
         if custom.get("note"):
             layout.append(LayoutItem("note", title=custom["note"]))
+    if current is not None:
+        close()
+    if len(set(customs)) != len(customs):
+        raise SchemaError(f"{where}: custom rows must have distinct names")
     return rows, layout, customs
 
 
@@ -492,7 +514,7 @@ def check_titles(pages, known):
         item.title
         for page in pages
         for item in page.layout
-        if item.kind in ("section", "note", "number", "choice", "text")
+        if item.kind in ("section", "note", "number", "choice", "text", "end") and item.title
     }
     titles |= {label for page in pages for item in page.layout for label in item.labels}
     titles |= {

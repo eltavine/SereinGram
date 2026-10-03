@@ -5,6 +5,7 @@
 #include "lang/lang_keys.h"
 #include "serein/schema/gen/settings/messages.h"
 #include "serein/settings/rows.h"
+#include "styles/style_menu_icons.h"
 
 #include <array>
 
@@ -231,7 +232,7 @@ inline void AddLayout(
 	AddToggle(builder, kToggleRows[2]);
 	AddToggle(builder, kToggleRows[3]);
 	AddToggle(builder, kToggleRows[4]);
-	AddNote(builder, tr::lng_serein_persian_calendar_note);
+	EndSection(builder, tr::lng_serein_persian_calendar_note);
 	AddSection(builder, {
 		u"serein/messages/marks"_q,
 		tr::lng_serein_marks_and_counts,
@@ -258,6 +259,7 @@ inline void AddLayout(
 	});
 	AddToggle(builder, kToggleRows[9]);
 	AddToggle(builder, kToggleRows[10]);
+	EndSection(builder);
 	AddSection(builder, {
 		u"serein/messages/reactions"_q,
 		tr::lng_serein_reactions,
@@ -269,6 +271,7 @@ inline void AddLayout(
 	AddToggle(builder, kToggleRows[14]);
 	AddToggle(builder, kToggleRows[15]);
 	AddToggle(builder, kToggleRows[16]);
+	EndSection(builder);
 	AddSection(builder, {
 		u"serein/messages/effects"_q,
 		tr::lng_serein_effects,
@@ -277,6 +280,7 @@ inline void AddLayout(
 	AddToggle(builder, kToggleRows[17]);
 	AddToggle(builder, kToggleRows[18]);
 	AddToggle(builder, kToggleRows[19]);
+	EndSection(builder);
 	AddSection(builder, {
 		u"serein/messages/content"_q,
 		tr::lng_serein_content_display,
@@ -289,10 +293,15 @@ inline void AddLayout(
 	AddToggle(builder, kToggleRows[23]);
 	AddToggle(builder, kToggleRows[24]);
 	AddToggle(builder, kToggleRows[25]);
-	AddNote(builder, tr::lng_serein_private_activities_note);
+	EndSection(builder, tr::lng_serein_private_activities_note);
+	AddSection(builder, {
+		u"serein/messages/reading"_q,
+		tr::lng_serein_section_reading,
+		{ u"reading"_q, u"Chinese"_q, u"spacing"_q },
+	});
 	AddToggle(builder, kToggleRows[26]);
 	custom.readingChinese();
-	AddNote(builder, tr::lng_serein_reading_chinese_note);
+	EndSection(builder, tr::lng_serein_reading_chinese_note);
 	AddSection(builder, {
 		u"serein/messages/interaction"_q,
 		tr::lng_serein_interaction,
@@ -301,7 +310,7 @@ inline void AddLayout(
 	AddToggle(builder, kToggleRows[27]);
 	AddNote(builder, tr::lng_serein_raise_selection_limit_note);
 	AddToggle(builder, kToggleRows[28]);
-	AddNote(builder, tr::lng_serein_double_click_edits_own_note);
+	EndSection(builder, tr::lng_serein_double_click_edits_own_note);
 	AddSection(builder, {
 		u"serein/messages/deleting"_q,
 		tr::lng_serein_deleting,
@@ -311,7 +320,21 @@ inline void AddLayout(
 	AddToggle(builder, kToggleRows[30]);
 	AddToggle(builder, kToggleRows[31]);
 	AddToggle(builder, kToggleRows[32]);
-	AddNote(builder, tr::lng_serein_delete_defaults_note);
+	EndSection(builder, tr::lng_serein_delete_defaults_note);
+}
+
+inline constexpr auto kSubpageTitle = &tr::lng_serein_messages;
+inline const auto kSubpageIcon = &st::menuIconChatBubble;
+
+inline void AddSubpageButton(
+		::Settings::Builder::SectionBuilder &builder,
+		::Settings::Type section) {
+	builder.addSectionButton({
+		.title = (*kSubpageTitle)(),
+		.targetSection = section,
+		.icon = { kSubpageIcon },
+		.keywords = { u"messages"_q, u"time"_q },
+	});
 }
 
 } // namespace Serein::Messages

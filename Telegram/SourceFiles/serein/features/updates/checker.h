@@ -25,12 +25,29 @@ enum class CheckResult {
 	Failed,
 };
 
+enum class Status {
+	Unknown,
+	Checking,
+	UpToDate,
+	Available,
+	Failed,
+	Managed,
+};
+
+struct UpdateState {
+	Status status = Status::Unknown;
+	std::optional<AvailableUpdate> update;
+
+	friend inline bool operator==(
+		const UpdateState &,
+		const UpdateState &) = default;
+};
+
 void StartUpdateChecks();
 
 [[nodiscard]] bool UpdateChecksAvailable();
 [[nodiscard]] QString ReleasesUrl();
 void CheckForUpdatesNow(Fn<void(CheckResult)> done);
-[[nodiscard]] rpl::producer<bool> CheckingValue();
-[[nodiscard]] rpl::producer<std::optional<AvailableUpdate>> AvailableValue();
+[[nodiscard]] rpl::producer<UpdateState> StateValue();
 
 } // namespace Serein::Updates

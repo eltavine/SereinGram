@@ -91,13 +91,13 @@ inline const auto kMainMenuConfig = Option<QByteArray>{
 	"lng_serein_main_menu",
 	0,
 	&ValidMainMenuBytes };
-inline constexpr auto kHideAppIconBadge = Option<bool>{
-	"serein.hideAppIconBadge",
+inline constexpr auto kMenuShortcuts = Option<bool>{
+	"serein.menuShortcuts",
 	Scope::Device,
 	false,
 	Category::Interface,
-	"lng_serein_hide_app_icon_badge",
-	0 };
+	"lng_serein_menu_shortcuts",
+	static_cast<unsigned>(Flag::RequiresRestart) };
 inline constexpr auto kNotificationDelay = Option<int>{
 	"serein.notificationDelay",
 	Scope::Device,
@@ -135,13 +135,13 @@ inline const auto kQuietHours = Option<QByteArray>{
 	"lng_serein_quiet_hours",
 	0,
 	&ValidQuietHoursBytes };
-inline constexpr auto kMenuShortcuts = Option<bool>{
-	"serein.menuShortcuts",
+inline constexpr auto kHideAppIconBadge = Option<bool>{
+	"serein.hideAppIconBadge",
 	Scope::Device,
 	false,
 	Category::Interface,
-	"lng_serein_menu_shortcuts",
-	static_cast<unsigned>(Flag::RequiresRestart) };
+	"lng_serein_hide_app_icon_badge",
+	0 };
 inline const auto kGlobalShortcut = Option<QByteArray>{
 	"serein.globalShortcut",
 	Scope::Device,
@@ -189,12 +189,12 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kHideReplyThumbnail));
 	Expects(registry.Add(kIgnoreChatTheme));
 	Expects(registry.Add(kMainMenuConfig));
-	Expects(registry.Add(kHideAppIconBadge));
+	Expects(registry.Add(kMenuShortcuts));
 	Expects(registry.Add(kNotificationDelay));
 	Expects(registry.Add(kOtherDeviceNotificationDelay));
 	Expects(registry.Add(kCenterTopNotifications));
 	Expects(registry.Add(kQuietHours));
-	Expects(registry.Add(kMenuShortcuts));
+	Expects(registry.Add(kHideAppIconBadge));
 	Expects(registry.Add(kGlobalShortcut));
 	Expects(registry.Add(kHalfwidthUiPunctuation));
 	Expects(registry.Add(kMoreAccounts));

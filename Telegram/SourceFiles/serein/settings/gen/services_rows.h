@@ -5,6 +5,7 @@
 #include "lang/lang_keys.h"
 #include "serein/schema/gen/settings/services.h"
 #include "serein/settings/rows.h"
+#include "styles/style_menu_icons.h"
 
 #include <array>
 
@@ -68,13 +69,31 @@ struct CustomRows {
 	CustomRow proxySubscription;
 	CustomRow proxyNotes;
 	CustomRow customDoh;
+	CustomRow datacenters;
 };
 
 inline void AddLayout(
 		::Settings::Builder::SectionBuilder &builder,
 		const CustomRows &custom) {
+	AddSection(builder, {
+		u"serein/services/providers"_q,
+		tr::lng_serein_section_providers,
+		{ u"service"_q, u"API"_q },
+	});
 	custom.services();
+	EndSection(builder, tr::lng_serein_services_about);
+	AddSection(builder, {
+		u"serein/services/system-ai"_q,
+		tr::lng_serein_section_system_ai,
+		{ u"AI"_q, u"Apple Intelligence"_q },
+	});
 	custom.preferSystemAi();
+	EndSection(builder, tr::lng_serein_system_ai_about);
+	AddSection(builder, {
+		u"serein/services/translation"_q,
+		tr::lng_serein_section_translation,
+		{ u"translate"_q, u"transcribe"_q },
+	});
 	AddToggle(builder, kToggleRows[0]);
 	AddNote(builder, tr::lng_serein_translation_context_about);
 	AddToggle(builder, kToggleRows[1]);
@@ -92,7 +111,12 @@ inline void AddLayout(
 		.values = { 0, 1, 2 },
 		.labels = { tr::lng_serein_auto_transcribe_off, tr::lng_serein_auto_transcribe_private, tr::lng_serein_auto_transcribe_all },
 	});
-	AddNote(builder, tr::lng_serein_auto_transcribe_about);
+	EndSection(builder, tr::lng_serein_auto_transcribe_about);
+	AddSection(builder, {
+		u"serein/services/network"_q,
+		tr::lng_serein_section_network,
+		{ u"proxy"_q, u"DNS"_q, u"network"_q },
+	});
 	custom.proxySubscription();
 	custom.proxyNotes();
 	AddToggle(builder, kToggleRows[4]);
@@ -102,8 +126,29 @@ inline void AddLayout(
 	AddNote(builder, tr::lng_serein_system_dns_note);
 	AddToggle(builder, kToggleRows[6]);
 	AddNote(builder, tr::lng_serein_faster_transfers_about);
+	custom.datacenters();
+	EndSection(builder, tr::lng_serein_dc_status_about);
+	AddSection(builder, {
+		u"serein/services/mini-apps"_q,
+		tr::lng_serein_section_mini_apps,
+		{ u"mini apps"_q, u"bots"_q },
+	});
 	AddToggle(builder, kToggleRows[7]);
-	AddNote(builder, tr::lng_serein_android_web_apps_about);
+	EndSection(builder, tr::lng_serein_android_web_apps_about);
+}
+
+inline constexpr auto kSubpageTitle = &tr::lng_serein_services;
+inline const auto kSubpageIcon = &st::menuIconTranslate;
+
+inline void AddSubpageButton(
+		::Settings::Builder::SectionBuilder &builder,
+		::Settings::Type section) {
+	builder.addSectionButton({
+		.title = (*kSubpageTitle)(),
+		.targetSection = section,
+		.icon = { kSubpageIcon },
+		.keywords = { u"translation"_q, u"AI"_q, u"service"_q },
+	});
 }
 
 } // namespace Serein::ServiceSettings

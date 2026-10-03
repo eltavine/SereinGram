@@ -16,6 +16,7 @@
 #include "serein/settings/rules.h"
 #include "serein/settings/services.h"
 #include "serein/settings/page.h"
+#include "serein/settings/rows.h"
 #include "serein/display/json_files.h"
 #include "core/application.h"
 #include "core/version.h"
@@ -216,19 +217,20 @@ void CopyDiagnostics(not_null<Window::SessionController*> controller) {
 	controller->showToast(tr::lng_serein_config_copy_report(tr::now));
 }
 
+constexpr auto kTitle = &tr::lng_serein_config_title;
+const auto kIcon = &st::menuIconStorage;
+
 const auto kMeta = BuildHelper({
 	.id = ConfigSection::Id(),
 	.parentId = HomeId(),
-	.title = &tr::lng_serein_config_title,
-	.icon = &st::menuIconStorage,
+	.title = kTitle,
+	.icon = kIcon,
 }, [](SectionBuilder &builder) {
 	const auto controller = builder.controller();
-	builder.addDividerText(tr::lng_serein_config_scope());
-	builder.addButton({
-		.id = u"serein/config/modified"_q,
-		.title = tr::lng_serein_config_modified(),
-		.st = &st::settingsButtonNoIcon,
-		.onClick = [=] { ShowModified(controller); },
+	AddSection(builder, {
+		u"serein/config/files"_q,
+		tr::lng_serein_section_config_files,
+		{ u"export"_q, u"import"_q },
 	});
 	builder.addButton({
 		.id = u"serein/config/export"_q,
@@ -242,6 +244,12 @@ const auto kMeta = BuildHelper({
 		.st = &st::settingsButtonNoIcon,
 		.onClick = [=] { Import(controller); },
 	});
+	EndSection(builder, tr::lng_serein_config_scope);
+	AddSection(builder, {
+		u"serein/config/saved-backup"_q,
+		tr::lng_serein_section_config_backup,
+		{ u"backup"_q, u"restore"_q },
+	});
 	builder.addButton({
 		.id = u"serein/config/backup"_q,
 		.title = tr::lng_serein_config_backup(),
@@ -254,7 +262,18 @@ const auto kMeta = BuildHelper({
 		.st = &st::settingsButtonNoIcon,
 		.onClick = [=] { Restore(controller); },
 	});
-	builder.addDividerText(tr::lng_serein_config_backup_about());
+	EndSection(builder, tr::lng_serein_config_backup_about);
+	AddSection(builder, {
+		u"serein/config/review"_q,
+		tr::lng_serein_section_config_review,
+		{ u"modified"_q, u"reset"_q, u"diagnostics"_q },
+	});
+	builder.addButton({
+		.id = u"serein/config/modified"_q,
+		.title = tr::lng_serein_config_modified(),
+		.st = &st::settingsButtonNoIcon,
+		.onClick = [=] { ShowModified(controller); },
+	});
 	builder.addButton({
 		.id = u"serein/config/reset"_q,
 		.title = tr::lng_serein_config_reset(),
@@ -267,6 +286,7 @@ const auto kMeta = BuildHelper({
 		.st = &st::settingsButtonNoIcon,
 		.onClick = [=] { CopyDiagnostics(controller); },
 	});
+	EndSection(builder);
 });
 
 const SectionBuildMethod ConfigSection::kBuild = kMeta.build;
@@ -275,6 +295,15 @@ const SectionBuildMethod ConfigSection::kBuild = kMeta.build;
 
 Settings::Type ConfigId() {
 	return ConfigSection::Id();
+}
+
+void AddConfigButton(SectionBuilder &builder) {
+	builder.addSectionButton({
+		.title = (*kTitle)(),
+		.targetSection = ConfigSection::Id(),
+		.icon = { kIcon },
+		.keywords = { u"backup"_q, u"import"_q, u"export"_q },
+	});
 }
 
 } // namespace Serein

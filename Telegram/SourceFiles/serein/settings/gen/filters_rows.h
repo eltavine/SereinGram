@@ -5,6 +5,7 @@
 #include "lang/lang_keys.h"
 #include "serein/schema/gen/settings/filters.h"
 #include "serein/settings/rows.h"
+#include "styles/style_menu_icons.h"
 
 #include <array>
 
@@ -25,6 +26,20 @@ inline void AddLayout(
 	custom.ruleSubscription();
 	custom.hiddenMessages();
 	custom.keywordAlerts();
+}
+
+inline constexpr auto kSubpageTitle = &tr::lng_serein_rules;
+inline const auto kSubpageIcon = &st::menuIconTagFilter;
+
+inline void AddSubpageButton(
+		::Settings::Builder::SectionBuilder &builder,
+		::Settings::Type section) {
+	builder.addSectionButton({
+		.title = (*kSubpageTitle)(),
+		.targetSection = section,
+		.icon = { kSubpageIcon },
+		.keywords = { u"filter"_q, u"link"_q },
+	});
 }
 
 } // namespace Serein::Filters

@@ -71,3 +71,8 @@ compactThreeLineDialogRow: DialogRow(compactDialogRow) {
 
 menuIconRepeat: icon {{ "menu/repeat", menuIconColor }};
 menuIconSerein: icon {{ "menu/serein", menuIconColor }};
+
+sereinHomeCoverPadding: margins(16px, 20px, 16px, 16px);
+sereinHomeCoverLogo: 72px;
+sereinHomeCoverLogoSkip: 12px;
+sereinHomeCoverLineSkip: 4px;

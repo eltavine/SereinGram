@@ -153,8 +153,8 @@ void TranscriptionSourceBox(not_null<Ui::GenericBox*> box) {
 const auto kMeta = BuildHelper({
 	.id = ServicesSection::Id(),
 	.parentId = HomeId(),
-	.title = &tr::lng_serein_services,
-	.icon = &st::menuIconTranslate,
+	.title = ServiceSettings::kSubpageTitle,
+	.icon = ServiceSettings::kSubpageIcon,
 }, [](SectionBuilder &builder) {
 	const auto controller = builder.controller();
 	ServiceSettings::AddLayout(builder, {
@@ -196,7 +196,6 @@ const auto kMeta = BuildHelper({
 				},
 				.keywords = { u"SereinGram"_q, u"LLM"_q, u"API"_q },
 			});
-			builder.addDividerText(tr::lng_serein_services_about());
 		},
 		.preferSystemAi = [&] {
 			const auto aiStatus = SystemAiAvailability();
@@ -215,17 +214,17 @@ const auto kMeta = BuildHelper({
 					Expects(ForDevice().Set(kPreferSystemAi, value));
 				}, aiButton->lifetime());
 			}
-			builder.addDividerText(tr::lng_serein_system_ai_about());
 			if (aiStatus != 0) {
 				builder.addDividerText(rpl::single(SystemAiStatusText(aiStatus)));
+				builder.addSkip();
 			}
 		},
 		.sendTranslations = [&] { AddSendTranslations(builder); },
 		.proxySubscription = [&] { AddProxySubscriptionRow(builder); },
 		.proxyNotes = [&] { AddProxyToolRows(builder); },
 		.customDoh = [&] { AddCustomDohRow(builder); },
+		.datacenters = [&] { AddDatacenterStatusRow(builder); },
 	});
-	AddDatacenterStatusRow(builder);
 });
 
 const SectionBuildMethod ServicesSection::kBuild = kMeta.build;

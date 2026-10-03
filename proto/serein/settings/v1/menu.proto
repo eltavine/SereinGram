@@ -11,9 +11,41 @@ message MenuSettings {
     cpp_namespace: "Menu"
     scope: SCOPE_DEVICE
     category: CATEGORY_MENU
+    subpage: {
+      title: "lng_serein_menu"
+      icon: "menuIconReorder"
+      keywords: [
+        "menu",
+        "actions"
+      ]
+    }
   };
 
+  optional bytes message_menu = 1 [(serein.options.v1.field) = {
+    section: {
+      title: "lng_serein_menu_items"
+      id: "items"
+      keywords: [
+        "menu",
+        "action"
+      ]
+    }
+    cpp_name: "kMenuConfig"
+    title: "lng_serein_menu"
+    custom_ui: true
+    validator: "ValidateConfig"
+    note: "lng_serein_menu_note"
+  }];
   optional bool confirm_repeat = 2 [(serein.options.v1.field) = {
+    section: {
+      title: "lng_serein_section_repeat_rating"
+      id: "repeat-rating"
+      keywords: [
+        "repeat",
+        "rating",
+        "reply"
+      ]
+    }
     title: "lng_serein_menu_confirm_repeat"
     keywords: [
       "repeat",
@@ -23,14 +55,6 @@ message MenuSettings {
   // Non-empty texts add menu items that reply to the message with them.
   optional string quick_rating_first = 3 [
     (serein.options.v1.field) = {
-      section: {
-        title: "lng_serein_quick_rating"
-        id: "quick-rating"
-        keywords: [
-          "rating",
-          "reply"
-        ]
-      }
       keywords: [
         "rating",
         "reply",
@@ -52,19 +76,4 @@ message MenuSettings {
     },
     (buf.validate.field).string.max_len = 256
   ];
-  optional bytes message_menu = 1 [(serein.options.v1.field) = {
-    section: {
-      title: "lng_serein_menu_items"
-      id: "items"
-      keywords: [
-        "menu",
-        "action"
-      ]
-    }
-    cpp_name: "kMenuConfig"
-    title: "lng_serein_menu"
-    custom_ui: true
-    validator: "ValidateConfig"
-    note: "lng_serein_menu_note"
-  }];
 }

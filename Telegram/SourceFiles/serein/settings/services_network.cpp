@@ -1,4 +1,5 @@
 #include "serein/settings/services_network.h"
+#include "serein/settings/rows.h"
 
 #include "core/application.h"
 #include "base/flat_set.h"
@@ -174,7 +175,7 @@ void AddProxySubscriptionRow(::Settings::Builder::SectionBuilder &builder) {
 		.onClick = [=] { controller->show(Box(ProxySubscriptionBox)); },
 		.keywords = { u"proxy"_q, u"subscription"_q, u"MTProto"_q },
 	});
-	builder.addDividerText(tr::lng_serein_proxy_subscription_about());
+	AddNote(builder, tr::lng_serein_proxy_subscription_about);
 }
 
 void AddProxyToolRows(::Settings::Builder::SectionBuilder &builder) {
@@ -202,7 +203,7 @@ void AddProxyToolRows(::Settings::Builder::SectionBuilder &builder) {
 		.onClick = [=] { controller->show(Box(ProxyNotesBox)); },
 		.keywords = { u"proxy"_q, u"note"_q, u"remark"_q },
 	});
-	builder.addDividerText(tr::lng_serein_proxy_tools_about());
+	AddNote(builder, tr::lng_serein_proxy_tools_about);
 }
 
 void AddCustomDohRow(::Settings::Builder::SectionBuilder &builder) {
@@ -220,7 +221,7 @@ void AddCustomDohRow(::Settings::Builder::SectionBuilder &builder) {
 		.onClick = [=] { controller->show(Box(CustomDohBox)); },
 		.keywords = { u"DNS"_q, u"DoH"_q, u"censorship"_q },
 	});
-	builder.addDividerText(tr::lng_serein_custom_doh_about());
+	AddNote(builder, tr::lng_serein_custom_doh_about);
 }
 
 void AddDatacenterStatusRow(::Settings::Builder::SectionBuilder &builder) {
@@ -232,7 +233,6 @@ void AddDatacenterStatusRow(::Settings::Builder::SectionBuilder &builder) {
 		.onClick = [=] { Network::ShowDatacenterStatus(controller); },
 		.keywords = { u"DC"_q, u"ping"_q, u"datacenter"_q },
 	});
-	builder.addDividerText(tr::lng_serein_dc_status_about());
 }
 
 } // namespace Serein

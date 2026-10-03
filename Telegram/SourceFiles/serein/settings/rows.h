@@ -95,5 +95,9 @@ void AddText(
 void AddNote(
 	::Settings::Builder::SectionBuilder &builder,
 	tr::phrase<> text);
+void EndSection(::Settings::Builder::SectionBuilder &builder);
+void EndSection(
+	::Settings::Builder::SectionBuilder &builder,
+	tr::phrase<> note);
 
 } // namespace Serein

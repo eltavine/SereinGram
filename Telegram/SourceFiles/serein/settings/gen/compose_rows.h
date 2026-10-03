@@ -5,6 +5,7 @@
 #include "lang/lang_keys.h"
 #include "serein/schema/gen/settings/compose.h"
 #include "serein/settings/rows.h"
+#include "styles/style_menu_icons.h"
 
 #include <array>
 
@@ -96,16 +97,22 @@ inline const auto kToggleRows = std::array<ToggleRow, 31>{ {
 		{ u"bot"_q, u"command"_q, u"draft"_q },
 	},
 	{
+		&kMentionMenu,
+		tr::lng_serein_mention_menu,
+		u"serein/compose/mention-menu"_q,
+		{ u"mention"_q, u"format"_q },
+	},
+	{
 		&kDisableAutoMarkdown,
 		tr::lng_serein_disable_auto_markdown,
 		u"serein/compose/disable-auto-markdown"_q,
 		{ u"Markdown"_q },
 	},
 	{
-		&kDisableLinkPreview,
-		tr::lng_serein_disable_link_preview,
-		u"serein/compose/disable-link-preview"_q,
-		{ u"link"_q, u"preview"_q },
+		&kFormatToolbar,
+		tr::lng_serein_format_toolbar,
+		u"serein/compose/format-toolbar"_q,
+		{ u"format"_q, u"toolbar"_q, u"bold"_q, u"selection"_q },
 	},
 	{
 		&kSpaceOnSend,
@@ -120,16 +127,16 @@ inline const auto kToggleRows = std::array<ToggleRow, 31>{ {
 		{ u"spacing"_q, u"edit"_q },
 	},
 	{
-		&kMentionMenu,
-		tr::lng_serein_mention_menu,
-		u"serein/compose/mention-menu"_q,
-		{ u"mention"_q, u"format"_q },
+		&kDraftTranslation,
+		tr::lng_serein_draft_translation,
+		u"serein/compose/draft-translation"_q,
+		{ u"translate"_q, u"draft"_q, u"message field"_q },
 	},
 	{
-		&kRememberForwardOptions,
-		tr::lng_serein_remember_forward_options,
-		u"serein/compose/remember-forward-options"_q,
-		{ u"forward"_q, u"sender"_q, u"names"_q, u"captions"_q, u"remember"_q },
+		&kDisableLinkPreview,
+		tr::lng_serein_disable_link_preview,
+		u"serein/compose/disable-link-preview"_q,
+		{ u"link"_q, u"preview"_q },
 	},
 	{
 		&kCaptionAboveMedia,
@@ -138,16 +145,16 @@ inline const auto kToggleRows = std::array<ToggleRow, 31>{ {
 		{ u"caption"_q, u"above"_q, u"media"_q, u"photo"_q, u"video"_q },
 	},
 	{
-		&kDraftTranslation,
-		tr::lng_serein_draft_translation,
-		u"serein/compose/draft-translation"_q,
-		{ u"translate"_q, u"draft"_q, u"message field"_q },
+		&kSendSilently,
+		tr::lng_serein_send_silently,
+		u"serein/compose/send-silently"_q,
+		{ u"silent"_q, u"notification"_q, u"send"_q },
 	},
 	{
-		&kFormatToolbar,
-		tr::lng_serein_format_toolbar,
-		u"serein/compose/format-toolbar"_q,
-		{ u"format"_q, u"toolbar"_q, u"bold"_q, u"selection"_q },
+		&kOwnerSendAs,
+		tr::lng_serein_owner_send_as,
+		u"serein/compose/owner-send-as"_q,
+		{ u"anonymous"_q, u"send as"_q, u"owner"_q },
 	},
 	{
 		&kConfirmSticker,
@@ -186,16 +193,10 @@ inline const auto kToggleRows = std::array<ToggleRow, 31>{ {
 		{ u"forward"_q, u"comment"_q, u"order"_q },
 	},
 	{
-		&kSendSilently,
-		tr::lng_serein_send_silently,
-		u"serein/compose/send-silently"_q,
-		{ u"silent"_q, u"notification"_q, u"send"_q },
-	},
-	{
-		&kOwnerSendAs,
-		tr::lng_serein_owner_send_as,
-		u"serein/compose/owner-send-as"_q,
-		{ u"anonymous"_q, u"send as"_q, u"owner"_q },
+		&kRememberForwardOptions,
+		tr::lng_serein_remember_forward_options,
+		u"serein/compose/remember-forward-options"_q,
+		{ u"forward"_q, u"sender"_q, u"names"_q, u"captions"_q, u"remember"_q },
 	},
 } };
 
@@ -225,6 +226,7 @@ inline void AddLayout(
 	AddToggle(builder, kToggleRows[8]);
 	AddToggle(builder, kToggleRows[9]);
 	AddToggle(builder, kToggleRows[10]);
+	EndSection(builder);
 	AddSection(builder, {
 		u"serein/compose/input-behavior"_q,
 		tr::lng_serein_input_behavior,
@@ -233,6 +235,7 @@ inline void AddLayout(
 	AddToggle(builder, kToggleRows[11]);
 	AddToggle(builder, kToggleRows[12]);
 	AddToggle(builder, kToggleRows[13]);
+	AddToggle(builder, kToggleRows[14]);
 	AddChoice(builder, {
 		.option = &kInputPlaceholderMode,
 		.title = tr::lng_serein_input_placeholder,
@@ -241,49 +244,71 @@ inline void AddLayout(
 		.values = { 0, 1, 2 },
 		.labels = { tr::lng_serein_preview_follow, tr::lng_serein_placeholder_chat, tr::lng_serein_placeholder_sender },
 	});
+	EndSection(builder);
 	AddSection(builder, {
 		u"serein/compose/text-format"_q,
 		tr::lng_serein_text_format,
 		{ u"text"_q, u"format"_q },
 	});
-	AddToggle(builder, kToggleRows[14]);
 	AddToggle(builder, kToggleRows[15]);
 	AddToggle(builder, kToggleRows[16]);
+	custom.defaultCodeLanguage();
 	AddToggle(builder, kToggleRows[17]);
 	AddToggle(builder, kToggleRows[18]);
+	EndSection(builder);
+	AddSection(builder, {
+		u"serein/compose/writing-tools"_q,
+		tr::lng_serein_section_writing_tools,
+		{ u"replies"_q, u"replacements"_q, u"translate"_q },
+	});
 	AddToggle(builder, kToggleRows[19]);
-	AddNote(builder, tr::lng_serein_remember_forward_options_note);
-	AddToggle(builder, kToggleRows[20]);
-	AddToggle(builder, kToggleRows[21]);
-	AddToggle(builder, kToggleRows[22]);
-	custom.defaultCodeLanguage();
 	custom.quickReplies();
 	custom.textReplacements();
 	custom.linkInlineBots();
-	AddSection(builder, {
-		u"serein/compose/send-confirmation"_q,
-		tr::lng_serein_send_confirmation,
-		{ u"send"_q, u"confirm"_q },
-	});
-	AddToggle(builder, kToggleRows[23]);
-	AddToggle(builder, kToggleRows[24]);
-	AddToggle(builder, kToggleRows[25]);
-	AddToggle(builder, kToggleRows[26]);
-	AddToggle(builder, kToggleRows[27]);
-	AddSection(builder, {
-		u"serein/compose/forwarding"_q,
-		tr::lng_serein_forwarding,
-		{ u"forward"_q },
-	});
-	AddToggle(builder, kToggleRows[28]);
+	EndSection(builder);
 	AddSection(builder, {
 		u"serein/compose/sending"_q,
 		tr::lng_serein_sending,
 		{ u"send"_q },
 	});
+	AddToggle(builder, kToggleRows[20]);
+	AddToggle(builder, kToggleRows[21]);
+	AddToggle(builder, kToggleRows[22]);
+	AddToggle(builder, kToggleRows[23]);
+	EndSection(builder, tr::lng_serein_owner_send_as_note);
+	AddSection(builder, {
+		u"serein/compose/send-confirmation"_q,
+		tr::lng_serein_send_confirmation,
+		{ u"send"_q, u"confirm"_q },
+	});
+	AddToggle(builder, kToggleRows[24]);
+	AddToggle(builder, kToggleRows[25]);
+	AddToggle(builder, kToggleRows[26]);
+	AddToggle(builder, kToggleRows[27]);
+	AddToggle(builder, kToggleRows[28]);
+	EndSection(builder);
+	AddSection(builder, {
+		u"serein/compose/forwarding"_q,
+		tr::lng_serein_forwarding,
+		{ u"forward"_q },
+	});
 	AddToggle(builder, kToggleRows[29]);
 	AddToggle(builder, kToggleRows[30]);
-	AddNote(builder, tr::lng_serein_owner_send_as_note);
+	EndSection(builder, tr::lng_serein_remember_forward_options_note);
+}
+
+inline constexpr auto kSubpageTitle = &tr::lng_serein_compose;
+inline const auto kSubpageIcon = &st::menuIconEdit;
+
+inline void AddSubpageButton(
+		::Settings::Builder::SectionBuilder &builder,
+		::Settings::Type section) {
+	builder.addSectionButton({
+		.title = (*kSubpageTitle)(),
+		.targetSection = section,
+		.icon = { kSubpageIcon },
+		.keywords = { u"compose"_q, u"send"_q },
+	});
 }
 
 } // namespace Serein::Compose

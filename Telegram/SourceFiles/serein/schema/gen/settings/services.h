@@ -98,13 +98,6 @@ inline constexpr auto kPauseProxyOnVpn = Option<bool>{
 	Category::Services,
 	"lng_serein_proxy_vpn",
 	0 };
-inline constexpr auto kProxyPausedByVpn = Option<bool>{
-	"serein.proxyPausedByVpn",
-	Scope::Device,
-	false,
-	Category::Services,
-	"lng_serein_proxy_vpn",
-	static_cast<unsigned>(Flag::Hidden) };
 inline const auto kCustomDoh = Option<QString>{
 	"serein.customDoh",
 	Scope::Device,
@@ -137,6 +130,13 @@ inline constexpr auto kAndroidWebApps = Option<bool>{
 	Category::Services,
 	"lng_serein_android_web_apps",
 	0 };
+inline constexpr auto kProxyPausedByVpn = Option<bool>{
+	"serein.proxyPausedByVpn",
+	Scope::Device,
+	false,
+	Category::Services,
+	"lng_serein_proxy_vpn",
+	static_cast<unsigned>(Flag::Hidden) };
 
 inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kServicesConfig));
@@ -150,11 +150,11 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kProxySubscription));
 	Expects(registry.Add(kProxyNotes));
 	Expects(registry.Add(kPauseProxyOnVpn));
-	Expects(registry.Add(kProxyPausedByVpn));
 	Expects(registry.Add(kCustomDoh));
 	Expects(registry.Add(kSystemDns));
 	Expects(registry.Add(kFasterTransfers));
 	Expects(registry.Add(kAndroidWebApps));
+	Expects(registry.Add(kProxyPausedByVpn));
 }
 
 } // namespace Serein::ServiceSettings

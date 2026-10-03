@@ -11,6 +11,14 @@ message FilterSettings {
     cpp_namespace: "Filters"
     scope: SCOPE_ACCOUNT
     category: CATEGORY_RULES
+    subpage: {
+      title: "lng_serein_rules"
+      icon: "menuIconTagFilter"
+      keywords: [
+        "filter",
+        "link"
+      ]
+    }
   };
 
   optional bytes filters = 1 [(serein.options.v1.field) = {

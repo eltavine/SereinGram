@@ -10,9 +10,26 @@ message PrivacySettings {
     cpp_namespace: "Privacy"
     scope: SCOPE_DEVICE
     category: CATEGORY_PRIVACY
+    subpage: {
+      title: "lng_serein_privacy"
+      icon: "menuIconLock"
+      keywords: [
+        "privacy",
+        "phone"
+      ]
+    }
   };
 
   optional bool demo_mode = 1 [(serein.options.v1.field) = {
+    section: {
+      title: "lng_serein_section_screen"
+      id: "screen"
+      keywords: [
+        "streamer",
+        "screen",
+        "lock"
+      ]
+    }
     keywords: [
       "presentation",
       "capture"
@@ -36,20 +53,16 @@ message PrivacySettings {
     ]
     note: "lng_serein_lock_settings_note"
   }];
-  optional bool hide_read_time = 2 [(serein.options.v1.field) = {
-    keywords: [
-      "read",
-      "time"
-    ]
-  }];
-  optional bool hide_share_phone_prompt = 3 [(serein.options.v1.field) = {
-    keywords: [
-      "share",
-      "phone"
-    ]
-  }];
   optional int32 profile_id_format = 4 [
     (serein.options.v1.field) = {
+      section: {
+        title: "lng_serein_section_profiles"
+        id: "profiles"
+        keywords: [
+          "profile",
+          "ID"
+        ]
+      }
       keywords: [
         "profile",
         "ID"
@@ -111,6 +124,26 @@ message PrivacySettings {
     keywords: [
       "profile",
       "gifts"
+    ]
+  }];
+  optional bool hide_read_time = 2 [(serein.options.v1.field) = {
+    section: {
+      title: "lng_serein_section_prompts"
+      id: "prompts"
+      keywords: [
+        "prompt",
+        "protected"
+      ]
+    }
+    keywords: [
+      "read",
+      "time"
+    ]
+  }];
+  optional bool hide_share_phone_prompt = 3 [(serein.options.v1.field) = {
+    keywords: [
+      "share",
+      "phone"
     ]
   }];
   optional bool hide_create_todo = 7 [(serein.options.v1.field) = {

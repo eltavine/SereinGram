@@ -26,20 +26,6 @@ inline constexpr auto kLockSettings = Option<bool>{
 	Category::Privacy,
 	"lng_serein_lock_settings",
 	0 };
-inline constexpr auto kHideReadTime = Option<bool>{
-	"serein.hideReadTime",
-	Scope::Device,
-	false,
-	Category::Privacy,
-	"lng_serein_hide_read_time",
-	0 };
-inline constexpr auto kHideSharePhonePrompt = Option<bool>{
-	"serein.hideSharePhonePrompt",
-	Scope::Device,
-	false,
-	Category::Privacy,
-	"lng_serein_hide_share_phone_prompt",
-	0 };
 inline constexpr auto kProfileIdFormat = Option<int>{
 	"serein.profileIdFormat",
 	Scope::Device,
@@ -93,6 +79,20 @@ inline constexpr auto kHideProfileGifts = Option<bool>{
 	Category::Privacy,
 	"lng_serein_hide_profile_gifts",
 	0 };
+inline constexpr auto kHideReadTime = Option<bool>{
+	"serein.hideReadTime",
+	Scope::Device,
+	false,
+	Category::Privacy,
+	"lng_serein_hide_read_time",
+	0 };
+inline constexpr auto kHideSharePhonePrompt = Option<bool>{
+	"serein.hideSharePhonePrompt",
+	Scope::Device,
+	false,
+	Category::Privacy,
+	"lng_serein_hide_share_phone_prompt",
+	0 };
 inline constexpr auto kHideCreateTodo = Option<bool>{
 	"serein.hideCreateTodo",
 	Scope::Device,
@@ -112,8 +112,6 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kDemoMode));
 	Expects(registry.Add(kAutoDemoMode));
 	Expects(registry.Add(kLockSettings));
-	Expects(registry.Add(kHideReadTime));
-	Expects(registry.Add(kHideSharePhonePrompt));
 	Expects(registry.Add(kProfileIdFormat));
 	Expects(registry.Add(kShowProfileDc));
 	Expects(registry.Add(kShowRegistrationDate));
@@ -121,6 +119,8 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kShowSessionDetails));
 	Expects(registry.Add(kLocalNames));
 	Expects(registry.Add(kHideProfileGifts));
+	Expects(registry.Add(kHideReadTime));
+	Expects(registry.Add(kHideSharePhonePrompt));
 	Expects(registry.Add(kHideCreateTodo));
 	Expects(registry.Add(kSaveProtectedContent));
 }

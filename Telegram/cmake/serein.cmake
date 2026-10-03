@@ -184,6 +184,7 @@ set(serein_sources
     serein/settings/quiet_hours.cpp
     serein/settings/keyword_alerts.cpp
     serein/settings/send_translations.cpp
+    serein/settings/home_cover.cpp
     serein/settings/media.cpp
     serein/settings/menu.cpp
     serein/settings/privacy.cpp

@@ -154,11 +154,28 @@ void HiddenFoldersBox(
 const auto kMeta = BuildHelper({
 	.id = ChatsSection::Id(),
 	.parentId = HomeId(),
-	.title = &tr::lng_serein_chats,
-	.icon = &st::menuIconChats,
+	.title = Chats::kSubpageTitle,
+	.icon = Chats::kSubpageIcon,
 }, [](SectionBuilder &builder) {
 	const auto controller = builder.controller();
 	Chats::AddLayout(builder, {
+		.chatSort = [&] {
+			builder.addButton({
+				.id = u"serein/chats/chat-sort"_q,
+				.title = tr::lng_serein_chat_sort(),
+				.st = &st::settingsButtonNoIcon,
+				.label = ForDevice().Value(Chats::kChatSort)
+					| rpl::map([](int value) {
+						const auto count = std::popcount(unsigned(value & 15));
+						return count
+							? QString::number(count)
+								+ tr::lng_serein_sort_active_suffix(tr::now)
+							: tr::lng_serein_preview_follow(tr::now);
+					}),
+				.onClick = [=] { controller->show(Box(Chats::ChatSortBox)); },
+				.keywords = { u"sort"_q, u"unread"_q, u"contacts"_q },
+			});
+		},
 		.startupFolderMode = [&] {
 			const auto session = builder.session();
 			builder.addButton({
@@ -175,23 +192,6 @@ const auto kMeta = BuildHelper({
 					}));
 				},
 				.keywords = { u"startup"_q, u"folder"_q },
-			});
-		},
-		.chatSort = [&] {
-			builder.addButton({
-				.id = u"serein/chats/chat-sort"_q,
-				.title = tr::lng_serein_chat_sort(),
-				.st = &st::settingsButtonNoIcon,
-				.label = ForDevice().Value(Chats::kChatSort)
-					| rpl::map([](int value) {
-						const auto count = std::popcount(unsigned(value & 15));
-						return count
-							? QString::number(count)
-								+ tr::lng_serein_sort_active_suffix(tr::now)
-							: tr::lng_serein_preview_follow(tr::now);
-					}),
-				.onClick = [=] { controller->show(Box(Chats::ChatSortBox)); },
-				.keywords = { u"sort"_q, u"unread"_q, u"contacts"_q },
 			});
 		},
 		.hiddenFolderIds = [&] {
@@ -211,13 +211,15 @@ const auto kMeta = BuildHelper({
 				.keywords = { u"folder"_q, u"hide"_q, u"tabs"_q },
 			});
 		},
-	});
-	builder.addButton({
-		.id = u"serein/chats/cleanup"_q,
-		.title = tr::lng_serein_cleanup(),
-		.st = &st::settingsButtonNoIcon,
-		.onClick = [=] { Chats::ShowChatCleanup(controller); },
-		.keywords = { u"clean"_q, u"deleted"_q, u"inactive"_q, u"bot"_q },
+		.cleanup = [&] {
+			builder.addButton({
+				.id = u"serein/chats/cleanup"_q,
+				.title = tr::lng_serein_cleanup(),
+				.st = &st::settingsButtonNoIcon,
+				.onClick = [=] { Chats::ShowChatCleanup(controller); },
+				.keywords = { u"clean"_q, u"deleted"_q, u"inactive"_q, u"bot"_q },
+			});
+		},
 	});
 });
 

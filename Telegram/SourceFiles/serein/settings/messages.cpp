@@ -63,8 +63,8 @@ void ReadingChineseBox(not_null<Ui::GenericBox*> box) {
 const auto kMeta = BuildHelper({
 	.id = MessagesSection::Id(),
 	.parentId = HomeId(),
-	.title = &tr::lng_serein_messages,
-	.icon = &st::menuIconChatBubble,
+	.title = Messages::kSubpageTitle,
+	.icon = Messages::kSubpageIcon,
 }, [](SectionBuilder &builder) {
 	const auto controller = builder.controller();
 	Messages::AddLayout(builder, {

@@ -19,6 +19,18 @@ inline const auto kToggleRows = std::array<ToggleRow, 6>{ {
 		{ u"deleted"_q, u"anti-recall"_q, u"history"_q },
 	},
 	{
+		&kHistorySaveEdits,
+		tr::lng_serein_history_save_edits,
+		u"serein/history/history-save-edits"_q,
+		{ u"edit"_q, u"history"_q },
+	},
+	{
+		&kHistoryIncludeBots,
+		tr::lng_serein_history_include_bots,
+		u"serein/history/history-include-bots"_q,
+		{ u"bots"_q, u"history"_q },
+	},
+	{
 		&kHistoryKeepDeletedInPlace,
 		tr::lng_serein_history_keep_deleted_in_place,
 		u"serein/history/history-keep-deleted-in-place"_q,
@@ -36,29 +48,34 @@ inline const auto kToggleRows = std::array<ToggleRow, 6>{ {
 		u"serein/history/history-keep-removed-chats"_q,
 		{ u"banned"_q, u"kicked"_q, u"removed"_q, u"channel"_q, u"group"_q },
 	},
-	{
-		&kHistorySaveEdits,
-		tr::lng_serein_history_save_edits,
-		u"serein/history/history-save-edits"_q,
-		{ u"edit"_q, u"history"_q },
-	},
-	{
-		&kHistoryIncludeBots,
-		tr::lng_serein_history_include_bots,
-		u"serein/history/history-include-bots"_q,
-		{ u"bots"_q, u"history"_q },
-	},
 } };
 
 inline void AddLayout(
 		::Settings::Builder::SectionBuilder &builder) {
+	AddSection(builder, {
+		u"serein/history/record"_q,
+		tr::lng_serein_section_history_record,
+		{ u"deleted"_q, u"edited"_q, u"bots"_q },
+	});
 	AddToggle(builder, kToggleRows[0]);
 	AddToggle(builder, kToggleRows[1]);
 	AddToggle(builder, kToggleRows[2]);
+	EndSection(builder);
+	AddSection(builder, {
+		u"serein/history/deleted"_q,
+		tr::lng_serein_section_history_deleted,
+		{ u"deleted"_q, u"media"_q },
+	});
 	AddToggle(builder, kToggleRows[3]);
-	AddNote(builder, tr::lng_serein_history_keep_removed_chats_note);
 	AddToggle(builder, kToggleRows[4]);
 	AddToggle(builder, kToggleRows[5]);
+	AddNote(builder, tr::lng_serein_history_keep_removed_chats_note);
+	EndSection(builder, tr::lng_serein_section_history_deleted_note);
+	AddSection(builder, {
+		u"serein/history/storage"_q,
+		tr::lng_serein_section_history_storage,
+		{ u"storage"_q, u"days"_q, u"limit"_q },
+	});
 	AddNumber(builder, {
 		.option = &kHistoryRetentionDays,
 		.title = tr::lng_serein_history_retention_days,
@@ -80,7 +97,7 @@ inline void AddLayout(
 		.maximum = 10000000,
 		.zeroLabel = tr::lng_serein_history_unlimited,
 	});
-	AddNote(builder, tr::lng_serein_history_note);
+	EndSection(builder, tr::lng_serein_history_note);
 }
 
 inline constexpr auto kSubpageTitle = &tr::lng_serein_history_page;

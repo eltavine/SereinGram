@@ -10,6 +10,14 @@ message InterfaceSettings {
     cpp_namespace: "Interface"
     scope: SCOPE_DEVICE
     category: CATEGORY_INTERFACE
+    subpage: {
+      title: "lng_serein_interface"
+      icon: "menuIconPalette"
+      keywords: [
+        "interface",
+        "appearance"
+      ]
+    }
   };
 
   optional int32 bubble_roundness = 1 [
@@ -114,33 +122,41 @@ message InterfaceSettings {
     cpp_name: "kMainMenuConfig"
     validator: "ValidMainMenuBytes"
   }];
-  optional bool hide_app_icon_badge = 11 [(serein.options.v1.field) = {
-    section: {
-      title: "lng_serein_window_notification"
-      id: "window-notification"
-      keywords: [
-        "window",
-        "notification"
+  optional bool menu_shortcuts = 18 [(serein.options.v1.field) = {
+    keywords: [
+      "main menu",
+      "tray",
+      "ghost",
+      "presentation",
+      "recent chats"
+    ]
+    note: "lng_serein_menu_shortcuts_note"
+    restart: true
+  }];
+  optional int32 notification_delay = 12 [
+    (serein.options.v1.field) = {
+      section: {
+        title: "lng_serein_section_notifications"
+        id: "notifications"
+        keywords: [
+          "notification",
+          "window"
+        ]
+      }
+    },
+    (buf.validate.field).int32 = {
+      in: [
+        0,
+        500,
+        1000,
+        2000,
+        5000,
+        10000,
+        30000,
+        60000
       ]
     }
-    keywords: [
-      "dock",
-      "icon",
-      "badge"
-    ]
-  }];
-  optional int32 notification_delay = 12 [(buf.validate.field).int32 = {
-    in: [
-      0,
-      500,
-      1000,
-      2000,
-      5000,
-      10000,
-      30000,
-      60000
-    ]
-  }];
+  ];
   optional int32 other_device_notification_delay = 13 [(buf.validate.field).int32 = {
     in: [
       0,
@@ -172,18 +188,23 @@ message InterfaceSettings {
     custom_ui: true
     validator: "ValidQuietHoursBytes"
   }];
-  optional bool menu_shortcuts = 18 [(serein.options.v1.field) = {
+  optional bool hide_app_icon_badge = 11 [(serein.options.v1.field) = {
     keywords: [
-      "main menu",
-      "tray",
-      "ghost",
-      "presentation",
-      "recent chats"
+      "dock",
+      "icon",
+      "badge"
     ]
-    note: "lng_serein_menu_shortcuts_note"
-    restart: true
   }];
   optional bytes global_shortcut = 19 [(serein.options.v1.field) = {
+    section: {
+      title: "lng_serein_section_app"
+      id: "app"
+      keywords: [
+        "shortcut",
+        "accounts",
+        "updates"
+      ]
+    }
     title: "lng_serein_global_shortcut"
     keywords: [
       "global",
@@ -195,14 +216,6 @@ message InterfaceSettings {
     custom_ui: true
   }];
   optional bool halfwidth_ui_punctuation = 14 [(serein.options.v1.field) = {
-    section: {
-      title: "lng_serein_ui_text"
-      id: "text"
-      keywords: [
-        "text",
-        "punctuation"
-      ]
-    }
     keywords: [
       "text",
       "punctuation"
@@ -210,11 +223,6 @@ message InterfaceSettings {
     restart: true
   }];
   optional bool more_accounts = 15 [(serein.options.v1.field) = {
-    section: {
-      title: "lng_serein_accounts"
-      id: "accounts"
-      keywords: ["accounts"]
-    }
     keywords: [
       "accounts",
       "limit",
@@ -223,11 +231,6 @@ message InterfaceSettings {
     note: "lng_serein_more_accounts_note"
   }];
   optional bool check_updates = 16 [(serein.options.v1.field) = {
-    section: {
-      title: "lng_serein_updates"
-      id: "updates"
-      keywords: ["updates"]
-    }
     keywords: [
       "updates",
       "GitHub",

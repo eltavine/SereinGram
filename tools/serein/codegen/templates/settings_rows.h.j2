@@ -102,6 +102,12 @@ inline void AddLayout(
 	});
 {% elif item.kind == "custom" %}
 	custom.{{ item.member }}();
+{% elif item.kind == "end" %}
+{% if item.title %}
+	EndSection(builder, tr::{{ item.title }});
+{% else %}
+	EndSection(builder);
+{% endif %}
 {% else %}
 	AddNote(builder, tr::{{ item.title }});
 {% endif %}

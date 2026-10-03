@@ -94,14 +94,6 @@ rpl::producer<bool> PauseProxyOnVpnValue() {
 	return ForDevice().Value(Serein::ServiceSettings::kPauseProxyOnVpn);
 }
 
-bool ProxyPausedByVpn() {
-	return ForDevice().Get(Serein::ServiceSettings::kProxyPausedByVpn);
-}
-
-rpl::producer<bool> ProxyPausedByVpnValue() {
-	return ForDevice().Value(Serein::ServiceSettings::kProxyPausedByVpn);
-}
-
 QString CustomDoh() {
 	return ForDevice().Get(Serein::ServiceSettings::kCustomDoh);
 }
@@ -132,6 +124,14 @@ bool AndroidWebApps() {
 
 rpl::producer<bool> AndroidWebAppsValue() {
 	return ForDevice().Value(Serein::ServiceSettings::kAndroidWebApps);
+}
+
+bool ProxyPausedByVpn() {
+	return ForDevice().Get(Serein::ServiceSettings::kProxyPausedByVpn);
+}
+
+rpl::producer<bool> ProxyPausedByVpnValue() {
+	return ForDevice().Value(Serein::ServiceSettings::kProxyPausedByVpn);
 }
 
 } // namespace Serein::Hooks::ServiceSettings

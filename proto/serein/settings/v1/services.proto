@@ -11,20 +11,55 @@ message ServicesSettings {
     cpp_namespace: "ServiceSettings"
     scope: SCOPE_DEVICE
     category: CATEGORY_SERVICES
+    subpage: {
+      title: "lng_serein_services"
+      icon: "menuIconTranslate"
+      keywords: [
+        "translation",
+        "AI",
+        "service"
+      ]
+    }
   };
 
   optional bytes services = 1 [(serein.options.v1.field) = {
+    section: {
+      title: "lng_serein_section_providers"
+      id: "providers"
+      keywords: [
+        "service",
+        "API"
+      ]
+      note: "lng_serein_services_about"
+    }
     cpp_name: "kServicesConfig"
     title: "lng_serein_services"
     custom_ui: true
     validator: "ValidServicesBytes"
   }];
   optional bool prefer_system_ai = 2 [(serein.options.v1.field) = {
+    section: {
+      title: "lng_serein_section_system_ai"
+      id: "system-ai"
+      keywords: [
+        "AI",
+        "Apple Intelligence"
+      ]
+      note: "lng_serein_system_ai_about"
+    }
     title: "lng_serein_system_ai"
     custom_ui: true
     refresh: [REFRESH_COMPOSE_BUTTONS]
   }];
   optional bool translation_context = 6 [(serein.options.v1.field) = {
+    section: {
+      title: "lng_serein_section_translation"
+      id: "translation"
+      keywords: [
+        "translate",
+        "transcribe"
+      ]
+    }
     keywords: [
       "LLM",
       "context",
@@ -94,6 +129,17 @@ message ServicesSettings {
   ];
   optional string proxy_subscription = 3 [
     (serein.options.v1.field) = {
+      section: {
+        title: "lng_serein_section_network"
+        id: "network"
+        keywords: [
+          "proxy",
+          "DNS",
+          "network"
+        ]
+        note: "lng_serein_dc_status_about"
+        extra: "datacenters"
+      }
       title: "lng_serein_proxy_subscription"
       custom_ui: true
     },
@@ -114,10 +160,6 @@ message ServicesSettings {
       "VPN"
     ]
     note: "lng_serein_proxy_vpn_about"
-  }];
-  optional bool proxy_paused_by_vpn = 5 [(serein.options.v1.field) = {
-    title: "lng_serein_proxy_vpn"
-    hidden: true
   }];
   optional string custom_doh = 7 [
     (serein.options.v1.field) = {custom_ui: true},
@@ -145,6 +187,14 @@ message ServicesSettings {
     note: "lng_serein_faster_transfers_about"
   }];
   optional bool android_web_apps = 10 [(serein.options.v1.field) = {
+    section: {
+      title: "lng_serein_section_mini_apps"
+      id: "mini-apps"
+      keywords: [
+        "mini apps",
+        "bots"
+      ]
+    }
     keywords: [
       "mini apps",
       "web apps",
@@ -152,5 +202,9 @@ message ServicesSettings {
       "Android"
     ]
     note: "lng_serein_android_web_apps_about"
+  }];
+  optional bool proxy_paused_by_vpn = 5 [(serein.options.v1.field) = {
+    title: "lng_serein_proxy_vpn"
+    hidden: true
   }];
 }

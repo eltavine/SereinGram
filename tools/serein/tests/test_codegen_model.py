@@ -228,13 +228,81 @@ class ModelTest(unittest.TestCase):
             )
         )[0]
         self.assertEqual(
-            [item.kind for item in page.layout], ["section", "toggle", "toggle", "note", "custom"]
+            [item.kind for item in page.layout],
+            ["section", "toggle", "toggle", "note", "custom", "end"],
         )
         self.assertEqual(page.layout[0].id, "serein/messages/group")
         self.assertEqual(page.layout[0].keywords, 'u"k"_q')
         self.assertEqual(page.rows[1].disabled_by, "kHideAll")
         self.assertEqual(page.customs, ["previewLines"])
         self.assertEqual(page.rows_header, "messages_rows.h")
+
+    def test_sections_close_with_their_note_or_a_divider(self):
+        def section(name, note="", extra=""):
+            value = {"title": f"lng_{name}", "id": name, "note": note, "extra": extra}
+            return {model.FIELD_EXTENSION: {"section": value}}
+
+        page = model.build_pages(
+            image(
+                field("lead", "lead"),
+                field("first", "first", options=section("one", note="lng_one_about")),
+                field(
+                    "second",
+                    "second",
+                    options={
+                        model.FIELD_EXTENSION: {
+                            "section": {"title": "lng_two", "id": "two"},
+                            "note": "lng_second_about",
+                        }
+                    },
+                ),
+                field("third", "third", options=section("three", extra="tools")),
+            )
+        )[0]
+        self.assertEqual(
+            [(item.kind, item.title or item.member) for item in page.layout],
+            [
+                ("toggle", ""),
+                ("end", ""),
+                ("section", "lng_one"),
+                ("toggle", ""),
+                ("end", "lng_one_about"),
+                ("section", "lng_two"),
+                ("toggle", ""),
+                ("end", "lng_second_about"),
+                ("section", "lng_three"),
+                ("toggle", ""),
+                ("custom", "tools"),
+                ("end", ""),
+            ],
+        )
+        self.assertEqual(page.customs, ["tools"])
+        titles = {"lng_serein_lead", "lng_serein_first", "lng_serein_second", "lng_serein_third"}
+        titles |= {"lng_one", "lng_two", "lng_three", "lng_second_about"}
+        with self.assertRaisesRegex(model.SchemaError, "lng_one_about"):
+            model.check_titles([page], titles)
+
+    def test_section_extra_rows_are_validated(self):
+        def page_with(extra, *more):
+            return image(
+                field(
+                    "first",
+                    "first",
+                    options={
+                        model.FIELD_EXTENSION: {
+                            "section": {"title": "lng_s", "id": "s", "extra": extra}
+                        }
+                    },
+                ),
+                *more,
+            )
+
+        with self.assertRaisesRegex(model.SchemaError, "lowerCamel"):
+            model.build_pages(page_with("Bad-name"))
+        with self.assertRaisesRegex(model.SchemaError, "distinct names"):
+            model.build_pages(
+                page_with("previewLines", field("preview_lines", "previewLines", "TYPE_INT32"))
+            )
 
     def test_number_inputs_use_rules_and_labels(self):
         page = model.build_pages(
