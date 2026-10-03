@@ -74,7 +74,7 @@ jobs:
 
   macos:
     name: MacOS
-    runs-on: macos-latest
+    runs-on: macos-26
 
     env:
       CONFIG: ${{ inputs.config || 'Debug' }}
@@ -97,10 +97,11 @@ jobs:
       - name: First set up.
         run: |
           sudo chown -R "$(whoami)":admin /usr/local/share
+          retry="$REPO_NAME/tools/serein/retry.sh"
 
-          brew update
+          "$retry" 3 30 brew update
           brew upgrade || true
-          brew install automake libtool meson nasm ninja pkg-config
+          "$retry" 3 30 brew install automake libtool meson nasm ninja pkg-config
 
           # Disable spotlight.
           sudo mdutil -a -i off
@@ -190,11 +191,14 @@ jobs:
       - name: Ad-hoc signature.
         run: |
           app="$REPO_NAME/out/$CONFIG/SereinGram.app"
-          lipo "$app/Contents/MacOS/SereinGram" -verify_arch x86_64 arm64
+          for arch in x86_64 arm64; do
+            lipo "$app/Contents/MacOS/SereinGram" -verify_arch "$arch"
+          done
           codesign --force --deep --sign - "$app"
           codesign --verify --deep --strict "$app"
 
       - name: Smoke test.
+        timeout-minutes: 10
         run: |
           python3 "$REPO_NAME/tools/serein/smoke_test.py" \
             "$REPO_NAME/out/$CONFIG/SereinGram.app/Contents/MacOS/SereinGram"

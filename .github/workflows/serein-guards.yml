@@ -17,7 +17,7 @@ jobs:
 
   guards:
     name: Architecture guards
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Clone.
@@ -81,8 +81,8 @@ jobs:
 
       - name: Desktop entry and AppStream metadata validate.
         run: |
-          sudo apt-get update
-          sudo apt-get install -y desktop-file-utils appstream
+          sudo apt-get update -o Acquire::Retries=3
+          tools/serein/retry.sh 3 30 sudo apt-get install -y -o Acquire::Retries=3 desktop-file-utils appstream
           desktop-file-validate lib/xdg/io.github.eltavine.SereinGram.desktop
           appstreamcli validate --no-net --explain lib/xdg/io.github.eltavine.SereinGram.metainfo.xml
 
@@ -99,7 +99,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          bash <(curl -sSfL https://raw.githubusercontent.com/rhysd/actionlint/v1.7.12/scripts/download-actionlint.bash) 1.7.12
+          curl -sSfL --retry 5 --retry-all-errors --retry-delay 10 -o "$RUNNER_TEMP/download-actionlint.bash" \
+            https://raw.githubusercontent.com/rhysd/actionlint/v1.7.12/scripts/download-actionlint.bash
+          bash "$RUNNER_TEMP/download-actionlint.bash" 1.7.12
           ./actionlint .github/workflows/serein-*.yml
           uvx zizmor@1.16.3 .github/workflows/serein-*.yml
 
@@ -141,7 +143,7 @@ jobs:
 
   commits:
     name: Commit messages and secrets
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Clone.
@@ -185,7 +187,7 @@ jobs:
           GITLEAKS_SHA256: 551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb
         run: |
           archive="$RUNNER_TEMP/gitleaks.tar.gz"
-          curl -sSfL -o "$archive" \
+          curl -sSfL --retry 5 --retry-all-errors --retry-delay 10 -o "$archive" \
             https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz
           echo "$GITLEAKS_SHA256  $archive" | sha256sum -c -
           tar -xzf "$archive" -C "$RUNNER_TEMP" gitleaks
@@ -194,7 +196,7 @@ jobs:
 
   core-tests:
     name: Core tests and static analysis
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Clone.
@@ -242,7 +244,7 @@ jobs:
 
   sanitizers:
     name: Core tests with sanitizers
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Clone.

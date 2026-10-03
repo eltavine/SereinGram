@@ -88,7 +88,7 @@ jobs:
 
   windows:
     name: Windows
-    runs-on: ${{ matrix.arch == 'arm64' && 'windows-11-arm' || 'windows-latest' }}
+    runs-on: ${{ matrix.arch == 'arm64' && 'windows-11-arm' || 'windows-2025-vs2026' }}
 
     strategy:
       fail-fast: false
@@ -178,7 +178,8 @@ jobs:
         shell: pwsh
         run: |
           $exe = Join-Path $env:RUNNER_TEMP 'vs_buildtools.exe'
-          Invoke-WebRequest -Uri https://aka.ms/vs/18/stable/vs_buildtools.exe -OutFile $exe
+          Invoke-WebRequest -Uri https://aka.ms/vs/18/stable/vs_buildtools.exe -OutFile $exe `
+            -MaximumRetryCount 5 -RetryIntervalSec 15
           $p = Start-Process -FilePath $exe -Wait -PassThru -ArgumentList `
             '--quiet','--wait','--norestart','--nocache', `
             '--add','Microsoft.VisualStudio.Workload.VCTools', `
@@ -354,8 +355,12 @@ jobs:
           $version = (Select-String -Path "$root\Telegram\build\version" -Pattern '^AppVersionStr (.+)$').Matches[0].Groups[1].Value.Trim()
           $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
           if (-not (Test-Path $iscc)) {
-            choco install innosetup --no-progress -y
-            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+            foreach ($attempt in 1..3) {
+              choco install innosetup --no-progress -y
+              if ($LASTEXITCODE -eq 0) { break }
+              if ($attempt -eq 3) { exit $LASTEXITCODE }
+              Start-Sleep -Seconds (30 * $attempt)
+            }
           }
           & $iscc "/DMyAppVersion=$version" "/DMyAppVersionFull=$version" "/DReleasePath=$root\out\$env:BUILD_CONFIG" "/DMyBuildTarget=${{ matrix.arch == 'arm64' && 'winarm' || 'win64' }}" "$root\Telegram\build\setup.iss"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

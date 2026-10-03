@@ -40,7 +40,7 @@ jobs:
         if: matrix.system == 'x86_64-linux'
         uses: jlumbroso/free-disk-space@ceedf095f4ec1a097402bc6bd80831f2e1a6fde6
         with:
-          tool-cache: true
+          preinstalled-runtimes: true
 
       - name: Clone.
         uses: actions/checkout@v7

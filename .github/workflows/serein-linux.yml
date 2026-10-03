@@ -85,7 +85,7 @@ jobs:
 
   linux:
     name: ${{ inputs.arch == 'arm64' && 'Rocky Linux 8 (arm64)' || 'Rocky Linux 8' }}
-    runs-on: ${{ inputs.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
+    runs-on: ${{ inputs.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-24.04' }}
     permissions:
       contents: read
       actions: write
@@ -107,6 +107,8 @@ jobs:
           submodules: recursive
 
       - name: First set up.
+        env:
+          CCACHE_SHA256: 508b2a1217dc6e04a23e967c7b95a0fb45d8a7e16fde9e180919698f2e2be060
         run: |
           for attempt in 1 2 3; do
             if sudo apt-get update -o Acquire::Retries=3; then
@@ -117,16 +119,22 @@ jobs:
               sleep 60
             fi
           done
-          curl -sSL https://install.python-poetry.org | python3 -
+          retry="$GITHUB_WORKSPACE/tools/serein/retry.sh"
+          download=(curl -fsSL --retry 5 --retry-all-errors --retry-delay 10)
+          "${download[@]}" -o "$RUNNER_TEMP/install-poetry.py" https://install.python-poetry.org
+          "$retry" 3 30 python3 "$RUNNER_TEMP/install-poetry.py" --version 2.5.1
           if [ "$ARCH" = x86_64 ]; then
-            curl -sSL https://github.com/ccache/ccache/releases/download/v4.13.6/ccache-4.13.6-linux-x86_64-glibc.tar.xz \
-            | sudo tar xJ -C /usr/local/bin --strip-components=1 ccache-4.13.6-linux-x86_64-glibc/ccache
+            "${download[@]}" -o "$RUNNER_TEMP/ccache.tar.xz" \
+              https://github.com/ccache/ccache/releases/download/v4.13.6/ccache-4.13.6-linux-x86_64-glibc.tar.xz
+            echo "$CCACHE_SHA256  $RUNNER_TEMP/ccache.tar.xz" | sha256sum -c -
+            sudo tar -xJf "$RUNNER_TEMP/ccache.tar.xz" -C /usr/local/bin --strip-components=1 \
+              ccache-4.13.6-linux-x86_64-glibc/ccache
           else
-            sudo apt-get install -y ccache
+            "$retry" 3 30 sudo apt-get install -y -o Acquire::Retries=3 ccache
           fi
           echo "CCACHE_DIR=$RUNNER_TEMP/.tdesktop-cache" >> "$GITHUB_ENV"
           cd Telegram/build/docker/centos_env
-          poetry install
+          "$retry" 3 30 poetry install
           DOCKERFILE=$(DEBUG='' LTO='' poetry run gen_dockerfile)
           echo "$DOCKERFILE" > Dockerfile
           if [ "$ARCH" = arm64 ]; then
@@ -137,7 +145,7 @@ jobs:
       - name: Free up some disk space.
         uses: jlumbroso/free-disk-space@ceedf095f4ec1a097402bc6bd80831f2e1a6fde6
         with:
-          tool-cache: true
+          preinstalled-runtimes: true
 
       - name: Set up Docker Buildx.
         id: setup-buildx
@@ -161,7 +169,20 @@ jobs:
           dockerfile: Telegram/build/docker/centos_env/Dockerfile
           skip-extraction: ${{ steps.cache-libs.outputs.cache-hit }}
 
+      # The builder keeps the finished layers, so a second attempt resumes after a network error.
       - name: Libraries.
+        id: libraries
+        continue-on-error: true
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: Telegram/build/docker/centos_env
+          load: true
+          tags: ${{ env.IMAGE_TAG }}
+          cache-from: type=local,src=${{ runner.temp }}/.buildx-cache
+          cache-to: type=local,dest=${{ runner.temp }}/.buildx-cache-new,mode=max
+
+      - name: Libraries, second attempt.
+        if: steps.libraries.outcome == 'failure'
         uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         with:
           context: Telegram/build/docker/centos_env
@@ -305,8 +326,9 @@ jobs:
           fi
 
       - name: Smoke test.
+        timeout-minutes: 15
         run: |
-          sudo apt-get install -y xvfb
+          tools/serein/retry.sh 3 30 sudo apt-get install -y -o Acquire::Retries=3 xvfb
           xvfb-run -a python3 tools/serein/smoke_test.py "out/$CONFIG/SereinGram"
 
       - name: Portable archive.
@@ -325,9 +347,10 @@ jobs:
         run: |
           tool="$RUNNER_TEMP/appimagetool"
           runtime="$RUNNER_TEMP/runtime-$APPIMAGE_ARCH"
-          curl -sSfL -o "$tool" \
+          download=(curl -fsSL --retry 5 --retry-all-errors --retry-delay 10)
+          "${download[@]}" -o "$tool" \
             "https://github.com/AppImage/appimagetool/releases/download/1.9.1/appimagetool-$APPIMAGE_ARCH.AppImage"
-          curl -sSfL -o "$runtime" \
+          "${download[@]}" -o "$runtime" \
             "https://github.com/AppImage/type2-runtime/releases/download/20251108/runtime-$APPIMAGE_ARCH"
           echo "$APPIMAGETOOL_SHA256  $tool" | sha256sum -c -
           echo "$RUNTIME_SHA256  $runtime" | sha256sum -c -
@@ -350,7 +373,7 @@ jobs:
           SEREIN_PACKAGE_ARCH: ${{ inputs.arch == 'arm64' && 'arm64' || 'amd64' }}
         run: |
           archive="$RUNNER_TEMP/nfpm.tar.gz"
-          curl -sSfL -o "$archive" \
+          curl -fsSL --retry 5 --retry-all-errors --retry-delay 10 -o "$archive" \
             "https://github.com/goreleaser/nfpm/releases/download/v2.47.0/nfpm_2.47.0_$NFPM_ASSET.tar.gz"
           echo "$NFPM_SHA256  $archive" | sha256sum -c -
           tar -xzf "$archive" -C "$RUNNER_TEMP" nfpm
@@ -370,6 +393,7 @@ jobs:
           ls -l artifact
 
       - name: AppImage integration test.
+        timeout-minutes: 15
         env:
           APPIMAGE_EXTRACT_AND_RUN: 1
         run: xvfb-run -a python3 tools/serein/smoke_test.py "artifact/SereinGram-linux-$ARCH.AppImage"
