@@ -156,7 +156,10 @@ void CleanupBox(
 			QString::number(state->total)));
 	});
 	const auto run = [=](bool remove) {
-		state->queue.clear();
+		if (!state->queue.empty()) {
+			box->showToast(tr::lng_serein_cleanup_busy(tr::now));
+			return;
+		}
 		for (const auto &candidate : state->candidates) {
 			const auto check = candidate.check;
 			if (check && check->checked() && !check->isDisabled()) {

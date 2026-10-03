@@ -397,6 +397,7 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_cleanup_delete_sure" = "Delete the selected private chats and leave the selected groups and channels? This cannot be undone.";
 "lng_serein_cleanup_progress" = "Done {done} of {total}";
 "lng_serein_cleanup_none_selected" = "Choose chats first.";
+"lng_serein_cleanup_busy" = "Wait until the selected chats are processed.";
 "lng_serein_local_pins" = "Locally pinned chats";
 "lng_serein_local_pin" = "Pin locally";
 "lng_serein_local_unpin" = "Unpin locally";
@@ -661,6 +662,8 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_keyword_alerts_channels" = "Also in channels";
 "lng_serein_keyword_alerts_about" = "A new message that contains one of these words shows a notification even when its chat is muted. Words match in any case. Write /pattern/ for a regular expression, or /pattern/i to ignore case.";
 "lng_serein_keyword_alerts_too_many" = "Up to {limit} keywords are supported.";
+"lng_serein_keyword_alerts_too_long" = "Each keyword can have up to {limit} characters.";
+"lng_serein_keyword_alerts_save_failed" = "These keywords could not be saved. Check them and try again.";
 "lng_serein_keyword_alerts_invalid" = "Not a valid regular expression: {pattern}";
 "lng_serein_link_changed" = "Open this modified link?";
 "lng_serein_config_off" = "Off";

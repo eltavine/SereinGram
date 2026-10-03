@@ -1,7 +1,10 @@
 #include "serein/messages/markdown_menu.h"
 
+#include "serein/hooks/gen/privacy.h"
 #include "serein/hooks/menu/actions.h"
 #include "serein/messages/markdown.h"
+#include "data/data_peer.h"
+#include "history/history.h"
 #include "history/history_item.h"
 #include "lang/lang_keys.h"
 #include "ui/widgets/menu/menu_action.h"
@@ -20,6 +23,10 @@ void InsertCopyMarkdownAction(
 		HistoryItem *item,
 		Window::SessionController *controller) {
 	if (!menu || !item || !controller || item->isService()) {
+		return;
+	} else if (!Hooks::Privacy::SaveProtectedContent()
+		&& (!item->history()->peer->allowsForwarding()
+			|| item->forbidsForward())) {
 		return;
 	}
 	const auto text = item->translatedText();

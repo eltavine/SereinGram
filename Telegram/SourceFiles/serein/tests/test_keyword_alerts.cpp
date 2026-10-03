@@ -52,6 +52,15 @@ TEST_CASE("KeywordAlerts") {
 		config.enabled = false;
 		CHECK(!Matches(config, u"release"_q, false));
 	}
+	SUBCASE("rules follow the schema length limit") {
+		const auto longest = QString(kMaxKeywordLength, u'k');
+		CHECK(ValidKeywordRule({ .pattern = longest }));
+		CHECK(!ValidKeywordRule({ .pattern = longest + u'k' }));
+		const auto wide = QString::fromUcs4(U"\U0001F600");
+		CHECK(ValidKeywordRule({ .pattern = wide.repeated(kMaxKeywordLength) }));
+		auto config = Enabled(longest);
+		CHECK(ReadKeywordAlerts(SerializeKeywordAlerts(config)) == config);
+	}
 	SUBCASE("pathological patterns fail instead of hanging") {
 		const auto config = Enabled(u"/(a|aa)+$/"_q);
 		CHECK(!Matches(config, QString(64, u'a') + u'b', false));

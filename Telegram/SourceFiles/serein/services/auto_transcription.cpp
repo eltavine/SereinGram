@@ -6,6 +6,7 @@
 #include "serein/services/external_transcription.h"
 #include "serein/services/request.h"
 #include "api/api_transcribes.h"
+#include "base/weak_ptr.h"
 #include "apiwrap.h"
 #include "data/data_document.h"
 #include "data/data_document_media.h"
@@ -44,7 +45,7 @@ enum class Mode {
 		&& (mode == Mode::AllChats || item->history()->peer->isUser());
 }
 
-class AutoTranscriber final {
+class AutoTranscriber final : public base::has_weak_ptr {
 public:
 	explicit AutoTranscriber(not_null<Main::Session*> session);
 
@@ -56,6 +57,7 @@ private:
 
 	void added(not_null<HistoryItem*> item);
 	void next();
+	void finished(FullMsgId id);
 
 	const not_null<Main::Session*> _session;
 	ServiceRequest _request;
@@ -109,29 +111,35 @@ void AutoTranscriber::next() {
 		const auto id = _queue.front();
 		_queue.pop_front();
 		const auto item = _session->data().message(id);
-		const auto i = _queued.find(id);
-		if (!item || i == end(_queued)) {
-			_queued.remove(id);
+		auto queued = _queued.take(id);
+		if (!item || !queued) {
 			continue;
 		}
-		const auto media = i->second.media;
-		const auto result = TranscribeExternally(item, media, _request, [=](
-				bool) {
-			_active = FullMsgId();
-			next();
-		});
+		_active = id;
+		const auto result = TranscribeExternally(
+			item,
+			queued->media,
+			_request,
+			[=](bool) { crl::on_main(this, [=] { finished(id); }); });
 		if (result == ExternalTranscription::Started) {
-			_queued.erase(i);
-			_active = id;
-		} else if (result == ExternalTranscription::Downloading
-			&& (media->owner()->loading()
-				|| ++i->second.downloads <= kMaxDownloadWaits)) {
+			continue;
+		}
+		_active = FullMsgId();
+		if (result == ExternalTranscription::Downloading
+			&& (queued->media->owner()->loading()
+				|| ++queued->downloads <= kMaxDownloadWaits)) {
+			_queued.emplace(id, std::move(*queued));
 			downloading.push_back(id);
-		} else {
-			_queued.erase(i);
 		}
 	}
 	_queue.insert(end(_queue), begin(downloading), end(downloading));
+}
+
+void AutoTranscriber::finished(FullMsgId id) {
+	if (_active == id) {
+		_active = FullMsgId();
+		next();
+	}
 }
 
 } // namespace

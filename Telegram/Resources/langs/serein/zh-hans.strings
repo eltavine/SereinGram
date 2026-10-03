@@ -393,6 +393,7 @@
 "lng_serein_cleanup_delete_sure" = "删除所选私聊并退出所选群组和频道？此操作无法撤销。";
 "lng_serein_cleanup_progress" = "已完成 {done}/{total}";
 "lng_serein_cleanup_none_selected" = "请先选择对话。";
+"lng_serein_cleanup_busy" = "请等待所选对话处理完成。";
 "lng_serein_local_pins" = "本地置顶的对话";
 "lng_serein_local_pin" = "本地置顶";
 "lng_serein_local_unpin" = "取消本地置顶";
@@ -657,6 +658,8 @@
 "lng_serein_keyword_alerts_channels" = "也包括频道";
 "lng_serein_keyword_alerts_about" = "包含这些词的新消息即使所在对话已静音也会通知。关键词不区分大小写。写成 /表达式/ 表示正则表达式，/表达式/i 表示忽略大小写。";
 "lng_serein_keyword_alerts_too_many" = "最多支持 {limit} 个关键词。";
+"lng_serein_keyword_alerts_too_long" = "每个关键词最多 {limit} 个字符。";
+"lng_serein_keyword_alerts_save_failed" = "无法保存这些关键词，请检查后重试。";
 "lng_serein_keyword_alerts_invalid" = "不是有效的正则表达式：{pattern}";
 "lng_serein_link_changed" = "打开修改后的链接？";
 "lng_serein_config_off" = "已停用";

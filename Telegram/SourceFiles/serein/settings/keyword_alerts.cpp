@@ -71,7 +71,19 @@ void KeywordAlertsBox(
 			[](const auto &rule) {
 				return !Notifications::ValidKeywordRule(rule);
 			});
-		if (result.rules.size() > Notifications::kMaxKeywordRules) {
+		const auto tooLong = std::ranges::any_of(
+			result.rules,
+			[](const auto &rule) {
+				return rule.pattern.toUcs4().size()
+					> Notifications::kMaxKeywordLength;
+			});
+		if (tooLong) {
+			box->showToast(tr::lng_serein_keyword_alerts_too_long(
+				tr::now,
+				lt_limit,
+				QString::number(Notifications::kMaxKeywordLength)));
+			return;
+		} else if (result.rules.size() > Notifications::kMaxKeywordRules) {
 			box->showToast(tr::lng_serein_keyword_alerts_too_many(
 				tr::now,
 				lt_limit,
@@ -87,7 +99,10 @@ void KeywordAlertsBox(
 		const auto raw = (result == KeywordAlerts())
 			? QByteArray()
 			: Notifications::SerializeKeywordAlerts(result);
-		Expects(ForAccount(session).Set(kKeywordAlerts, raw));
+		if (!ForAccount(session).Set(kKeywordAlerts, raw)) {
+			box->showToast(tr::lng_serein_keyword_alerts_save_failed(tr::now));
+			return;
+		}
 		box->closeBox();
 	});
 	box->addButton(tr::lng_cancel(), [=] { box->closeBox(); });

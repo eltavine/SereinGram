@@ -41,7 +41,9 @@ constexpr auto kMaxText = 16384;
 } // namespace
 
 bool ValidKeywordRule(const KeywordRule &rule) {
-	return !rule.pattern.trimmed().isEmpty()
+	const auto length = rule.pattern.toUcs4().size();
+	return length <= kMaxKeywordLength
+		&& !rule.pattern.trimmed().isEmpty()
 		&& !rule.pattern.contains(u'\n')
 		&& (!rule.regex || SafePattern(rule.pattern, !rule.caseSensitive).isValid());
 }

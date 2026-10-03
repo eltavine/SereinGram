@@ -5,6 +5,7 @@
 namespace Serein::Notifications {
 
 inline constexpr auto kMaxKeywordRules = 50;
+inline constexpr auto kMaxKeywordLength = 256;
 
 [[nodiscard]] std::optional<KeywordAlerts> ReadKeywordAlerts(
 	const QByteArray &raw);

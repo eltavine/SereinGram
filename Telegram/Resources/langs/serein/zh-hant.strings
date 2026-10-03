@@ -393,6 +393,7 @@
 "lng_serein_cleanup_delete_sure" = "刪除所選私人對話並退出所選群組和頻道？此操作無法復原。";
 "lng_serein_cleanup_progress" = "已完成 {done}/{total}";
 "lng_serein_cleanup_none_selected" = "請先選擇對話。";
+"lng_serein_cleanup_busy" = "請等待所選對話處理完成。";
 "lng_serein_local_pins" = "本機置頂的對話";
 "lng_serein_local_pin" = "本機置頂";
 "lng_serein_local_unpin" = "取消本機置頂";
@@ -657,6 +658,8 @@
 "lng_serein_keyword_alerts_channels" = "也包括頻道";
 "lng_serein_keyword_alerts_about" = "包含這些字詞的新訊息即使所在對話已靜音也會通知。關鍵字不區分大小寫。寫成 /表達式/ 表示正規表達式，/表達式/i 表示忽略大小寫。";
 "lng_serein_keyword_alerts_too_many" = "最多支援 {limit} 個關鍵字。";
+"lng_serein_keyword_alerts_too_long" = "每個關鍵字最多 {limit} 個字元。";
+"lng_serein_keyword_alerts_save_failed" = "無法儲存這些關鍵字，請檢查後重試。";
 "lng_serein_keyword_alerts_invalid" = "不是有效的正規表達式：{pattern}";
 "lng_serein_link_changed" = "開啟修改後的連結？";
 "lng_serein_config_off" = "已停用";

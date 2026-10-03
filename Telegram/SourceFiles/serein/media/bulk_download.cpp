@@ -1,6 +1,8 @@
 #include "serein/media/bulk_download.h"
 
+#include "core/application.h"
 #include "data/data_peer.h"
+#include "export/export_manager.h"
 #include "export/export_settings.h"
 #include "export/view/export_view_settings.h"
 #include "lang/lang_keys.h"
@@ -8,7 +10,6 @@
 #include "storage/storage_account.h"
 #include "ui/widgets/buttons.h"
 #include "ui/wrap/vertical_layout.h"
-#include "window/window_peer_menu.h"
 #include "window/window_session_controller.h"
 
 #include "styles/style_settings.h"
@@ -19,12 +20,14 @@ void DownloadChatMedia(
 		not_null<Window::SessionController*> controller,
 		not_null<PeerData*> peer) {
 	auto &local = controller->session().local();
-	auto settings = local.readExportSettings();
-	settings.media.types = Export::MediaSettings::Type::AllMask;
-	settings.media.sizeLimit = Export::View::SizeLimitByIndex(
+	const auto saved = local.readExportSettings();
+	auto media = saved;
+	media.media.types = Export::MediaSettings::Type::AllMask;
+	media.media.sizeLimit = Export::View::SizeLimitByIndex(
 		Export::View::kSizeValueCount - 1);
-	local.writeExportSettings(settings);
-	Window::PeerMenuExportChat(controller, peer);
+	local.writeExportSettings(media);
+	Core::App().exportManager().start(peer);
+	local.writeExportSettings(saved);
 }
 
 void AddMediaDownloadRow(const ChatSettingsContext &context) {
