@@ -37,7 +37,7 @@ jobs:
     timeout-minutes: 120
     env:
       # tdlib/telegram-bot-api "Update version to 10.3."
-      TELEGRAM_BOT_API_COMMIT: 2efabc722e9493b9cac450233198d09e5cea0573
+      SERVER_COMMIT: 2efabc722e9493b9cac450233198d09e5cea0573
 
     steps:
       - name: Clone.
@@ -53,7 +53,7 @@ jobs:
           "$retry" 3 30 sudo apt-get update -o Acquire::Retries=3
           "$retry" 3 30 sudo apt-get install -y -o Acquire::Retries=3 gperf libssl-dev zlib1g-dev
           "$retry" 3 30 git clone --filter=blob:none https://github.com/tdlib/telegram-bot-api.git "$src"
-          git -C "$src" checkout --quiet "$TELEGRAM_BOT_API_COMMIT"
+          git -C "$src" checkout --quiet "$SERVER_COMMIT"
           "$retry" 3 30 git -C "$src" submodule update --init --recursive --depth 1
           cmake -S "$src" -B "$src/build" -DCMAKE_BUILD_TYPE=Release
           cmake --build "$src/build" --target telegram-bot-api --parallel 3
