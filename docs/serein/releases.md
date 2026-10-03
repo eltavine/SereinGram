@@ -92,6 +92,10 @@ AppImage 内嵌 AppImage 规范的更新信息 `gh-releases-zsync|<所有者>|<�
 
 Release 正文最上方是自动生成的变更记录：Nightly 列出自上一个 Nightly 以来、正式版列出自上一个 `v*` 标签以来 `develop` 主线上的提交，按 Conventional Commits 类型分为不兼容变更、新功能、修复、性能与 Telegram Desktop 上游合并，构建、工具与文档等其余提交折叠显示；随后是按系统与架构排列的下载表与校验说明。生成逻辑在 `tools/serein/release.py`。
 
+## 4a. Telegram 频道
+
+每个通过 CI 并成功更新的 Nightly 还会由 Telegram bot 发到频道 `-1004356403303`：先发一条消息，写明提交第一行、作者、提交链接与本次 Actions 运行链接，随后按系统分组，以文件相册发出全部二进制产物（不含 `.zsync`），每个相册都回复这条消息。公共 Bot API 服务器只接受 50 MB 以内的上传，因此 Telegram 任务在运行器上启动本地 `telegram-bot-api` 服务器（`--local`，上限 2000 MB）；服务器由 `serein-nightly.yml` 在 CI 运行期间从固定的 tdlib/telegram-bot-api 发布提交编译，不使用第三方镜像或二进制。任务运行在仓库的 `telegram` 环境中，只需要环境 Secret `TELEGRAM_BOT_TOKEN`（bot 必须是频道管理员并能发帖）。本地服务器登录用的 api_id 与 api_hash 复用 CI 构建所用的那一组：仓库 Secrets `SEREIN_API_ID` 与 `SEREIN_API_HASH`，未设置时是 `Telegram/cmake/telegram_options.cmake` 中的公开测试凭据（`TDESKTOP_API_TEST`）；在 `telegram` 环境中设置 `TELEGRAM_API_ID` 与 `TELEGRAM_API_HASH` 时优先用这一组。最终回退是纯文本消息：本地服务器没有编译成功、无法登录或发送文件出错时，改用公共 Bot API（只需要 bot token）发一条不带格式的消息，列出提交第一行、作者、提交与 Actions 链接以及 Nightly 下载页，任务给出警告但不失败；连这条消息也发不出去（例如缺少 bot token 或 bot 不能在频道发帖）时任务才失败，GitHub 上的 Nightly 不受影响。重跑较旧提交而 `nightly` 已指向更新的提交时，不会发到频道。发帖逻辑在 `tools/serein/telegram_post.py`。
+
 ## 5. API 凭据
 
 正式版必须使用 SereinGram 自己的 API 凭据（仓库 Secrets `SEREIN_API_ID`、`SEREIN_API_HASH`）。缺少凭据时 `serein-release.yml` 仍完成整套构建并保留产物供内部测试，但不发布正式版，并以“Release credentials”任务失败提示配置。Nightly 在缺少凭据时改用 Telegram Desktop 源码中公开的测试凭据（`TDESKTOP_API_TEST`）构建并照常发布，发布任务只给出警告；`release.py notes --test-credentials` 把 `tools/serein/credentials_notice.md` 中的英文声明放在正文最上方：SereinGram 尚未配置开发者 API 凭据，本 Nightly 使用 Telegram Desktop 公开的测试凭据构建，登录可能受限或失败，配置凭据后会自动发布新的 Nightly。声明的措辞由 `tools/serein/tests/test_release.py` 固定。配置凭据后的下一个 Nightly 不再带这段声明。
@@ -104,7 +108,7 @@ Release 正文最上方是自动生成的变更记录：Nightly 列出自上一�
 | `serein-win.yml`、`serein-mac.yml`、`serein-linux.yml` | 指向 `develop` 的 PR 与 `main` 推送（Debug）；被 `serein-ci.yml` 调用（Release，Windows 与 Linux 各含 x86_64 和 arm64） | 编译（警告即错误）、`test_serein`、启动冒烟测试、打包与安装测试；Linux 发行版安装测试是单独的任务 |
 | `serein-flatpak.yml`、`serein-snap.yml`、`serein-arch.yml`、`serein-nix.yml` | 各自的打包文件在 `main` 上改动、每周定时、手动；被 `serein-ci.yml` 调用 | 发行版打包与安装检查 |
 | `serein-ci.yml` | 被 `serein-nightly.yml` 与 `serein-release.yml` 调用 | 一个提交的全部 CI：守卫、Release 矩阵、Flatpak、Snap、Arch Linux 与 Nix |
-| `serein-nightly.yml` | 每次推送到 `develop`、手动 | 全部 CI 通过后清空并重新填充固定的 `nightly` 发布 |
+| `serein-nightly.yml` | 每次推送到 `develop`、手动 | 全部 CI 通过后清空并重新填充固定的 `nightly` 发布，再把二进制产物发到 Telegram 频道 |
 | `serein-release.yml` | 仅手动 | 全部 CI、校验文件、变更记录与正式版草稿 |
 | `serein-upstream.yml` | 每周一、手动 | 合并 Telegram Desktop `dev`，开同步 PR 并触发守卫与三平台构建 |
 

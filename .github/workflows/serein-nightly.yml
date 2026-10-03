@@ -27,6 +27,47 @@ jobs:
     with:
       channel: ${{ github.ref_name == github.event.repository.default_branch && 'nightly' || '' }}
 
+  # WHY: the public Bot API refuses uploads over 50 MB, so the binaries go through a local
+  # telegram-bot-api server, built here from a pinned release commit while the CI runs: it
+  # receives the bot token, so it is never a third-party image or binary.
+  bot-api:
+    name: Bot API server
+    if: github.ref_name == github.event.repository.default_branch
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      # tdlib/telegram-bot-api "Update version to 10.3."
+      TELEGRAM_BOT_API_COMMIT: 2efabc722e9493b9cac450233198d09e5cea0573
+
+    steps:
+      - name: Clone.
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          sparse-checkout: tools/serein
+
+      - name: Build the server.
+        run: |
+          retry=tools/serein/retry.sh
+          src="$RUNNER_TEMP/telegram-bot-api"
+          "$retry" 3 30 sudo apt-get update -o Acquire::Retries=3
+          "$retry" 3 30 sudo apt-get install -y -o Acquire::Retries=3 gperf libssl-dev zlib1g-dev
+          "$retry" 3 30 git clone --filter=blob:none https://github.com/tdlib/telegram-bot-api.git "$src"
+          git -C "$src" checkout --quiet "$TELEGRAM_BOT_API_COMMIT"
+          "$retry" 3 30 git -C "$src" submodule update --init --recursive --depth 1
+          cmake -S "$src" -B "$src/build" -DCMAKE_BUILD_TYPE=Release
+          cmake --build "$src/build" --target telegram-bot-api --parallel 3
+          mkdir "$RUNNER_TEMP/server"
+          install -m755 "$src/build/telegram-bot-api" "$RUNNER_TEMP/server/telegram-bot-api"
+
+      - name: Upload the server.
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          path: ${{ runner.temp }}/server/telegram-bot-api
+          archive: false
+          if-no-files-found: error
+          retention-days: 3
+
   publish:
     name: Publish
     needs: ci
@@ -34,6 +75,8 @@ jobs:
     runs-on: ubuntu-24.04
     permissions:
       contents: write
+    outputs:
+      outdated: ${{ steps.published.outputs.outdated }}
     env:
       GH_TOKEN: ${{ github.token }}
       COMMIT: ${{ github.sha }}
@@ -145,3 +188,94 @@ jobs:
           done
           echo "::error::The nightly release does not hold exactly the files and the commit of this build."
           exit 1
+
+  telegram:
+    name: Telegram
+    needs: [publish, bot-api]
+    if: ${{ !cancelled() && needs.publish.result == 'success' && needs.publish.outputs.outdated == 'false' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    environment: telegram
+    env:
+      TELEGRAM_CHAT_ID: '-1004356403303'
+
+    steps:
+      - name: Clone.
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Download the builds.
+        continue-on-error: true
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: SereinGram-*
+          path: dist
+          merge-multiple: true
+          skip-decompress: true
+
+      - name: Download the Bot API server.
+        if: needs.bot-api.result == 'success'
+        continue-on-error: true
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: telegram-bot-api
+          path: ${{ runner.temp }}/server
+          skip-decompress: true
+
+      - name: Post the binaries to the channel.
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          OWN_API_ID: ${{ secrets.TELEGRAM_API_ID }}
+          OWN_API_HASH: ${{ secrets.TELEGRAM_API_HASH }}
+          SEREIN_API_ID: ${{ secrets.SEREIN_API_ID }}
+          SEREIN_API_HASH: ${{ secrets.SEREIN_API_HASH }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          if [ -z "$TELEGRAM_BOT_TOKEN" ]; then
+            echo "::error::The telegram environment has no TELEGRAM_BOT_TOKEN secret."
+            exit 1
+          fi
+          server="$RUNNER_TEMP/server/telegram-bot-api"
+          log="$RUNNER_TEMP/bot-api.log"
+          if [ -f "$server" ]; then
+            if [ -n "$OWN_API_ID" ] && [ -n "$OWN_API_HASH" ]; then
+              TELEGRAM_API_ID=$OWN_API_ID TELEGRAM_API_HASH=$OWN_API_HASH
+            elif [ -n "$SEREIN_API_ID" ] && [ -n "$SEREIN_API_HASH" ]; then
+              TELEGRAM_API_ID=$SEREIN_API_ID TELEGRAM_API_HASH=$SEREIN_API_HASH
+            else
+              cmake_options=Telegram/cmake/telegram_options.cmake
+              TELEGRAM_API_ID=$(sed -n 's/^ *set(TDESKTOP_API_ID \([0-9]\{1,\}\))$/\1/p' "$cmake_options")
+              TELEGRAM_API_HASH=$(sed -n 's/^ *set(TDESKTOP_API_HASH \([0-9a-f]\{32\}\))$/\1/p' "$cmake_options")
+              echo "::notice::The Bot API server logs in with the test API credentials, like the builds without SEREIN_API_ID and SEREIN_API_HASH."
+            fi
+            if [ -n "$TELEGRAM_API_ID" ] && [ -n "$TELEGRAM_API_HASH" ]; then
+              export TELEGRAM_API_ID TELEGRAM_API_HASH
+              data="$RUNNER_TEMP/bot-api-data"
+              chmod +x "$server"
+              mkdir -p "$data/temp"
+              "$server" --local --http-ip-address=127.0.0.1 --http-port=8081 \
+                --dir="$data" --temp-dir="$data/temp" > "$log" 2>&1 &
+              server_pid=$!
+              trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+              export TELEGRAM_BOT_API=http://127.0.0.1:8081
+            else
+              echo "::warning::No API credentials were found for the Bot API server."
+            fi
+          fi
+          status=0
+          python3 tools/serein/telegram_post.py dist \
+            --chat "$TELEGRAM_CHAT_ID" \
+            --title "SereinGram Nightly" \
+            --commit "$GITHUB_SHA" \
+            --commit-url "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/commit/$GITHUB_SHA" \
+            --run-number "$GITHUB_RUN_NUMBER" \
+            --run-url "$RUN_URL" \
+            --release-url "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/tag/nightly" \
+            || status=$?
+          if [ -s "$log" ]; then
+            echo "::group::Bot API server log"
+            tail -n 50 "$log"
+            echo "::endgroup::"
+          fi
+          exit "$status"
