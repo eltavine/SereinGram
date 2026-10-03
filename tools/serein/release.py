@@ -79,6 +79,26 @@ def verify(directory, assets):
     return sorted(expected - present), sorted(present - expected)
 
 
+def uploaded(directory, release):
+    """Compare the files of a directory with the assets of `gh release view --json assets`."""
+    built = {path.name: path.stat().st_size for path in Path(directory).iterdir() if path.is_file()}
+    sizes = {}
+    problems = []
+    for asset in release.get("assets", []):
+        if asset.get("state") == "uploaded":
+            sizes[asset["name"]] = asset["size"]
+        else:
+            problems.append(f"{asset['name']}: the upload did not finish")
+    for name in sorted(built.keys() - sizes.keys()):
+        problems.append(f"{name}: missing from the release")
+    for name in sorted(sizes.keys() - built.keys()):
+        problems.append(f"{name}: not part of this build")
+    for name in sorted(built.keys() & sizes.keys()):
+        if built[name] != sizes[name]:
+            problems.append(f"{name}: {sizes[name]} bytes uploaded, {built[name]} built")
+    return problems
+
+
 def compatibility(old_assets, new_assets):
     current = {asset["name"]: asset for asset in new_assets}
     problems = []
@@ -370,11 +390,23 @@ def main(argv=None):
     command = commands.add_parser("compat")
     command.add_argument("--baseline", required=True)
     command.add_argument("--root", default=str(ROOT))
+    command = commands.add_parser("uploaded")
+    command.add_argument("directory")
+    command.add_argument("release_json", help="output of gh release view --json assets")
     args = parser.parse_args(argv)
     try:
         assets = load_assets(args.assets)
         if args.command == "compat":
             return check_compatibility(args.root, args.baseline, assets)
+        if args.command == "uploaded":
+            release = json.loads(Path(args.release_json).read_text(encoding="utf-8"))
+            problems = uploaded(args.directory, release)
+            for problem in problems:
+                print(problem, file=sys.stderr)
+            if problems:
+                return 1
+            print(f"All {len(release.get('assets', []))} files of the release are uploaded.")
+            return 0
         if args.command == "verify":
             missing, unexpected = verify(args.directory, assets)
             for name in missing:
@@ -389,7 +421,7 @@ def main(argv=None):
         else:
             commits = first_parent_log(args.root, args.previous, args.commit, args.limit)
             write(notes(commits, assets, info_from(args)), args.output)
-    except (ReleaseError, OSError, subprocess.CalledProcessError) as error:
+    except (ReleaseError, OSError, ValueError, subprocess.CalledProcessError) as error:
         print(f"release.py: {error}", file=sys.stderr)
         return 1
     return 0

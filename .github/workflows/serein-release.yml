@@ -18,7 +18,7 @@ on:
       - '.github/workflows/serein-release.yml'
 
 concurrency:
-  group: serein-release-${{ github.ref }}
+  group: serein-release-${{ github.ref_type == 'tag' && github.ref || 'nightly' }}
   cancel-in-progress: false
 
 permissions:
@@ -259,9 +259,16 @@ jobs:
         if: env.CHANNEL == 'nightly'
         run: |
           draft="nightly-$GITHUB_RUN_ID"
-          gh release create "$draft" dist/* --draft --prerelease \
-            --target "$COMMIT" --title "SereinGram Nightly $DATE (${COMMIT::7})" \
-            --notes-file "$RUNNER_TEMP/notes.md"
+          details=(--target "$COMMIT" --title "SereinGram Nightly $DATE (${COMMIT::7})"
+            --notes-file "$RUNNER_TEMP/notes.md")
+          if gh release view "$draft" >/dev/null 2>&1; then
+            gh release edit "$draft" "${details[@]}"
+          else
+            gh release create "$draft" --draft --prerelease "${details[@]}"
+          fi
+          tools/serein/retry.sh 3 30 gh release upload "$draft" dist/* --clobber
+          gh release view "$draft" --json assets > "$RUNNER_TEMP/draft.json"
+          python3 tools/serein/release.py uploaded dist "$RUNNER_TEMP/draft.json"
           if gh release view nightly >/dev/null 2>&1; then
             gh release delete nightly --cleanup-tag --yes
           fi
@@ -277,10 +284,26 @@ jobs:
           if [[ "$TAG" == *-* ]]; then
             prerelease=(--prerelease)
           fi
-          if gh release view "$TAG" >/dev/null 2>&1; then
-            gh release upload "$TAG" dist/* --clobber
-            gh release edit "$TAG" --notes-file "$RUNNER_TEMP/notes.md"
-          else
-            gh release create "$TAG" dist/* --draft --verify-tag "${prerelease[@]}" \
+          if ! gh release view "$TAG" >/dev/null 2>&1; then
+            gh release create "$TAG" --draft --verify-tag "${prerelease[@]}" \
               --title "SereinGram $TAG" --notes-file "$RUNNER_TEMP/notes.md"
           fi
+          tools/serein/retry.sh 3 30 gh release upload "$TAG" dist/* --clobber
+          gh release edit "$TAG" --notes-file "$RUNNER_TEMP/notes.md"
+
+      - name: Check the published files.
+        run: |
+          tools/serein/retry.sh 3 10 gh release view "$TAG" --json assets > "$RUNNER_TEMP/published.json"
+          python3 tools/serein/release.py uploaded dist "$RUNNER_TEMP/published.json"
+
+      - name: Remove the drafts of earlier failed nightlies.
+        if: env.CHANNEL == 'nightly'
+        continue-on-error: true
+        run: |
+          gh release list --limit 100 --json tagName,isDraft \
+            --jq '.[] | select(.isDraft and (.tagName | test("^nightly-[0-9]+$"))) | .tagName' \
+          | while read -r stale; do
+            if [ "${stale#nightly-}" -lt "$GITHUB_RUN_ID" ]; then
+              gh release delete "$stale" --yes
+            fi
+          done

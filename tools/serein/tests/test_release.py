@@ -153,6 +153,55 @@ class FilesTest(unittest.TestCase):
         )
 
 
+class UploadedTest(unittest.TestCase):
+    def setUp(self):
+        self._temp = tempfile.TemporaryDirectory()
+        self.dir = Path(self._temp.name) / "dist"
+        self.dir.mkdir()
+        (self.dir / "SHA256SUMS").write_bytes(b"x" * 10)
+        (self.dir / "SereinGram-macos-arm64.dmg").write_bytes(b"x" * 20)
+
+    def tearDown(self):
+        self._temp.cleanup()
+
+    @staticmethod
+    def release(*assets):
+        return {
+            "assets": [{"name": name, "size": size, "state": state} for name, size, state in assets]
+        }
+
+    def test_accepts_the_same_files(self):
+        release_data = self.release(
+            ("SHA256SUMS", 10, "uploaded"), ("SereinGram-macos-arm64.dmg", 20, "uploaded")
+        )
+        self.assertEqual(release.uploaded(self.dir, release_data), [])
+
+    def test_reports_every_difference(self):
+        release_data = self.release(
+            ("SHA256SUMS", 9, "uploaded"),
+            ("SereinGram-macos-arm64.dmg", 20, "starter"),
+            ("old.txt", 1, "uploaded"),
+        )
+        self.assertEqual(
+            release.uploaded(self.dir, release_data),
+            [
+                "SereinGram-macos-arm64.dmg: the upload did not finish",
+                "SereinGram-macos-arm64.dmg: missing from the release",
+                "old.txt: not part of this build",
+                "SHA256SUMS: 9 bytes uploaded, 10 built",
+            ],
+        )
+
+    def test_main_reads_the_gh_output(self):
+        output = Path(self._temp.name) / "release.json"
+        output.write_text(json.dumps(self.release(("SHA256SUMS", 10, "uploaded"))))
+        self.assertEqual(release.main(["uploaded", str(self.dir), str(output)]), 1)
+        (self.dir / "SereinGram-macos-arm64.dmg").unlink()
+        self.assertEqual(release.main(["uploaded", str(self.dir), str(output)]), 0)
+        output.write_text("not json")
+        self.assertEqual(release.main(["uploaded", str(self.dir), str(output)]), 1)
+
+
 class NotesTest(unittest.TestCase):
     def setUp(self):
         self._temp = tempfile.TemporaryDirectory()
