@@ -4,6 +4,7 @@ set(serein_test_sources
     serein/tests/test_main.cpp
     serein/tests/test_lang.cpp
     serein/tests/test_options.cpp
+    serein/tests/test_session_lifetime.cpp
     serein/tests/test_exchange.cpp
     serein/tests/test_presets.cpp
     serein/tests/test_markdown.cpp

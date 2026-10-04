@@ -2,6 +2,7 @@
 
 #include "serein/adapters/tdesktop/prefs.h"
 #include "serein/core/device_options.h"
+#include "serein/core/session_lifetime.h"
 #include "serein/chats/options.h"
 #include "serein/compose/options.h"
 #include "serein/features/ghost/model/policy.h"
@@ -47,12 +48,11 @@ Options &ForAccount(gsl::not_null<Main::Session*> session) {
 	const auto inserted = states.emplace(
 		session, std::make_unique<State>(session->local())).first;
 	// Reachable from inside Session(), before its lifetime is constructed.
-	session->account().sessionValue(
-	) | rpl::filter([=](Main::Session *value) {
-		return (value == session.get());
-	}) | rpl::take(1) | rpl::on_next([=] {
-		session->lifetime().add([session] { states.erase(session); });
-	}, inserted->second->lifetime);
+	details::BindSessionCleanup(
+		session,
+		session->account().sessionValue(),
+		[session] { states.erase(session); },
+		inserted->second->lifetime);
 	return inserted->second->options;
 }
 
