@@ -195,7 +195,7 @@ void PromoSuggestions::setTopPromoted(
 		History *promoted,
 		const QString &type,
 		const QString &message) {
-	if (Serein::Chats::HideProxySponsor() && type == u"proxy"_q) {
+	if (Serein::Chats::HideProxySponsor() && type.isEmpty()) {
 		promoted = nullptr;
 	}
 	const auto changed = (_topPromoted != promoted);
