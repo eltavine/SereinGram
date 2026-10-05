@@ -6,6 +6,7 @@
 #include "serein/schema/gen/settings/menu.h"
 #include "serein/settings/rows.h"
 #include "styles/style_menu_icons.h"
+#include "styles/style_serein.h"
 
 #include <array>
 
@@ -13,10 +14,13 @@ namespace Serein::Menu {
 
 inline const auto kToggleRows = std::array<ToggleRow, 1>{ {
 	{
-		&kConfirmRepeat,
-		tr::lng_serein_menu_confirm_repeat,
-		u"serein/menu/confirm-repeat"_q,
-		{ u"repeat"_q, u"confirm"_q },
+		.option = &kConfirmRepeat,
+		.title = tr::lng_serein_menu_confirm_repeat,
+		.id = u"serein/menu/confirm-repeat"_q,
+		.keywords = { u"repeat"_q, u"confirm"_q },
+		.icon = &st::menuIconRepeat,
+		.tile = &st::settingsIconBg6,
+		.about = tr::lng_serein_confirm_repeat_about,
 	},
 } };
 
@@ -46,6 +50,9 @@ inline void AddLayout(
 		.id = u"serein/menu/quick-rating-first"_q,
 		.keywords = { u"rating"_q, u"reply"_q, u"great"_q },
 		.placeholder = tr::lng_serein_quick_rating_unset,
+		.icon = &st::menuIconLike,
+		.tile = &st::settingsIconBg6,
+		.about = tr::lng_serein_quick_rating_first_about,
 	});
 	AddText(builder, {
 		.option = &kQuickRatingSecond,
@@ -53,20 +60,25 @@ inline void AddLayout(
 		.id = u"serein/menu/quick-rating-second"_q,
 		.keywords = { u"rating"_q, u"reply"_q, u"poor"_q },
 		.placeholder = tr::lng_serein_quick_rating_unset,
+		.icon = &st::menuIconReply,
+		.tile = &st::settingsIconBg6,
+		.about = tr::lng_serein_quick_rating_second_about,
 	});
 	EndSection(builder, tr::lng_serein_quick_rating_note);
 }
 
 inline constexpr auto kSubpageTitle = &tr::lng_serein_menu;
 inline const auto kSubpageIcon = &st::menuIconReorder;
+inline const auto kSubpageTile = &st::settingsIconBg3;
 
 inline void AddSubpageButton(
 		::Settings::Builder::SectionBuilder &builder,
 		::Settings::Type section) {
-	builder.addSectionButton({
+	AddPageButton(builder, {
 		.title = (*kSubpageTitle)(),
-		.targetSection = section,
-		.icon = { kSubpageIcon },
+		.section = section,
+		.icon = kSubpageIcon,
+		.tile = kSubpageTile,
 		.keywords = { u"menu"_q, u"actions"_q },
 	});
 }

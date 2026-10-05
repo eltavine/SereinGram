@@ -36,6 +36,7 @@ message ChatsSettings {
     cpp_name: "kCompactList"
     title: "lng_serein_compact_chat_list"
     refresh: REFRESH_DIALOG_LIST
+    icon: "menuIconShrink"
   }];
   optional int32 chat_preview_lines = 2 [
     (serein.options.v1.field) = {
@@ -53,6 +54,7 @@ message ChatsSettings {
           "lng_serein_preview_three"
         ]
       }
+      icon: "menuIconAsMessages"
     },
     (buf.validate.field).int32 = {
       gte: 0
@@ -67,9 +69,11 @@ message ChatsSettings {
       "preview"
     ]
     refresh: REFRESH_DIALOG_LIST
+    icon: "menuIconCaptionHide"
   }];
   optional bool hide_stories = 4 [(serein.options.v1.field) = {
     keywords: ["stories"]
+    icon: "menuIconStoriesSavedSection"
   }];
   optional bool search_own_chats_only = 28 [(serein.options.v1.field) = {
     keywords: [
@@ -79,6 +83,7 @@ message ChatsSettings {
       "privacy"
     ]
     note: "lng_serein_search_own_chats_only_note"
+    icon: "menuIconSearch"
   }];
   optional int32 startup_folder_mode = 8 [
     (serein.options.v1.field) = {
@@ -100,6 +105,7 @@ message ChatsSettings {
       "all chats",
       "folders"
     ]
+    icon: "menuIconShowInFolder"
   }];
   optional bool show_archive_in_folders = 6 [(serein.options.v1.field) = {
     keywords: [
@@ -107,12 +113,14 @@ message ChatsSettings {
       "folders"
     ]
     refresh: REFRESH_DIALOG_LIST
+    icon: "menuIconArchive"
   }];
   optional bool hide_folder_unread_counters = 7 [(serein.options.v1.field) = {
     keywords: [
       "unread",
       "folders"
     ]
+    icon: "menuIconMarkRead"
   }];
   optional string hidden_folder_ids = 27 [(serein.options.v1.field) = {
     title: "lng_serein_hidden_folders"
@@ -136,6 +144,7 @@ message ChatsSettings {
     ]
     note: "lng_serein_managed_folder_filter_note"
     restart: true
+    icon: "menuIconTagFilter"
   }];
   optional bool hide_sponsored_messages = 13 [(serein.options.v1.field) = {
     section: {
@@ -150,24 +159,28 @@ message ChatsSettings {
       "sponsored",
       "search ads"
     ]
+    icon: "menuIconBlock"
   }];
   optional bool hide_proxy_sponsor = 14 [(serein.options.v1.field) = {
     keywords: [
       "proxy",
       "sponsored channel"
     ]
+    icon: "menuIconNetwork"
   }];
   optional bool hide_premium_promotions = 15 [(serein.options.v1.field) = {
     keywords: [
       "Premium",
       "promotions"
     ]
+    icon: "menuIconPremium"
   }];
   optional bool hide_birthday_suggestions = 16 [(serein.options.v1.field) = {
     keywords: [
       "birthday",
       "suggestion"
     ]
+    icon: "menuIconGiftPremium"
   }];
   optional bool disable_scroll_to_next_channel = 17 [(serein.options.v1.field) = {
     section: {
@@ -182,12 +195,14 @@ message ChatsSettings {
       "scroll",
       "channel"
     ]
+    icon: "menuIconChannel"
   }];
   optional bool disable_scroll_to_next_topic = 18 [(serein.options.v1.field) = {
     keywords: [
       "scroll",
       "topic"
     ]
+    icon: "menuIconTopics"
   }];
   optional bool remember_reading_position = 20 [(serein.options.v1.field) = {
     keywords: [
@@ -196,6 +211,7 @@ message ChatsSettings {
       "resume"
     ]
     note: "lng_serein_remember_reading_position_note"
+    icon: "menuIconSavedMessages"
   }];
   optional bool chat_quick_actions = 22 [(serein.options.v1.field) = {
     section: {
@@ -215,6 +231,7 @@ message ChatsSettings {
       "pinned"
     ]
     note: "lng_serein_chat_quick_actions_note"
+    icon: "menuIconBoosts"
   }];
   optional bool management_shortcuts = 23 [(serein.options.v1.field) = {
     keywords: [
@@ -224,6 +241,7 @@ message ChatsSettings {
       "group"
     ]
     note: "lng_serein_management_shortcuts_note"
+    icon: "menuIconAdmin"
   }];
   optional bool local_pinning = 24 [(serein.options.v1.field) = {
     keywords: [
@@ -232,6 +250,7 @@ message ChatsSettings {
       "local"
     ]
     note: "lng_serein_local_pinning_note"
+    icon: "menuIconPin"
   }];
   optional bool chat_settings_menu = 29 [(serein.options.v1.field) = {
     keywords: [
@@ -240,6 +259,7 @@ message ChatsSettings {
       "settings"
     ]
     note: "lng_serein_chat_settings_menu_note"
+    icon: "menuIconSettings"
   }];
   optional int32 startup_folder_id = 9 [
     (serein.options.v1.field) = {

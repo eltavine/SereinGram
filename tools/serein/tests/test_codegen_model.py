@@ -9,6 +9,12 @@ sys.path.insert(0, str(CODEGEN))
 import model  # noqa: E402
 
 PAGE = {"cppNamespace": "Messages", "scope": "SCOPE_DEVICE", "category": "CATEGORY_MESSAGES"}
+ICONS = {"menuIconInfo"}
+VISUAL = {"icon": "menuIconInfo"}
+
+
+def visual(extension=None, **options):
+    return {model.FIELD_EXTENSION: {**VISUAL, **(extension or {})}, **options}
 
 
 def field(name, json_name, kind="TYPE_BOOL", options=None):
@@ -548,8 +554,12 @@ class RenderTest(unittest.TestCase):
         import generate
 
         output = generate.render(
-            image(field("seconds_in_messages", "secondsInMessages")),
-            known_strings={"lng_serein_seconds_in_messages"},
+            image(field("seconds_in_messages", "secondsInMessages", options=visual())),
+            known_strings={
+                "lng_serein_seconds_in_messages",
+                "lng_serein_seconds_in_messages_about",
+            },
+            known_icons=ICONS,
         )
         text = output["schema/gen/settings/messages.h"]
         self.assertIn("namespace Serein::Messages {", text)
@@ -558,7 +568,13 @@ class RenderTest(unittest.TestCase):
         rows = output["settings/gen/messages_rows.h"]
         self.assertIn('#include "serein/schema/gen/settings/messages.h"', rows)
         self.assertIn("std::array<ToggleRow, 1>", rows)
-        self.assertIn("\t\t&kSecondsInMessages,\n\t\ttr::lng_serein_seconds_in_messages,", rows)
+        self.assertIn(
+            "\t\t.option = &kSecondsInMessages,\n\t\t.title = tr::lng_serein_seconds_in_messages,",
+            rows,
+        )
+        self.assertIn("\t\t.icon = &st::menuIconInfo,", rows)
+        self.assertIn("\t\t.about = tr::lng_serein_seconds_in_messages_about,", rows)
+        self.assertRegex(rows, r"\t\t\.tile = &st::settingsIconBg\d,")
         self.assertIn('u"serein/messages/seconds-in-messages"_q', rows)
         self.assertIn("\tAddToggle(builder, kToggleRows[0]);", rows)
         self.assertIn("\t\t::Settings::Builder::SectionBuilder &builder) {", rows)
@@ -569,7 +585,7 @@ class RenderTest(unittest.TestCase):
 
         output = generate.render(
             image(
-                field("seconds_in_messages", "secondsInMessages"),
+                field("seconds_in_messages", "secondsInMessages", options=visual()),
                 field(
                     "preview_lines",
                     "previewLines",
@@ -577,7 +593,11 @@ class RenderTest(unittest.TestCase):
                     {model.FIELD_EXTENSION: {"cppName": "kLines", "scope": "SCOPE_ACCOUNT"}},
                 ),
             ),
-            known_strings={"lng_serein_seconds_in_messages"},
+            known_strings={
+                "lng_serein_seconds_in_messages",
+                "lng_serein_seconds_in_messages_about",
+            },
+            known_icons=ICONS,
         )
         header = output["hooks/gen/messages.h"]
         self.assertIn("namespace Serein::Hooks::Messages {", header)
@@ -603,15 +623,19 @@ class RenderTest(unittest.TestCase):
                     "keep_days",
                     "keepDays",
                     "TYPE_INT32",
-                    {
-                        model.FIELD_EXTENSION: {
-                            "number": {"zeroLabel": "lng_forever", "countFormat": "lng_days"}
-                        },
-                        model.RULES_EXTENSION: {"int32": {"gte": 0, "lte": 365}},
-                    },
+                    visual(
+                        {"number": {"zeroLabel": "lng_forever", "countFormat": "lng_days"}},
+                        **{model.RULES_EXTENSION: {"int32": {"gte": 0, "lte": 365}}},
+                    ),
                 )
             ),
-            known_strings={"lng_serein_keep_days", "lng_forever", "lng_days"},
+            known_strings={
+                "lng_serein_keep_days",
+                "lng_serein_keep_days_about",
+                "lng_forever",
+                "lng_days",
+            },
+            known_icons=ICONS,
         )
         rows = output["settings/gen/messages_rows.h"]
         self.assertIn("\tAddNumber(builder, {\n\t\t.option = &kKeepDays,", rows)
@@ -628,13 +652,14 @@ class RenderTest(unittest.TestCase):
                     "mode",
                     "mode",
                     "TYPE_INT32",
-                    {
-                        model.FIELD_EXTENSION: {"choice": {"labels": ["lng_a", "lng_b"]}},
-                        model.RULES_EXTENSION: {"int32": {"gte": 0, "lte": 1}},
-                    },
+                    visual(
+                        {"choice": {"labels": ["lng_a", "lng_b"]}},
+                        **{model.RULES_EXTENSION: {"int32": {"gte": 0, "lte": 1}}},
+                    ),
                 )
             ),
-            known_strings={"lng_serein_mode", "lng_a", "lng_b"},
+            known_strings={"lng_serein_mode", "lng_serein_mode_about", "lng_a", "lng_b"},
+            known_icons=ICONS,
         )
         rows = output["settings/gen/messages_rows.h"]
         self.assertIn("\t\t.values = { 0, 1 },", rows)
@@ -649,12 +674,11 @@ class RenderTest(unittest.TestCase):
                     "mark",
                     "mark",
                     "TYPE_STRING",
-                    {
-                        model.FIELD_EXTENSION: {"text": {"placeholder": "lng_edited"}},
-                    },
+                    visual({"text": {"placeholder": "lng_edited"}}),
                 )
             ),
-            known_strings={"lng_serein_mark", "lng_edited"},
+            known_strings={"lng_serein_mark", "lng_serein_mark_about", "lng_edited"},
+            known_icons=ICONS,
         )
         rows = output["settings/gen/messages_rows.h"]
         self.assertIn("\tAddText(builder, {\n\t\t.option = &kMark,", rows)
@@ -694,14 +718,16 @@ class RenderTest(unittest.TestCase):
             "subpage": {"title": "lng_page", "icon": "menuIconLock", "keywords": ["ghost"]},
         }
         output = generate.render(
-            image(field("hide_all", "hideAll"), page=page),
-            known_strings={"lng_serein_hide_all", "lng_page"},
+            image(field("hide_all", "hideAll", options=visual()), page=page),
+            known_strings={"lng_serein_hide_all", "lng_serein_hide_all_about", "lng_page"},
+            known_icons=ICONS,
         )
         rows = output["settings/gen/messages_rows.h"]
         self.assertIn('#include "styles/style_menu_icons.h"', rows)
         self.assertIn("inline constexpr auto kSubpageTitle = &tr::lng_page;", rows)
         self.assertIn("inline const auto kSubpageIcon = &st::menuIconLock;", rows)
-        self.assertIn("		.targetSection = section,", rows)
+        self.assertIn("		.section = section,", rows)
+        self.assertRegex(rows, r"inline const auto kSubpageTile = &st::settingsIconBg\d;")
         self.assertIn('		.keywords = { u"ghost"_q },', rows)
         with self.assertRaisesRegex(model.SchemaError, "lng_page"):
             generate.render(
@@ -709,9 +735,66 @@ class RenderTest(unittest.TestCase):
                 known_strings={"lng_serein_hide_all"},
             )
         plain = generate.render(
-            image(field("hide_all", "hideAll")), known_strings={"lng_serein_hide_all"}
+            image(field("hide_all", "hideAll", options=visual())),
+            known_strings={"lng_serein_hide_all", "lng_serein_hide_all_about"},
+            known_icons=ICONS,
         )
         self.assertNotIn("AddSubpageButton", plain["settings/gen/messages_rows.h"])
+
+    def test_rows_need_icons_and_descriptions(self):
+        import generate
+
+        strings = {"lng_serein_hide_all", "lng_serein_hide_all_about"}
+        for options, known, error in (
+            ({}, strings, "need an icon"),
+            (visual({"icon": "menuIconLost"}), strings, "unknown icons"),
+            (visual(), {"lng_serein_hide_all"}, "lng_serein_hide_all_about"),
+            (visual({"icon": "st::menuIconInfo"}), strings, "style name"),
+        ):
+            with self.subTest(options=options), self.assertRaisesRegex(model.SchemaError, error):
+                generate.render(
+                    image(field("hide_all", "hideAll", options=options)),
+                    known_strings=known,
+                    known_icons=ICONS,
+                )
+        custom = generate.render(
+            image(field("hide_all", "hideAll", options=visual({"about": "lng_note"}))),
+            known_strings={"lng_serein_hide_all", "lng_note"},
+            known_icons=ICONS,
+        )
+        self.assertIn("\t\t.about = tr::lng_note,", custom["settings/gen/messages_rows.h"])
+        for options in (
+            visual({"note": "lng_serein_hide_all_about"}),
+            visual({"section": {"title": "lng_s", "id": "s", "note": "lng_serein_hide_all_about"}}),
+        ):
+            with (
+                self.subTest(options=options),
+                self.assertRaisesRegex(model.SchemaError, "repeat a note"),
+            ):
+                generate.render(
+                    image(field("hide_all", "hideAll", options=options)),
+                    known_strings=strings | {"lng_s"},
+                    known_icons=ICONS,
+                )
+
+    def test_sections_take_successive_tiles(self):
+        def section(name):
+            return visual({"section": {"title": "lng_s", "id": name}})
+
+        page = model.build_pages(
+            image(
+                field("first", "first", options=section("one")),
+                field("second", "second", options=visual()),
+                field("third", "third", options=section("two")),
+            )
+        )[0]
+        first, second, third = (row.tile for row in page.rows)
+        self.assertEqual(first, second)
+        self.assertNotEqual(first, third)
+        self.assertEqual(
+            model.TILES.index(third),
+            (model.TILES.index(first) + 1) % len(model.TILES),
+        )
 
     def test_renders_custom_rows(self):
         import generate

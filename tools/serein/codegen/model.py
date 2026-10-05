@@ -2,7 +2,8 @@
 
 import json
 import re
-from dataclasses import dataclass, field
+import zlib
+from dataclasses import dataclass, field, replace
 
 PAGE_EXTENSION = "[serein.options.v1.page]"
 FIELD_EXTENSION = "[serein.options.v1.field]"
@@ -34,6 +35,18 @@ TYPES = {
 }
 INT_RULES = {"gte": ">=", "gt": ">", "lte": "<=", "lt": "<", "const": "=="}
 STRING_RULES = {"min_len", "max_len", "pattern", "const"}
+STYLE_NAME = r"[A-Za-z_][A-Za-z0-9_]*"
+# Upstream settings tile colors; each section of a page takes the next one.
+TILES = (
+    "settingsIconBg4",
+    "settingsIconBg2",
+    "settingsIconBg5",
+    "settingsIconBg3",
+    "settingsIconBg6",
+    "settingsIconBg1",
+    "settingsIconBg8",
+)
+VISUAL_KINDS = ("number", "choice", "text")
 
 
 class SchemaError(Exception):
@@ -106,6 +119,9 @@ class Row:
     id: str
     keywords: str
     disabled_by: str = ""
+    icon: str = ""
+    tile: str = ""
+    about: str = ""
 
 
 @dataclass
@@ -127,6 +143,9 @@ class LayoutItem:
     hint: str = ""
     placeholder: str = ""
     hidden_by: str = ""
+    icon: str = ""
+    tile: str = ""
+    about: str = ""
 
 
 @dataclass
@@ -298,6 +317,8 @@ def build_page(source, message):
     stem = source.rsplit("/", 1)[-1].removesuffix(".proto")
     rows, layout, customs = build_layout(message, options, stem, where)
     subpage = build_subpage(page.get("subpage"), where)
+    if subpage:
+        subpage["tile"] = TILES[zlib.crc32(stem.encode()) % len(TILES)]
     return Page(
         source=f"proto/{source}",
         namespace=page["cppNamespace"],
@@ -329,10 +350,23 @@ def build_subpage(subpage, where):
     }
 
 
+def build_visual(custom, option, tile, place):
+    icon = custom.get("icon", "")
+    if icon and not re.fullmatch(STYLE_NAME, icon):
+        raise SchemaError(f"{place}: icon must be a style name")
+    return {
+        "icon": icon,
+        "tile": tile,
+        "about": custom.get("about") or f"lng_serein_{option.name}_about",
+    }
+
+
 def build_layout(message, options, stem, where):
     by_name = {option.name: option for option in options}
     rows, layout, customs = [], [], []
     current = None
+    offset = zlib.crc32(stem.encode()) % len(TILES)
+    sections = 0
 
     def close():
         if current is None and not layout:
@@ -360,6 +394,7 @@ def build_layout(message, options, stem, where):
                 raise SchemaError(f"{place}: section extra must be a lowerCamel name")
             close()
             current = (section.get("note", ""), extra)
+            sections += 1
             layout.append(
                 LayoutItem(
                     "section",
@@ -368,20 +403,23 @@ def build_layout(message, options, stem, where):
                     keywords=cpp_keywords(section.get("keywords", [])),
                 )
             )
+        tile = TILES[(offset + max(sections - 1, 0)) % len(TILES)]
+        visual = build_visual(custom, option, tile, place)
         if "number" in custom and not option.custom_ui:
-            layout.append(number_item(item, option, custom["number"], stem, place))
+            built = number_item(item, option, custom["number"], stem, place)
+            layout.append(replace(built, **visual))
         elif "choice" in custom and not option.custom_ui:
-            layout.append(choice_item(item, option, custom["choice"], stem, place))
+            built = choice_item(item, option, custom["choice"], stem, place)
+            layout.append(replace(built, **visual))
         elif "text" in custom and not option.custom_ui:
-            layout.append(
-                text_item(
-                    option,
-                    custom["text"],
-                    stem,
-                    place,
-                    visible_toggle(by_name, custom.get("disabledBy", ""), option, place),
-                )
+            built = text_item(
+                option,
+                custom["text"],
+                stem,
+                place,
+                visible_toggle(by_name, custom.get("disabledBy", ""), option, place),
             )
+            layout.append(replace(built, **visual))
         elif option.toggle:
             disabled_by = visible_toggle(by_name, custom.get("disabledBy", ""), option, place)
             layout.append(LayoutItem("toggle", index=len(rows)))
@@ -392,6 +430,7 @@ def build_layout(message, options, stem, where):
                     id=f"serein/{stem}/{option.name.replace('_', '-')}",
                     keywords=cpp_keywords(option.keywords),
                     disabled_by=disabled_by,
+                    **visual,
                 )
             )
         else:
@@ -528,3 +567,26 @@ def check_titles(pages, known):
     missing = sorted(title for title in titles if title not in known)
     if missing:
         raise SchemaError(f"settings rows use unknown strings: {missing}")
+
+
+def check_visuals(pages, known_strings, known_icons):
+    rows = [row for page in pages for row in page.rows]
+    rows += [item for page in pages for item in page.layout if item.kind in VISUAL_KINDS]
+    without = sorted(row.id for row in rows if not row.icon)
+    if without:
+        raise SchemaError(f"settings rows need an icon: {without}")
+    unknown = sorted({row.icon for row in rows if row.icon not in known_icons})
+    if unknown:
+        raise SchemaError(f"settings rows use unknown icons: {unknown}")
+    missing = sorted({row.about for row in rows if row.about not in known_strings})
+    if missing:
+        raise SchemaError(f"settings rows use unknown descriptions: {missing}")
+    notes = {
+        item.title
+        for page in pages
+        for item in page.layout
+        if item.kind in ("note", "end") and item.title
+    }
+    repeated = sorted({row.about for row in rows if row.about in notes})
+    if repeated:
+        raise SchemaError(f"settings rows repeat a note as their description: {repeated}")

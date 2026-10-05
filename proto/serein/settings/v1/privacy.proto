@@ -35,6 +35,7 @@ message PrivacySettings {
       "capture"
     ]
     note: "lng_serein_demo_mode_note"
+    icon: "menuIconSpoiler"
   }];
   optional bool auto_demo_mode = 10 [(serein.options.v1.field) = {
     keywords: [
@@ -44,6 +45,7 @@ message PrivacySettings {
       "streaming"
     ]
     note: "lng_serein_auto_demo_mode_note"
+    icon: "menuIconStartStreamWith"
   }];
   optional bool lock_settings = 11 [(serein.options.v1.field) = {
     keywords: [
@@ -52,6 +54,7 @@ message PrivacySettings {
       "settings"
     ]
     note: "lng_serein_lock_settings_note"
+    icon: "menuIcon2SV"
   }];
   optional int32 profile_id_format = 4 [
     (serein.options.v1.field) = {
@@ -74,6 +77,7 @@ message PrivacySettings {
           "lng_serein_id_raw"
         ]
       }
+      icon: "menuIconPersonal"
     },
     (buf.validate.field).int32 = {
       gte: 0
@@ -85,6 +89,7 @@ message PrivacySettings {
       "profile",
       "DC"
     ]
+    icon: "menuIconStorage"
   }];
   optional bool show_registration_date = 9 [(serein.options.v1.field) = {
     keywords: [
@@ -93,6 +98,7 @@ message PrivacySettings {
       "account age"
     ]
     note: "lng_serein_registration_date_note"
+    icon: "menuIconSchedule"
   }];
   optional bool show_contact_status = 14 [(serein.options.v1.field) = {
     keywords: [
@@ -101,6 +107,7 @@ message PrivacySettings {
       "mutual contact"
     ]
     note: "lng_serein_contact_status_note"
+    icon: "menuIconInvite"
   }];
   optional bool show_session_details = 13 [(serein.options.v1.field) = {
     keywords: [
@@ -110,6 +117,7 @@ message PrivacySettings {
       "login"
     ]
     note: "lng_serein_session_details_note"
+    icon: "menuIconDevices"
   }];
   optional bool local_names = 12 [(serein.options.v1.field) = {
     keywords: [
@@ -119,12 +127,14 @@ message PrivacySettings {
       "nickname"
     ]
     note: "lng_serein_local_names_note"
+    icon: "menuIconTagRename"
   }];
   optional bool hide_profile_gifts = 6 [(serein.options.v1.field) = {
     keywords: [
       "profile",
       "gifts"
     ]
+    icon: "menuIconGiftPremium"
   }];
   optional bool hide_read_time = 2 [(serein.options.v1.field) = {
     section: {
@@ -139,18 +149,21 @@ message PrivacySettings {
       "read",
       "time"
     ]
+    icon: "menuIconMarkRead"
   }];
   optional bool hide_share_phone_prompt = 3 [(serein.options.v1.field) = {
     keywords: [
       "share",
       "phone"
     ]
+    icon: "menuIconPhone"
   }];
   optional bool hide_create_todo = 7 [(serein.options.v1.field) = {
     keywords: [
       "todo",
       "list"
     ]
+    icon: "menuIconCreateTodoList"
   }];
   // Forwarding stays blocked because Telegram rejects it server-side.
   optional bool save_protected_content = 8 [(serein.options.v1.field) = {
@@ -161,5 +174,6 @@ message PrivacySettings {
       "noforwards"
     ]
     note: "lng_serein_save_protected_content_note"
+    icon: "menuIconSaveImage"
   }];
 }

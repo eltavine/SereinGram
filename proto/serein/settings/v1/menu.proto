@@ -51,6 +51,7 @@ message MenuSettings {
       "repeat",
       "confirm"
     ]
+    icon: "menuIconRepeat"
   }];
   // Non-empty texts add menu items that reply to the message with them.
   optional string quick_rating_first = 3 [
@@ -61,6 +62,7 @@ message MenuSettings {
         "great"
       ]
       text: {placeholder: "lng_serein_quick_rating_unset"}
+      icon: "menuIconLike"
     },
     (buf.validate.field).string.max_len = 256
   ];
@@ -73,6 +75,7 @@ message MenuSettings {
       ]
       note: "lng_serein_quick_rating_note"
       text: {placeholder: "lng_serein_quick_rating_unset"}
+      icon: "menuIconReply"
     },
     (buf.validate.field).string.max_len = 256
   ];

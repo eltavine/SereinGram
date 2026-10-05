@@ -6,6 +6,7 @@
 #include "serein/schema/gen/settings/ghost.h"
 #include "serein/settings/rows.h"
 #include "styles/style_menu_icons.h"
+#include "styles/style_serein.h"
 
 #include <array>
 
@@ -13,70 +14,103 @@ namespace Serein::Ghost {
 
 inline const auto kToggleRows = std::array<ToggleRow, 11>{ {
 	{
-		&kGhostMode,
-		tr::lng_serein_ghost_mode,
-		u"serein/ghost/ghost-mode"_q,
-		{ u"ghost"_q, u"online"_q, u"typing"_q },
+		.option = &kGhostMode,
+		.title = tr::lng_serein_ghost_mode,
+		.id = u"serein/ghost/ghost-mode"_q,
+		.keywords = { u"ghost"_q, u"online"_q, u"typing"_q },
+		.icon = &st::menuIconStealthLocked,
+		.tile = &st::settingsIconBg3,
+		.about = tr::lng_serein_ghost_mode_about,
 	},
 	{
-		&kGhostAllAccounts,
-		tr::lng_serein_ghost_all_accounts,
-		u"serein/ghost/ghost-all-accounts"_q,
-		{ u"ghost"_q, u"all accounts"_q, u"global"_q },
+		.option = &kGhostAllAccounts,
+		.title = tr::lng_serein_ghost_all_accounts,
+		.id = u"serein/ghost/ghost-all-accounts"_q,
+		.keywords = { u"ghost"_q, u"all accounts"_q, u"global"_q },
+		.icon = &st::menuIconGroups,
+		.tile = &st::settingsIconBg3,
+		.about = tr::lng_serein_ghost_all_accounts_about,
 	},
 	{
-		&kGhostHideReadReceipts,
-		tr::lng_serein_ghost_hide_read_receipts,
-		u"serein/ghost/ghost-hide-read-receipts"_q,
-		{ u"ghost"_q, u"read"_q, u"receipts"_q },
+		.option = &kGhostHideReadReceipts,
+		.title = tr::lng_serein_ghost_hide_read_receipts,
+		.id = u"serein/ghost/ghost-hide-read-receipts"_q,
+		.keywords = { u"ghost"_q, u"read"_q, u"receipts"_q },
+		.icon = &st::menuIconMarkUnread,
+		.tile = &st::settingsIconBg3,
+		.about = tr::lng_serein_ghost_hide_read_receipts_about,
 	},
 	{
-		&kGhostHideStoryViews,
-		tr::lng_serein_ghost_hide_story_views,
-		u"serein/ghost/ghost-hide-story-views"_q,
-		{ u"ghost"_q, u"stories"_q },
+		.option = &kGhostHideStoryViews,
+		.title = tr::lng_serein_ghost_hide_story_views,
+		.id = u"serein/ghost/ghost-hide-story-views"_q,
+		.keywords = { u"ghost"_q, u"stories"_q },
+		.icon = &st::menuIconStoriesSavedSection,
+		.tile = &st::settingsIconBg3,
+		.about = tr::lng_serein_ghost_hide_story_views_about,
 	},
 	{
-		&kGhostHideOnline,
-		tr::lng_serein_ghost_hide_online,
-		u"serein/ghost/ghost-hide-online"_q,
-		{ u"ghost"_q, u"online"_q },
+		.option = &kGhostHideOnline,
+		.title = tr::lng_serein_ghost_hide_online,
+		.id = u"serein/ghost/ghost-hide-online"_q,
+		.keywords = { u"ghost"_q, u"online"_q },
+		.icon = &st::menuIconUserHide,
+		.tile = &st::settingsIconBg3,
+		.about = tr::lng_serein_ghost_hide_online_about,
 	},
 	{
-		&kGhostHideTyping,
-		tr::lng_serein_ghost_hide_typing,
-		u"serein/ghost/ghost-hide-typing"_q,
-		{ u"ghost"_q, u"typing"_q },
+		.option = &kGhostHideTyping,
+		.title = tr::lng_serein_ghost_hide_typing,
+		.id = u"serein/ghost/ghost-hide-typing"_q,
+		.keywords = { u"ghost"_q, u"typing"_q },
+		.icon = &st::menuIconShortcut,
+		.tile = &st::settingsIconBg3,
+		.about = tr::lng_serein_ghost_hide_typing_about,
 	},
 	{
-		&kGhostHideViewIncrements,
-		tr::lng_serein_ghost_hide_view_increments,
-		u"serein/ghost/ghost-hide-view-increments"_q,
-		{ u"ghost"_q, u"views"_q },
+		.option = &kGhostHideViewIncrements,
+		.title = tr::lng_serein_ghost_hide_view_increments,
+		.id = u"serein/ghost/ghost-hide-view-increments"_q,
+		.keywords = { u"ghost"_q, u"views"_q },
+		.icon = &st::menuIconRepeat,
+		.tile = &st::settingsIconBg3,
+		.about = tr::lng_serein_ghost_hide_view_increments_about,
 	},
 	{
-		&kGhostMarkReadAfterSending,
-		tr::lng_serein_ghost_mark_read_after_sending,
-		u"serein/ghost/ghost-mark-read-after-sending"_q,
-		{ u"ghost"_q, u"read"_q, u"send"_q },
+		.option = &kGhostMarkReadAfterSending,
+		.title = tr::lng_serein_ghost_mark_read_after_sending,
+		.id = u"serein/ghost/ghost-mark-read-after-sending"_q,
+		.keywords = { u"ghost"_q, u"read"_q, u"send"_q },
+		.icon = &st::menuIconSend,
+		.tile = &st::settingsIconBg6,
+		.about = tr::lng_serein_ghost_mark_read_after_sending_about,
 	},
 	{
-		&kGhostExplicitReadReceipts,
-		tr::lng_serein_ghost_explicit_read_receipts,
-		u"serein/ghost/ghost-explicit-read-receipts"_q,
-		{ u"ghost"_q, u"read"_q, u"mark as read"_q },
+		.option = &kGhostExplicitReadReceipts,
+		.title = tr::lng_serein_ghost_explicit_read_receipts,
+		.id = u"serein/ghost/ghost-explicit-read-receipts"_q,
+		.keywords = { u"ghost"_q, u"read"_q, u"mark as read"_q },
+		.icon = &st::menuIconMarkRead,
+		.tile = &st::settingsIconBg6,
+		.about = tr::lng_serein_ghost_explicit_read_receipts_about,
 	},
 	{
-		&kGhostSendSilently,
-		tr::lng_serein_ghost_send_silently,
-		u"serein/ghost/ghost-send-silently"_q,
-		{ u"ghost"_q, u"silent"_q, u"notification"_q, u"send"_q },
+		.option = &kGhostSendSilently,
+		.title = tr::lng_serein_ghost_send_silently,
+		.id = u"serein/ghost/ghost-send-silently"_q,
+		.keywords = { u"ghost"_q, u"silent"_q, u"notification"_q, u"send"_q },
+		.icon = &st::menuIconSilent,
+		.tile = &st::settingsIconBg6,
+		.about = tr::lng_serein_ghost_send_silently_about,
 	},
 	{
-		&kGhostUseScheduledMessages,
-		tr::lng_serein_ghost_use_scheduled_messages,
-		u"serein/ghost/ghost-use-scheduled-messages"_q,
-		{ u"ghost"_q, u"scheduled"_q, u"send"_q },
+		.option = &kGhostUseScheduledMessages,
+		.title = tr::lng_serein_ghost_use_scheduled_messages,
+		.id = u"serein/ghost/ghost-use-scheduled-messages"_q,
+		.keywords = { u"ghost"_q, u"scheduled"_q, u"send"_q },
+		.icon = &st::menuIconSchedule,
+		.tile = &st::settingsIconBg6,
+		.about = tr::lng_serein_ghost_use_scheduled_messages_about,
 	},
 } };
 
@@ -116,14 +150,16 @@ inline void AddLayout(
 
 inline constexpr auto kSubpageTitle = &tr::lng_serein_ghost_mode;
 inline const auto kSubpageIcon = &st::menuIconStealth;
+inline const auto kSubpageTile = &st::settingsIconBg3;
 
 inline void AddSubpageButton(
 		::Settings::Builder::SectionBuilder &builder,
 		::Settings::Type section) {
-	builder.addSectionButton({
+	AddPageButton(builder, {
 		.title = (*kSubpageTitle)(),
-		.targetSection = section,
-		.icon = { kSubpageIcon },
+		.section = section,
+		.icon = kSubpageIcon,
+		.tile = kSubpageTile,
 		.keywords = { u"ghost"_q, u"stealth"_q, u"online"_q, u"read"_q },
 	});
 }

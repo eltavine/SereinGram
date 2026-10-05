@@ -38,6 +38,7 @@ message MediaSettings {
         "size"
       ]
       choice: {suffix: "%"}
+      icon: "menuIconEnlarge"
     },
     (buf.validate.field).int32 = {
       in: [
@@ -57,6 +58,7 @@ message MediaSettings {
       "time"
     ]
     refresh: REFRESH_MESSAGE_VIEW
+    icon: "menuIconTimer"
   }];
   optional bool rounded_stickers = 13 [(serein.options.v1.field) = {
     keywords: [
@@ -65,6 +67,7 @@ message MediaSettings {
       "corners"
     ]
     refresh: REFRESH_MESSAGE_VIEW
+    icon: "menuIconStickers"
   }];
   optional int32 recent_sticker_limit = 3 [
     (serein.options.v1.field) = {
@@ -74,6 +77,7 @@ message MediaSettings {
         "limit"
       ]
       number: {zero_label: "lng_serein_preview_follow"}
+      icon: "menuIconReschedule"
     },
     (buf.validate.field).int32 = {
       gte: 0
@@ -85,24 +89,28 @@ message MediaSettings {
       "group",
       "sticker"
     ]
+    icon: "menuIconGroupsHide"
   }];
   optional bool hide_recommended_stickers = 5 [(serein.options.v1.field) = {
     keywords: [
       "recommended",
       "sticker"
     ]
+    icon: "menuIconStickerAdd"
   }];
   optional bool hide_recommended_emoji = 6 [(serein.options.v1.field) = {
     keywords: [
       "recommended",
       "emoji"
     ]
+    icon: "menuIconEmoji"
   }];
   optional bool hide_greeting_sticker = 8 [(serein.options.v1.field) = {
     keywords: [
       "greeting",
       "sticker"
     ]
+    icon: "menuIconWelcomeMessage"
   }];
   optional bool sticker_pack_author = 16 [(serein.options.v1.field) = {
     keywords: [
@@ -112,6 +120,7 @@ message MediaSettings {
       "author",
       "creator"
     ]
+    icon: "menuIconProfile"
   }];
   optional string sticker_author_bot = 14 [
     (serein.options.v1.field) = {
@@ -124,6 +133,7 @@ message MediaSettings {
       ]
       note: "lng_serein_sticker_author_bot_note"
       text: {placeholder: "lng_serein_sticker_author_bot_placeholder"}
+      icon: "menuIconBot"
     },
     (buf.validate.field).string = {
       max_len: 33
@@ -143,6 +153,7 @@ message MediaSettings {
       "GIF",
       "categories"
     ]
+    icon: "menuIconGif"
   }];
   optional bool disable_video_autoplay = 9 [(serein.options.v1.field) = {
     keywords: [
@@ -150,6 +161,7 @@ message MediaSettings {
       "autoplay"
     ]
     refresh: REFRESH_MESSAGE_VIEW
+    icon: "menuIconStartStream"
   }];
   optional bool gif_playback_controls = 10 [(serein.options.v1.field) = {
     keywords: [
@@ -157,6 +169,7 @@ message MediaSettings {
       "playback",
       "controls"
     ]
+    icon: "menuIconCustomize"
   }];
   optional bool mp4_file_preview = 11 [(serein.options.v1.field) = {
     keywords: [
@@ -164,6 +177,7 @@ message MediaSettings {
       "file",
       "preview"
     ]
+    icon: "menuIconFile"
   }];
   optional bool force_click_preview = 15 [(serein.options.v1.field) = {
     keywords: [
@@ -174,6 +188,7 @@ message MediaSettings {
       "haptic"
     ]
     note: "lng_serein_force_click_preview_note"
+    icon: "menuIconTouchID"
   }];
   optional bool downloads_per_chat = 17 [(serein.options.v1.field) = {
     section: {
@@ -193,6 +208,7 @@ message MediaSettings {
       "organize"
     ]
     note: "lng_serein_downloads_per_chat_note"
+    icon: "menuIconShowInFolder"
   }];
   optional bool denoise_voice_messages = 12 [(serein.options.v1.field) = {
     keywords: [
@@ -202,6 +218,7 @@ message MediaSettings {
       "microphone"
     ]
     note: "lng_serein_denoise_voice_messages_note"
+    icon: "menuIconVideoChat"
   }];
   optional bool story_posting = 18 [(serein.options.v1.field) = {
     keywords: [
@@ -212,5 +229,6 @@ message MediaSettings {
       "close friends"
     ]
     note: "lng_serein_story_posting_note"
+    icon: "menuIconStoriesSavedSection"
   }];
 }

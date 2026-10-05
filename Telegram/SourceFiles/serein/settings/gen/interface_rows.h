@@ -6,6 +6,7 @@
 #include "serein/schema/gen/settings/interface.h"
 #include "serein/settings/rows.h"
 #include "styles/style_menu_icons.h"
+#include "styles/style_serein.h"
 
 #include <array>
 
@@ -13,64 +14,94 @@ namespace Serein::Interface {
 
 inline const auto kToggleRows = std::array<ToggleRow, 10>{ {
 	{
-		&kWideChannelPosts,
-		tr::lng_serein_wide_channel_posts,
-		u"serein/interface/wide-channel-posts"_q,
-		{ u"channel"_q, u"width"_q },
+		.option = &kWideChannelPosts,
+		.title = tr::lng_serein_wide_channel_posts,
+		.id = u"serein/interface/wide-channel-posts"_q,
+		.keywords = { u"channel"_q, u"width"_q },
+		.icon = &st::menuIconEnlarge,
+		.tile = &st::settingsIconBg1,
+		.about = tr::lng_serein_wide_channel_posts_about,
 	},
 	{
-		&kHideBubbleTail,
-		tr::lng_serein_hide_bubble_tail,
-		u"serein/interface/hide-bubble-tail"_q,
-		{ u"bubble"_q, u"tail"_q },
+		.option = &kHideBubbleTail,
+		.title = tr::lng_serein_hide_bubble_tail,
+		.id = u"serein/interface/hide-bubble-tail"_q,
+		.keywords = { u"bubble"_q, u"tail"_q },
+		.icon = &st::menuIconChatBubble,
+		.tile = &st::settingsIconBg1,
+		.about = tr::lng_serein_hide_bubble_tail_about,
 	},
 	{
-		&kThemeReplyColors,
-		tr::lng_serein_theme_reply_colors,
-		u"serein/interface/theme-reply-colors"_q,
-		{ u"reply"_q, u"quote"_q, u"color"_q },
+		.option = &kThemeReplyColors,
+		.title = tr::lng_serein_theme_reply_colors,
+		.id = u"serein/interface/theme-reply-colors"_q,
+		.keywords = { u"reply"_q, u"quote"_q, u"color"_q },
+		.icon = &st::menuIconChangeColors,
+		.tile = &st::settingsIconBg1,
+		.about = tr::lng_serein_theme_reply_colors_about,
 	},
 	{
-		&kHideReplyThumbnail,
-		tr::lng_serein_hide_reply_thumbnail,
-		u"serein/interface/hide-reply-thumbnail"_q,
-		{ u"reply"_q, u"thumbnail"_q },
+		.option = &kHideReplyThumbnail,
+		.title = tr::lng_serein_hide_reply_thumbnail,
+		.id = u"serein/interface/hide-reply-thumbnail"_q,
+		.keywords = { u"reply"_q, u"thumbnail"_q },
+		.icon = &st::menuIconReply,
+		.tile = &st::settingsIconBg1,
+		.about = tr::lng_serein_hide_reply_thumbnail_about,
 	},
 	{
-		&kIgnoreChatTheme,
-		tr::lng_serein_ignore_chat_theme,
-		u"serein/interface/ignore-chat-theme"_q,
-		{ u"chat"_q, u"theme"_q, u"wallpaper"_q },
+		.option = &kIgnoreChatTheme,
+		.title = tr::lng_serein_ignore_chat_theme,
+		.id = u"serein/interface/ignore-chat-theme"_q,
+		.keywords = { u"chat"_q, u"theme"_q, u"wallpaper"_q },
+		.icon = &st::menuIconPhoto,
+		.tile = &st::settingsIconBg1,
+		.about = tr::lng_serein_ignore_chat_theme_about,
 	},
 	{
-		&kMenuShortcuts,
-		tr::lng_serein_menu_shortcuts,
-		u"serein/interface/menu-shortcuts"_q,
-		{ u"main menu"_q, u"tray"_q, u"ghost"_q, u"presentation"_q, u"recent chats"_q },
+		.option = &kMenuShortcuts,
+		.title = tr::lng_serein_menu_shortcuts,
+		.id = u"serein/interface/menu-shortcuts"_q,
+		.keywords = { u"main menu"_q, u"tray"_q, u"ghost"_q, u"presentation"_q, u"recent chats"_q },
+		.icon = &st::menuIconToMainMenu,
+		.tile = &st::settingsIconBg8,
+		.about = tr::lng_serein_menu_shortcuts_about,
 	},
 	{
-		&kCenterTopNotifications,
-		tr::lng_serein_center_top_notifications,
-		u"serein/interface/center-top-notifications"_q,
-		{ u"notification"_q, u"position"_q, u"center"_q },
+		.option = &kCenterTopNotifications,
+		.title = tr::lng_serein_center_top_notifications,
+		.id = u"serein/interface/center-top-notifications"_q,
+		.keywords = { u"notification"_q, u"position"_q, u"center"_q },
+		.icon = &st::menuIconNotifications,
+		.tile = &st::settingsIconBg4,
+		.about = tr::lng_serein_center_top_notifications_about,
 	},
 	{
-		&kHideAppIconBadge,
-		tr::lng_serein_hide_app_icon_badge,
-		u"serein/interface/hide-app-icon-badge"_q,
-		{ u"dock"_q, u"icon"_q, u"badge"_q },
+		.option = &kHideAppIconBadge,
+		.title = tr::lng_serein_hide_app_icon_badge,
+		.id = u"serein/interface/hide-app-icon-badge"_q,
+		.keywords = { u"dock"_q, u"icon"_q, u"badge"_q },
+		.icon = &st::menuIconDockBounce,
+		.tile = &st::settingsIconBg4,
+		.about = tr::lng_serein_hide_app_icon_badge_about,
 	},
 	{
-		&kHalfwidthUiPunctuation,
-		tr::lng_serein_halfwidth_ui_punctuation,
-		u"serein/interface/halfwidth-ui-punctuation"_q,
-		{ u"text"_q, u"punctuation"_q },
+		.option = &kHalfwidthUiPunctuation,
+		.title = tr::lng_serein_halfwidth_ui_punctuation,
+		.id = u"serein/interface/halfwidth-ui-punctuation"_q,
+		.keywords = { u"text"_q, u"punctuation"_q },
+		.icon = &st::menuIconTranslate,
+		.tile = &st::settingsIconBg2,
+		.about = tr::lng_serein_halfwidth_ui_punctuation_about,
 	},
 	{
-		&kMoreAccounts,
-		tr::lng_serein_more_accounts,
-		u"serein/interface/more-accounts"_q,
-		{ u"accounts"_q, u"limit"_q, u"multiple"_q },
+		.option = &kMoreAccounts,
+		.title = tr::lng_serein_more_accounts,
+		.id = u"serein/interface/more-accounts"_q,
+		.keywords = { u"accounts"_q, u"limit"_q, u"multiple"_q },
+		.icon = &st::menuIconAddAccount,
+		.tile = &st::settingsIconBg2,
+		.about = tr::lng_serein_more_accounts_about,
 	},
 } };
 
@@ -115,6 +146,9 @@ inline void AddLayout(
 			return QString::number(value) + u"%"_q;
 		},
 		.hint = tr::lng_serein_text_width_hint,
+		.icon = &st::menuIconFont,
+		.tile = &st::settingsIconBg1,
+		.about = tr::lng_serein_text_message_width_about,
 	});
 	AddToggle(builder, kToggleRows[0]);
 	AddToggle(builder, kToggleRows[1]);
@@ -157,14 +191,16 @@ inline void AddLayout(
 
 inline constexpr auto kSubpageTitle = &tr::lng_serein_interface;
 inline const auto kSubpageIcon = &st::menuIconPalette;
+inline const auto kSubpageTile = &st::settingsIconBg6;
 
 inline void AddSubpageButton(
 		::Settings::Builder::SectionBuilder &builder,
 		::Settings::Type section) {
-	builder.addSectionButton({
+	AddPageButton(builder, {
 		.title = (*kSubpageTitle)(),
-		.targetSection = section,
-		.icon = { kSubpageIcon },
+		.section = section,
+		.icon = kSubpageIcon,
+		.tile = kSubpageTile,
 		.keywords = { u"interface"_q, u"appearance"_q },
 	});
 }

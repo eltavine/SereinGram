@@ -5,6 +5,8 @@
 #include "lang/lang_keys.h"
 #include "serein/schema/gen/settings/links.h"
 #include "serein/settings/rows.h"
+#include "styles/style_menu_icons.h"
+#include "styles/style_serein.h"
 
 #include <array>
 

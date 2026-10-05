@@ -6,6 +6,7 @@
 #include "serein/settings/gen/messages_rows.h"
 #include "serein/settings/home.h"
 #include "serein/settings/page.h"
+#include "serein/settings/rows.h"
 #include "lang/lang_keys.h"
 #include "settings/settings_builder.h"
 #include "settings/settings_common_session.h"
@@ -70,10 +71,9 @@ const auto kMeta = BuildHelper({
 	Messages::AddLayout(builder, {
 		.readingChinese = [&] {
 			const auto available = Messages::ChineseConversionAvailable();
-			const auto chinese = builder.addButton({
+			const auto chinese = AddRow(builder, {
 				.id = u"serein/messages/reading-chinese"_q,
 				.title = tr::lng_serein_reading_chinese(),
-				.st = &st::settingsButtonNoIcon,
 				.label = available
 					? rpl::producer<QString>(
 						ForDevice().Value(Messages::kReadingChinese)
@@ -82,6 +82,10 @@ const auto kMeta = BuildHelper({
 						tr::lng_serein_reading_unavailable(tr::now))),
 				.onClick = [=] { controller->show(Box(ReadingChineseBox)); },
 				.keywords = { u"Chinese"_q, u"simplified"_q, u"traditional"_q },
+				.visual = {
+					.icon = &st::menuIconTranslate,
+					.about = tr::lng_serein_reading_chinese_about,
+				},
 			});
 			if (chinese && !available) {
 				chinese->setDisabled(true);

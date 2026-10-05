@@ -232,17 +232,23 @@ const auto kMeta = BuildHelper({
 		tr::lng_serein_section_config_files,
 		{ u"export"_q, u"import"_q },
 	});
-	builder.addButton({
+	AddRow(builder, {
 		.id = u"serein/config/export"_q,
 		.title = tr::lng_serein_config_export(),
-		.st = &st::settingsButtonNoIcon,
 		.onClick = [=] { Export(controller); },
+		.visual = {
+			.icon = &st::menuIconExportTheme,
+			.about = tr::lng_serein_config_export_about,
+		},
 	});
-	builder.addButton({
+	AddRow(builder, {
 		.id = u"serein/config/import"_q,
 		.title = tr::lng_serein_config_import(),
-		.st = &st::settingsButtonNoIcon,
 		.onClick = [=] { Import(controller); },
+		.visual = {
+			.icon = &st::menuIconImportTheme,
+			.about = tr::lng_serein_config_import_row_about,
+		},
 	});
 	EndSection(builder, tr::lng_serein_config_scope);
 	AddSection(builder, {
@@ -250,17 +256,23 @@ const auto kMeta = BuildHelper({
 		tr::lng_serein_section_config_backup,
 		{ u"backup"_q, u"restore"_q },
 	});
-	builder.addButton({
+	AddRow(builder, {
 		.id = u"serein/config/backup"_q,
 		.title = tr::lng_serein_config_backup(),
-		.st = &st::settingsButtonNoIcon,
 		.onClick = [=] { BackUp(controller); },
+		.visual = {
+			.icon = &st::menuIconSavedMessages,
+			.about = tr::lng_serein_config_backup_row_about,
+		},
 	});
-	builder.addButton({
+	AddRow(builder, {
 		.id = u"serein/config/restore"_q,
 		.title = tr::lng_serein_config_restore(),
-		.st = &st::settingsButtonNoIcon,
 		.onClick = [=] { Restore(controller); },
+		.visual = {
+			.icon = &st::menuIconRestore,
+			.about = tr::lng_serein_config_restore_about,
+		},
 	});
 	EndSection(builder, tr::lng_serein_config_backup_about);
 	AddSection(builder, {
@@ -268,23 +280,32 @@ const auto kMeta = BuildHelper({
 		tr::lng_serein_section_config_review,
 		{ u"modified"_q, u"reset"_q, u"diagnostics"_q },
 	});
-	builder.addButton({
+	AddRow(builder, {
 		.id = u"serein/config/modified"_q,
 		.title = tr::lng_serein_config_modified(),
-		.st = &st::settingsButtonNoIcon,
 		.onClick = [=] { ShowModified(controller); },
+		.visual = {
+			.icon = &st::menuIconEdit,
+			.about = tr::lng_serein_config_modified_row_about,
+		},
 	});
-	builder.addButton({
+	AddRow(builder, {
 		.id = u"serein/config/reset"_q,
 		.title = tr::lng_serein_config_reset(),
-		.st = &st::settingsButtonNoIcon,
 		.onClick = [=] { ShowReset(controller); },
+		.visual = {
+			.icon = &st::menuIconRetractVote,
+			.about = tr::lng_serein_config_reset_row_about,
+		},
 	});
-	builder.addButton({
+	AddRow(builder, {
 		.id = u"serein/config/diagnostics"_q,
 		.title = tr::lng_serein_config_diagnostics(),
-		.st = &st::settingsButtonNoIcon,
 		.onClick = [=] { CopyDiagnostics(controller); },
+		.visual = {
+			.icon = &st::menuIconCopy,
+			.about = tr::lng_serein_config_diagnostics_about,
+		},
 	});
 	EndSection(builder);
 });

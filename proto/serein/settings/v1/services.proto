@@ -66,6 +66,8 @@ message ServicesSettings {
       "translate"
     ]
     note: "lng_serein_translation_context_about"
+    icon: "menuIconChats"
+    about: "lng_serein_translation_context_summary"
   }];
   optional bool chat_translation_without_premium = 8 [(serein.options.v1.field) = {
     title: "lng_serein_chat_translation"
@@ -75,6 +77,7 @@ message ServicesSettings {
       "Premium"
     ]
     note: "lng_serein_chat_translation_about"
+    icon: "menuIconPremium"
   }];
   optional bool auto_translate_chats = 11 [(serein.options.v1.field) = {
     scope: SCOPE_ACCOUNT
@@ -84,6 +87,8 @@ message ServicesSettings {
       "chat"
     ]
     note: "lng_serein_auto_translate_chats_about"
+    icon: "menuIconAsTopics"
+    about: "lng_serein_auto_translate_chats_summary"
   }];
   optional bytes send_translations = 15 [(serein.options.v1.field) = {
     scope: SCOPE_ACCOUNT
@@ -103,6 +108,8 @@ message ServicesSettings {
       "article"
     ]
     note: "lng_serein_instant_view_translation_about"
+    icon: "menuIconArticle"
+    about: "lng_serein_instant_view_translation_summary"
   }];
   optional int32 auto_transcribe = 16 [
     (serein.options.v1.field) = {
@@ -121,6 +128,8 @@ message ServicesSettings {
           "lng_serein_auto_transcribe_all"
         ]
       }
+      icon: "menuIconVideoChat"
+      about: "lng_serein_auto_transcribe_summary"
     },
     (buf.validate.field).int32 = {
       gte: 0
@@ -160,6 +169,7 @@ message ServicesSettings {
       "VPN"
     ]
     note: "lng_serein_proxy_vpn_about"
+    icon: "menuIcon2SV"
   }];
   optional string custom_doh = 7 [
     (serein.options.v1.field) = {custom_ui: true},
@@ -176,6 +186,7 @@ message ServicesSettings {
       "Google"
     ]
     note: "lng_serein_system_dns_note"
+    icon: "menuIconIpAddress"
   }];
   optional bool faster_transfers = 13 [(serein.options.v1.field) = {
     title: "lng_serein_faster_transfers"
@@ -185,6 +196,8 @@ message ServicesSettings {
       "speed"
     ]
     note: "lng_serein_faster_transfers_about"
+    icon: "menuIconNetwork"
+    about: "lng_serein_faster_transfers_summary"
   }];
   optional bool android_web_apps = 10 [(serein.options.v1.field) = {
     section: {
@@ -202,6 +215,8 @@ message ServicesSettings {
       "Android"
     ]
     note: "lng_serein_android_web_apps_about"
+    icon: "menuIconBotCommands"
+    about: "lng_serein_android_web_apps_summary"
   }];
   optional bool proxy_paused_by_vpn = 5 [(serein.options.v1.field) = {
     title: "lng_serein_proxy_vpn"

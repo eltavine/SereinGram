@@ -3,6 +3,7 @@
 #include "serein/core/options.h"
 #include "serein/features/keyword_alerts/model/keywords.h"
 #include "serein/schema/gen/settings/filters.h"
+#include "serein/settings/rows.h"
 #include "lang/lang_keys.h"
 #include "main/main_session.h"
 #include "settings/settings_builder.h"
@@ -13,6 +14,7 @@
 #include "window/window_session_controller.h"
 
 #include "styles/style_layers.h"
+#include "styles/style_menu_icons.h"
 #include "styles/style_settings.h"
 
 #include <algorithm>
@@ -113,14 +115,17 @@ void KeywordAlertsBox(
 void AddKeywordAlerts(::Settings::Builder::SectionBuilder &builder) {
 	const auto controller = builder.controller();
 	const auto session = builder.session();
-	builder.addButton({
+	AddRow(builder, {
 		.id = u"serein/rules/keyword-alerts"_q,
 		.title = tr::lng_serein_keyword_alerts(),
-		.st = &st::settingsButtonNoIcon,
 		.label = ForAccount(session).Value(kKeywordAlerts)
 			| rpl::map([](QByteArray raw) { return Describe(Read(raw)); }),
 		.onClick = [=] { controller->show(Box(KeywordAlertsBox, session)); },
 		.keywords = { u"keyword"_q, u"alert"_q, u"mention"_q },
+		.visual = {
+			.icon = &st::menuIconNotifications,
+			.about = tr::lng_serein_keyword_alerts_row_about,
+		},
 	});
 }
 

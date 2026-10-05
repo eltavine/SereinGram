@@ -1,12 +1,17 @@
 #include "serein/settings/rows.h"
 
 #include "serein/settings/restart.h"
+#include "settings/settings_common.h"
 #include "ui/layers/generic_box.h"
+#include "ui/painter.h"
 #include "ui/widgets/buttons.h"
 #include "ui/widgets/checkbox.h"
 #include "ui/widgets/fields/input_field.h"
+#include "ui/widgets/labels.h"
+#include "ui/wrap/vertical_layout.h"
 #include "window/window_session_controller.h"
 #include "styles/style_layers.h"
+#include "styles/style_serein.h"
 #include "styles/style_settings.h"
 #include "styles/style_widgets.h"
 
@@ -14,6 +19,41 @@
 
 namespace Serein {
 namespace {
+
+void AddTile(
+		not_null<Ui::SettingsButton*> button,
+		const style::icon &icon,
+		const style::color &tile) {
+	const auto widget = Ui::CreateChild<Ui::RpWidget>(button.get());
+	const auto size = st::sereinSettingsTileSize;
+	widget->setAttribute(Qt::WA_TransparentForMouseEvents);
+	widget->resize(size, size);
+	widget->show();
+	button->sizeValue(
+	) | rpl::on_next([=](QSize outer) {
+		widget->moveToLeft(
+			st::sereinSettingsTileLeft,
+			(outer.height() - size) / 2,
+			outer.width());
+	}, widget->lifetime());
+	widget->paintRequest(
+	) | rpl::on_next([=, &icon, &tile] {
+		auto p = QPainter(widget);
+		auto hq = PainterHighQualityEnabler(p);
+		const auto radius = st::sereinSettingsTileRadius;
+		p.setPen(Qt::NoPen);
+		p.setBrush(tile->b);
+		p.drawRoundedRect(widget->rect(), radius, radius);
+		icon.paintInCenter(p, widget->rect(), st::settingsIconFg->c);
+	}, widget->lifetime());
+}
+
+[[nodiscard]] RowVisual VisualOf(
+		const style::icon *icon,
+		const style::color *tile,
+		const std::optional<tr::phrase<>> &about) {
+	return { .icon = icon, .tile = tile, .about = about };
+}
 
 template <typename Type>
 [[nodiscard]] Fn<Options&()> StoreFor(
@@ -115,6 +155,85 @@ void TextBox(
 
 } // namespace
 
+Ui::SettingsButton *AddRow(
+		::Settings::Builder::SectionBuilder &builder,
+		RowArgs &&args) {
+	auto result = (Ui::SettingsButton*)nullptr;
+	const auto described = args.visual.about.has_value();
+	const auto &st = args.st
+		? *args.st
+		: args.visual.icon
+		? (described
+			? st::sereinSettingsButtonDescribed
+			: st::sereinSettingsButton)
+		: (described
+			? st::sereinSettingsButtonPlainDescribed
+			: st::settingsButtonNoIcon);
+	const auto searchIcon = args.visual.icon;
+	builder.addControl({
+		.factory = [&](not_null<Ui::VerticalLayout*> container) {
+			auto wrap = object_ptr<Ui::VerticalLayout>(container);
+			const auto raw = wrap.data();
+			const auto button = raw->add(object_ptr<Ui::SettingsButton>(
+				raw,
+				rpl::duplicate(args.title),
+				st));
+			if (const auto icon = args.visual.icon) {
+				const auto tile = args.visual.tile;
+				AddTile(button, *icon, tile ? *tile : st::settingsIconBg4);
+			}
+			if (args.label) {
+				::Settings::CreateRightLabel(
+					button,
+					std::move(args.label),
+					st,
+					rpl::duplicate(args.title));
+			}
+			if (args.toggled) {
+				button->toggleOn(std::move(args.toggled));
+			}
+			if (args.onClick) {
+				button->addClickHandler(std::move(args.onClick));
+			}
+			if (const auto about = args.visual.about) {
+				raw->add(
+					object_ptr<Ui::FlatLabel>(
+						raw,
+						(*about)(),
+						st::sereinSettingsAbout),
+					args.visual.icon
+						? st::sereinSettingsAboutPadding
+						: st::sereinSettingsAboutPlainPadding);
+			}
+			result = button;
+			return object_ptr<Ui::RpWidget>(std::move(wrap));
+		},
+		.id = std::move(args.id),
+		.title = rpl::duplicate(args.title),
+		.shown = std::move(args.shown),
+		.keywords = std::move(args.keywords),
+		.searchIcon = { searchIcon },
+	});
+	return result;
+}
+
+void AddPageButton(
+		::Settings::Builder::SectionBuilder &builder,
+		PageButton &&button) {
+	const auto showOther = builder.showOther();
+	const auto section = button.section;
+	AddRow(builder, {
+		.title = std::move(button.title),
+		.onClick = [=] {
+			if (showOther) {
+				showOther(section);
+			}
+		},
+		.keywords = std::move(button.keywords),
+		.visual = { .icon = button.icon, .tile = button.tile },
+	});
+}
+
 void AddToggle(
 		::Settings::Builder::SectionBuilder &builder,
 		const ToggleRow &row) {
@@ -123,12 +242,12 @@ void AddToggle(
 	const auto option = *row.option;
 	const auto store = StoreFor(builder, option);
 	const auto controller = builder.controller();
-	const auto button = builder.addButton({
+	const auto button = AddRow(builder, {
 		.id = row.id,
 		.title = row.title(),
-		.st = &st::settingsButtonNoIcon,
 		.toggled = store().Value(option),
 		.keywords = row.keywords,
+		.visual = VisualOf(row.icon, row.tile, row.about),
 	});
 	if (!button) {
 		return;
@@ -167,10 +286,9 @@ void AddNumber(
 
 	const auto store = StoreFor(builder, *row.option);
 	const auto controller = builder.controller();
-	builder.addButton({
+	AddRow(builder, {
 		.id = row.id,
 		.title = row.title(),
-		.st = &st::settingsButtonNoIcon,
 		.label = store().Value(*row.option) | rpl::map([=](int value) {
 			return !value
 				? row.zeroLabel(tr::now)
@@ -184,6 +302,7 @@ void AddNumber(
 			}
 		},
 		.keywords = row.keywords,
+		.visual = VisualOf(row.icon, row.tile, row.about),
 	});
 }
 
@@ -195,10 +314,9 @@ void AddChoice(
 
 	const auto store = StoreFor(builder, *row.option);
 	const auto controller = builder.controller();
-	builder.addButton({
+	AddRow(builder, {
 		.id = row.id,
 		.title = row.title(),
-		.st = &st::settingsButtonNoIcon,
 		.label = store().Value(*row.option) | rpl::map([=](int value) {
 			return ChoiceLabel(row, value);
 		}),
@@ -208,6 +326,7 @@ void AddChoice(
 			}
 		},
 		.keywords = row.keywords,
+		.visual = VisualOf(row.icon, row.tile, row.about),
 	});
 }
 
@@ -223,10 +342,9 @@ void AddText(
 		shown = StoreFor(builder, *row.hiddenBy)().Value(*row.hiddenBy)
 			| rpl::map([](bool hidden) { return !hidden; });
 	}
-	builder.addButton({
+	AddRow(builder, {
 		.id = row.id,
 		.title = row.title(),
-		.st = &st::settingsButtonNoIcon,
 		.label = store().Value(*row.option) | rpl::map([=](const QString &text) {
 			return text.isEmpty() ? row.placeholder(tr::now) : text;
 		}),
@@ -237,6 +355,7 @@ void AddText(
 		},
 		.keywords = row.keywords,
 		.shown = std::move(shown),
+		.visual = VisualOf(row.icon, row.tile, row.about),
 	});
 }
 

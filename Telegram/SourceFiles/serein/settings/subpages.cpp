@@ -6,11 +6,14 @@
 #include "serein/settings/gen/history_rows.h"
 #include "serein/settings/privacy.h"
 #include "serein/settings/page.h"
+#include "serein/settings/rows.h"
 #include "lang/lang_keys.h"
 #include "settings/settings_builder.h"
 #include "settings/settings_common_session.h"
 #include "ui/wrap/vertical_layout.h"
 #include "window/window_session_controller.h"
+#include "styles/style_menu_icons.h"
+#include "styles/style_serein.h"
 #include "styles/style_settings.h"
 
 namespace Serein {
@@ -64,27 +67,34 @@ const auto kHistoryMeta = BuildHelper({
 }, [](SectionBuilder &builder) {
 	HistorySettings::AddLayout(builder);
 	const auto controller = builder.controller();
-	builder.addButton({
+	AddRow(builder, {
 		.id = u"serein/privacy/history-saved-chats"_q,
 		.title = tr::lng_serein_history_saved_chats(),
-		.st = &st::settingsButtonNoIcon,
 		.onClick = [=] {
 			if (controller) {
 				HistoryFeature::ShowSavedChats(controller);
 			}
 		},
 		.keywords = { u"history"_q, u"deleted"_q, u"chats"_q },
+		.visual = {
+			.icon = &st::menuIconChats,
+			.about = tr::lng_serein_history_saved_chats_about,
+		},
 	});
-	builder.addButton({
+	AddRow(builder, {
 		.id = u"serein/privacy/history-clear-all"_q,
 		.title = tr::lng_serein_history_clear_all(),
-		.st = &st::settingsAttentionButton,
 		.onClick = [=] {
 			if (controller) {
 				HistoryFeature::ConfirmClearHistory(controller, nullptr);
 			}
 		},
 		.keywords = { u"history"_q, u"deleted"_q, u"clear"_q },
+		.visual = {
+			.icon = &st::menuIconClear,
+			.about = tr::lng_serein_history_clear_all_about,
+		},
+		.st = &st::sereinSettingsAttentionButtonDescribed,
 	});
 });
 

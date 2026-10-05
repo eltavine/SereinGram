@@ -3,6 +3,7 @@
 #include "serein/core/options.h"
 #include "serein/features/quiet_hours/model/schedule.h"
 #include "serein/schema/gen/settings/interface.h"
+#include "serein/settings/rows.h"
 #include "base/basic_types.h"
 #include "lang/lang_keys.h"
 #include "settings/settings_builder.h"
@@ -17,6 +18,7 @@
 #include <QtCore/QTime>
 
 #include "styles/style_layers.h"
+#include "styles/style_menu_icons.h"
 #include "styles/style_passcode_box.h"
 #include "styles/style_settings.h"
 
@@ -208,15 +210,18 @@ void QuietHoursBox(not_null<Ui::GenericBox*> box) {
 
 void AddQuietHours(::Settings::Builder::SectionBuilder &builder) {
 	const auto controller = builder.controller();
-	builder.addButton({
+	AddRow(builder, {
 		.id = u"serein/interface/quiet-hours"_q,
 		.title = tr::lng_serein_quiet_hours(),
-		.st = &st::settingsButtonNoIcon,
 		.label = ForDevice().Value(kQuietHours) | rpl::map([](QByteArray raw) {
 			return Describe(Read(raw));
 		}),
 		.onClick = [=] { controller->show(Box(QuietHoursBox)); },
 		.keywords = { u"quiet"_q, u"do not disturb"_q, u"schedule"_q },
+		.visual = {
+			.icon = &st::menuIconMuteFor,
+			.about = tr::lng_serein_quiet_hours_row_about,
+		},
 	});
 }
 

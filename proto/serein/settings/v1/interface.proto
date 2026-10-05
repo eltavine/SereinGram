@@ -68,6 +68,7 @@ message InterfaceSettings {
         suffix: "%"
         hint: "lng_serein_text_width_hint"
       }
+      icon: "menuIconFont"
     },
     (buf.validate.field).int32 = {
       gte: 50
@@ -80,6 +81,7 @@ message InterfaceSettings {
       "width"
     ]
     refresh: REFRESH_MESSAGE_VIEW
+    icon: "menuIconEnlarge"
   }];
   optional bool hide_bubble_tail = 6 [(serein.options.v1.field) = {
     keywords: [
@@ -87,6 +89,7 @@ message InterfaceSettings {
       "tail"
     ]
     refresh: REFRESH_MESSAGE_VIEW
+    icon: "menuIconChatBubble"
   }];
   optional bool theme_reply_colors = 7 [(serein.options.v1.field) = {
     keywords: [
@@ -95,6 +98,7 @@ message InterfaceSettings {
       "color"
     ]
     refresh: REFRESH_MESSAGE_VIEW
+    icon: "menuIconChangeColors"
   }];
   optional bool hide_reply_thumbnail = 8 [(serein.options.v1.field) = {
     keywords: [
@@ -102,6 +106,7 @@ message InterfaceSettings {
       "thumbnail"
     ]
     refresh: REFRESH_MESSAGE_VIEW
+    icon: "menuIconReply"
   }];
   optional bool ignore_chat_theme = 9 [(serein.options.v1.field) = {
     keywords: [
@@ -109,6 +114,7 @@ message InterfaceSettings {
       "theme",
       "wallpaper"
     ]
+    icon: "menuIconPhoto"
   }];
   optional bytes main_menu = 10 [(serein.options.v1.field) = {
     section: {
@@ -132,6 +138,7 @@ message InterfaceSettings {
     ]
     note: "lng_serein_menu_shortcuts_note"
     restart: true
+    icon: "menuIconToMainMenu"
   }];
   optional int32 notification_delay = 12 [
     (serein.options.v1.field) = {
@@ -176,6 +183,7 @@ message InterfaceSettings {
       "center"
     ]
     note: "lng_serein_center_top_notifications_note"
+    icon: "menuIconNotifications"
   }];
   optional bytes quiet_hours = 21 [(serein.options.v1.field) = {
     title: "lng_serein_quiet_hours"
@@ -194,6 +202,7 @@ message InterfaceSettings {
       "icon",
       "badge"
     ]
+    icon: "menuIconDockBounce"
   }];
   optional bytes global_shortcut = 19 [(serein.options.v1.field) = {
     section: {
@@ -221,6 +230,7 @@ message InterfaceSettings {
       "punctuation"
     ]
     restart: true
+    icon: "menuIconTranslate"
   }];
   optional bool more_accounts = 15 [(serein.options.v1.field) = {
     keywords: [
@@ -229,6 +239,7 @@ message InterfaceSettings {
       "multiple"
     ]
     note: "lng_serein_more_accounts_note"
+    icon: "menuIconAddAccount"
   }];
   optional bool check_updates = 16 [(serein.options.v1.field) = {
     keywords: [

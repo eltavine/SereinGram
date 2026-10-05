@@ -81,6 +81,10 @@ message FieldOptions {
   // Generates a single choice row for an int32 option.
   ChoiceInput choice = 17;
   TextInput text = 18;
+  // Menu icon style shown on a colored tile, for example "menuIconInfo".
+  string icon = 19;
+  // Lang key of the explanation under the row, "lng_serein_<field>_about" when empty.
+  string about = 20;
 }
 
 message TextInput {

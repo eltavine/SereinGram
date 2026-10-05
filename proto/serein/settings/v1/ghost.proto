@@ -27,6 +27,7 @@ message GhostSettings {
       "online",
       "typing"
     ]
+    icon: "menuIconStealthLocked"
   }];
   optional bool ghost_all_accounts = 10 [(serein.options.v1.field) = {
     scope: SCOPE_DEVICE
@@ -36,6 +37,7 @@ message GhostSettings {
       "global"
     ]
     note: "lng_serein_ghost_all_accounts_note"
+    icon: "menuIconGroups"
   }];
   optional bool ghost_hide_read_receipts = 2 [(serein.options.v1.field) = {
     section: {
@@ -54,6 +56,7 @@ message GhostSettings {
       "read",
       "receipts"
     ]
+    icon: "menuIconMarkUnread"
   }];
   optional bool ghost_hide_story_views = 3 [(serein.options.v1.field) = {
     default_bool: true
@@ -61,6 +64,7 @@ message GhostSettings {
       "ghost",
       "stories"
     ]
+    icon: "menuIconStoriesSavedSection"
   }];
   optional bool ghost_hide_online = 4 [(serein.options.v1.field) = {
     default_bool: true
@@ -68,6 +72,7 @@ message GhostSettings {
       "ghost",
       "online"
     ]
+    icon: "menuIconUserHide"
   }];
   optional bool ghost_hide_typing = 5 [(serein.options.v1.field) = {
     default_bool: true
@@ -75,12 +80,14 @@ message GhostSettings {
       "ghost",
       "typing"
     ]
+    icon: "menuIconShortcut"
   }];
   optional bool ghost_hide_view_increments = 6 [(serein.options.v1.field) = {
     keywords: [
       "ghost",
       "views"
     ]
+    icon: "menuIconRepeat"
   }];
   optional bool ghost_mark_read_after_sending = 7 [(serein.options.v1.field) = {
     section: {
@@ -97,6 +104,7 @@ message GhostSettings {
       "read",
       "send"
     ]
+    icon: "menuIconSend"
   }];
   optional bool ghost_explicit_read_receipts = 9 [(serein.options.v1.field) = {
     keywords: [
@@ -104,6 +112,7 @@ message GhostSettings {
       "read",
       "mark as read"
     ]
+    icon: "menuIconMarkRead"
   }];
   optional string read_receipt_exceptions = 11 [(serein.options.v1.field) = {
     title: "lng_serein_ghost_read_exceptions"
@@ -123,6 +132,7 @@ message GhostSettings {
       "notification",
       "send"
     ]
+    icon: "menuIconSilent"
   }];
   optional bool ghost_use_scheduled_messages = 8 [(serein.options.v1.field) = {
     keywords: [
@@ -131,5 +141,6 @@ message GhostSettings {
       "send"
     ]
     note: "lng_serein_ghost_note"
+    icon: "menuIconSchedule"
   }];
 }

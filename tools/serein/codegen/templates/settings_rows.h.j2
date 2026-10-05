@@ -5,9 +5,8 @@
 #include "lang/lang_keys.h"
 #include "serein/schema/gen/{{ page.header }}"
 #include "serein/settings/rows.h"
-{% if page.subpage %}
 #include "styles/style_menu_icons.h"
-{% endif %}
+#include "styles/style_serein.h"
 
 #include <array>
 
@@ -17,13 +16,16 @@ namespace Serein::{{ page.namespace }} {
 inline const auto kToggleRows = std::array<ToggleRow, {{ page.rows | length }}>{ {
 {% for row in page.rows %}
 	{
-		&{{ row.cpp_name }},
-		tr::{{ row.title }},
-		u"{{ row.id }}"_q,
-		{ {{ row.keywords }} },
+		.option = &{{ row.cpp_name }},
+		.title = tr::{{ row.title }},
+		.id = u"{{ row.id }}"_q,
+		.keywords = { {{ row.keywords }} },
 {% if row.disabled_by %}
-		&{{ row.disabled_by }},
+		.disabledBy = &{{ row.disabled_by }},
 {% endif %}
+		.icon = &st::{{ row.icon }},
+		.tile = &st::{{ row.tile }},
+		.about = tr::{{ row.about }},
 	},
 {% endfor %}
 } };
@@ -74,6 +76,9 @@ inline void AddLayout(
 {% if item.hint %}
 		.hint = tr::{{ item.hint }},
 {% endif %}
+		.icon = &st::{{ item.icon }},
+		.tile = &st::{{ item.tile }},
+		.about = tr::{{ item.about }},
 	});
 {% elif item.kind == "choice" %}
 	AddChoice(builder, {
@@ -88,6 +93,9 @@ inline void AddLayout(
 {% if item.suffix %}
 		.suffix = u{{ item.suffix | tojson }}_q,
 {% endif %}
+		.icon = &st::{{ item.icon }},
+		.tile = &st::{{ item.tile }},
+		.about = tr::{{ item.about }},
 	});
 {% elif item.kind == "text" %}
 	AddText(builder, {
@@ -99,6 +107,9 @@ inline void AddLayout(
 {% if item.hidden_by %}
 		.hiddenBy = &{{ item.hidden_by }},
 {% endif %}
+		.icon = &st::{{ item.icon }},
+		.tile = &st::{{ item.tile }},
+		.about = tr::{{ item.about }},
 	});
 {% elif item.kind == "custom" %}
 	custom.{{ item.member }}();
@@ -117,14 +128,16 @@ inline void AddLayout(
 
 inline constexpr auto kSubpageTitle = &tr::{{ page.subpage.title }};
 inline const auto kSubpageIcon = &st::{{ page.subpage.icon }};
+inline const auto kSubpageTile = &st::{{ page.subpage.tile }};
 
 inline void AddSubpageButton(
 		::Settings::Builder::SectionBuilder &builder,
 		::Settings::Type section) {
-	builder.addSectionButton({
+	AddPageButton(builder, {
 		.title = (*kSubpageTitle)(),
-		.targetSection = section,
-		.icon = { kSubpageIcon },
+		.section = section,
+		.icon = kSubpageIcon,
+		.tile = kSubpageTile,
 		.keywords = { {{ page.subpage.keywords }} },
 	});
 }

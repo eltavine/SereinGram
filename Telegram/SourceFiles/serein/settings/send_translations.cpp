@@ -3,6 +3,7 @@
 #include "serein/core/options.h"
 #include "serein/schema/gen/settings/services.h"
 #include "serein/services/send_translation.h"
+#include "serein/settings/rows.h"
 #include "data/data_peer.h"
 #include "lang/lang_keys.h"
 #include "main/main_session.h"
@@ -14,6 +15,7 @@
 #include "window/window_session_controller.h"
 
 #include "styles/style_layers.h"
+#include "styles/style_menu_icons.h"
 #include "styles/style_settings.h"
 
 namespace Serein {
@@ -66,10 +68,9 @@ void SendTranslationsBox(
 void AddSendTranslations(::Settings::Builder::SectionBuilder &builder) {
 	const auto controller = builder.controller();
 	const auto session = builder.session();
-	builder.addButton({
+	AddRow(builder, {
 		.id = u"serein/services/send-translation"_q,
 		.title = tr::lng_serein_send_translation(),
-		.st = &st::settingsButtonNoIcon,
 		.label = ForAccount(session).Value(
 			ServiceSettings::kSendTranslations
 		) | rpl::map([=](const QByteArray &) {
@@ -82,6 +83,10 @@ void AddSendTranslations(::Settings::Builder::SectionBuilder &builder) {
 			controller->show(Box(SendTranslationsBox, controller));
 		},
 		.keywords = { u"translate"_q, u"send"_q, u"outgoing"_q },
+		.visual = {
+			.icon = &st::menuIconSend,
+			.about = tr::lng_serein_send_translation_row_about,
+		},
 	});
 }
 

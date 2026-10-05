@@ -6,6 +6,7 @@
 #include "serein/schema/gen/settings/privacy.h"
 #include "serein/settings/rows.h"
 #include "styles/style_menu_icons.h"
+#include "styles/style_serein.h"
 
 #include <array>
 
@@ -13,82 +14,121 @@ namespace Serein::Privacy {
 
 inline const auto kToggleRows = std::array<ToggleRow, 13>{ {
 	{
-		&kDemoMode,
-		tr::lng_serein_demo_mode,
-		u"serein/privacy/demo-mode"_q,
-		{ u"presentation"_q, u"capture"_q },
+		.option = &kDemoMode,
+		.title = tr::lng_serein_demo_mode,
+		.id = u"serein/privacy/demo-mode"_q,
+		.keywords = { u"presentation"_q, u"capture"_q },
+		.icon = &st::menuIconSpoiler,
+		.tile = &st::settingsIconBg4,
+		.about = tr::lng_serein_demo_mode_about,
 	},
 	{
-		&kAutoDemoMode,
-		tr::lng_serein_auto_demo_mode,
-		u"serein/privacy/auto-demo-mode"_q,
-		{ u"presentation"_q, u"OBS"_q, u"recording"_q, u"streaming"_q },
+		.option = &kAutoDemoMode,
+		.title = tr::lng_serein_auto_demo_mode,
+		.id = u"serein/privacy/auto-demo-mode"_q,
+		.keywords = { u"presentation"_q, u"OBS"_q, u"recording"_q, u"streaming"_q },
+		.icon = &st::menuIconStartStreamWith,
+		.tile = &st::settingsIconBg4,
+		.about = tr::lng_serein_auto_demo_mode_about,
 	},
 	{
-		&kLockSettings,
-		tr::lng_serein_lock_settings,
-		u"serein/privacy/lock-settings"_q,
-		{ u"lock"_q, u"passcode"_q, u"settings"_q },
+		.option = &kLockSettings,
+		.title = tr::lng_serein_lock_settings,
+		.id = u"serein/privacy/lock-settings"_q,
+		.keywords = { u"lock"_q, u"passcode"_q, u"settings"_q },
+		.icon = &st::menuIcon2SV,
+		.tile = &st::settingsIconBg4,
+		.about = tr::lng_serein_lock_settings_about,
 	},
 	{
-		&kShowProfileDc,
-		tr::lng_serein_show_profile_dc,
-		u"serein/privacy/show-profile-dc"_q,
-		{ u"profile"_q, u"DC"_q },
+		.option = &kShowProfileDc,
+		.title = tr::lng_serein_show_profile_dc,
+		.id = u"serein/privacy/show-profile-dc"_q,
+		.keywords = { u"profile"_q, u"DC"_q },
+		.icon = &st::menuIconStorage,
+		.tile = &st::settingsIconBg2,
+		.about = tr::lng_serein_show_profile_dc_about,
 	},
 	{
-		&kShowRegistrationDate,
-		tr::lng_serein_show_registration_date,
-		u"serein/privacy/show-registration-date"_q,
-		{ u"profile"_q, u"registration"_q, u"account age"_q },
+		.option = &kShowRegistrationDate,
+		.title = tr::lng_serein_show_registration_date,
+		.id = u"serein/privacy/show-registration-date"_q,
+		.keywords = { u"profile"_q, u"registration"_q, u"account age"_q },
+		.icon = &st::menuIconSchedule,
+		.tile = &st::settingsIconBg2,
+		.about = tr::lng_serein_show_registration_date_about,
 	},
 	{
-		&kShowContactStatus,
-		tr::lng_serein_show_contact_status,
-		u"serein/privacy/show-contact-status"_q,
-		{ u"profile"_q, u"contact"_q, u"mutual contact"_q },
+		.option = &kShowContactStatus,
+		.title = tr::lng_serein_show_contact_status,
+		.id = u"serein/privacy/show-contact-status"_q,
+		.keywords = { u"profile"_q, u"contact"_q, u"mutual contact"_q },
+		.icon = &st::menuIconInvite,
+		.tile = &st::settingsIconBg2,
+		.about = tr::lng_serein_show_contact_status_about,
 	},
 	{
-		&kShowSessionDetails,
-		tr::lng_serein_show_session_details,
-		u"serein/privacy/show-session-details"_q,
-		{ u"sessions"_q, u"devices"_q, u"API ID"_q, u"login"_q },
+		.option = &kShowSessionDetails,
+		.title = tr::lng_serein_show_session_details,
+		.id = u"serein/privacy/show-session-details"_q,
+		.keywords = { u"sessions"_q, u"devices"_q, u"API ID"_q, u"login"_q },
+		.icon = &st::menuIconDevices,
+		.tile = &st::settingsIconBg2,
+		.about = tr::lng_serein_show_session_details_about,
 	},
 	{
-		&kLocalNames,
-		tr::lng_serein_local_names,
-		u"serein/privacy/local-names"_q,
-		{ u"local name"_q, u"alias"_q, u"rename"_q, u"nickname"_q },
+		.option = &kLocalNames,
+		.title = tr::lng_serein_local_names,
+		.id = u"serein/privacy/local-names"_q,
+		.keywords = { u"local name"_q, u"alias"_q, u"rename"_q, u"nickname"_q },
+		.icon = &st::menuIconTagRename,
+		.tile = &st::settingsIconBg2,
+		.about = tr::lng_serein_local_names_about,
 	},
 	{
-		&kHideProfileGifts,
-		tr::lng_serein_hide_profile_gifts,
-		u"serein/privacy/hide-profile-gifts"_q,
-		{ u"profile"_q, u"gifts"_q },
+		.option = &kHideProfileGifts,
+		.title = tr::lng_serein_hide_profile_gifts,
+		.id = u"serein/privacy/hide-profile-gifts"_q,
+		.keywords = { u"profile"_q, u"gifts"_q },
+		.icon = &st::menuIconGiftPremium,
+		.tile = &st::settingsIconBg2,
+		.about = tr::lng_serein_hide_profile_gifts_about,
 	},
 	{
-		&kHideReadTime,
-		tr::lng_serein_hide_read_time,
-		u"serein/privacy/hide-read-time"_q,
-		{ u"read"_q, u"time"_q },
+		.option = &kHideReadTime,
+		.title = tr::lng_serein_hide_read_time,
+		.id = u"serein/privacy/hide-read-time"_q,
+		.keywords = { u"read"_q, u"time"_q },
+		.icon = &st::menuIconMarkRead,
+		.tile = &st::settingsIconBg5,
+		.about = tr::lng_serein_hide_read_time_about,
 	},
 	{
-		&kHideSharePhonePrompt,
-		tr::lng_serein_hide_share_phone_prompt,
-		u"serein/privacy/hide-share-phone-prompt"_q,
-		{ u"share"_q, u"phone"_q },
+		.option = &kHideSharePhonePrompt,
+		.title = tr::lng_serein_hide_share_phone_prompt,
+		.id = u"serein/privacy/hide-share-phone-prompt"_q,
+		.keywords = { u"share"_q, u"phone"_q },
+		.icon = &st::menuIconPhone,
+		.tile = &st::settingsIconBg5,
+		.about = tr::lng_serein_hide_share_phone_prompt_about,
 	},
 	{
-		&kHideCreateTodo,
-		tr::lng_serein_hide_create_todo,
-		u"serein/privacy/hide-create-todo"_q,
-		{ u"todo"_q, u"list"_q },
+		.option = &kHideCreateTodo,
+		.title = tr::lng_serein_hide_create_todo,
+		.id = u"serein/privacy/hide-create-todo"_q,
+		.keywords = { u"todo"_q, u"list"_q },
+		.icon = &st::menuIconCreateTodoList,
+		.tile = &st::settingsIconBg5,
+		.about = tr::lng_serein_hide_create_todo_about,
 	},
 	{
-		&kSaveProtectedContent,
-		tr::lng_serein_save_protected_content,
-		u"serein/privacy/save-protected-content"_q,
-		{ u"protected"_q, u"save"_q, u"copy"_q, u"noforwards"_q },
+		.option = &kSaveProtectedContent,
+		.title = tr::lng_serein_save_protected_content,
+		.id = u"serein/privacy/save-protected-content"_q,
+		.keywords = { u"protected"_q, u"save"_q, u"copy"_q, u"noforwards"_q },
+		.icon = &st::menuIconSaveImage,
+		.tile = &st::settingsIconBg5,
+		.about = tr::lng_serein_save_protected_content_about,
 	},
 } };
 
@@ -117,6 +157,9 @@ inline void AddLayout(
 		.keywords = { u"profile"_q, u"ID"_q },
 		.values = { 0, 1, 2 },
 		.labels = { tr::lng_serein_id_off, tr::lng_serein_id_bot_api, tr::lng_serein_id_raw },
+		.icon = &st::menuIconPersonal,
+		.tile = &st::settingsIconBg2,
+		.about = tr::lng_serein_profile_id_format_about,
 	});
 	AddToggle(builder, kToggleRows[3]);
 	AddToggle(builder, kToggleRows[4]);
@@ -143,14 +186,16 @@ inline void AddLayout(
 
 inline constexpr auto kSubpageTitle = &tr::lng_serein_privacy;
 inline const auto kSubpageIcon = &st::menuIconLock;
+inline const auto kSubpageTile = &st::settingsIconBg4;
 
 inline void AddSubpageButton(
 		::Settings::Builder::SectionBuilder &builder,
 		::Settings::Type section) {
-	builder.addSectionButton({
+	AddPageButton(builder, {
 		.title = (*kSubpageTitle)(),
-		.targetSection = section,
-		.icon = { kSubpageIcon },
+		.section = section,
+		.icon = kSubpageIcon,
+		.tile = kSubpageTile,
 		.keywords = { u"privacy"_q, u"phone"_q },
 	});
 }

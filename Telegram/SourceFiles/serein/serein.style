@@ -1,6 +1,29 @@
 using "ui/widgets/widgets.style";
 using "dialogs/dialogs.style";
 using "ui/menu_icons.style";
+using "settings/settings.style";
+
+sereinSettingsTileSize: 28px;
+sereinSettingsTileLeft: 18px;
+sereinSettingsTileRadius: 8px;
+sereinSettingsButton: SettingsButton(settingsButton) {
+	padding: margins(60px, 12px, 22px, 12px);
+	iconLeft: 18px;
+}
+sereinSettingsButtonDescribed: SettingsButton(sereinSettingsButton) {
+	padding: margins(60px, 12px, 22px, 3px);
+}
+sereinSettingsAttentionButtonDescribed: SettingsButton(sereinSettingsButtonDescribed) {
+	textFg: attentionButtonFg;
+	textFgOver: attentionButtonFgOver;
+}
+sereinSettingsButtonPlainDescribed: SettingsButton(settingsButtonNoIcon) {
+	padding: margins(22px, 10px, 22px, 3px);
+}
+sereinSettingsAbout: FlatLabel(settingsExperimentalAbout) {
+}
+sereinSettingsAboutPadding: margins(60px, 0px, 22px, 11px);
+sereinSettingsAboutPlainPadding: margins(22px, 0px, 22px, 10px);
 
 sereinSnapshotWidth: 640px;
 sereinSnapshotPadding: 16px;

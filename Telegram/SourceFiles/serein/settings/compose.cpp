@@ -7,6 +7,7 @@
 #include "serein/settings/gen/compose_rows.h"
 #include "serein/settings/home.h"
 #include "serein/settings/page.h"
+#include "serein/settings/rows.h"
 #include "lang/lang_keys.h"
 #include "settings/settings_builder.h"
 #include "settings/settings_common_session.h"
@@ -161,10 +162,9 @@ const auto kMeta = BuildHelper({
 	const auto controller = builder.controller();
 	Compose::AddLayout(builder, {
 		.defaultCodeLanguage = [&] {
-			builder.addButton({
+			AddRow(builder, {
 				.id = u"serein/compose/default-code-language"_q,
 				.title = tr::lng_serein_default_code_language(),
-				.st = &st::settingsButtonNoIcon,
 				.label = ForDevice().Value(Compose::kDefaultCodeLanguage)
 					| rpl::map([](const QString &value) {
 						return value.isEmpty()
@@ -173,22 +173,28 @@ const auto kMeta = BuildHelper({
 					}),
 				.onClick = [=] { controller->show(Box(CodeLanguageBox)); },
 				.keywords = { u"code"_q, u"language"_q },
+				.visual = {
+					.icon = &st::menuIconTagRename,
+					.about = tr::lng_serein_default_code_language_about,
+				},
 			});
 		},
 		.quickReplies = [&] {
-			builder.addButton({
+			AddRow(builder, {
 				.id = u"serein/compose/quick-replies"_q,
 				.title = tr::lng_serein_quick_replies(),
-				.st = &st::settingsButtonNoIcon,
 				.onClick = [=] { controller->show(Box(QuickRepliesBox)); },
 				.keywords = { u"quick"_q, u"reply"_q },
+				.visual = {
+					.icon = &st::menuIconReply,
+					.about = tr::lng_serein_quick_replies_about,
+				},
 			});
 		},
 		.textReplacements = [&] {
-			builder.addButton({
+			AddRow(builder, {
 				.id = u"serein/compose/text-replacements"_q,
 				.title = tr::lng_serein_text_replacements(),
-				.st = &st::settingsButtonNoIcon,
 				.label = ForDevice().Value(Compose::kTextReplacements)
 					| rpl::map([](const QByteArray &raw) {
 						const auto rules = Compose::ReadTextReplacements(raw);
@@ -201,13 +207,16 @@ const auto kMeta = BuildHelper({
 					controller->show(Box(TextReplacementsBox));
 				},
 				.keywords = { u"replace"_q, u"shortcut"_q, u"text"_q },
+				.visual = {
+					.icon = &st::menuIconReplace,
+					.about = tr::lng_serein_text_replacements_row_about,
+				},
 			});
 		},
 		.linkInlineBots = [&] {
-			builder.addButton({
+			AddRow(builder, {
 				.id = u"serein/compose/link-inline-bots"_q,
 				.title = tr::lng_serein_link_inline_bots(),
-				.st = &st::settingsButtonNoIcon,
 				.label = ForDevice().Value(Compose::kLinkInlineBots)
 					| rpl::map([](const QByteArray &raw) {
 						const auto rules = Compose::ReadLinkInlineBots(raw);
@@ -220,6 +229,10 @@ const auto kMeta = BuildHelper({
 					controller->show(Box(LinkInlineBotsBox));
 				},
 				.keywords = { u"inline"_q, u"bot"_q, u"link"_q },
+				.visual = {
+					.icon = &st::menuIconStarRefLink,
+					.about = tr::lng_serein_link_inline_bots_row_about,
+				},
 			});
 		},
 	});

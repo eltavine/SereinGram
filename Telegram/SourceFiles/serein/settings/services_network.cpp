@@ -18,6 +18,7 @@
 #include "ui/widgets/labels.h"
 #include "window/window_session_controller.h"
 #include "styles/style_layers.h"
+#include "styles/style_menu_icons.h"
 #include "styles/style_settings.h"
 
 #include <QtCore/QUrl>
@@ -162,10 +163,9 @@ void ProxyNotesBox(not_null<Ui::GenericBox*> box) {
 
 void AddProxySubscriptionRow(::Settings::Builder::SectionBuilder &builder) {
 	const auto controller = builder.controller();
-	builder.addButton({
+	AddRow(builder, {
 		.id = u"serein/services/proxy-subscription"_q,
 		.title = tr::lng_serein_proxy_subscription(),
-		.st = &st::settingsButtonNoIcon,
 		.label = ForDevice().Value(ServiceSettings::kProxySubscription)
 			| rpl::map([](const QString &url) {
 				return url.isEmpty()
@@ -174,44 +174,56 @@ void AddProxySubscriptionRow(::Settings::Builder::SectionBuilder &builder) {
 			}),
 		.onClick = [=] { controller->show(Box(ProxySubscriptionBox)); },
 		.keywords = { u"proxy"_q, u"subscription"_q, u"MTProto"_q },
+		.visual = {
+			.icon = &st::menuIconLink,
+			.about = tr::lng_serein_proxy_subscription_row_about,
+		},
 	});
 	AddNote(builder, tr::lng_serein_proxy_subscription_about);
 }
 
 void AddProxyToolRows(::Settings::Builder::SectionBuilder &builder) {
 	const auto controller = builder.controller();
-	builder.addButton({
+	AddRow(builder, {
 		.id = u"serein/services/proxy-sort"_q,
 		.title = tr::lng_serein_proxy_sort(),
-		.st = &st::settingsButtonNoIcon,
 		.onClick = [=] { Network::SortProxiesByLatency(controller->uiShow()); },
 		.keywords = { u"proxy"_q, u"ping"_q, u"latency"_q },
+		.visual = {
+			.icon = &st::menuIconOrderNumber,
+			.about = tr::lng_serein_proxy_sort_about,
+		},
 	});
-	builder.addButton({
+	AddRow(builder, {
 		.id = u"serein/services/proxy-clean"_q,
 		.title = tr::lng_serein_proxy_clean(),
-		.st = &st::settingsButtonNoIcon,
 		.onClick = [=] {
 			Network::RemoveUnavailableProxies(controller->uiShow());
 		},
 		.keywords = { u"proxy"_q, u"unavailable"_q, u"clean"_q },
+		.visual = {
+			.icon = &st::menuIconClear,
+			.about = tr::lng_serein_proxy_clean_about,
+		},
 	});
-	builder.addButton({
+	AddRow(builder, {
 		.id = u"serein/services/proxy-notes"_q,
 		.title = tr::lng_serein_proxy_notes(),
-		.st = &st::settingsButtonNoIcon,
 		.onClick = [=] { controller->show(Box(ProxyNotesBox)); },
 		.keywords = { u"proxy"_q, u"note"_q, u"remark"_q },
+		.visual = {
+			.icon = &st::menuIconTagEdit,
+			.about = tr::lng_serein_proxy_notes_row_about,
+		},
 	});
 	AddNote(builder, tr::lng_serein_proxy_tools_about);
 }
 
 void AddCustomDohRow(::Settings::Builder::SectionBuilder &builder) {
 	const auto controller = builder.controller();
-	builder.addButton({
+	AddRow(builder, {
 		.id = u"serein/services/custom-doh"_q,
 		.title = tr::lng_serein_custom_doh(),
-		.st = &st::settingsButtonNoIcon,
 		.label = ForDevice().Value(ServiceSettings::kCustomDoh)
 			| rpl::map([](const QString &host) {
 				return host.isEmpty()
@@ -220,18 +232,25 @@ void AddCustomDohRow(::Settings::Builder::SectionBuilder &builder) {
 			}),
 		.onClick = [=] { controller->show(Box(CustomDohBox)); },
 		.keywords = { u"DNS"_q, u"DoH"_q, u"censorship"_q },
+		.visual = {
+			.icon = &st::menuIconLock,
+			.about = tr::lng_serein_custom_doh_row_about,
+		},
 	});
 	AddNote(builder, tr::lng_serein_custom_doh_about);
 }
 
 void AddDatacenterStatusRow(::Settings::Builder::SectionBuilder &builder) {
 	const auto controller = builder.controller();
-	builder.addButton({
+	AddRow(builder, {
 		.id = u"serein/services/dc-status"_q,
 		.title = tr::lng_serein_dc_status(),
-		.st = &st::settingsButtonNoIcon,
 		.onClick = [=] { Network::ShowDatacenterStatus(controller); },
 		.keywords = { u"DC"_q, u"ping"_q, u"datacenter"_q },
+		.visual = {
+			.icon = &st::menuIconStats,
+			.about = tr::lng_serein_dc_status_row_about,
+		},
 	});
 }
 

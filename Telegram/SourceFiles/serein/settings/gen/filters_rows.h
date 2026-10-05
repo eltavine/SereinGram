@@ -6,6 +6,7 @@
 #include "serein/schema/gen/settings/filters.h"
 #include "serein/settings/rows.h"
 #include "styles/style_menu_icons.h"
+#include "styles/style_serein.h"
 
 #include <array>
 
@@ -30,14 +31,16 @@ inline void AddLayout(
 
 inline constexpr auto kSubpageTitle = &tr::lng_serein_rules;
 inline const auto kSubpageIcon = &st::menuIconTagFilter;
+inline const auto kSubpageTile = &st::settingsIconBg2;
 
 inline void AddSubpageButton(
 		::Settings::Builder::SectionBuilder &builder,
 		::Settings::Type section) {
-	builder.addSectionButton({
+	AddPageButton(builder, {
 		.title = (*kSubpageTitle)(),
-		.targetSection = section,
-		.icon = { kSubpageIcon },
+		.section = section,
+		.icon = kSubpageIcon,
+		.tile = kSubpageTile,
 		.keywords = { u"filter"_q, u"link"_q },
 	});
 }

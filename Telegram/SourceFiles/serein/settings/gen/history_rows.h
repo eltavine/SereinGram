@@ -6,6 +6,7 @@
 #include "serein/schema/gen/settings/history.h"
 #include "serein/settings/rows.h"
 #include "styles/style_menu_icons.h"
+#include "styles/style_serein.h"
 
 #include <array>
 
@@ -13,40 +14,58 @@ namespace Serein::HistorySettings {
 
 inline const auto kToggleRows = std::array<ToggleRow, 6>{ {
 	{
-		&kHistorySaveDeleted,
-		tr::lng_serein_history_save_deleted,
-		u"serein/history/history-save-deleted"_q,
-		{ u"deleted"_q, u"anti-recall"_q, u"history"_q },
+		.option = &kHistorySaveDeleted,
+		.title = tr::lng_serein_history_save_deleted,
+		.id = u"serein/history/history-save-deleted"_q,
+		.keywords = { u"deleted"_q, u"anti-recall"_q, u"history"_q },
+		.icon = &st::menuIconDelete,
+		.tile = &st::settingsIconBg3,
+		.about = tr::lng_serein_history_save_deleted_about,
 	},
 	{
-		&kHistorySaveEdits,
-		tr::lng_serein_history_save_edits,
-		u"serein/history/history-save-edits"_q,
-		{ u"edit"_q, u"history"_q },
+		.option = &kHistorySaveEdits,
+		.title = tr::lng_serein_history_save_edits,
+		.id = u"serein/history/history-save-edits"_q,
+		.keywords = { u"edit"_q, u"history"_q },
+		.icon = &st::menuIconEdit,
+		.tile = &st::settingsIconBg3,
+		.about = tr::lng_serein_history_save_edits_about,
 	},
 	{
-		&kHistoryIncludeBots,
-		tr::lng_serein_history_include_bots,
-		u"serein/history/history-include-bots"_q,
-		{ u"bots"_q, u"history"_q },
+		.option = &kHistoryIncludeBots,
+		.title = tr::lng_serein_history_include_bots,
+		.id = u"serein/history/history-include-bots"_q,
+		.keywords = { u"bots"_q, u"history"_q },
+		.icon = &st::menuIconBot,
+		.tile = &st::settingsIconBg3,
+		.about = tr::lng_serein_history_include_bots_about,
 	},
 	{
-		&kHistoryKeepDeletedInPlace,
-		tr::lng_serein_history_keep_deleted_in_place,
-		u"serein/history/history-keep-deleted-in-place"_q,
-		{ u"deleted"_q, u"anti-recall"_q, u"in chat"_q },
+		.option = &kHistoryKeepDeletedInPlace,
+		.title = tr::lng_serein_history_keep_deleted_in_place,
+		.id = u"serein/history/history-keep-deleted-in-place"_q,
+		.keywords = { u"deleted"_q, u"anti-recall"_q, u"in chat"_q },
+		.icon = &st::menuIconShowInChat,
+		.tile = &st::settingsIconBg6,
+		.about = tr::lng_serein_history_keep_deleted_in_place_about,
 	},
 	{
-		&kHistoryKeepExpiredMedia,
-		tr::lng_serein_history_keep_expired_media,
-		u"serein/history/history-keep-expired-media"_q,
-		{ u"self-destruct"_q, u"view once"_q, u"expired"_q, u"media"_q },
+		.option = &kHistoryKeepExpiredMedia,
+		.title = tr::lng_serein_history_keep_expired_media,
+		.id = u"serein/history/history-keep-expired-media"_q,
+		.keywords = { u"self-destruct"_q, u"view once"_q, u"expired"_q, u"media"_q },
+		.icon = &st::menuIconTTL,
+		.tile = &st::settingsIconBg6,
+		.about = tr::lng_serein_history_keep_expired_media_about,
 	},
 	{
-		&kHistoryKeepRemovedChats,
-		tr::lng_serein_history_keep_removed_chats,
-		u"serein/history/history-keep-removed-chats"_q,
-		{ u"banned"_q, u"kicked"_q, u"removed"_q, u"channel"_q, u"group"_q },
+		.option = &kHistoryKeepRemovedChats,
+		.title = tr::lng_serein_history_keep_removed_chats,
+		.id = u"serein/history/history-keep-removed-chats"_q,
+		.keywords = { u"banned"_q, u"kicked"_q, u"removed"_q, u"channel"_q, u"group"_q },
+		.icon = &st::menuIconRemovedUsers,
+		.tile = &st::settingsIconBg6,
+		.about = tr::lng_serein_history_keep_removed_chats_about,
 	},
 } };
 
@@ -87,6 +106,9 @@ inline void AddLayout(
 		.format = [](int value) {
 			return tr::lng_days(tr::now, lt_count, value);
 		},
+		.icon = &st::menuIconHourglass,
+		.tile = &st::settingsIconBg1,
+		.about = tr::lng_serein_history_retention_days_about,
 	});
 	AddNumber(builder, {
 		.option = &kHistoryMaxRecords,
@@ -96,20 +118,25 @@ inline void AddLayout(
 		.minimum = 1,
 		.maximum = 10000000,
 		.zeroLabel = tr::lng_serein_history_unlimited,
+		.icon = &st::menuIconStorage,
+		.tile = &st::settingsIconBg1,
+		.about = tr::lng_serein_history_max_records_about,
 	});
 	EndSection(builder, tr::lng_serein_history_note);
 }
 
 inline constexpr auto kSubpageTitle = &tr::lng_serein_history_page;
 inline const auto kSubpageIcon = &st::menuIconRestore;
+inline const auto kSubpageTile = &st::settingsIconBg3;
 
 inline void AddSubpageButton(
 		::Settings::Builder::SectionBuilder &builder,
 		::Settings::Type section) {
-	builder.addSectionButton({
+	AddPageButton(builder, {
 		.title = (*kSubpageTitle)(),
-		.targetSection = section,
-		.icon = { kSubpageIcon },
+		.section = section,
+		.icon = kSubpageIcon,
+		.tile = kSubpageTile,
 		.keywords = { u"deleted"_q, u"edited"_q, u"anti-recall"_q, u"history"_q },
 	});
 }

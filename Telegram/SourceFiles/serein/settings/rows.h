@@ -10,7 +10,17 @@
 #include <type_traits>
 #include <vector>
 
+namespace Ui {
+class SettingsButton;
+} // namespace Ui
+
 namespace Serein {
+
+struct RowVisual {
+	const style::icon *icon = nullptr;
+	const style::color *tile = nullptr;
+	std::optional<tr::phrase<>> about;
+};
 
 struct ToggleRow {
 	const Option<bool> *option = nullptr;
@@ -18,6 +28,9 @@ struct ToggleRow {
 	QString id;
 	QStringList keywords;
 	const Option<bool> *disabledBy = nullptr;
+	const style::icon *icon = nullptr;
+	const style::color *tile = nullptr;
+	std::optional<tr::phrase<>> about;
 };
 
 struct SectionRow {
@@ -36,6 +49,9 @@ struct NumberRow {
 	tr::phrase<> zeroLabel;
 	Fn<QString(int)> format;
 	std::optional<tr::phrase<>> hint;
+	const style::icon *icon = nullptr;
+	const style::color *tile = nullptr;
+	std::optional<tr::phrase<>> about;
 };
 
 struct ChoiceRow {
@@ -46,6 +62,9 @@ struct ChoiceRow {
 	std::vector<int> values;
 	std::vector<tr::phrase<>> labels;
 	QString suffix;
+	const style::icon *icon = nullptr;
+	const style::color *tile = nullptr;
+	std::optional<tr::phrase<>> about;
 };
 
 struct TextRow {
@@ -55,6 +74,29 @@ struct TextRow {
 	QStringList keywords;
 	tr::phrase<> placeholder;
 	const Option<bool> *hiddenBy = nullptr;
+	const style::icon *icon = nullptr;
+	const style::color *tile = nullptr;
+	std::optional<tr::phrase<>> about;
+};
+
+struct RowArgs {
+	QString id;
+	rpl::producer<QString> title;
+	rpl::producer<QString> label;
+	rpl::producer<bool> toggled;
+	Fn<void()> onClick;
+	QStringList keywords;
+	rpl::producer<bool> shown;
+	RowVisual visual;
+	const style::SettingsButton *st = nullptr;
+};
+
+struct PageButton {
+	rpl::producer<QString> title;
+	::Settings::Type section;
+	const style::icon *icon = nullptr;
+	const style::color *tile = nullptr;
+	QStringList keywords;
 };
 
 class CustomRow final {
@@ -74,6 +116,13 @@ private:
 
 };
 
+// The row is null while the settings search builds its index.
+Ui::SettingsButton *AddRow(
+	::Settings::Builder::SectionBuilder &builder,
+	RowArgs &&args);
+void AddPageButton(
+	::Settings::Builder::SectionBuilder &builder,
+	PageButton &&button);
 void AddToggle(
 	::Settings::Builder::SectionBuilder &builder,
 	const ToggleRow &row);

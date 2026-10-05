@@ -7,6 +7,7 @@
 #include "serein/core/options.h"
 #include "serein/features/ghost/model/exceptions.h"
 #include "serein/schema/gen/settings/ghost.h"
+#include "serein/settings/rows.h"
 #include "settings/settings_builder.h"
 #include "ui/layers/generic_box.h"
 #include "ui/widgets/buttons.h"
@@ -14,6 +15,7 @@
 #include "ui/widgets/labels.h"
 #include "window/window_session_controller.h"
 #include "styles/style_layers.h"
+#include "styles/style_menu_icons.h"
 #include "styles/style_settings.h"
 
 namespace Serein {
@@ -66,10 +68,9 @@ void ReadExceptionsBox(
 void AddReadExceptionsRow(::Settings::Builder::SectionBuilder &builder) {
 	const auto controller = builder.controller();
 	const auto session = builder.session();
-	builder.addButton({
+	AddRow(builder, {
 		.id = u"serein/ghost/read-exceptions"_q,
 		.title = tr::lng_serein_ghost_read_exceptions(),
-		.st = &st::settingsButtonNoIcon,
 		.label = ForAccount(session).Value(
 			Ghost::kReadReceiptExceptions
 		) | rpl::map([](const QString &value) {
@@ -82,6 +83,10 @@ void AddReadExceptionsRow(::Settings::Builder::SectionBuilder &builder) {
 			controller->show(Box(ReadExceptionsBox, session));
 		},
 		.keywords = { u"ghost"_q, u"read"_q, u"exceptions"_q },
+		.visual = {
+			.icon = &st::menuIconChats,
+			.about = tr::lng_serein_ghost_read_exceptions_row_about,
+		},
 	});
 }
 

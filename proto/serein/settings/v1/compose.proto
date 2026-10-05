@@ -31,14 +31,17 @@ message ComposeSettings {
     }
     keywords: ["attach"]
     refresh: REFRESH_COMPOSE_BUTTONS
+    icon: "menuIconFile"
   }];
   optional bool hide_emoji_button = 2 [(serein.options.v1.field) = {
     keywords: ["emoji"]
     refresh: REFRESH_COMPOSE_BUTTONS
+    icon: "menuIconEmoji"
   }];
   optional bool hide_recording_button = 3 [(serein.options.v1.field) = {
     keywords: ["recording"]
     refresh: REFRESH_COMPOSE_BUTTONS
+    icon: "menuIconStartStreamWith"
   }];
   optional bool hide_bot_command_button = 4 [(serein.options.v1.field) = {
     keywords: [
@@ -46,6 +49,7 @@ message ComposeSettings {
       "command"
     ]
     refresh: REFRESH_COMPOSE_BUTTONS
+    icon: "menuIconBotCommands"
   }];
   optional bool hide_bot_menu = 5 [(serein.options.v1.field) = {
     keywords: [
@@ -53,6 +57,7 @@ message ComposeSettings {
       "menu"
     ]
     refresh: REFRESH_COMPOSE_BUTTONS
+    icon: "menuIconBot"
   }];
   optional bool hide_auto_delete_button = 6 [(serein.options.v1.field) = {
     keywords: [
@@ -60,22 +65,27 @@ message ComposeSettings {
       "timer"
     ]
     refresh: REFRESH_COMPOSE_BUTTONS
+    icon: "menuIconTTL"
   }];
   optional bool hide_gift_button = 7 [(serein.options.v1.field) = {
     keywords: ["gift"]
     refresh: REFRESH_COMPOSE_BUTTONS
+    icon: "menuIconGiftPremium"
   }];
   optional bool hide_ai_button = 8 [(serein.options.v1.field) = {
     keywords: ["AI"]
     refresh: REFRESH_COMPOSE_BUTTONS
+    icon: "menuIconEmojiObjects"
   }];
   optional bool hide_send_as_button = 9 [(serein.options.v1.field) = {
     keywords: ["send as"]
     refresh: REFRESH_COMPOSE_BUTTONS
+    icon: "menuIconProfile"
   }];
   optional bool hide_stars_reaction_button = 10 [(serein.options.v1.field) = {
     keywords: ["Stars"]
     refresh: REFRESH_COMPOSE_BUTTONS
+    icon: "menuIconStar"
   }];
   optional bool hide_channel_mute_button = 11 [(serein.options.v1.field) = {
     keywords: [
@@ -83,6 +93,7 @@ message ComposeSettings {
       "mute"
     ]
     refresh: REFRESH_COMPOSE_BUTTONS
+    icon: "menuIconMute"
   }];
   optional bool disable_emoji_hover = 12 [(serein.options.v1.field) = {
     section: {
@@ -97,12 +108,14 @@ message ComposeSettings {
       "emoji",
       "hover"
     ]
+    icon: "menuIconStickerAdd"
   }];
   optional bool disable_attach_hover = 13 [(serein.options.v1.field) = {
     keywords: [
       "attachment",
       "hover"
     ]
+    icon: "menuIconPhoto"
   }];
   optional bool bot_commands_to_draft = 14 [(serein.options.v1.field) = {
     keywords: [
@@ -110,12 +123,14 @@ message ComposeSettings {
       "command",
       "draft"
     ]
+    icon: "menuIconShortcut"
   }];
   optional bool mention_menu = 29 [(serein.options.v1.field) = {
     keywords: [
       "mention",
       "format"
     ]
+    icon: "menuIconUsername"
   }];
   optional int32 input_placeholder_mode = 15 [
     (serein.options.v1.field) = {
@@ -131,6 +146,7 @@ message ComposeSettings {
           "lng_serein_placeholder_sender"
         ]
       }
+      icon: "menuIconAsMessages"
     },
     (buf.validate.field).int32 = {
       gte: 0
@@ -147,6 +163,7 @@ message ComposeSettings {
       ]
     }
     keywords: ["Markdown"]
+    icon: "menuIconArticle"
   }];
   optional bool format_toolbar = 31 [(serein.options.v1.field) = {
     keywords: [
@@ -155,6 +172,7 @@ message ComposeSettings {
       "bold",
       "selection"
     ]
+    icon: "menuIconFont"
   }];
   optional string default_code_language = 20 [(buf.validate.field).string = {
     max_len: 32
@@ -165,12 +183,14 @@ message ComposeSettings {
       "spacing",
       "send"
     ]
+    icon: "menuIconSend"
   }];
   optional bool space_on_edit = 19 [(serein.options.v1.field) = {
     keywords: [
       "spacing",
       "edit"
     ]
+    icon: "menuIconSigned"
   }];
   optional bool draft_translation = 32 [(serein.options.v1.field) = {
     section: {
@@ -187,6 +207,7 @@ message ComposeSettings {
       "draft",
       "message field"
     ]
+    icon: "menuIconTranslate"
   }];
   optional bytes quick_replies = 21 [(serein.options.v1.field) = {
     validator: "ValidQuickReplies"
@@ -211,6 +232,7 @@ message ComposeSettings {
       "link",
       "preview"
     ]
+    icon: "menuIconLink"
   }];
   optional bool caption_above_media = 35 [(serein.options.v1.field) = {
     keywords: [
@@ -220,6 +242,7 @@ message ComposeSettings {
       "photo",
       "video"
     ]
+    icon: "menuIconAbove"
   }];
   optional bool send_silently = 28 [(serein.options.v1.field) = {
     keywords: [
@@ -227,6 +250,7 @@ message ComposeSettings {
       "notification",
       "send"
     ]
+    icon: "menuIconSilent"
   }];
   optional bool owner_send_as = 37 [(serein.options.v1.field) = {
     keywords: [
@@ -236,6 +260,7 @@ message ComposeSettings {
     ]
     note: "lng_serein_owner_send_as_note"
     refresh: [REFRESH_COMPOSE_BUTTONS]
+    icon: "menuIconStealth"
   }];
   optional bool confirm_sticker = 22 [(serein.options.v1.field) = {
     section: {
@@ -250,30 +275,35 @@ message ComposeSettings {
       "sticker",
       "confirm"
     ]
+    icon: "menuIconStickers"
   }];
   optional bool confirm_gif = 23 [(serein.options.v1.field) = {
     keywords: [
       "GIF",
       "confirm"
     ]
+    icon: "menuIconGif"
   }];
   optional bool preview_voice = 24 [(serein.options.v1.field) = {
     keywords: [
       "voice",
       "listen"
     ]
+    icon: "menuIconVideoChat"
   }];
   optional bool preview_round_video = 25 [(serein.options.v1.field) = {
     keywords: [
       "video",
       "preview"
     ]
+    icon: "menuIconStartStream"
   }];
   optional bool confirm_private_call = 26 [(serein.options.v1.field) = {
     keywords: [
       "call",
       "confirm"
     ]
+    icon: "menuIconPhone"
   }];
   optional bool forward_before_comment = 27 [(serein.options.v1.field) = {
     section: {
@@ -286,6 +316,7 @@ message ComposeSettings {
       "comment",
       "order"
     ]
+    icon: "menuIconReorder"
   }];
   optional bool remember_forward_options = 33 [(serein.options.v1.field) = {
     keywords: [
@@ -296,6 +327,7 @@ message ComposeSettings {
       "remember"
     ]
     note: "lng_serein_remember_forward_options_note"
+    icon: "menuIconForward"
   }];
   optional int32 last_forward_options = 34 [
     (serein.options.v1.field) = {
