@@ -46,6 +46,16 @@ namespace Serein::Hooks::Interface {
 [[nodiscard]] rpl::producer<bool> MoreAccountsValue();
 [[nodiscard]] bool CheckUpdates();
 [[nodiscard]] rpl::producer<bool> CheckUpdatesValue();
+[[nodiscard]] bool OnlineStatusInChats();
+[[nodiscard]] rpl::producer<bool> OnlineStatusInChatsValue();
+[[nodiscard]] bool OnlineStatusInHeader();
+[[nodiscard]] rpl::producer<bool> OnlineStatusInHeaderValue();
+[[nodiscard]] bool OnlineStatusOnSenders();
+[[nodiscard]] rpl::producer<bool> OnlineStatusOnSendersValue();
+[[nodiscard]] bool OnlineStatusSelf();
+[[nodiscard]] rpl::producer<bool> OnlineStatusSelfValue();
+[[nodiscard]] bool OnlineStatusDetailed();
+[[nodiscard]] rpl::producer<bool> OnlineStatusDetailedValue();
 [[nodiscard]] bool PresetsOffered();
 [[nodiscard]] rpl::producer<bool> PresetsOfferedValue();
 

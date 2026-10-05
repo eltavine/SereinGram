@@ -10,6 +10,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "serein/hooks/messages/double_click.h"
 #include "serein/hooks/media/force_preview.h"
 #include "serein/hooks/gen/privacy.h"
+#include "serein/hooks/online.h"
 
 #include "history/view/history_view_about_view.h"
 #include "base/unixtime.h"
@@ -2432,7 +2433,7 @@ QString ListWidget::tooltipText() const {
 		if (count.count && count.shortened) {
 			return Lang::FormatCountDecimal(count.count);
 		}
-		if (const auto text = link->tooltip(); !text.isEmpty()) {
+		if (const auto text = Serein::Hooks::Online::LinkTooltip(&session(), link); !text.isEmpty()) {
 			return text;
 		}
 	}
@@ -3277,6 +3278,7 @@ void ListWidget::paintUserpics(
 					view->width(),
 					st::msgPhotoSize,
 					context.paused);
+				Serein::Hooks::Online::PaintSender(p, from, userpicTop, view->width());
 			} else if (const auto info = item->displayHiddenSenderInfo()) {
 				if (info->customUserpic.empty()) {
 					info->emptyUserpic.paintCircle(

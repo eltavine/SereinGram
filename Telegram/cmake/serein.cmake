@@ -34,6 +34,7 @@ set(serein_sources
     serein/features/history/media_store.cpp
     serein/features/history/model/recorder.cpp
     serein/features/history/model/window.cpp
+    serein/features/online/model/presence.cpp
     serein/features/updates/model/manifest.cpp
     serein/features/updates/model/version.cpp
     serein/features/regdate/model/estimate.cpp
@@ -74,6 +75,9 @@ set(serein_sources
     serein/features/history/viewer/section.cpp
     serein/features/history/viewer/source.cpp
     serein/features/history/viewer/top_bar.cpp
+    serein/features/online/hooks.cpp
+    serein/features/online/status.cpp
+    serein/app/online_menu.cpp
     serein/app/tray_menu.cpp
     serein/features/updates/checker.cpp
     serein/features/updates/install_target.cpp

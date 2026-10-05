@@ -12,6 +12,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "serein/hooks/gen/privacy.h"
 #include "serein/hooks/menu/actions.h"
 #include "serein/hooks/menu/selection.h"
+#include "serein/hooks/online.h"
 
 #include "api/api_polls.h"
 #include "chat_helpers/stickers_emoji_pack.h"
@@ -1743,6 +1744,7 @@ void HistoryInner::paintEvent(QPaintEvent *e) {
 					width(),
 					st::msgPhotoSize,
 					context.paused);
+				Serein::Hooks::Online::PaintSender(p, from, userpicTop, width());
 			} else if (const auto info = item->displayHiddenSenderInfo()) {
 				if (info->customUserpic.empty()) {
 					info->emptyUserpic.paintCircle(
@@ -6454,7 +6456,7 @@ QString HistoryInner::tooltipText() const {
 		if (count.count && count.shortened) {
 			return Lang::FormatCountDecimal(count.count);
 		}
-		if (const auto text = lnk->tooltip(); !text.isEmpty()) {
+		if (const auto text = Serein::Hooks::Online::LinkTooltip(&session(), lnk); !text.isEmpty()) {
 			return text;
 		}
 	}

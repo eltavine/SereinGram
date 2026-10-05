@@ -188,7 +188,25 @@ TEST_CASE("Options") {
 		Flag::RefreshDialogList), "stories use widget refresh");
 	auto interface = Registry();
 	Interface::RegisterOptions(interface);
-	Require(interface.All().size() == 21, "interface option count");
+	Require(interface.All().size() == 26, "interface option count");
+	for (const auto option : {
+			&Interface::kOnlineStatusInChats,
+			&Interface::kOnlineStatusInHeader,
+			&Interface::kOnlineStatusOnSenders,
+			&Interface::kOnlineStatusSelf,
+			&Interface::kOnlineStatusDetailed }) {
+		Require(!option->fallback && option->scope == Scope::Device,
+			"online status options must be device opt-ins");
+	}
+	Require(interface.HasFlag(Interface::kOnlineStatusInChats.key,
+			Flag::RefreshDialogList)
+		&& interface.HasFlag(Interface::kOnlineStatusOnSenders.key,
+			Flag::RefreshMessageView)
+		&& interface.HasFlag(Interface::kOnlineStatusDetailed.key,
+			Flag::RefreshDialogList)
+		&& interface.HasFlag(Interface::kOnlineStatusDetailed.key,
+			Flag::RefreshMessageView),
+		"online status refresh flags");
 	Require(interface.HasFlag(Interface::kQuietHours.key, Flag::Exportable)
 		&& Interface::kQuietHours.fallback.isEmpty(),
 		"quiet hours must start off and travel with exported settings");

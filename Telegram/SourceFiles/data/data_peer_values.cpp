@@ -7,6 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "data/data_peer_values.h"
 
+#include "serein/hooks/online.h"
 #include "lang/lang_keys.h"
 #include "data/data_channel.h"
 #include "data/data_chat.h"
@@ -501,12 +502,14 @@ QString OnlineText(not_null<UserData*> user, TimeId now) {
 	if (const auto special = OnlineTextSpecial(user)) {
 		return *special;
 	}
-	return OnlineText(user->lastseen(), now);
+	return Serein::Hooks::Online::StatusText(user->lastseen(), now).value_or(OnlineText(user->lastseen(), now));
 }
 
 QString OnlineTextFull(not_null<UserData*> user, TimeId now) {
 	if (const auto special = OnlineTextSpecial(user)) {
 		return *special;
+	} else if (const auto custom = Serein::Hooks::Online::StatusText(user->lastseen(), now)) {
+		return *custom;
 	} else if (const auto common = OnlineTextCommon(user->lastseen(), now)) {
 		return *common;
 	}

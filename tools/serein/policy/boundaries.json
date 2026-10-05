@@ -143,6 +143,24 @@
       "app": true,
       "libraries": true
     },
+    "serein/features/online/": {
+      "own": [
+        "serein/features/online/",
+        "serein/core/",
+        "serein/schema/",
+        "serein/ports/",
+        "serein/hooks/"
+      ],
+      "app": true,
+      "libraries": true
+    },
+    "serein/features/online/model/": {
+      "own": [
+        "serein/features/online/model/"
+      ],
+      "app": false,
+      "libraries": true
+    },
     "serein/display/": {
       "own": [
         "serein/display/",

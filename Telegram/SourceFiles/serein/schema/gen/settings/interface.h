@@ -170,6 +170,41 @@ inline constexpr auto kCheckUpdates = Option<bool>{
 	Category::Interface,
 	"lng_serein_check_updates",
 	0 };
+inline constexpr auto kOnlineStatusInChats = Option<bool>{
+	"serein.onlineStatusInChats",
+	Scope::Device,
+	false,
+	Category::Interface,
+	"lng_serein_online_status_in_chats",
+	static_cast<unsigned>(Flag::RefreshDialogList) };
+inline constexpr auto kOnlineStatusInHeader = Option<bool>{
+	"serein.onlineStatusInHeader",
+	Scope::Device,
+	false,
+	Category::Interface,
+	"lng_serein_online_status_in_header",
+	0 };
+inline constexpr auto kOnlineStatusOnSenders = Option<bool>{
+	"serein.onlineStatusOnSenders",
+	Scope::Device,
+	false,
+	Category::Interface,
+	"lng_serein_online_status_on_senders",
+	static_cast<unsigned>(Flag::RefreshMessageView) };
+inline constexpr auto kOnlineStatusSelf = Option<bool>{
+	"serein.onlineStatusSelf",
+	Scope::Device,
+	false,
+	Category::Interface,
+	"lng_serein_online_status_self",
+	0 };
+inline constexpr auto kOnlineStatusDetailed = Option<bool>{
+	"serein.onlineStatusDetailed",
+	Scope::Device,
+	false,
+	Category::Interface,
+	"lng_serein_online_status_detailed",
+	static_cast<unsigned>(Flag::RefreshDialogList) | static_cast<unsigned>(Flag::RefreshMessageView) };
 inline constexpr auto kPresetsOffered = Option<bool>{
 	"serein.presetsOffered",
 	Scope::Device,
@@ -199,6 +234,11 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kHalfwidthUiPunctuation));
 	Expects(registry.Add(kMoreAccounts));
 	Expects(registry.Add(kCheckUpdates));
+	Expects(registry.Add(kOnlineStatusInChats));
+	Expects(registry.Add(kOnlineStatusInHeader));
+	Expects(registry.Add(kOnlineStatusOnSenders));
+	Expects(registry.Add(kOnlineStatusSelf));
+	Expects(registry.Add(kOnlineStatusDetailed));
 	Expects(registry.Add(kPresetsOffered));
 }
 

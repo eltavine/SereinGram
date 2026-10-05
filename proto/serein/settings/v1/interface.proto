@@ -250,5 +250,64 @@ message InterfaceSettings {
     default_bool: true
     custom_ui: true
   }];
+  optional bool online_status_in_chats = 22 [(serein.options.v1.field) = {
+    section: {
+      title: "lng_serein_section_online_status"
+      id: "online"
+      keywords: [
+        "online",
+        "last seen",
+        "presence"
+      ]
+    }
+    keywords: [
+      "online",
+      "last seen",
+      "chat list"
+    ]
+    refresh: REFRESH_DIALOG_LIST
+    icon: "menuIconChats"
+  }];
+  optional bool online_status_in_header = 23 [(serein.options.v1.field) = {
+    keywords: [
+      "online",
+      "last seen",
+      "profile",
+      "seconds"
+    ]
+    icon: "menuIconProfile"
+  }];
+  optional bool online_status_on_senders = 24 [(serein.options.v1.field) = {
+    keywords: [
+      "online",
+      "avatar",
+      "group",
+      "sender"
+    ]
+    refresh: REFRESH_MESSAGE_VIEW
+    icon: "menuIconGroups"
+  }];
+  optional bool online_status_self = 25 [(serein.options.v1.field) = {
+    keywords: [
+      "online",
+      "invisible",
+      "ghost",
+      "my status"
+    ]
+    icon: "menuIconStealth"
+  }];
+  optional bool online_status_detailed = 26 [(serein.options.v1.field) = {
+    keywords: [
+      "online",
+      "last seen",
+      "detailed",
+      "exact time"
+    ]
+    refresh: [
+      REFRESH_DIALOG_LIST,
+      REFRESH_MESSAGE_VIEW
+    ]
+    icon: "menuIconWhenOnline"
+  }];
   optional bool presets_offered = 20 [(serein.options.v1.field) = {hidden: true}];
 }

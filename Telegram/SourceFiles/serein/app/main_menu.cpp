@@ -1,5 +1,6 @@
 #include "serein/hooks/interface/main_menu.h"
 
+#include "serein/app/online_menu.h"
 #include "serein/chats/recent_tracking.h"
 #include "serein/features/stories/composer.h"
 #include "serein/hooks/ghost.h"
@@ -18,6 +19,7 @@ namespace Serein::Hooks {
 void FillMainMenu(
 		gsl::not_null<Window::SessionController*> controller,
 		const MainMenuAction &addAction) {
+	App::AddOwnOnlineStatus(controller, addAction);
 	if (ForDevice().Get(Serein::Media::kStoryPosting)) {
 		addAction(
 			tr::lng_serein_story_new(),

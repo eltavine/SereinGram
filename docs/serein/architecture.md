@@ -29,7 +29,7 @@ Telegram/SourceFiles/serein/
   hooks/          上游唯一允许包含的 serein 头文件与生成的分发代码；默认返回上游行为
   display/        各领域共用的展示工具（视图刷新、ID 格式化）
   <领域>/         admin、chats、compose、filters、interface、links、media、menu、messages、network、privacy、services、snapshot
-  features/<名>/  ghost、history、instant_view、updates、stickers、regdate、stories：model/ 为不依赖上游的纯逻辑与状态机，其余是该功能的界面、菜单项与挂钩实现
+  features/<名>/  ghost、history、instant_view、online、updates、stickers、regdate、stories：model/ 为不依赖上游的纯逻辑与状态机，其余是该功能的界面、菜单项与挂钩实现
   settings/       设置界面外壳：schema 生成的设置行（settings/gen）加各页面的自定义行
   app/            组合根：选项实例、模块表、菜单贡献者的注册顺序、需要创建适配器或跨领域组装的挂钩
   tests/          单元测试、假实现、界面场景
@@ -100,8 +100,9 @@ namespace Serein::Hooks {
 | HIST 编辑 | `history/history_item.cpp` 的 `applyEdition` | `OnBeforeEdition` |
 | HIST 原始 TL | `history/history.cpp` 的 `History::createItem`、`data/data_session.cpp` 的 `updateEditedMessage` | `OnMessageReceived`、`OnMessageEdited` |
 | HIST 标记 | `history/view/history_view_bottom_info.{h,cpp}` 的 `Data::sereinMarks` 与时间文字绘制 | `Messages::MarksPalette` |
+| 在线状态 | `dialogs/ui/dialogs_layout.cpp`、`data/data_peer_values.cpp`、`history/history_inner_widget.cpp`、`history/view/history_view_list_widget.cpp` | `Online::RowPrefix`、`StatusText`、`PaintSender`、`LinkTooltip` |
 
-已接入：在线状态（`api/api_updates.cpp`）与输入状态（`api/api_send_progress.cpp`，群通话的“正在说话”不受影响），各为一行条件；服务器删除（`data/data_session.cpp` 两处）与编辑前快照（`history/history_item.cpp`），实现位于 `serein/features/history/recording.cpp`；组合根 `serein/app/history_storage.cpp` 只把 Qt SQL 与 AES-GCM 适配器登记为历史存储，构建中没有 Qt SQL 时登记空实现，历史功能随之保持关闭。历史功能另在收到消息与编辑完成处各用一行挂钩按会话缓存原始 TL（`features/history/wire_cache.cpp`），还原时复用上游 `AdminLog::PrepareLogMessage`（为此移到头文件声明）与 `History::createItem`，“已删除消息”与“编辑历史”是基于上游 `HistoryView::ListWidget` 的聊天分区（`features/history/viewer/`）；已删除、已编辑标记经 `BottomInfo::Data::sereinMarks` 进入时间文字，绘制期间由 `Serein::Messages::MarksPalette` 换成红色调色板。已读类请求被拦截时，上游本地状态仍需按“已读”推进，否则未读计数与重试逻辑会卡住；这一点在 GHOST 模块的实现与测试中单独验证。
+已接入：在线状态（`api/api_updates.cpp`）与输入状态（`api/api_send_progress.cpp`，群通话的“正在说话”不受影响），各为一行条件；服务器删除（`data/data_session.cpp` 两处）与编辑前快照（`history/history_item.cpp`），实现位于 `serein/features/history/recording.cpp`；组合根 `serein/app/history_storage.cpp` 只把 Qt SQL 与 AES-GCM 适配器登记为历史存储，构建中没有 Qt SQL 时登记空实现，历史功能随之保持关闭。历史功能另在收到消息与编辑完成处各用一行挂钩按会话缓存原始 TL（`features/history/wire_cache.cpp`），还原时复用上游 `AdminLog::PrepareLogMessage`（为此移到头文件声明）与 `History::createItem`，“已删除消息”与“编辑历史”是基于上游 `HistoryView::ListWidget` 的聊天分区（`features/history/viewer/`）；已删除、已编辑标记经 `BottomInfo::Data::sereinMarks` 进入时间文字，绘制期间由 `Serein::Messages::MarksPalette` 换成红色调色板。在线状态的挂钩实现在 `features/online/hooks.cpp`，格式化规则是纯模型 `features/online/model/presence.cpp`；主菜单中自己的状态要读取幽灵模式的策略，因此放在组合根 `app/online_menu.cpp`。已读类请求被拦截时，上游本地状态仍需按“已读”推进，否则未读计数与重试逻辑会卡住；这一点在 GHOST 模块的实现与测试中单独验证。
 
 门面的三种来源：设置选项的取值与订阅函数由 proto 生成到 `serein/hooks/gen/<页>.h`；面向上游的薄接口头文件位于 `serein/hooks/<领域>/`，只允许前置声明与库头文件，可脱离应用代码单独通过语法检查（参数或返回值是上游嵌套类型时，门面声明为函数模板，由实现文件对该类型显式实例化，例如 `ApplyInfoOptions(Data &, ...)` 与 `TranscriptionOverride<Entry>(item)`；只需填充上游私有结构而不读取其他成员时，模板直接写在门面头文件里，由上游传入自身类型，例如 `ModerateDefaults<ModerateMessagesBoxOptions>()` 与 `PrependCustomDoh(attempts, Type::Mozilla)`）；其余一次性挂钩（幽灵、历史、定时发送）位于 `serein/hooks/*.h`，实现放在对应的功能目录，例如 `features/ghost/hooks.cpp` 与 `features/history/recording.cpp`；只供 Serein 内部使用的函数不放进门面。应用启动只有一个挂钩 `Serein::Hooks::OnApplicationStarted()`：组合根的模块表 `serein/app/modules.cpp` 为每个模块登记“应用启动”“会话启动”和“窗口启动”回调（窗口启动由 `SessionController` 构造函数中的 `Serein::Hooks::OnWindowStarted` 分发），会话跟踪统一订阅各账号的 `sessionValue()`，功能模块不再各自挂接上游。消息菜单的定制按菜单项文字识别上游动作，文字在每次打开菜单时按当前语言计算；只有文字与其他菜单项重复或由自绘控件显示的项（保存图片、带自动删除倒计时的删除、表情包按钮）在上游保留显式标签。
 

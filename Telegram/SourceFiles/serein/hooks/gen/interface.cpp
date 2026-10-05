@@ -166,6 +166,46 @@ rpl::producer<bool> CheckUpdatesValue() {
 	return ForDevice().Value(Serein::Interface::kCheckUpdates);
 }
 
+bool OnlineStatusInChats() {
+	return ForDevice().Get(Serein::Interface::kOnlineStatusInChats);
+}
+
+rpl::producer<bool> OnlineStatusInChatsValue() {
+	return ForDevice().Value(Serein::Interface::kOnlineStatusInChats);
+}
+
+bool OnlineStatusInHeader() {
+	return ForDevice().Get(Serein::Interface::kOnlineStatusInHeader);
+}
+
+rpl::producer<bool> OnlineStatusInHeaderValue() {
+	return ForDevice().Value(Serein::Interface::kOnlineStatusInHeader);
+}
+
+bool OnlineStatusOnSenders() {
+	return ForDevice().Get(Serein::Interface::kOnlineStatusOnSenders);
+}
+
+rpl::producer<bool> OnlineStatusOnSendersValue() {
+	return ForDevice().Value(Serein::Interface::kOnlineStatusOnSenders);
+}
+
+bool OnlineStatusSelf() {
+	return ForDevice().Get(Serein::Interface::kOnlineStatusSelf);
+}
+
+rpl::producer<bool> OnlineStatusSelfValue() {
+	return ForDevice().Value(Serein::Interface::kOnlineStatusSelf);
+}
+
+bool OnlineStatusDetailed() {
+	return ForDevice().Get(Serein::Interface::kOnlineStatusDetailed);
+}
+
+rpl::producer<bool> OnlineStatusDetailedValue() {
+	return ForDevice().Value(Serein::Interface::kOnlineStatusDetailed);
+}
+
 bool PresetsOffered() {
 	return ForDevice().Get(Serein::Interface::kPresetsOffered);
 }

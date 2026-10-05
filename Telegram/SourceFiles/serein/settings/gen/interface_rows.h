@@ -12,7 +12,7 @@
 
 namespace Serein::Interface {
 
-inline const auto kToggleRows = std::array<ToggleRow, 10>{ {
+inline const auto kToggleRows = std::array<ToggleRow, 15>{ {
 	{
 		.option = &kWideChannelPosts,
 		.title = tr::lng_serein_wide_channel_posts,
@@ -103,6 +103,51 @@ inline const auto kToggleRows = std::array<ToggleRow, 10>{ {
 		.tile = &st::settingsIconBg2,
 		.about = tr::lng_serein_more_accounts_about,
 	},
+	{
+		.option = &kOnlineStatusInChats,
+		.title = tr::lng_serein_online_status_in_chats,
+		.id = u"serein/interface/online-status-in-chats"_q,
+		.keywords = { u"online"_q, u"last seen"_q, u"chat list"_q },
+		.icon = &st::menuIconChats,
+		.tile = &st::settingsIconBg5,
+		.about = tr::lng_serein_online_status_in_chats_about,
+	},
+	{
+		.option = &kOnlineStatusInHeader,
+		.title = tr::lng_serein_online_status_in_header,
+		.id = u"serein/interface/online-status-in-header"_q,
+		.keywords = { u"online"_q, u"last seen"_q, u"profile"_q, u"seconds"_q },
+		.icon = &st::menuIconProfile,
+		.tile = &st::settingsIconBg5,
+		.about = tr::lng_serein_online_status_in_header_about,
+	},
+	{
+		.option = &kOnlineStatusOnSenders,
+		.title = tr::lng_serein_online_status_on_senders,
+		.id = u"serein/interface/online-status-on-senders"_q,
+		.keywords = { u"online"_q, u"avatar"_q, u"group"_q, u"sender"_q },
+		.icon = &st::menuIconGroups,
+		.tile = &st::settingsIconBg5,
+		.about = tr::lng_serein_online_status_on_senders_about,
+	},
+	{
+		.option = &kOnlineStatusSelf,
+		.title = tr::lng_serein_online_status_self,
+		.id = u"serein/interface/online-status-self"_q,
+		.keywords = { u"online"_q, u"invisible"_q, u"ghost"_q, u"my status"_q },
+		.icon = &st::menuIconStealth,
+		.tile = &st::settingsIconBg5,
+		.about = tr::lng_serein_online_status_self_about,
+	},
+	{
+		.option = &kOnlineStatusDetailed,
+		.title = tr::lng_serein_online_status_detailed,
+		.id = u"serein/interface/online-status-detailed"_q,
+		.keywords = { u"online"_q, u"last seen"_q, u"detailed"_q, u"exact time"_q },
+		.icon = &st::menuIconWhenOnline,
+		.tile = &st::settingsIconBg5,
+		.about = tr::lng_serein_online_status_detailed_about,
+	},
 } };
 
 struct CustomRows {
@@ -186,6 +231,17 @@ inline void AddLayout(
 	AddToggle(builder, kToggleRows[9]);
 	AddNote(builder, tr::lng_serein_more_accounts_note);
 	custom.checkUpdates();
+	EndSection(builder);
+	AddSection(builder, {
+		u"serein/interface/online"_q,
+		tr::lng_serein_section_online_status,
+		{ u"online"_q, u"last seen"_q, u"presence"_q },
+	});
+	AddToggle(builder, kToggleRows[10]);
+	AddToggle(builder, kToggleRows[11]);
+	AddToggle(builder, kToggleRows[12]);
+	AddToggle(builder, kToggleRows[13]);
+	AddToggle(builder, kToggleRows[14]);
 	EndSection(builder);
 }
 
