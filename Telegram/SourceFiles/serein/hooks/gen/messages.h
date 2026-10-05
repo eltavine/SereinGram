@@ -30,6 +30,8 @@ namespace Serein::Hooks::Messages {
 [[nodiscard]] rpl::producer<QString> DeletedMarkValue();
 [[nodiscard]] bool FadeDeletedMessages();
 [[nodiscard]] rpl::producer<bool> FadeDeletedMessagesValue();
+[[nodiscard]] bool HighlightHistoryMarks();
+[[nodiscard]] rpl::producer<bool> HighlightHistoryMarksValue();
 [[nodiscard]] bool ShowChannelBadge();
 [[nodiscard]] rpl::producer<bool> ShowChannelBadgeValue();
 [[nodiscard]] bool HideReactions();

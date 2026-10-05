@@ -27,4 +27,9 @@ void InsertHistoryExclusionAction(
 	HistoryItem *item,
 	Window::SessionController *controller);
 
+void InsertRestoredMediaAction(
+	Ui::PopupMenu *menu,
+	HistoryItem *item,
+	Window::SessionController *controller);
+
 } // namespace Serein::HistoryFeature

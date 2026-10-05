@@ -33,6 +33,7 @@ QJsonObject Parse(const QByteArray &raw) {
 Visibility DefaultVisibility(ActionId id) {
 	if (id == ActionId::EditHistory
 		|| id == ActionId::DeletedMessages
+		|| id == ActionId::RestoredMedia
 		|| id == ActionId::ReadUntilHere
 		|| id == ActionId::HistoryExclusion
 		|| id == ActionId::QuickRatingFirst

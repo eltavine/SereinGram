@@ -897,8 +897,6 @@
 "lng_serein_history_note" = "此账号收到的已删除和已编辑消息只以加密形式保存在本机。";
 "lng_serein_menu_edit_history" = "编辑历史";
 "lng_serein_menu_deleted_messages" = "已删除的消息";
-"lng_serein_history_empty" = "此对话没有保存的已删除消息。";
-"lng_serein_history_show_chat" = "以聊天形式查看";
 "lng_serein_history_open_file" = "打开文件";
 "lng_serein_history_open_media" = "打开媒体";
 "lng_serein_history_media_missing" = "这份媒体已不存在。";
@@ -933,3 +931,7 @@
 "lng_serein_sticker_set_author_copied" = "作者资料尚未加载，已复制作者 ID。";
 "lng_serein_sticker_set_author_searching" = "正在查找作者…";
 "lng_serein_sticker_set_author_not_found" = "未能找到作者，已复制作者 ID。";
+"lng_serein_history_deleted_count" = "已删除的消息：{amount}";
+"lng_serein_history_open_chat" = "打开对话";
+"lng_serein_menu_restored_media" = "打开保存的媒体";
+"lng_serein_highlight_history_marks" = "醒目显示已删除和已编辑标记";

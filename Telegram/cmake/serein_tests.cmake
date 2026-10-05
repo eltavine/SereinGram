@@ -66,6 +66,7 @@ set(serein_test_sources
     serein/display/text_entities.cpp
     serein/features/history/media_store.cpp
     serein/features/history/model/recorder.cpp
+    serein/features/history/model/window.cpp
     serein/features/updates/model/manifest.cpp
     serein/features/updates/model/version.cpp
     serein/features/regdate/model/estimate.cpp
@@ -117,4 +118,5 @@ set(serein_sql_test_sources
     serein/tests/test_history_store.cpp
     serein/tests/test_history_recorder.cpp
     serein/tests/test_history_media.cpp
+    serein/tests/test_history_window.cpp
 )

@@ -18,10 +18,11 @@
 
 #include <crl/crl_async.h>
 
+#include <set>
+#include <utility>
+
 namespace Serein::HistoryFeature {
 namespace {
-
-constexpr auto kRemovedChatLimit = 500;
 
 class Batch final {
 public:
@@ -43,13 +44,13 @@ private:
 
 };
 
-void RecordDeleted(
+bool RecordDeleted(
 		gsl::not_null<Main::Session*> session,
 		const Policy &policy,
 		gsl::not_null<HistoryItem*> item) {
 	const auto backend = BackendFor(session, true);
 	if (!backend) {
-		return;
+		return false;
 	}
 	auto snapshot = TakeSnapshot(item);
 	auto media = snapshot.localPath.isEmpty()
@@ -58,8 +59,10 @@ void RecordDeleted(
 	if (media) {
 		snapshot.cachedMediaName = media->name;
 	}
-	if (!backend->recorder->recordDeleted(policy, snapshot) || !media) {
-		return;
+	if (!backend->recorder->recordDeleted(policy, snapshot)) {
+		return false;
+	} else if (!media) {
+		return true;
 	}
 	const auto path = CachedMediaPath(
 		backend->mediaDirectory,
@@ -73,6 +76,7 @@ void RecordDeleted(
 			LOG(("Serein History: could not cache deleted media in %1.").arg(path));
 		}
 	});
+	return true;
 }
 
 } // namespace
@@ -90,18 +94,21 @@ void WatchRemovedChats(gsl::not_null<Main::Session*> session) {
 		if (!policy.saveDeleted || !policy.keepRemovedChats || !history) {
 			return;
 		}
-		auto left = kRemovedChatLimit;
-		for (auto i = history->blocks.rbegin(); i != history->blocks.rend(); ++i) {
-			const auto &messages = (*i)->messages;
-			for (auto j = messages.rbegin(); j != messages.rend(); ++j) {
-				const auto item = (*j)->data();
-				if (!left) {
-					return;
-				} else if (item->isRegular() && !item->isService()) {
-					RecordDeleted(session, policy, item);
-					--left;
+		const auto backend = BackendFor(session, true);
+		auto recorded = false;
+		{
+			const auto batch = Batch(backend ? backend->store.get() : nullptr);
+			for (const auto &block : history->blocks) {
+				for (const auto &view : block->messages) {
+					const auto item = view->data();
+					if (item->isRegular() && !item->isService()) {
+						recorded |= RecordDeleted(session, policy, item);
+					}
 				}
 			}
+		}
+		if (recorded) {
+			NotifyRecordsChanged(session, qint64(channel->id.value));
 		}
 	}, session->lifetime());
 }
@@ -114,6 +121,7 @@ std::vector<gsl::not_null<HistoryItem*>> OnServerDeleted(
 		std::vector<gsl::not_null<HistoryItem*>> items) {
 	auto batch = std::optional<HistoryFeature::Batch>();
 	auto batchSession = (Main::Session*)nullptr;
+	auto changed = std::set<std::pair<Main::Session*, qint64>>();
 	for (const auto &item : items) {
 		const auto session = &item->history()->session();
 		const auto policy = HistoryFeature::Read(ForAccount(session));
@@ -124,10 +132,17 @@ std::vector<gsl::not_null<HistoryItem*>> OnServerDeleted(
 				const auto backend = HistoryFeature::BackendFor(session, true);
 				batch.emplace(backend ? backend->store.get() : nullptr);
 			}
-			HistoryFeature::RecordDeleted(session, policy, item);
+			if (HistoryFeature::RecordDeleted(session, policy, item)) {
+				changed.emplace(
+					session,
+					qint64(item->history()->peer->id.value));
+			}
 		}
 	}
 	batch.reset();
+	for (const auto &[session, peerId] : changed) {
+		HistoryFeature::NotifyRecordsChanged(session, peerId);
+	}
 	return HistoryFeature::KeepDeletedInPlace(std::move(items));
 }
 
@@ -139,9 +154,14 @@ void OnBeforeEdition(
 	if (!policy.saveEdits || item->originalText() == updated) {
 		return;
 	} else if (const auto backend = HistoryFeature::BackendFor(session, true)) {
-		backend->recorder->recordEdit(
+		const auto recorded = backend->recorder->recordEdit(
 			policy,
 			HistoryFeature::TakeSnapshot(item));
+		if (recorded) {
+			HistoryFeature::NotifyRecordsChanged(
+				session,
+				qint64(item->history()->peer->id.value));
+		}
 	}
 }
 

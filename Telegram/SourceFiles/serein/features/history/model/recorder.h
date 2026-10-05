@@ -21,6 +21,8 @@ struct Snapshot {
 	QString mediaSummary;
 	QString localPath;
 	QString cachedMediaName;
+	QByteArray tlMessage;
+	int apiLayer = 0;
 };
 
 struct Policy {
@@ -36,6 +38,11 @@ struct Policy {
 [[nodiscard]] Policy Read(Options &account);
 [[nodiscard]] bool Excluded(Options &account, qint64 peerId);
 [[nodiscard]] bool SetExcluded(Options &account, qint64 peerId, bool excluded);
+[[nodiscard]] History::Record RecordFromSnapshot(
+	History::RecordKind kind,
+	const Snapshot &snapshot,
+	int revision,
+	qint64 recordedAt);
 
 class Recorder final {
 public:

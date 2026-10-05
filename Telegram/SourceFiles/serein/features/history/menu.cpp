@@ -1,68 +1,69 @@
 #include "serein/features/history/menu.h"
 
 #include "serein/features/history/backend.h"
+#include "serein/features/history/capture.h"
+#include "serein/features/history/copies.h"
 #include "serein/features/history/model/recorder.h"
 #include "serein/features/history/viewer.h"
 #include "serein/hooks/menu/actions.h"
-#include "serein/ports/history_store.h"
-#include "base/unixtime.h"
+#include "core/file_utilities.h"
 #include "data/data_peer.h"
 #include "data/data_session.h"
 #include "history/history.h"
 #include "history/history_item.h"
 #include "lang/lang_keys.h"
 #include "main/main_session.h"
-#include "ui/layers/generic_box.h"
-#include "ui/widgets/labels.h"
 #include "ui/widgets/menu/menu_action.h"
 #include "ui/widgets/menu/menu.h"
 #include "ui/widgets/popup_menu.h"
 #include "window/window_session_controller.h"
-#include "styles/style_boxes.h"
-#include "styles/style_layers.h"
 #include "styles/style_menu_icons.h"
+
+#include <QtCore/QDir>
+#include <QtCore/QFile>
+#include <QtCore/QFileInfo>
 
 namespace Serein::HistoryFeature {
 namespace {
 
-[[nodiscard]] std::vector<History::Record> EditVersions(
-		not_null<HistoryItem*> item) {
-	const auto store = StoreFor(&item->history()->session());
-	if (!store) {
-		return {};
-	}
-	auto result = store->versions(
-		qint64(item->history()->peer->id.value),
-		item->id.bare);
-	std::erase_if(result, [](const History::Record &record) {
-		return record.kind != History::RecordKind::Edited;
-	});
-	return result;
+void InsertAction(
+		Ui::PopupMenu *menu,
+		const QString &text,
+		Fn<void()> callback,
+		const style::icon *icon,
+		Menu::ActionId id) {
+	const auto action = Ui::Menu::CreateAction(menu, text, std::move(callback));
+	auto widget = base::make_unique_q<Ui::Menu::Action>(
+		menu->menu(),
+		menu->menu()->st(),
+		action,
+		icon,
+		icon);
+	Menu::Tag(
+		menu->insertAction(Menu::DeleteActionIndex(menu), std::move(widget)),
+		id);
 }
 
-void ShowRecords(
-		not_null<Window::SessionController*> controller,
-		const QString &title,
-		const QString &text) {
-	controller->show(Box([=](not_null<Ui::GenericBox*> box) {
-		box->setTitle(rpl::single(title));
-		const auto label = box->addRow(object_ptr<Ui::FlatLabel>(
-			box, text, st::boxLabel));
-		label->setSelectable(true);
-		box->addButton(tr::lng_close(), [=] { box->closeBox(); });
-	}));
-}
-
-[[nodiscard]] QString Describe(const std::vector<History::Record> &versions) {
-	auto blocks = QStringList();
-	for (const auto &version : versions) {
-		const auto when = base::unixtime::parse(TimeId(version.recordedAt));
-		const auto body = version.text.isEmpty()
-			? version.mediaSummary
-			: version.text;
-		blocks.push_back(langDateTimeFull(when) + u"\n"_q + body);
+[[nodiscard]] bool OpenCachedMedia(
+		gsl::not_null<Main::Session*> session,
+		const History::Record &record) {
+	const auto name = SafeFileName(record.cachedMediaName);
+	if (name.isEmpty()) {
+		return false;
 	}
-	return blocks.join(u"\n\n"_q);
+	const auto bytes = CachedMediaBytes(session, record);
+	const auto folder = QDir::temp().filePath(u"SereinGram"_q);
+	const auto path = QDir(folder).filePath(name);
+	auto file = QFile(path);
+	if (!bytes
+		|| !QDir().mkpath(folder)
+		|| !file.open(QIODevice::WriteOnly)
+		|| file.write(*bytes) != bytes->size()) {
+		return false;
+	}
+	file.close();
+	File::Launch(path);
+	return true;
 }
 
 } // namespace
@@ -71,27 +72,27 @@ void InsertEditHistoryAction(
 		Ui::PopupMenu *menu,
 		HistoryItem *item,
 		Window::SessionController *controller) {
-	if (!menu || !item || !controller || EditVersions(item).empty()) {
+	if (!menu || !item || !controller) {
 		return;
 	}
-	const auto itemId = item->fullId();
-	const auto action = Ui::Menu::CreateAction(menu,
+	const auto copy = FindCopy(item);
+	if (copy && copy->version) {
+		return;
+	} else if (!copy && !IsServerMsgId(item->id)) {
+		return;
+	}
+	const auto peer = item->history()->peer;
+	const auto messageId = copy ? copy->record.messageId : item->id.bare;
+	if (!HasEditHistory(&controller->session(), peer, messageId)) {
+		return;
+	}
+	InsertAction(
+		menu,
 		tr::lng_serein_menu_edit_history(tr::now),
 		crl::guard(controller, [=] {
-			const auto current = controller->session().data().message(itemId);
-			if (!current) {
-				return;
-			}
-			ShowRecords(
-				controller,
-				tr::lng_serein_menu_edit_history(tr::now),
-				Describe(EditVersions(current)));
-		}));
-	auto widget = base::make_unique_q<Ui::Menu::Action>(
-		menu->menu(), menu->menu()->st(), action,
-		&st::menuIconInfo, &st::menuIconInfo);
-	Menu::Tag(
-		menu->insertAction(Menu::DeleteActionIndex(menu), std::move(widget)),
+			ShowEditHistory(controller, peer, messageId);
+		}),
+		&st::menuIconEdit,
 		Menu::ActionId::EditHistory);
 }
 
@@ -99,23 +100,20 @@ void InsertDeletedMessagesAction(
 		Ui::PopupMenu *menu,
 		HistoryItem *item,
 		Window::SessionController *controller) {
-	if (!menu || !item || !controller) {
+	if (!menu || !item || !controller || FindCopy(item)) {
 		return;
 	}
 	const auto peer = item->history()->peer;
-	if (!HistoryFeature::HasDeletedMessages(&controller->session(), peer)) {
+	if (!HasDeletedMessages(&controller->session(), peer)) {
 		return;
 	}
-	const auto action = Ui::Menu::CreateAction(menu,
+	InsertAction(
+		menu,
 		tr::lng_serein_menu_deleted_messages(tr::now),
 		crl::guard(controller, [=] {
-			HistoryFeature::ShowDeletedMessages(controller, peer);
-		}));
-	auto widget = base::make_unique_q<Ui::Menu::Action>(
-		menu->menu(), menu->menu()->st(), action,
-		&st::menuIconInfo, &st::menuIconInfo);
-	Menu::Tag(
-		menu->insertAction(Menu::DeleteActionIndex(menu), std::move(widget)),
+			ShowDeletedMessages(controller, peer);
+		}),
+		&st::menuIconRestore,
 		Menu::ActionId::DeletedMessages);
 }
 
@@ -123,7 +121,7 @@ void InsertHistoryExclusionAction(
 		Ui::PopupMenu *menu,
 		HistoryItem *item,
 		Window::SessionController *controller) {
-	if (!menu || !item || !controller) {
+	if (!menu || !item || !controller || FindCopy(item)) {
 		return;
 	}
 	const auto session = &controller->session();
@@ -133,7 +131,8 @@ void InsertHistoryExclusionAction(
 	}
 	const auto peerId = qint64(item->history()->peer->id.value);
 	const auto excluded = policy.excludedPeers.contains(peerId);
-	const auto action = Ui::Menu::CreateAction(menu,
+	InsertAction(
+		menu,
 		(excluded
 			? tr::lng_serein_menu_history_include
 			: tr::lng_serein_menu_history_exclude)(tr::now),
@@ -142,13 +141,42 @@ void InsertHistoryExclusionAction(
 				ForAccount(session),
 				peerId,
 				!excluded));
-		}));
-	auto widget = base::make_unique_q<Ui::Menu::Action>(
-		menu->menu(), menu->menu()->st(), action,
-		&st::menuIconArchive, &st::menuIconArchive);
-	Menu::Tag(
-		menu->insertAction(Menu::DeleteActionIndex(menu), std::move(widget)),
+		}),
+		&st::menuIconArchive,
 		Menu::ActionId::HistoryExclusion);
+}
+
+void InsertRestoredMediaAction(
+		Ui::PopupMenu *menu,
+		HistoryItem *item,
+		Window::SessionController *controller) {
+	const auto copy = (menu && item && controller) ? FindCopy(item) : nullptr;
+	if (!copy) {
+		return;
+	}
+	const auto record = copy->record;
+	const auto path = record.localPath;
+	if (!path.isEmpty() && QFileInfo::exists(path)) {
+		InsertAction(
+			menu,
+			tr::lng_serein_history_open_file(tr::now),
+			[=] { File::Launch(path); },
+			&st::menuIconShowInFolder,
+			Menu::ActionId::RestoredMedia);
+	} else if (!record.cachedMediaName.isEmpty()) {
+		const auto session = &controller->session();
+		InsertAction(
+			menu,
+			tr::lng_serein_history_open_media(tr::now),
+			crl::guard(controller, [=] {
+				if (!OpenCachedMedia(session, record)) {
+					controller->showToast(
+						tr::lng_serein_history_media_missing(tr::now));
+				}
+			}),
+			&st::menuIconPhoto,
+			Menu::ActionId::RestoredMedia);
+	}
 }
 
 } // namespace Serein::HistoryFeature

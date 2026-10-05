@@ -583,6 +583,7 @@ not_null<HistoryItem*> History::createItem(
 		bool detachExistingItem,
 		bool newMessage) {
 	owner().fillMessagePeers(peer->id, message);
+	Serein::Hooks::OnMessageReceived(this, id.bare, message);
 	if (const auto result = owner().message(peer, id)) {
 		if (detachExistingItem) {
 			result->removeMainView(Data::ViewRemovalReason::Detached);

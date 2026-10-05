@@ -78,6 +78,32 @@ TEST_CASE("HistoryRecorder") {
 	Require(files.size() == 1 && files[0].localPath == withFile.localPath,
 		"deleted message file path not saved");
 
+	auto wire = Message(43);
+	wire.text.clear();
+	wire.tlMessage = QByteArray("\x01\x02\x03\x04", 4);
+	wire.apiLayer = 214;
+	Require(recorder.recordDeleted(policy, wire),
+		"a message with only its wire form is saved");
+	const auto wired = store->deleted({
+		.peerId = 555,
+		.minMessageId = 43,
+		.maxMessageId = 43,
+	});
+	Require(wired.size() == 1
+		&& wired[0].tlMessage == wire.tlMessage
+		&& wired[0].apiLayer == 214,
+		"the wire form and its layer are kept");
+	auto plain = Message(44);
+	plain.apiLayer = 214;
+	Require(recorder.recordDeleted(policy, plain), "plain message saved");
+	const auto plainSaved = store->deleted({
+		.peerId = 555,
+		.minMessageId = 44,
+		.maxMessageId = 44,
+	});
+	Require(plainSaved.size() == 1 && plainSaved[0].apiLayer == 0,
+		"no layer is stored without a wire form");
+
 	Require(recorder.recordEdit(policy, Message(3)), "first edit is saved");
 	now += 10;
 	Require(recorder.recordEdit(policy, Message(3)), "second edit is saved");

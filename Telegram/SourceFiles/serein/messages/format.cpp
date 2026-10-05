@@ -4,19 +4,46 @@
 #include "serein/features/history/deleted_marks.h"
 #include "serein/messages/options.h"
 #include "serein/hooks/messages/time_format.h"
+#include "serein/schema/gen/settings/history.h"
+#include "history/history.h"
 #include "history/history_item.h"
 #include "history/history_item_components.h"
 #include "history/view/history_view_bottom_info.h"
 #include "history/view/history_view_element.h"
+#include "main/main_session.h"
+#include "ui/painter.h"
 #include "ui/text/format_values.h"
+#include "ui/text/text_utilities.h"
 #include "lang/lang_keys.h"
 #include "base/unixtime.h"
+#include "styles/style_serein.h"
 
 #include <QtCore/QLocale>
 
 #include <cstdlib>
 
 namespace Serein::Messages {
+namespace {
+
+[[nodiscard]] QString DeletedMark() {
+	const auto custom = ForDevice().Get(kDeletedMark);
+	return custom.isEmpty() ? tr::lng_serein_deleted_mark(tr::now) : custom;
+}
+
+[[nodiscard]] TextWithEntities HighlightedMark(
+		const style::IconEmoji &icon,
+		const QString &text) {
+	return Ui::Text::Colorized(
+		Ui::Text::IconEmoji(&icon).append(text)
+	).append(QChar(' '));
+}
+
+[[nodiscard]] bool RecordsEdits(not_null<HistoryItem*> item) {
+	return ForAccount(&item->history()->session()).Get(
+		HistorySettings::kHistorySaveEdits);
+}
+
+} // namespace
 
 QString FormatTime(QTime time) {
 	return FormatTime(time, ForDevice().Get(kSecondsInMessages));
@@ -77,6 +104,7 @@ QString FormatCounter(int count) {
 
 template <typename Data>
 void ApplyInfoOptions(Data &data, not_null<HistoryItem*> item) {
+	using Flag = HistoryView::BottomInfo::Data::Flag;
 	auto &options = ForDevice();
 	if (options.Get(kHideMessageViews)) {
 		data.views.reset();
@@ -84,18 +112,30 @@ void ApplyInfoOptions(Data &data, not_null<HistoryItem*> item) {
 	if (options.Get(kHideChannelSignature)) {
 		data.author.clear();
 	}
-	if (options.Get(kHideEditedBadge)) {
-		using Flag = HistoryView::BottomInfo::Data::Flag;
+	const auto hideEdited = options.Get(kHideEditedBadge);
+	if (hideEdited) {
 		data.flags &= ~(Flag::Edited | Flag::EditedPrimary);
 	}
-	if (HistoryFeature::DeletedInPlace(item)) {
-		const auto custom = ForDevice().Get(kDeletedMark);
-		const auto mark = custom.isEmpty()
-			? tr::lng_serein_deleted_mark(tr::now)
-			: custom;
+	const auto marks = HistoryFeature::MarksFor(item);
+	const auto highlight = options.Get(kHighlightHistoryMarks);
+	if (marks.deleted && highlight) {
+		data.sereinMarks.append(
+			HighlightedMark(st::sereinHistoryDeletedMark, DeletedMark()));
+	} else if (marks.deleted) {
+		const auto mark = DeletedMark();
 		data.author = data.author.isEmpty()
 			? mark
 			: (mark + u" \u00B7 "_q + data.author);
+	}
+	const auto edited = (data.flags & (Flag::Edited | Flag::EditedPrimary))
+		&& RecordsEdits(item);
+	if (highlight && !hideEdited && (marks.edited || edited)) {
+		if (data.flags & Flag::EditedPrimary) {
+			data.date = data.editedDate;
+		}
+		data.flags &= ~(Flag::Edited | Flag::EditedPrimary);
+		data.sereinMarks.append(
+			HighlightedMark(st::sereinHistoryEditedMark, EditedMark()));
 	}
 }
 
@@ -132,6 +172,20 @@ TextWithEntities ServiceText(
 	auto result = text;
 	result.text += u" · "_q + FormatTime(view->dateTime().time());
 	return result;
+}
+
+MarksPalette::MarksPalette(Painter &p, bool active)
+: _p(p)
+, _previous(active ? &p.textPalette() : nullptr) {
+	if (active) {
+		p.setTextPalette(st::sereinHistoryMarkPalette);
+	}
+}
+
+MarksPalette::~MarksPalette() {
+	if (_previous) {
+		_p.setTextPalette(*_previous);
+	}
 }
 
 QString WithMessageId(QString text, not_null<HistoryItem*> item) {

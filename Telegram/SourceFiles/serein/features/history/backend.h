@@ -6,6 +6,7 @@
 #include <QtCore/QByteArray>
 #include <QtCore/QString>
 #include <gsl/pointers>
+#include <rpl/producer.h>
 
 #include <memory>
 #include <optional>
@@ -46,6 +47,13 @@ struct Backend {
 
 void PruneHistory(gsl::not_null<Main::Session*> session);
 [[nodiscard]] bool ClearHistory(
+	gsl::not_null<Main::Session*> session,
+	qint64 peerId);
+
+// Fires the peer id whose records changed, zero when every chat changed.
+[[nodiscard]] rpl::producer<qint64> RecordsChanged(
+	gsl::not_null<Main::Session*> session);
+void NotifyRecordsChanged(
 	gsl::not_null<Main::Session*> session,
 	qint64 peerId);
 [[nodiscard]] std::optional<QByteArray> CachedMediaBytes(

@@ -140,6 +140,17 @@ message MessagesSettings {
     ]
     refresh: REFRESH_MESSAGE_VIEW
   }];
+  optional bool highlight_history_marks = 37 [(serein.options.v1.field) = {
+    default_bool: true
+    keywords: [
+      "deleted",
+      "edited",
+      "red",
+      "icon",
+      "anti-recall"
+    ]
+    refresh: REFRESH_MESSAGE_VIEW
+  }];
   optional bool show_channel_badge = 29 [(serein.options.v1.field) = {
     keywords: [
       "channel",

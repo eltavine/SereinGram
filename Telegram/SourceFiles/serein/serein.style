@@ -9,7 +9,18 @@ sereinSnapshotAvatarSize: 32px;
 sereinSnapshotPreviewHeight: 200px;
 sereinSnapshotPreviewMinimum: 80px;
 
-sereinHistoryPreviewSize: size(240px, 180px);
+sereinHistoryMarkPalette: TextPalette(defaultTextPalette) {
+	linkFg: attentionButtonFg;
+	selectLinkFg: attentionButtonFg;
+}
+sereinHistoryDeletedMark: IconEmoji {
+	icon: icon{{ "menu/delete-12x12", attentionButtonFg }};
+	padding: margins(0px, 3px, 2px, 0px);
+}
+sereinHistoryEditedMark: IconEmoji {
+	icon: icon{{ "menu/edit-12x12", attentionButtonFg }};
+	padding: margins(0px, 3px, 2px, 0px);
+}
 
 sereinStoryPreviewSize: size(135px, 240px);
 sereinMediaMenuIconEdit: icon {{ "menu/edit", mediaviewMenuFg }};

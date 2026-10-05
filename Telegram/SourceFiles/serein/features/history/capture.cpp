@@ -1,6 +1,8 @@
 #include "serein/features/history/capture.h"
 
 #include "serein/features/history/entities.h"
+#include "serein/features/history/wire.h"
+#include "serein/features/history/wire_cache.h"
 #include "data/data_document.h"
 #include "data/data_document_media.h"
 #include "data/data_media_types.h"
@@ -56,6 +58,8 @@ Snapshot TakeSnapshot(gsl::not_null<HistoryItem*> item) {
 			result.localPath = document->filepath(true);
 		}
 	}
+	result.tlMessage = CapturedWire(item);
+	result.apiLayer = WireLayer();
 	return result;
 }
 

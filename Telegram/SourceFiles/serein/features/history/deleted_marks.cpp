@@ -1,5 +1,6 @@
 #include "serein/features/history/deleted_marks.h"
 
+#include "serein/features/history/copies.h"
 #include "data/data_session.h"
 #include "history/history.h"
 #include "history/history_item.h"
@@ -47,6 +48,13 @@ bool DeletedInPlace(gsl::not_null<const HistoryItem*> item) {
 	const auto &marks = Marks();
 	const auto i = marks.find(&item->history()->session());
 	return (i != marks.end()) && i->second.contains(item->fullId());
+}
+
+HistoryMarks MarksFor(gsl::not_null<const HistoryItem*> item) {
+	if (const auto copy = FindCopy(item)) {
+		return { .deleted = copy->deleted, .edited = copy->edited };
+	}
+	return { .deleted = DeletedInPlace(item) };
 }
 
 } // namespace Serein::HistoryFeature

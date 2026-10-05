@@ -284,6 +284,7 @@ void BottomInfo::paint(
 
 	const auto authorEditedWidth = _authorEditedDate.maxWidth();
 	right -= authorEditedWidth;
+	const auto marks = Serein::Messages::MarksPalette(p, !_data.sereinMarks.empty());
 	_authorEditedDate.drawLeft(
 		p,
 		right,
@@ -517,7 +518,7 @@ void BottomInfo::layoutDateText() {
 		: (name + afterAuthor);
 	auto helper = Ui::Text::CustomEmojiHelper(
 		Core::TextContext({ .session = &_reactionsOwner->session() }));
-	auto marked = TextWithEntities();
+	auto marked = _data.sereinMarks;
 	if (const auto count = _data.stars) {
 		marked.append(
 			Ui::Text::IconEmoji(&st::starIconEmojiSmall)

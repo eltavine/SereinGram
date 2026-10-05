@@ -3085,6 +3085,7 @@ void Session::updateEditedMessage(const MTPMessage &data) {
 	}, [&](const auto &data) {
 		existing->applyEdition(HistoryMessageEdition(_session, data));
 	});
+	Serein::Hooks::OnMessageEdited(existing, data);
 }
 
 void Session::processMessages(

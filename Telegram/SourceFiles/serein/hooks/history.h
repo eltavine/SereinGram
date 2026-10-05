@@ -17,6 +17,15 @@ namespace Serein::Hooks {
 void OnBeforeEdition(
 	gsl::not_null<HistoryItem*> item,
 	const TextWithEntities &updated);
+template <typename Message>
+void OnMessageReceived(
+	gsl::not_null<::History*> history,
+	qint64 id,
+	const Message &message);
+template <typename Message>
+void OnMessageEdited(
+	gsl::not_null<HistoryItem*> item,
+	const Message &message);
 [[nodiscard]] std::vector<gsl::not_null<HistoryItem*>> OnExpiredMessages(
 	std::vector<gsl::not_null<HistoryItem*>> items);
 [[nodiscard]] bool KeepExpiredMedia(gsl::not_null<const HistoryItem*> item);

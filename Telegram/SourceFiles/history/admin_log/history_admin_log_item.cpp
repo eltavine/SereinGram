@@ -122,6 +122,8 @@ std::optional<MTPMessageReplyHeader> PrepareLogReply(
 	});
 }
 
+} // namespace
+
 MTPMessage PrepareLogMessage(const MTPMessage &message, TimeId newDate) {
 	return message.match([&](const MTPDmessageEmpty &data) {
 		return MTP_messageEmpty(
@@ -210,6 +212,8 @@ MTPMessage PrepareLogMessage(const MTPMessage &message, TimeId newDate) {
 			data.vrich_message() ? *data.vrich_message() : MTPRichMessage());
 	});
 }
+
+namespace {
 
 bool MediaCanHaveCaption(const MTPMessage &message) {
 	if (message.type() != mtpc_message) {

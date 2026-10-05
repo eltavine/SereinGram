@@ -63,6 +63,7 @@ void RegisterMessageMenu() {
 	AddItemAction(Filters::InsertAuthorAction);
 	AddItemAction(HistoryFeature::InsertEditHistoryAction);
 	AddItemAction(HistoryFeature::InsertDeletedMessagesAction);
+	AddItemAction(HistoryFeature::InsertRestoredMediaAction);
 	AddItemAction(Ghost::InsertReadUntilHereAction);
 	AddItemAction(HistoryFeature::InsertHistoryExclusionAction);
 	AddItemAction(Menu::InsertButtonDataAction);

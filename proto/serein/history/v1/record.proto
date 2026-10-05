@@ -39,7 +39,7 @@ message Record {
   int64 from_peer_id = 8;
   string text = 9;
   repeated TextEntity entities = 10 [(buf.validate.field).repeated.max_items = 10000];
-  // Upstream MTP layer of tl_message; rendering falls back to text when it differs.
+  // Upstream MTP layer of tl_message, kept for diagnostics; unparsable TL falls back to text.
   int32 api_layer = 11 [(buf.validate.field).int32.gte = 0];
   bytes tl_message = 12;
   string media_summary = 13;

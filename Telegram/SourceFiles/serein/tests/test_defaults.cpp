@@ -32,11 +32,13 @@ const auto kInertDefaults = std::map<std::string_view, std::string_view>{
 	{ "serein.checkUpdates", "replaces the updater that builds disable" },
 	{ "serein.stickerScale", "100 percent is the upstream size" },
 	{ "serein.fadeDeletedMessages", "needs history recording, off by default" },
+	{ "serein.highlightHistoryMarks", "needs history recording, off by default" },
 };
 
 const auto kGatedMenuActions = std::map<Serein::Menu::ActionId, std::string_view>{
 	{ Serein::Menu::ActionId::EditHistory, "needs history recording, off by default" },
 	{ Serein::Menu::ActionId::DeletedMessages, "needs history recording, off by default" },
+	{ Serein::Menu::ActionId::RestoredMedia, "only in the history viewer, which needs recording" },
 	{ Serein::Menu::ActionId::HistoryExclusion, "needs history recording, off by default" },
 	{ Serein::Menu::ActionId::ReadUntilHere, "needs ghost read receipts, off by default" },
 	{ Serein::Menu::ActionId::QuickRatingFirst, "needs a quick rating, unset by default" },

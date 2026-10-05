@@ -7,11 +7,16 @@
 #include <gsl/pointers>
 
 class HistoryItem;
+class Painter;
 struct TextWithEntities;
 
 namespace HistoryView {
 class Element;
 } // namespace HistoryView
+
+namespace style {
+struct TextPalette;
+} // namespace style
 
 namespace Serein::Messages {
 
@@ -30,5 +35,18 @@ void ApplyForwardedDate(Data &data, gsl::not_null<HistoryItem*> item);
 [[nodiscard]] QString WithMessageId(
 	QString text,
 	gsl::not_null<HistoryItem*> item);
+
+class MarksPalette final {
+public:
+	MarksPalette(Painter &p, bool active);
+	MarksPalette(const MarksPalette &) = delete;
+	MarksPalette &operator=(const MarksPalette &) = delete;
+	~MarksPalette();
+
+private:
+	Painter &_p;
+	const style::TextPalette *_previous = nullptr;
+
+};
 
 } // namespace Serein::Messages

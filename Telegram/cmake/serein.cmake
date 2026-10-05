@@ -33,6 +33,7 @@ set(serein_sources
     serein/features/history/deleted_marks.cpp
     serein/features/history/media_store.cpp
     serein/features/history/model/recorder.cpp
+    serein/features/history/model/window.cpp
     serein/features/updates/model/manifest.cpp
     serein/features/updates/model/version.cpp
     serein/features/regdate/model/estimate.cpp
@@ -52,6 +53,8 @@ set(serein_sources
     serein/features/history/backend.cpp
     serein/features/history/capture.cpp
     serein/features/history/recording.cpp
+    serein/features/history/wire.cpp
+    serein/features/history/wire_cache.cpp
     serein/app/lifecycle.cpp
     serein/app/main_menu.cpp
     serein/app/message_menu.cpp
@@ -63,9 +66,14 @@ set(serein_sources
     serein/app/shortcuts.cpp
     serein/app/sticker_set_menu.cpp
     serein/app/user_lookup.cpp
-    serein/features/history/bubbles.cpp
+    serein/features/history/copies.cpp
     serein/features/history/restored_message.cpp
     serein/features/history/viewer.cpp
+    serein/features/history/viewer/items.cpp
+    serein/features/history/viewer/saved_chats.cpp
+    serein/features/history/viewer/section.cpp
+    serein/features/history/viewer/source.cpp
+    serein/features/history/viewer/top_bar.cpp
     serein/app/tray_menu.cpp
     serein/features/updates/checker.cpp
     serein/features/updates/install_target.cpp

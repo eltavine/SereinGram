@@ -6,6 +6,7 @@
 #include "serein/chats/recent_tracking.h"
 #include "serein/features/history/backend.h"
 #include "serein/features/history/recording.h"
+#include "serein/features/history/wire_cache.h"
 #include "serein/features/updates/checker.h"
 #include "serein/privacy/auto_demo.h"
 #include "serein/filters/subscription.h"
@@ -35,6 +36,7 @@ constexpr auto kModules = std::array{
 	Module{ "interface.app_icon", Interface::StartAppIcon },
 	Module{ "history.storage", RegisterHistoryStorage },
 	Module{ "history.retention", nullptr, HistoryFeature::PruneHistory },
+	Module{ "history.wire", nullptr, HistoryFeature::StartWireCapture },
 	Module{
 		"history.removed_chats",
 		nullptr,

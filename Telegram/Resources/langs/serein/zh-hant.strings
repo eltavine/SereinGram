@@ -897,8 +897,6 @@
 "lng_serein_history_note" = "此帳號收到的已刪除和已編輯訊息只以加密形式儲存在本機。";
 "lng_serein_menu_edit_history" = "編輯歷史";
 "lng_serein_menu_deleted_messages" = "已刪除的訊息";
-"lng_serein_history_empty" = "此對話沒有儲存的已刪除訊息。";
-"lng_serein_history_show_chat" = "以聊天形式檢視";
 "lng_serein_history_open_file" = "開啟檔案";
 "lng_serein_history_open_media" = "開啟媒體";
 "lng_serein_history_media_missing" = "這份媒體已不存在。";
@@ -933,3 +931,7 @@
 "lng_serein_sticker_set_author_copied" = "作者資料尚未載入，已複製作者 ID。";
 "lng_serein_sticker_set_author_searching" = "正在尋找作者…";
 "lng_serein_sticker_set_author_not_found" = "未能找到作者，已複製作者 ID。";
+"lng_serein_history_deleted_count" = "已刪除的訊息：{amount}";
+"lng_serein_history_open_chat" = "開啟對話";
+"lng_serein_menu_restored_media" = "開啟儲存的媒體";
+"lng_serein_highlight_history_marks" = "醒目顯示已刪除和已編輯標記";

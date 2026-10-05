@@ -11,7 +11,7 @@
 
 namespace Serein::Messages {
 
-inline const auto kToggleRows = std::array<ToggleRow, 33>{ {
+inline const auto kToggleRows = std::array<ToggleRow, 34>{ {
 	{
 		&kSecondsInMessages,
 		tr::lng_serein_seconds_in_messages,
@@ -71,6 +71,12 @@ inline const auto kToggleRows = std::array<ToggleRow, 33>{ {
 		tr::lng_serein_fade_deleted_messages,
 		u"serein/messages/fade-deleted-messages"_q,
 		{ u"deleted"_q, u"transparent"_q, u"anti-recall"_q },
+	},
+	{
+		&kHighlightHistoryMarks,
+		tr::lng_serein_highlight_history_marks,
+		u"serein/messages/highlight-history-marks"_q,
+		{ u"deleted"_q, u"edited"_q, u"red"_q, u"icon"_q, u"anti-recall"_q },
 	},
 	{
 		&kShowChannelBadge,
@@ -259,47 +265,48 @@ inline void AddLayout(
 	});
 	AddToggle(builder, kToggleRows[9]);
 	AddToggle(builder, kToggleRows[10]);
+	AddToggle(builder, kToggleRows[11]);
 	EndSection(builder);
 	AddSection(builder, {
 		u"serein/messages/reactions"_q,
 		tr::lng_serein_reactions,
 		{ u"reactions"_q },
 	});
-	AddToggle(builder, kToggleRows[11]);
 	AddToggle(builder, kToggleRows[12]);
 	AddToggle(builder, kToggleRows[13]);
 	AddToggle(builder, kToggleRows[14]);
 	AddToggle(builder, kToggleRows[15]);
 	AddToggle(builder, kToggleRows[16]);
+	AddToggle(builder, kToggleRows[17]);
 	EndSection(builder);
 	AddSection(builder, {
 		u"serein/messages/effects"_q,
 		tr::lng_serein_effects,
 		{ u"effects"_q, u"animation"_q },
 	});
-	AddToggle(builder, kToggleRows[17]);
 	AddToggle(builder, kToggleRows[18]);
 	AddToggle(builder, kToggleRows[19]);
+	AddToggle(builder, kToggleRows[20]);
 	EndSection(builder);
 	AddSection(builder, {
 		u"serein/messages/content"_q,
 		tr::lng_serein_content_display,
 		{ u"content"_q, u"display"_q },
 	});
-	AddToggle(builder, kToggleRows[20]);
-	AddNote(builder, tr::lng_serein_reveal_spoilers_note);
 	AddToggle(builder, kToggleRows[21]);
+	AddNote(builder, tr::lng_serein_reveal_spoilers_note);
 	AddToggle(builder, kToggleRows[22]);
 	AddToggle(builder, kToggleRows[23]);
 	AddToggle(builder, kToggleRows[24]);
 	AddToggle(builder, kToggleRows[25]);
+	AddToggle(builder, kToggleRows[26]);
 	EndSection(builder, tr::lng_serein_private_activities_note);
 	AddSection(builder, {
 		u"serein/messages/reading"_q,
 		tr::lng_serein_section_reading,
 		{ u"reading"_q, u"Chinese"_q, u"spacing"_q },
 	});
-	AddToggle(builder, kToggleRows[26]);
+	AddToggle(builder, kToggleRows[27]);
 	custom.readingChinese();
 	EndSection(builder, tr::lng_serein_reading_chinese_note);
 	AddSection(builder, {
@@ -307,19 +314,19 @@ inline void AddLayout(
 		tr::lng_serein_interaction,
 		{ u"select"_q, u"double click"_q },
 	});
-	AddToggle(builder, kToggleRows[27]);
-	AddNote(builder, tr::lng_serein_raise_selection_limit_note);
 	AddToggle(builder, kToggleRows[28]);
+	AddNote(builder, tr::lng_serein_raise_selection_limit_note);
+	AddToggle(builder, kToggleRows[29]);
 	EndSection(builder, tr::lng_serein_double_click_edits_own_note);
 	AddSection(builder, {
 		u"serein/messages/deleting"_q,
 		tr::lng_serein_deleting,
 		{ u"delete"_q, u"moderate"_q },
 	});
-	AddToggle(builder, kToggleRows[29]);
 	AddToggle(builder, kToggleRows[30]);
 	AddToggle(builder, kToggleRows[31]);
 	AddToggle(builder, kToggleRows[32]);
+	AddToggle(builder, kToggleRows[33]);
 	EndSection(builder, tr::lng_serein_delete_defaults_note);
 }
 

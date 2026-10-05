@@ -39,6 +39,7 @@ enum class ActionId : int {
 	Reminder = 34,
 	HideMessage = 35,
 	CopyMarkdown = 36,
+	RestoredMedia = 37,
 };
 
 } // namespace Serein::Menu

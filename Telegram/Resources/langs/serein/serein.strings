@@ -901,8 +901,6 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_history_note" = "Deleted and edited messages received by this account are stored encrypted on this device only.";
 "lng_serein_menu_edit_history" = "Edit history";
 "lng_serein_menu_deleted_messages" = "Deleted messages";
-"lng_serein_history_empty" = "No deleted messages are saved for this chat.";
-"lng_serein_history_show_chat" = "Show as chat";
 "lng_serein_history_open_file" = "Open file";
 "lng_serein_history_open_media" = "Open media";
 "lng_serein_history_media_missing" = "This media is no longer available.";
@@ -937,3 +935,7 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_sticker_set_author_copied" = "The author is not loaded yet. Author ID copied.";
 "lng_serein_sticker_set_author_searching" = "Looking up the author…";
 "lng_serein_sticker_set_author_not_found" = "The author could not be found. Author ID copied.";
+"lng_serein_history_deleted_count" = "Deleted messages: {amount}";
+"lng_serein_history_open_chat" = "Open chat";
+"lng_serein_menu_restored_media" = "Open saved media";
+"lng_serein_highlight_history_marks" = "Highlight deleted and edited labels";

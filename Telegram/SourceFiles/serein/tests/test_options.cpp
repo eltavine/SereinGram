@@ -125,7 +125,7 @@ TEST_CASE("Options") {
 	Require(registry.All().size() == 1, "registry count");
 	auto messages = Registry();
 	Messages::RegisterOptions(messages);
-	Require(messages.All().size() == 36, "message option count");
+	Require(messages.All().size() == 37, "message option count");
 	Require(Messages::kFadeDeletedMessages.fallback, "deleted messages not faded by default");
 	auto refreshCount = 0;
 	for (const auto &entry : messages.All()) {
@@ -133,7 +133,7 @@ TEST_CASE("Options") {
 		Require(entry.category == Category::Messages, "message option category");
 		refreshCount += messages.HasFlag(entry.key, Flag::RefreshMessageView);
 	}
-	Require(refreshCount == 23, "message refresh option count");
+	Require(refreshCount == 24, "message refresh option count");
 	Require(Messages::kReadingChinese.validate(0)
 		&& Messages::kReadingChinese.validate(1)
 		&& Messages::kReadingChinese.validate(2)

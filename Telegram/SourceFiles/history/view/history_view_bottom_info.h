@@ -56,6 +56,7 @@ public:
 		QDateTime date;
 		QDateTime editedDate;
 		QString author;
+		TextWithEntities sereinMarks;
 		EffectId effectId = 0;
 		int64 tonStake = 0;
 		int stars = 0;
