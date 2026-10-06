@@ -70,6 +70,15 @@ message HistorySettings {
     ]
     icon: "menuIconShowInChat"
   }];
+  optional bool history_quote_deleted_replies = 10 [(serein.options.v1.field) = {
+    keywords: [
+      "reply",
+      "quote",
+      "deleted"
+    ]
+    default_bool: true
+    icon: "menuIconReply"
+  }];
   optional bool history_keep_expired_media = 8 [(serein.options.v1.field) = {
     keywords: [
       "self-destruct",

@@ -3,16 +3,20 @@
 #include <QtCore/QString>
 #include <gsl/pointers>
 
+#include <optional>
 #include <vector>
 
 class History;
 class HistoryItem;
 class QPainter;
+struct FileLoadTo;
+struct FullMsgId;
 struct FullReplyTo;
 struct TextWithEntities;
 
 namespace Api {
 struct SendAction;
+struct SendOptions;
 } // namespace Api
 
 namespace Serein::Hooks {
@@ -40,11 +44,18 @@ void OnHistorySliceAdded(gsl::not_null<::History*> history);
 	gsl::not_null<::History*> history,
 	qint64 messageId,
 	const QString &fallback);
-void QuoteDeletedReply(
-	gsl::not_null<::History*> history,
-	FullReplyTo &replyTo,
-	TextWithEntities &text);
+void QuoteDeletedReply(Api::SendAction &action, TextWithEntities &text);
 [[nodiscard]] FullReplyTo DetachDeletedReply(const Api::SendAction &action);
+[[nodiscard]] FullReplyTo UploadReplyTo(const Api::SendAction &action);
+void OnUploadPrepared(
+	gsl::not_null<::History*> history,
+	FileLoadTo &to,
+	FullMsgId localId);
+void OnMediaSending(
+	gsl::not_null<HistoryItem*> item,
+	const Api::SendOptions &options);
+[[nodiscard]] std::optional<TextWithEntities> DeletedReplyPreviewName(
+	gsl::not_null<HistoryItem*> to);
 
 class FadedPaint final {
 public:

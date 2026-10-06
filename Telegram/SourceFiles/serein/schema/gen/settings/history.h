@@ -35,6 +35,13 @@ inline constexpr auto kHistoryKeepDeletedInPlace = Option<bool>{
 	Category::Privacy,
 	"lng_serein_history_keep_deleted_in_place",
 	0 };
+inline constexpr auto kHistoryQuoteDeletedReplies = Option<bool>{
+	"serein.historyQuoteDeletedReplies",
+	Scope::Account,
+	true,
+	Category::Privacy,
+	"lng_serein_history_quote_deleted_replies",
+	0 };
 inline constexpr auto kHistoryKeepExpiredMedia = Option<bool>{
 	"serein.historyKeepExpiredMedia",
 	Scope::Account,
@@ -85,6 +92,7 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kHistorySaveEdits));
 	Expects(registry.Add(kHistoryIncludeBots));
 	Expects(registry.Add(kHistoryKeepDeletedInPlace));
+	Expects(registry.Add(kHistoryQuoteDeletedReplies));
 	Expects(registry.Add(kHistoryKeepExpiredMedia));
 	Expects(registry.Add(kHistoryKeepRemovedChats));
 	Expects(registry.Add(kHistoryRetentionDays));

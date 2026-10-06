@@ -33,6 +33,7 @@ const auto kInertDefaults = std::map<std::string_view, std::string_view>{
 	{ "serein.stickerScale", "100 percent is the upstream size" },
 	{ "serein.fadeDeletedMessages", "needs history recording, off by default" },
 	{ "serein.highlightHistoryMarks", "needs history recording, off by default" },
+	{ "serein.historyQuoteDeletedReplies", "needs deleted messages kept in chat, off by default" },
 };
 
 const auto kGatedMenuActions = std::map<Serein::Menu::ActionId, std::string_view>{

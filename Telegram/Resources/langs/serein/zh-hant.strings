@@ -930,6 +930,9 @@
 "lng_serein_history_page" = "已刪除與已編輯訊息";
 "lng_serein_history_save_deleted" = "保留已刪除的訊息";
 "lng_serein_history_keep_deleted_in_place" = "在聊天中保留已刪除訊息";
+"lng_serein_history_quote_deleted_replies" = "回覆已刪除訊息時引用原文";
+"lng_serein_reply_deleted_quote" = "引用 {name} 的已刪除訊息";
+"lng_serein_reply_deleted_plain" = "{name} 的訊息已刪除，將不帶回覆傳送";
 "lng_serein_history_keep_expired_media" = "保留已過期的限時媒體";
 "lng_serein_history_keep_removed_chats" = "保留被移出的對話的訊息";
 "lng_serein_history_keep_removed_chats_note" = "被群組或頻道封鎖、移出時，本裝置上已載入的訊息會像已刪除訊息一樣存入本機歷史。需要開啟「保留已刪除訊息」。";
@@ -1173,6 +1176,7 @@
 "lng_serein_history_save_edits_about" = "在本機儲存每則訊息編輯前的版本，方便檢視它原來的內容。";
 "lng_serein_history_include_bots_about" = "同時記錄機器人傳送的已刪除和已編輯訊息；關閉時會略過它們。";
 "lng_serein_history_keep_deleted_in_place_about" = "已刪除的訊息留在聊天中並帶有刪除標記。重新啟動後，已記錄的訊息會放回原處，並盡量恢復媒體。";
+"lng_serein_history_quote_deleted_replies_about" = "已刪除的訊息無法被回覆，因此會把原文作為引用放在你的訊息前面，群組中還會註明作者。聯絡人只以使用者名稱註明，不會洩露你設定的備註名稱。關閉後只傳送你的訊息，不帶回覆。";
 "lng_serein_history_keep_expired_media_about" = "限時照片和影片在計時結束後仍可檢視，直到重新啟動應用程式。";
 "lng_serein_history_keep_removed_chats_about" = "被群組或頻道封鎖、移出時，會儲存本裝置已載入的該對話全部訊息。需要開啟「保留已刪除的訊息」。";
 "lng_serein_history_retention_days_about" = "儲存時間超過這個天數的記錄會自動刪除；選擇「永久」則保留到你手動清除。";

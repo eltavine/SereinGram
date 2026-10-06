@@ -12,7 +12,7 @@
 
 namespace Serein::HistorySettings {
 
-inline const auto kToggleRows = std::array<ToggleRow, 6>{ {
+inline const auto kToggleRows = std::array<ToggleRow, 7>{ {
 	{
 		.option = &kHistorySaveDeleted,
 		.title = tr::lng_serein_history_save_deleted,
@@ -48,6 +48,15 @@ inline const auto kToggleRows = std::array<ToggleRow, 6>{ {
 		.icon = &st::menuIconShowInChat,
 		.tile = &st::settingsIconBg6,
 		.about = tr::lng_serein_history_keep_deleted_in_place_about,
+	},
+	{
+		.option = &kHistoryQuoteDeletedReplies,
+		.title = tr::lng_serein_history_quote_deleted_replies,
+		.id = u"serein/history/history-quote-deleted-replies"_q,
+		.keywords = { u"reply"_q, u"quote"_q, u"deleted"_q },
+		.icon = &st::menuIconReply,
+		.tile = &st::settingsIconBg6,
+		.about = tr::lng_serein_history_quote_deleted_replies_about,
 	},
 	{
 		.option = &kHistoryKeepExpiredMedia,
@@ -88,6 +97,7 @@ inline void AddLayout(
 	AddToggle(builder, kToggleRows[3]);
 	AddToggle(builder, kToggleRows[4]);
 	AddToggle(builder, kToggleRows[5]);
+	AddToggle(builder, kToggleRows[6]);
 	AddNote(builder, tr::lng_serein_history_keep_removed_chats_note);
 	EndSection(builder, tr::lng_serein_section_history_deleted_note);
 	AddSection(builder, {

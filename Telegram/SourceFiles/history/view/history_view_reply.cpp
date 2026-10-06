@@ -1128,6 +1128,9 @@ TextWithEntities Reply::ComposePreviewName(
 		not_null<History*> history,
 		not_null<HistoryItem*> to,
 		const FullReplyTo &replyTo) {
+	if (auto name = Serein::Hooks::DeletedReplyPreviewName(to)) {
+		return std::move(*name);
+	}
 	const auto sender = [&] {
 		if (const auto from = to->displayFrom()) {
 			return not_null(from);

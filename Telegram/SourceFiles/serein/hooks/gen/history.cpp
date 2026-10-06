@@ -38,6 +38,14 @@ rpl::producer<bool> HistoryKeepDeletedInPlaceValue(gsl::not_null<Main::Session*>
 	return ForAccount(session).Value(Serein::HistorySettings::kHistoryKeepDeletedInPlace);
 }
 
+bool HistoryQuoteDeletedReplies(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Get(Serein::HistorySettings::kHistoryQuoteDeletedReplies);
+}
+
+rpl::producer<bool> HistoryQuoteDeletedRepliesValue(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Value(Serein::HistorySettings::kHistoryQuoteDeletedReplies);
+}
+
 bool HistoryKeepExpiredMedia(gsl::not_null<Main::Session*> session) {
 	return ForAccount(session).Get(Serein::HistorySettings::kHistoryKeepExpiredMedia);
 }

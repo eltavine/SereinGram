@@ -175,7 +175,7 @@ void ShowChannelsLimitBox(not_null<PeerData*> peer) {
 	return FileLoadTo(
 		peer->id,
 		action.options,
-		Serein::Hooks::DetachDeletedReply(action),
+		Serein::Hooks::UploadReplyTo(action),
 		action.replaceMediaOf);
 }
 
@@ -4809,7 +4809,7 @@ void ApiWrap::sendMessage(
 		history,
 		_session->user()).flags;
 	TextUtilities::PrepareForSending(left, prepareFlags);
-	Serein::Hooks::QuoteDeletedReply(history, action.replyTo, left);
+	Serein::Hooks::QuoteDeletedReply(action, left);
 
 	HistoryItem *lastMessage = nullptr;
 
@@ -5378,6 +5378,7 @@ void ApiWrap::sendMediaWithRandomId(
 		}
 		return;
 	}
+	Serein::Hooks::OnMediaSending(item, options);
 
 	auto caption = item->originalText();
 	TextUtilities::Trim(caption);
@@ -5626,6 +5627,7 @@ void ApiWrap::sendAlbumIfReady(not_null<SendingAlbum*> album) {
 		}
 		return;
 	}
+	Serein::Hooks::OnMediaSending(sample, album->options);
 	if (album->options.price > 0) {
 		sendMultiPaidMedia(sample, album);
 		return;

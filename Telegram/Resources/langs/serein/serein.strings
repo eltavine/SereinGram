@@ -934,6 +934,9 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_history_page" = "Deleted and edited messages";
 "lng_serein_history_save_deleted" = "Keep deleted messages";
 "lng_serein_history_keep_deleted_in_place" = "Keep deleted messages in chat";
+"lng_serein_history_quote_deleted_replies" = "Quote deleted messages in replies";
+"lng_serein_reply_deleted_quote" = "Quote deleted message from {name}";
+"lng_serein_reply_deleted_plain" = "Deleted message from {name} · sent without reply";
 "lng_serein_history_keep_expired_media" = "Keep self-destructing media after it expires";
 "lng_serein_history_keep_removed_chats" = "Keep messages of chats you are removed from";
 "lng_serein_history_keep_removed_chats_note" = "When you are banned or removed from a group or channel, the messages loaded on this device are saved to the local history, as if they were deleted. Needs “Keep deleted messages”.";
@@ -1177,6 +1180,7 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_history_save_edits_about" = "Saves the earlier version of each edited message on this device, so you can see what it said before.";
 "lng_serein_history_include_bots_about" = "Also records deleted and edited messages sent by bots, which are skipped otherwise.";
 "lng_serein_history_keep_deleted_in_place_about" = "Deleted messages stay in the chat with a deleted mark. After a restart, recorded ones return, with media when possible.";
+"lng_serein_history_quote_deleted_replies_about" = "Replies can't point to deleted messages, so the text is quoted above yours, with the author's name in groups. Contacts are named by username to keep the names you saved private. Off sends your message without the reply.";
 "lng_serein_history_keep_expired_media_about" = "Self-destructing photos and videos stay viewable after their timer runs out, until you restart the app.";
 "lng_serein_history_keep_removed_chats_about" = "If you are banned or removed from a group or channel, all its messages loaded on this device are saved. Needs “Keep deleted messages”.";
 "lng_serein_history_retention_days_about" = "Records saved more than this many days ago are removed automatically. “Forever” keeps them until you clear them.";

@@ -1178,6 +1178,7 @@ struct ConfirmedLocalFile {
 		file->to.replyTo.topicRootId = histories.convertTopicReplyToId(
 			history,
 			file->to.replyTo.topicRootId);
+		Serein::Hooks::OnUploadPrepared(history, file->to, newId);
 	}
 
 	auto action = SendAction(history, file->to.options);

@@ -39,27 +39,41 @@ constexpr auto kEllipsis = char16_t(0x2026);
 } // namespace
 
 TextWithEntities QuoteDeletedMessage(
-		const TextWithEntities &quote,
-		const TextWithEntities &text) {
-	const auto &source = quote.text;
-	const auto size = int(source.size());
-	auto till = std::min(size, kReplyQuoteLimit);
-	if (till < size && till > 0 && source[till - 1].isHighSurrogate()) {
-		--till;
-	}
-	const auto cut = (till < size);
-	while (till > 0 && source[till - 1].isSpace()) {
-		--till;
-	}
+		const DeletedQuote &quote,
+		const TextWithEntities &text,
+		int limit) {
+	const auto &source = quote.text.text;
 	auto from = 0;
+	auto till = int(source.size());
 	while (from < till && source[from].isSpace()) {
 		++from;
 	}
-	if (from == till) {
+	while (till > from && source[till - 1].isSpace()) {
+		--till;
+	}
+	const auto header = quote.author.isEmpty()
+		? 0
+		: (int(quote.author.size()) + 1);
+	const auto tail = text.text.isEmpty() ? 0 : (int(text.text.size()) + 1);
+	const auto room = limit - header - tail;
+	const auto cut = (till - from > std::min(room, kReplyQuoteLimit));
+	if (cut) {
+		till = from + std::min(room - 1, kReplyQuoteLimit);
+		if (till > from && source[till - 1].isHighSurrogate()) {
+			--till;
+		}
+		while (till > from && source[till - 1].isSpace()) {
+			--till;
+		}
+	}
+	if (till <= from) {
 		return text;
 	}
 	auto result = TextWithEntities();
-	result.text = source.mid(from, till - from);
+	if (header) {
+		result.text = quote.author + QChar('\n');
+	}
+	result.text.append(source.mid(from, till - from));
 	if (cut) {
 		result.text.append(QChar(kEllipsis));
 	}
@@ -68,7 +82,13 @@ TextWithEntities QuoteDeletedMessage(
 		0,
 		int(result.text.size()),
 		u"1"_q));
-	for (const auto &entity : quote.entities) {
+	if (header) {
+		result.entities.push_back(EntityInText(
+			EntityType::Bold,
+			0,
+			int(quote.author.size())));
+	}
+	for (const auto &entity : quote.text.entities) {
 		const auto type = entity.type();
 		const auto start = std::max(entity.offset(), from);
 		const auto end = std::min(entity.offset() + entity.length(), till);
@@ -77,7 +97,7 @@ TextWithEntities QuoteDeletedMessage(
 		if (KeptInQuote(type) && start < end && (whole || Clippable(type))) {
 			result.entities.push_back(EntityInText(
 				type,
-				start - from,
+				start - from + header,
 				end - start,
 				entity.data()));
 		}

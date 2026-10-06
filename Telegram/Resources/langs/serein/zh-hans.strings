@@ -930,6 +930,9 @@
 "lng_serein_history_page" = "已删除与已编辑消息";
 "lng_serein_history_save_deleted" = "保留已删除的消息";
 "lng_serein_history_keep_deleted_in_place" = "在聊天中保留已删除消息";
+"lng_serein_history_quote_deleted_replies" = "回复已删除消息时引用原文";
+"lng_serein_reply_deleted_quote" = "引用 {name} 的已删除消息";
+"lng_serein_reply_deleted_plain" = "{name} 的消息已删除，将不带回复发送";
 "lng_serein_history_keep_expired_media" = "保留已过期的限时媒体";
 "lng_serein_history_keep_removed_chats" = "保留被移出的对话的消息";
 "lng_serein_history_keep_removed_chats_note" = "被群组或频道封禁、移出时，本设备上已加载的消息会像已删除消息一样存入本地历史。需要开启“保留已删除消息”。";
@@ -1173,6 +1176,7 @@
 "lng_serein_history_save_edits_about" = "在本机保存每条消息编辑前的版本，方便查看它原来的内容。";
 "lng_serein_history_include_bots_about" = "同时记录机器人发送的已删除和已编辑消息；关闭时会跳过它们。";
 "lng_serein_history_keep_deleted_in_place_about" = "已删除的消息留在聊天中并带有删除标记。重启后，已记录的消息会放回原处，并尽量恢复媒体。";
+"lng_serein_history_quote_deleted_replies_about" = "已删除的消息无法被回复，因此会把原文作为引用放在你的消息前面，群组中还会注明作者。联系人只以用户名注明，不会泄露你设置的备注名。关闭后只发送你的消息，不带回复。";
 "lng_serein_history_keep_expired_media_about" = "限时照片和视频在计时结束后仍可查看，直到重启应用。";
 "lng_serein_history_keep_removed_chats_about" = "被群组或频道封禁、移出时，会保存本设备已加载的该对话全部消息。需要开启“保留已删除的消息”。";
 "lng_serein_history_retention_days_about" = "保存时间超过这个天数的记录会自动删除；选择“永久”则保留到你手动清除。";
