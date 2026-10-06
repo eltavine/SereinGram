@@ -1,4 +1,5 @@
 #include "serein/settings/home.h"
+#include "serein/hooks/settings/about.h"
 #include "serein/settings/interface.h"
 #include "serein/settings/licenses.h"
 #include "serein/settings/messages.h"
@@ -157,6 +158,18 @@ void AddAbout(SectionBuilder &builder) {
 	builder.addDivider();
 	builder.addSkip();
 	builder.addSubsectionTitle(tr::lng_serein_home_about());
+	const auto controller = builder.controller();
+	builder.addButton({
+		.id = u"serein/home/about"_q,
+		.title = tr::lng_serein_about_title(),
+		.icon = { &st::menuIconInfo },
+		.onClick = [=] {
+			if (controller) {
+				controller->show(Box(Serein::AboutBox));
+			}
+		},
+		.keywords = { u"about"_q, u"disclaimer"_q, u"license"_q },
+	});
 	AddUpdateCheck(builder);
 	builder.addButton({
 		.title = tr::lng_serein_source_code(),
@@ -165,7 +178,6 @@ void AddAbout(SectionBuilder &builder) {
 			UrlClickHandler::Open(u"https://github.com/eltavine/SereinGram"_q);
 		},
 	});
-	const auto controller = builder.controller();
 	builder.addButton({
 		.title = tr::lng_serein_licenses(),
 		.icon = { &st::menuIconFile },

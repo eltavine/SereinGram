@@ -39,7 +39,8 @@ Nagram 的品牌政策要求分支使用不同品牌并替换 Nagram 名称与�
 | SG-BRAND-03 | 应用 ID、数据目录、便携目录、Windows AppUserModelID、安装器 ID 与通知激活器 GUID | D | Implemented | P0 |
 | SG-BRAND-04 | 源码、发布与问题反馈链接指向 `eltavine/SereinGram` | D | Implemented | P0 |
 | SG-BRAND-05 | 代码更名：`nagram` → `serein`（目录、命名空间、文案键、存储键、CMake、测试目标、工作流） | D | Implemented | P0 |
-| SG-BRAND-06 | 第三方许可声明（SereinGram 设置首页“第三方许可”：列出随程序分发的 OpenCC、marisa-trie、darts-clone、RapidJSON、quirc 与注册日期数据的名称、许可与地址，许可全文作为 Qt 资源打包，可在程序内查看；文本直接取自子模块中的许可文件，RapidJSON 的子集不含许可文件，以其头文件中的版权声明补齐 MIT 文本） | D | Implemented | P1 |
+| SG-BRAND-06 | 第三方许可声明（SereinGram 设置首页“第三方许可”：列出随程序分发的 OpenCC、marisa-trie、darts-clone、RapidJSON、quirc 与注册日期数据的名称、许可与地址，许可全文作为 Qt 资源打包，可在程序内查看；文本直接取自子模块中的许可文件，RapidJSON 的子集不含许可文件，以其头文件中的版权声明补齐 MIT 文本；关于页左下角也可打开） | D | Implemented | P1 |
+| SG-BRAND-07 | 关于页与声明（主菜单“关于”、macOS 应用菜单与 SereinGram 设置首页“关于 SereinGram”打开同一窗口：顶部沿用设置首页封面的图标、名称、版本与更新状态；“声明”依次说明非官方客户端、只是借鉴 Nagram 与 AyuGram 且与其作者及维护者没有任何关联、服务条款与账号风险、尊重他人、无担保、名称与商标；“隐私”说明不做追踪、所选外部服务与本机数据；“开源”给出 GPLv3 许可、源代码、版权、致谢（Telegram Desktop、代码库最初分支自 Nagram-qt、图标设计者）与帮助渠道；条目复用上游 `Ui::MakeFeatureListEntry`，上游 `AboutBox` 只剩一行转发到 `serein/settings/about.cpp`） | D | Implemented | P1 |
 
 ## CORE 基础设施
 
@@ -57,7 +58,7 @@ Nagram 的品牌政策要求分支使用不同品牌并替换 Nagram 名称与�
 | SG-CORE-10 | 测试：纯逻辑单元测试与 `-testagent` 界面场景（核心测试基于 doctest，每个测试文件用 `TEST_CASE` 自注册，用例单独报告并可按名称筛选） | D | Implemented | P0 |
 | SG-CORE-11 | 更多界面语言的社区翻译平台接入（Serein 字符串按界面语言加载任意 `langs/serein/<语言代码>.strings`，缺失的键回退英文，CMake 扫描目录自动生成资源清单；核心测试要求中文译文完整、其他译文的键与占位符与英文一致；`crowdin.yml` 与同步工作流 `serein-crowdin.yml` 已就绪：在 GitHub Secrets 中配置 Crowdin 项目 ID 与访问令牌后，英文源文件改动时上传，每周下载译文并向 develop 提交 PR） | Ad Na | Implemented | P3 |
 | SG-CORE-12 | 一键预设与首次引导（SereinGram 设置首页“快速设置”列出预设：清爽界面、隐私优先、保留删除与编辑记录、频道阅读、技术细节、中文排版；每套预设是 `Telegram/Resources/serein/presets/` 中与导出文件同格式的 JSON，目录由 `catalog.json` 列出，标题与说明取自 `lng_serein_preset_<id>` 文案，新增预设无需改代码；套用时走与导入相同的差异预览，确认后才写入，已全部生效时直接提示；第一次打开 SereinGram 设置时弹出一次欢迎框说明默认全部关闭并可选择预设，是否已提示记在本设备的内部设置中；核心测试逐个用完整的选项注册表预演每套预设，键名失效、取值不合法或缺少三语文案都会失败） | D | Implemented | P1 |
-| SG-CORE-13 | 设置首页布局（顶部封面显示应用图标、名称、版本（Nightly 附带构建提交）与更新状态：未检查时提供“检查更新”，检查中显示“正在检查…”，已是最新、检查失败（可重试）或有新版本（附与当前安装方式相符的下载链接）时分别提示，系统软件包构建显示由软件包管理器提供更新；其下是常用入口“幽灵模式”“已删除与已编辑消息”与“一键预设”，右侧显示当前账号的开启状态；其余页面按“外观”“发送与工具”“隐私与数据”分组，每页使用不同的图标；“关于”分组在最后：“检查更新”立即检查并提示结果，系统软件包构建不显示，随后是源代码与开源许可） | D | Implemented | P1 |
+| SG-CORE-13 | 设置首页布局（顶部封面显示应用图标、名称、版本（Nightly 附带构建提交）与更新状态：未检查时提供“检查更新”，检查中显示“正在检查…”，已是最新、检查失败（可重试）或有新版本（附与当前安装方式相符的下载链接）时分别提示，系统软件包构建显示由软件包管理器提供更新；其下是常用入口“幽灵模式”“已删除与已编辑消息”与“一键预设”，右侧显示当前账号的开启状态；其余页面按“外观”“发送与工具”“隐私与数据”分组，每页使用不同的图标；“关于”分组在最后：先是打开关于页的“关于 SereinGram”，然后“检查更新”立即检查并提示结果，系统软件包构建不显示，随后是源代码与开源许可） | D | Implemented | P1 |
 
 ## GHOST 幽灵模式
 

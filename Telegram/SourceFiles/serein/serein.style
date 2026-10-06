@@ -112,3 +112,7 @@ sereinHomeCoverPadding: margins(16px, 20px, 16px, 16px);
 sereinHomeCoverLogo: 72px;
 sereinHomeCoverLogoSkip: 12px;
 sereinHomeCoverLineSkip: 4px;
+sereinAboutIntro: FlatLabel(defaultFlatLabel) {
+	align: align(top);
+	minWidth: 40px;
+}

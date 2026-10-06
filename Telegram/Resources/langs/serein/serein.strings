@@ -2,8 +2,39 @@
 SereinGram strings. Merged after lang.strings at configure time, see
 Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 */
-"lng_serein_about_api" = "Independent desktop messenger based on {api_link}.";
-"lng_serein_about" = "SereinGram is based on Telegram Desktop.";
+"lng_serein_about_title" = "About SereinGram";
+"lng_serein_about_intro" = "An unofficial, free and open-source Telegram client for the desktop, based on Telegram Desktop.";
+"lng_serein_about_notices" = "Disclaimers";
+"lng_serein_about_unofficial_title" = "Unofficial client";
+"lng_serein_about_unofficial" = "SereinGram is an independent third-party app. It is not developed, endorsed or supported by Telegram. It connects through the public {api_link}, never uses the API credentials of official Telegram apps and never presents itself as one.";
+"lng_serein_about_api_link" = "Telegram API";
+"lng_serein_about_references_title" = "Not affiliated with Nagram or AyuGram";
+"lng_serein_about_references" = "SereinGram only draws on Nagram and AyuGram for reference. It has no affiliation of any kind with the authors or maintainers of either project: it is not their work, it is not developed with them, and they neither endorse nor support it. Please do not contact them about SereinGram.";
+"lng_serein_about_terms_title" = "Terms of Service";
+"lng_serein_about_terms" = "Using Telegram through SereinGram is still subject to Telegram's {terms_link}. Optional features such as ghost mode, keeping deleted messages and expired self-destructing media, or saving protected content may go against those terms. They are all off by default: turning them on is your own decision and at your own risk, including any limits Telegram places on your account.";
+"lng_serein_about_terms_link" = "Terms of Service";
+"lng_serein_about_respect_title" = "Respect others";
+"lng_serein_about_respect" = "Keeping messages that others deleted, or reading without sending read receipts, can go against what the people you talk to expect. Respect their privacy and follow the laws that apply to you.";
+"lng_serein_about_warranty_title" = "No warranty";
+"lng_serein_about_warranty" = "SereinGram is provided as is, without any warranty, to the extent permitted by law. Its developers are not liable for lost data, restricted accounts or any other damage caused by using it. Nightly builds are development versions and may be unstable.";
+"lng_serein_about_names_title" = "Names and trademarks";
+"lng_serein_about_names" = "Telegram, Nagram, AyuGram and the other names mentioned here belong to their respective owners. SereinGram uses them only to describe where it comes from and what it works with.";
+"lng_serein_about_privacy" = "Privacy";
+"lng_serein_about_tracking_title" = "No tracking";
+"lng_serein_about_tracking" = "SereinGram adds no analytics, telemetry, ads or crash reports of its own. Beyond what Telegram Desktop itself does, it connects only to GitHub to check for updates, which you can turn off in SereinGram's interface settings, and to the services you set up yourself.";
+"lng_serein_about_services_title" = "Services you choose";
+"lng_serein_about_services" = "External translation, transcription and AI services that you add receive the text or audio you ask them to process, including from automatic features you turn on, and handle it under their own privacy policies. Their API keys stay in the system keychain or in an encrypted file on this device.";
+"lng_serein_about_local_title" = "Data on this device";
+"lng_serein_about_local" = "If you keep deleted messages or edit history, they are stored only on this device, encrypted with a key derived from the account's local key, and erased when you log out.";
+"lng_serein_about_open_source" = "Open source";
+"lng_serein_about_license_title" = "Free software";
+"lng_serein_about_license" = "SereinGram is free software: you may use, study, share and modify it under the {license_link}. The complete source code is available on {github_link}.";
+"lng_serein_about_license_link" = "GNU General Public License v3";
+"lng_serein_about_credits_title" = "Credits";
+"lng_serein_about_credits" = "SereinGram is based on Telegram Desktop by the Telegram Desktop Authors. Its code base started as a fork of Nagram-qt, NextAlone's open-source fork of Telegram Desktop, and the parts of it still in use remain under the GPLv3. The logo was designed by {designer_link}.";
+"lng_serein_about_help_title" = "Help and feedback";
+"lng_serein_about_help" = "Downloads and release notes are on {releases_link}. Report SereinGram problems on {issues_link}, not to Telegram, Nagram or AyuGram. For questions about Telegram itself, see the {faq_link}.";
+"lng_serein_about_faq_link" = "Telegram FAQ";
 "lng_serein_intro_about" = "SereinGram for desktop.\nAn independent client for Telegram.";
 "lng_serein_mac_menu_show" = "Show SereinGram";
 "lng_serein_open_from_tray" = "Open SereinGram";

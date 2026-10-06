@@ -73,7 +73,9 @@ using Updates::Status;
 	return tr::link(tr::lng_serein_update_check_now(tr::now));
 }
 
-[[nodiscard]] object_ptr<Ui::RpWidget> CreateCover(QWidget *parent) {
+} // namespace
+
+object_ptr<Ui::RpWidget> CreateAppCover(QWidget *parent) {
 	auto result = object_ptr<Ui::RpWidget>(parent);
 	const auto cover = result.data();
 	const auto logo = Ui::CreateChild<Ui::RpWidget>(cover);
@@ -128,12 +130,10 @@ using Updates::Status;
 	return result;
 }
 
-} // namespace
-
 void AddHomeCover(::Settings::Builder::SectionBuilder &builder) {
 	builder.add([](const ::Settings::Builder::WidgetContext &context) {
 		return ::Settings::Builder::SectionBuilder::WidgetToAdd{
-			.widget = CreateCover(context.container),
+			.widget = CreateAppCover(context.container),
 		};
 	});
 }
