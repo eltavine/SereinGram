@@ -796,9 +796,10 @@
 "lng_serein_quick_media" = "共享媒体";
 "lng_serein_quick_pinned" = "置顶消息";
 "lng_serein_quick_jump" = "跳转到消息…";
-"lng_serein_quick_jump_placeholder" = "消息 ID";
-"lng_serein_quick_jump_about" = "在当前对话中打开该 ID 的消息。ID 是消息链接末尾的数字。";
+"lng_serein_quick_jump_placeholder" = "消息 ID 或链接";
+"lng_serein_quick_jump_about" = "输入消息 ID 或粘贴消息链接。话题与评论区中的消息会在原处打开，指向其他对话的链接会打开对应的对话。";
 "lng_serein_quick_jump_go" = "跳转";
+"lng_serein_quick_jump_missing" = "此对话中没有这个 ID 的消息。";
 "lng_serein_quick_clear_cache" = "清除媒体缓存";
 "lng_serein_quick_clear_cache_confirm" = "要移除此对话中当前已加载消息里的图片、视频、文件与语音消息的缓存吗？未加载的较早消息、贴纸以及你保存的文件都会保留。移除后再次打开时会重新下载。";
 "lng_serein_quick_clear_cache_done" = "已移除的缓存文件：{amount}。";

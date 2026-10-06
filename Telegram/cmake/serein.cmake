@@ -136,6 +136,8 @@ set(serein_sources
     serein/privacy/login_token.cpp
     serein/privacy/qr_decode.cpp
     serein/privacy/qr_scan.cpp
+    serein/features/jump/box.cpp
+    serein/features/jump/model/target.cpp
     serein/features/purge/box.cpp
     serein/features/purge/gateway.cpp
     serein/features/purge/model/job.cpp

@@ -796,9 +796,10 @@
 "lng_serein_quick_media" = "共享媒體";
 "lng_serein_quick_pinned" = "置頂訊息";
 "lng_serein_quick_jump" = "跳至訊息…";
-"lng_serein_quick_jump_placeholder" = "訊息 ID";
-"lng_serein_quick_jump_about" = "在目前對話中開啟該 ID 的訊息。ID 是訊息連結末尾的數字。";
+"lng_serein_quick_jump_placeholder" = "訊息 ID 或連結";
+"lng_serein_quick_jump_about" = "輸入訊息 ID 或貼上訊息連結。主題與留言區中的訊息會在原處開啟，指向其他對話的連結會開啟對應的對話。";
 "lng_serein_quick_jump_go" = "前往";
+"lng_serein_quick_jump_missing" = "此對話中沒有這個 ID 的訊息。";
 "lng_serein_quick_clear_cache" = "清除媒體快取";
 "lng_serein_quick_clear_cache_confirm" = "要移除此對話中目前已載入訊息裡的圖片、影片、檔案與語音訊息的快取嗎？未載入的較早訊息、貼圖以及你儲存的檔案都會保留。移除後再次開啟時會重新下載。";
 "lng_serein_quick_clear_cache_done" = "已移除的快取檔案：{amount}。";

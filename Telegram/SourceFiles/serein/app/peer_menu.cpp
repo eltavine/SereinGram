@@ -9,6 +9,7 @@
 #include "serein/features/history/chat_row.h"
 #include "serein/features/history/viewer.h"
 #include "serein/features/inspector/box.h"
+#include "serein/features/jump/box.h"
 #include "serein/features/purge/box.h"
 #include "serein/features/stories/composer.h"
 #include "serein/filters/model.h"
@@ -102,6 +103,9 @@ void FillHistoryMenu(
 					strong->rootId(),
 					Window::SectionShow::Way::Forward);
 			}
+		}, &st::menuIconShowInChat);
+		addAction(tr::lng_serein_quick_jump(tr::now), [=] {
+			Jump::ShowJumpBox(controller, peer);
 		}, &st::menuIconShowInChat);
 	}
 	if (!topic) {

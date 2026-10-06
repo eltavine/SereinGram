@@ -56,6 +56,7 @@ set(serein_test_sources
     serein/tests/test_reply_quote.cpp
     serein/tests/test_inspector.cpp
     serein/tests/test_purge.cpp
+    serein/tests/test_jump.cpp
     serein/tests/test_online_presence.cpp
     serein/tests/text_entity_support.cpp
     serein/adapters/openssl/aes_gcm_cipher.cpp
@@ -75,6 +76,7 @@ set(serein_test_sources
     serein/features/inspector/model/facts.cpp
     serein/features/inspector/model/render.cpp
     serein/features/inspector/model/tl_tree.cpp
+    serein/features/jump/model/target.cpp
     serein/features/purge/model/job.cpp
     serein/features/purge/model/plan.cpp
     serein/features/online/model/presence.cpp
