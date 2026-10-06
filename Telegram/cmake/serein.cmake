@@ -136,7 +136,10 @@ set(serein_sources
     serein/privacy/login_token.cpp
     serein/privacy/qr_decode.cpp
     serein/privacy/qr_scan.cpp
-    serein/admin/delete_mine.cpp
+    serein/features/purge/box.cpp
+    serein/features/purge/gateway.cpp
+    serein/features/purge/model/job.cpp
+    serein/features/purge/model/plan.cpp
     serein/admin/unblock_all.cpp
     serein/admin/upgrade.cpp
     serein/admin/shortcuts.cpp

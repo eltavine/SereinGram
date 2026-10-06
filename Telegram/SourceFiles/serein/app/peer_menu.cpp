@@ -1,6 +1,5 @@
 #include "serein/hooks/peer_menu.h"
 
-#include "serein/admin/delete_mine.h"
 #include "serein/admin/shortcuts.h"
 #include "serein/admin/upgrade.h"
 #include "serein/chats/chat_settings.h"
@@ -10,6 +9,7 @@
 #include "serein/features/history/chat_row.h"
 #include "serein/features/history/viewer.h"
 #include "serein/features/inspector/box.h"
+#include "serein/features/purge/box.h"
 #include "serein/features/stories/composer.h"
 #include "serein/filters/model.h"
 #include "serein/filters/reveal.h"
@@ -168,11 +168,11 @@ void FillHistoryMenu(
 	}
 	if (!topic
 		&& ForDevice().Get(Chats::kManagementShortcuts)
-		&& Admin::CanDeleteMyMessages(peer)) {
+		&& Purge::CanDeleteMine(peer)) {
 		addAction({
 			.text = tr::lng_serein_delete_mine(tr::now),
 			.handler = [=] {
-				Admin::ConfirmDeleteMyMessages(controller, peer);
+				Purge::ShowDeleteMine(controller, peer);
 			},
 			.icon = &st::menuIconDeleteAttention,
 			.isAttention = true,

@@ -30,6 +30,7 @@ sereinInspectorTextPadding: margins(22px, 4px, 22px, 8px);
 sereinInspectorRaw: FlatLabel(defaultFlatLabel) {
 	minWidth: 100px;
 }
+sereinPurgeOptionPadding: margins(22px, 8px, 22px, 4px);
 
 sereinSnapshotWidth: 640px;
 sereinSnapshotPadding: 16px;
