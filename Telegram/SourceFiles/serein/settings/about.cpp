@@ -130,6 +130,10 @@ using Entries = std::vector<Ui::FeatureListEntry>;
 			tr::lng_serein_about_help_title(tr::now),
 			tr::lng_serein_about_help(
 				tr::now,
+				lt_chat_link,
+				tr::lng_serein_about_chat_link(
+					tr::now,
+					tr::url(u"https://t.me/SereinGram_chat"_q)),
 				lt_releases_link,
 				tr::link(u"GitHub Releases"_q, Repository(u"/releases"_q)),
 				lt_issues_link,

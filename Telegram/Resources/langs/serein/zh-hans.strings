@@ -29,7 +29,8 @@
 "lng_serein_about_credits_title" = "致谢";
 "lng_serein_about_credits" = "SereinGram 基于 Telegram Desktop 作者们开发的 Telegram Desktop。它的代码库最初分支自 NextAlone 基于 Telegram Desktop 的开源分支 Nagram-qt，其中仍在使用的部分继续以 GPLv3 授权。图标由 {designer_link} 设计。";
 "lng_serein_about_help_title" = "帮助与反馈";
-"lng_serein_about_help" = "下载与更新说明见 {releases_link}。SereinGram 的问题请提交到 {issues_link}，不要反馈给 Telegram、Nagram 或 AyuGram。关于 Telegram 本身的问题，请查看 {faq_link}。";
+"lng_serein_about_help" = "提问与交流请到 {chat_link}。下载与更新说明见 {releases_link}。SereinGram 的问题请提交到 {issues_link}，不要反馈给 Telegram、Nagram 或 AyuGram。关于 Telegram 本身的问题，请查看 {faq_link}。";
+"lng_serein_about_chat_link" = "SereinGram 群组";
 "lng_serein_about_faq_link" = "Telegram 常见问题";
 "lng_serein_intro_about" = "桌面版 SereinGram。\n独立的 Telegram 客户端。";
 "lng_serein_mac_menu_show" = "显示 SereinGram";

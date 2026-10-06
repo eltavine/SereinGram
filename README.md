@@ -21,8 +21,9 @@ until you turn something on SereinGram behaves like Telegram Desktop.
 > **Nagram** and **AyuGram** for reference and has **no affiliation of any
 > kind** with their authors or maintainers, who neither endorse nor support
 > it. Report SereinGram problems on the
-> [SereinGram issue tracker](https://github.com/eltavine/SereinGram/issues),
-> never to Telegram, Nagram or AyuGram, and read the
+> [SereinGram issue tracker](https://github.com/eltavine/SereinGram/issues)
+> and ask questions in the [SereinGram chat](https://t.me/SereinGram_chat),
+> never with Telegram, Nagram or AyuGram, and read the
 > [disclaimers](#disclaimers) before you use it.
 
 中文用户请阅读[简体中文说明](#简体中文)。
@@ -639,7 +640,8 @@ with the version from the About page, your system, the steps that lead to
 the problem and, if possible, whether it also happens with every
 SereinGram option off. Problems that also happen in the official Telegram
 Desktop belong to Telegram Desktop. Never send SereinGram problems to
-Telegram, Nagram or AyuGram.
+Telegram, Nagram or AyuGram. For questions and discussion, join the
+[SereinGram chat](https://t.me/SereinGram_chat).
 
 ## Privacy
 
@@ -772,4 +774,4 @@ SereinGram 是一款基于 [Telegram Desktop](https://github.com/telegramdesktop
 
 ### 许可与致谢
 
-SereinGram 以 GNU GPL 第 3 版（或任何更新的版本）授权，并沿用 Telegram Desktop 的 OpenSSL 例外条款，见 [LICENSE](LICENSE) 与 [LEGAL](LEGAL)。感谢 Telegram Desktop 的作者们、Nagram-qt 的作者 NextAlone、图标设计者 [OukaroMF](https://github.com/OukaroMF/)，以及 OpenCC、marisa-trie、darts-clone、RapidJSON、quirc、WizardLoop CreationDate 等开源项目。问题与建议请提交到 [GitHub Issues](https://github.com/eltavine/SereinGram/issues)。
+SereinGram 以 GNU GPL 第 3 版（或任何更新的版本）授权，并沿用 Telegram Desktop 的 OpenSSL 例外条款，见 [LICENSE](LICENSE) 与 [LEGAL](LEGAL)。感谢 Telegram Desktop 的作者们、Nagram-qt 的作者 NextAlone、图标设计者 [OukaroMF](https://github.com/OukaroMF/)，以及 OpenCC、marisa-trie、darts-clone、RapidJSON、quirc、WizardLoop CreationDate 等开源项目。问题报告请提交到 [GitHub Issues](https://github.com/eltavine/SereinGram/issues)，提问与交流请到 [SereinGram 群组](https://t.me/SereinGram_chat)。

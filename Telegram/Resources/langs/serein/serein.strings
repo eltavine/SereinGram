@@ -33,7 +33,8 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_about_credits_title" = "Credits";
 "lng_serein_about_credits" = "SereinGram is based on Telegram Desktop by the Telegram Desktop Authors. Its code base started as a fork of Nagram-qt, NextAlone's open-source fork of Telegram Desktop, and the parts of it still in use remain under the GPLv3. The logo was designed by {designer_link}.";
 "lng_serein_about_help_title" = "Help and feedback";
-"lng_serein_about_help" = "Downloads and release notes are on {releases_link}. Report SereinGram problems on {issues_link}, not to Telegram, Nagram or AyuGram. For questions about Telegram itself, see the {faq_link}.";
+"lng_serein_about_help" = "Ask questions in the {chat_link}. Downloads and release notes are on {releases_link}. Report SereinGram problems on {issues_link}, not to Telegram, Nagram or AyuGram. For questions about Telegram itself, see the {faq_link}.";
+"lng_serein_about_chat_link" = "SereinGram chat";
 "lng_serein_about_faq_link" = "Telegram FAQ";
 "lng_serein_intro_about" = "SereinGram for desktop.\nAn independent client for Telegram.";
 "lng_serein_mac_menu_show" = "Show SereinGram";

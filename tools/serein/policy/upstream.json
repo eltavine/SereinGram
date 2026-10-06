@@ -11,6 +11,7 @@
     "Telegram/build/api_credentials.local.cmake.example",
     "BRANDING.md",
     "README.md",
+    ".github/ISSUE_TEMPLATE/",
     "Telegram/Resources/qrc/serein_opencc.qrc",
     "Telegram/ThirdParty/OpenCC",
     "Telegram/Resources/serein/",
