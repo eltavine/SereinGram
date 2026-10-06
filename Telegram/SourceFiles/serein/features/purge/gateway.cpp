@@ -6,6 +6,7 @@
 #include "data/data_session.h"
 #include "data/data_types.h"
 #include "data/data_user.h"
+#include "history/history.h"
 #include "history/history_item.h"
 #include "main/main_session.h"
 #include "main/session/send_as_peers.h"
