@@ -30,10 +30,10 @@
   ],
   "submodule_overrides": [],
   "budget": {
-    "all_files": 233,
-    "all_added_lines": 1683,
-    "source_files": 165,
-    "source_added_lines": 1486,
+    "all_files": 235,
+    "all_added_lines": 1698,
+    "source_files": 167,
+    "source_added_lines": 1501,
     "direct_include_files": 0,
     "upstream_headers": 158
   }

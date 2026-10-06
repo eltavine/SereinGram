@@ -11,6 +11,10 @@ class QPainter;
 struct FullReplyTo;
 struct TextWithEntities;
 
+namespace Api {
+struct SendAction;
+} // namespace Api
+
 namespace Serein::Hooks {
 
 [[nodiscard]] std::vector<gsl::not_null<HistoryItem*>> OnServerDeleted(
@@ -40,6 +44,7 @@ void QuoteDeletedReply(
 	gsl::not_null<::History*> history,
 	FullReplyTo &replyTo,
 	TextWithEntities &text);
+[[nodiscard]] FullReplyTo DetachDeletedReply(const Api::SendAction &action);
 
 class FadedPaint final {
 public:

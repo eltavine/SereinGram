@@ -19,6 +19,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "history/history_item.h"
 #include "history/history_item_helpers.h" // ShouldSendSilent
 #include "main/main_session.h"
+#include "serein/hooks/history.h"
 
 namespace Api {
 namespace {
@@ -40,6 +41,7 @@ void TodoLists::create(
 		Fn<void(QString)> fail) {
 	StripEphemeralReply(_session, action.replyTo);
 	_session->api().sendAction(action);
+	action.replyTo = Serein::Hooks::DetachDeletedReply(action);
 
 	const auto history = action.history;
 	const auto peer = history->peer;

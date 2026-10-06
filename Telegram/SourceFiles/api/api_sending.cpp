@@ -29,6 +29,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "chat_helpers/stickers_dice_pack.h" // DicePacks::kDiceString.
 #include "ui/text/text_entity.h" // TextWithEntities.
 #include "serein/hooks/compose/text.h"
+#include "serein/hooks/history.h"
 #include "ui/item_text_options.h" // Ui::ItemTextOptions.
 #include "ui/chat/attach/attach_prepare.h"
 #include "main/main_session.h"
@@ -78,6 +79,7 @@ void SendSimpleMedia(SendAction action, MTPInputMedia inputMedia) {
 	action.clearDraft = false;
 	action.generateLocal = false;
 	api->sendAction(action);
+	action.replyTo = Serein::Hooks::DetachDeletedReply(action);
 
 	if (!action.options.scheduled
 		&& !action.options.shortcutId
@@ -201,6 +203,7 @@ void SendExistingMedia(
 	message.action.clearDraft = false;
 	message.action.generateLocal = true;
 	api->sendAction(message.action);
+	message.action.replyTo = Serein::Hooks::DetachDeletedReply(message.action);
 
 	const auto newId = FullMsgId(
 		peer->id,
@@ -746,6 +749,7 @@ void SendMusicSelection(
 	message.action.clearDraft = false;
 	message.action.generateLocal = true;
 	api->sendAction(message.action);
+	message.action.replyTo = Serein::Hooks::DetachDeletedReply(message.action);
 
 	const auto state = std::make_shared<MusicSelectionState>(MusicSelectionState{
 		.action = message.action,
@@ -837,6 +841,7 @@ bool SendDice(MessageToSend &message) {
 
 	auto &action = message.action;
 	api->sendAction(action);
+	action.replyTo = Serein::Hooks::DetachDeletedReply(action);
 
 	const auto newId = FullMsgId(
 		peer->id,

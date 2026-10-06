@@ -175,7 +175,7 @@ void ShowChannelsLimitBox(not_null<PeerData*> peer) {
 	return FileLoadTo(
 		peer->id,
 		action.options,
-		action.replyTo,
+		Serein::Hooks::DetachDeletedReply(action),
 		action.replaceMediaOf);
 }
 
@@ -4198,12 +4198,13 @@ void ApiWrap::sendSharedContact(
 
 	const auto history = action.history;
 	const auto peer = history->peer;
+	const auto replyTo = Serein::Hooks::DetachDeletedReply(action);
 
 	const auto newId = FullMsgId(
 		peer->id,
 		_session->data().nextLocalMessageId());
 	auto flags = NewMessageFlags(peer);
-	if (action.replyTo) {
+	if (replyTo) {
 		flags |= MessageFlag::HasReplyInfo;
 	}
 	FillMessagePostFlags(action, peer, flags);
@@ -4217,7 +4218,7 @@ void ApiWrap::sendSharedContact(
 		.id = newId.msg,
 		.flags = flags,
 		.from = NewMessageFromId(action),
-		.replyTo = action.replyTo,
+		.replyTo = replyTo,
 		.date = NewMessageDate(action.options),
 		.shortcutId = action.options.shortcutId,
 		.starsPaid = action.options.starsApproved,
@@ -4509,6 +4510,7 @@ void ApiWrap::sendRichMessage(
 			Iv::FlattenRichPageSummary(page).text);
 	if (!ephemeral) {
 		StripEphemeralReply(_session, action.replyTo);
+		action.replyTo = Serein::Hooks::DetachDeletedReply(action);
 	}
 	const auto newId = FullMsgId(
 		peer->id,
@@ -5127,6 +5129,7 @@ void ApiWrap::sendInlineResult(
 		Fn<void(bool)> done) {
 	StripEphemeralReply(_session, action.replyTo);
 	sendAction(action);
+	action.replyTo = Serein::Hooks::DetachDeletedReply(action);
 
 	const auto history = action.history;
 	const auto peer = history->peer;

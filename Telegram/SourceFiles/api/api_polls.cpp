@@ -26,6 +26,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "history/history_item_helpers.h" // ShouldSendSilent
 #include "lang/lang_keys.h"
 #include "main/main_session.h"
+#include "serein/hooks/history.h"
 #include "styles/style_polls.h"
 #include "ui/toast/toast.h"
 #include "window/window_session_controller.h"
@@ -225,6 +226,7 @@ void Polls::create(
 		Fn<void(bool fileReferenceExpired)> fail) {
 	StripEphemeralReply(_session, action.replyTo);
 	_session->api().sendAction(action);
+	action.replyTo = Serein::Hooks::DetachDeletedReply(action);
 
 	const auto history = action.history;
 	const auto peer = history->peer;
