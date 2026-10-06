@@ -126,6 +126,7 @@ inline void AddLayout(
 }
 
 inline constexpr auto kSubpageTitle = &tr::lng_serein_history_page;
+inline constexpr auto kSubpageAbout = &tr::lng_serein_page_history_about;
 inline const auto kSubpageIcon = &st::menuIconRestore;
 inline const auto kSubpageTile = &st::settingsIconBg3;
 
@@ -138,6 +139,7 @@ inline void AddSubpageButton(
 		.icon = kSubpageIcon,
 		.tile = kSubpageTile,
 		.keywords = { u"deleted"_q, u"edited"_q, u"anti-recall"_q, u"history"_q },
+		.about = *kSubpageAbout,
 	});
 }
 

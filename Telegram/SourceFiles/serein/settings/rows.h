@@ -97,6 +97,7 @@ struct PageButton {
 	const style::icon *icon = nullptr;
 	const style::color *tile = nullptr;
 	QStringList keywords;
+	std::optional<tr::phrase<>> about;
 };
 
 class CustomRow final {

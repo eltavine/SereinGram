@@ -230,7 +230,11 @@ void AddPageButton(
 			}
 		},
 		.keywords = std::move(button.keywords),
-		.visual = { .icon = button.icon, .tile = button.tile },
+		.visual = {
+			.icon = button.icon,
+			.tile = button.tile,
+			.about = button.about,
+		},
 	});
 }
 

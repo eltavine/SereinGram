@@ -30,6 +30,7 @@ inline void AddLayout(
 }
 
 inline constexpr auto kSubpageTitle = &tr::lng_serein_rules;
+inline constexpr auto kSubpageAbout = &tr::lng_serein_page_filters_about;
 inline const auto kSubpageIcon = &st::menuIconTagFilter;
 inline const auto kSubpageTile = &st::settingsIconBg2;
 
@@ -42,6 +43,7 @@ inline void AddSubpageButton(
 		.icon = kSubpageIcon,
 		.tile = kSubpageTile,
 		.keywords = { u"filter"_q, u"link"_q },
+		.about = *kSubpageAbout,
 	});
 }
 

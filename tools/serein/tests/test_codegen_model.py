@@ -717,23 +717,49 @@ class RenderTest(unittest.TestCase):
             **PAGE,
             "subpage": {"title": "lng_page", "icon": "menuIconLock", "keywords": ["ghost"]},
         }
+        strings = {
+            "lng_serein_hide_all",
+            "lng_serein_hide_all_about",
+            "lng_page",
+            "lng_serein_page_messages_about",
+        }
         output = generate.render(
             image(field("hide_all", "hideAll", options=visual()), page=page),
-            known_strings={"lng_serein_hide_all", "lng_serein_hide_all_about", "lng_page"},
+            known_strings=strings,
             known_icons=ICONS,
         )
         rows = output["settings/gen/messages_rows.h"]
         self.assertIn('#include "styles/style_menu_icons.h"', rows)
         self.assertIn("inline constexpr auto kSubpageTitle = &tr::lng_page;", rows)
+        self.assertIn(
+            "inline constexpr auto kSubpageAbout = &tr::lng_serein_page_messages_about;", rows
+        )
         self.assertIn("inline const auto kSubpageIcon = &st::menuIconLock;", rows)
         self.assertIn("		.section = section,", rows)
         self.assertRegex(rows, r"inline const auto kSubpageTile = &st::settingsIconBg\d;")
         self.assertIn('		.keywords = { u"ghost"_q },', rows)
+        self.assertIn("		.about = *kSubpageAbout,", rows)
         with self.assertRaisesRegex(model.SchemaError, "lng_page"):
             generate.render(
                 image(field("hide_all", "hideAll"), page=page),
                 known_strings={"lng_serein_hide_all"},
             )
+        with self.assertRaisesRegex(model.SchemaError, "lng_serein_page_messages_about"):
+            generate.render(
+                image(field("hide_all", "hideAll", options=visual()), page=page),
+                known_strings=strings - {"lng_serein_page_messages_about"},
+                known_icons=ICONS,
+            )
+        custom = {**page, "subpage": {**page["subpage"], "about": "lng_page_about"}}
+        named = generate.render(
+            image(field("hide_all", "hideAll", options=visual()), page=custom),
+            known_strings=(strings - {"lng_serein_page_messages_about"}) | {"lng_page_about"},
+            known_icons=ICONS,
+        )
+        self.assertIn(
+            "inline constexpr auto kSubpageAbout = &tr::lng_page_about;",
+            named["settings/gen/messages_rows.h"],
+        )
         plain = generate.render(
             image(field("hide_all", "hideAll", options=visual())),
             known_strings={"lng_serein_hide_all", "lng_serein_hide_all_about"},

@@ -395,6 +395,7 @@ inline void AddLayout(
 }
 
 inline constexpr auto kSubpageTitle = &tr::lng_serein_compose;
+inline constexpr auto kSubpageAbout = &tr::lng_serein_page_compose_about;
 inline const auto kSubpageIcon = &st::menuIconEdit;
 inline const auto kSubpageTile = &st::settingsIconBg2;
 
@@ -407,6 +408,7 @@ inline void AddSubpageButton(
 		.icon = kSubpageIcon,
 		.tile = kSubpageTile,
 		.keywords = { u"compose"_q, u"send"_q },
+		.about = *kSubpageAbout,
 	});
 }
 

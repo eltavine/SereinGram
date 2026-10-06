@@ -185,6 +185,7 @@ inline void AddLayout(
 }
 
 inline constexpr auto kSubpageTitle = &tr::lng_serein_privacy;
+inline constexpr auto kSubpageAbout = &tr::lng_serein_page_privacy_about;
 inline const auto kSubpageIcon = &st::menuIconLock;
 inline const auto kSubpageTile = &st::settingsIconBg4;
 
@@ -197,6 +198,7 @@ inline void AddSubpageButton(
 		.icon = kSubpageIcon,
 		.tile = kSubpageTile,
 		.keywords = { u"privacy"_q, u"phone"_q },
+		.about = *kSubpageAbout,
 	});
 }
 

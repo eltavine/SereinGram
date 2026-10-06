@@ -127,6 +127,7 @@ inline void AddLayout(
 {% if page.subpage %}
 
 inline constexpr auto kSubpageTitle = &tr::{{ page.subpage.title }};
+inline constexpr auto kSubpageAbout = &tr::{{ page.subpage.about }};
 inline const auto kSubpageIcon = &st::{{ page.subpage.icon }};
 inline const auto kSubpageTile = &st::{{ page.subpage.tile }};
 
@@ -139,6 +140,7 @@ inline void AddSubpageButton(
 		.icon = kSubpageIcon,
 		.tile = kSubpageTile,
 		.keywords = { {{ page.subpage.keywords }} },
+		.about = *kSubpageAbout,
 	});
 }
 {% endif %}

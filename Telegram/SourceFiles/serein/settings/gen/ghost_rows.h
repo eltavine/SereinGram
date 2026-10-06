@@ -149,6 +149,7 @@ inline void AddLayout(
 }
 
 inline constexpr auto kSubpageTitle = &tr::lng_serein_ghost_mode;
+inline constexpr auto kSubpageAbout = &tr::lng_serein_page_ghost_about;
 inline const auto kSubpageIcon = &st::menuIconStealth;
 inline const auto kSubpageTile = &st::settingsIconBg3;
 
@@ -161,6 +162,7 @@ inline void AddSubpageButton(
 		.icon = kSubpageIcon,
 		.tile = kSubpageTile,
 		.keywords = { u"ghost"_q, u"stealth"_q, u"online"_q, u"read"_q },
+		.about = *kSubpageAbout,
 	});
 }
 

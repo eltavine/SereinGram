@@ -46,6 +46,9 @@ message Subpage {
   // Name of the style::icon in st:: shown on that button.
   string icon = 2;
   repeated string keywords = 3;
+  // Lang key of the explanation under that button. Unset means
+  // lng_serein_page_<proto file name>_about.
+  string about = 4;
 }
 
 // Unset fields follow the naming convention: the C++ constant is

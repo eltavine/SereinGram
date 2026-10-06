@@ -166,6 +166,7 @@ inline void AddLayout(
 }
 
 inline constexpr auto kSubpageTitle = &tr::lng_serein_services;
+inline constexpr auto kSubpageAbout = &tr::lng_serein_page_services_about;
 inline const auto kSubpageIcon = &st::menuIconTranslate;
 inline const auto kSubpageTile = &st::settingsIconBg5;
 
@@ -178,6 +179,7 @@ inline void AddSubpageButton(
 		.icon = kSubpageIcon,
 		.tile = kSubpageTile,
 		.keywords = { u"translation"_q, u"AI"_q, u"service"_q },
+		.about = *kSubpageAbout,
 	});
 }
 

@@ -319,11 +319,13 @@ Settings::Type ConfigId() {
 }
 
 void AddConfigButton(SectionBuilder &builder) {
-	builder.addSectionButton({
+	AddPageButton(builder, {
 		.title = (*kTitle)(),
-		.targetSection = ConfigSection::Id(),
-		.icon = { kIcon },
+		.section = ConfigSection::Id(),
+		.icon = kIcon,
+		.tile = &st::settingsIconBg6,
 		.keywords = { u"backup"_q, u"import"_q, u"export"_q },
+		.about = tr::lng_serein_page_config_about,
 	});
 }
 

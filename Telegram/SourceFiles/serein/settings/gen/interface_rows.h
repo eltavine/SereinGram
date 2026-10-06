@@ -246,6 +246,7 @@ inline void AddLayout(
 }
 
 inline constexpr auto kSubpageTitle = &tr::lng_serein_interface;
+inline constexpr auto kSubpageAbout = &tr::lng_serein_page_interface_about;
 inline const auto kSubpageIcon = &st::menuIconPalette;
 inline const auto kSubpageTile = &st::settingsIconBg6;
 
@@ -258,6 +259,7 @@ inline void AddSubpageButton(
 		.icon = kSubpageIcon,
 		.tile = kSubpageTile,
 		.keywords = { u"interface"_q, u"appearance"_q },
+		.about = *kSubpageAbout,
 	});
 }
 

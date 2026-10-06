@@ -316,7 +316,7 @@ def build_page(source, message):
             custom.append((validator, option.ctype))
     stem = source.rsplit("/", 1)[-1].removesuffix(".proto")
     rows, layout, customs = build_layout(message, options, stem, where)
-    subpage = build_subpage(page.get("subpage"), where)
+    subpage = build_subpage(page.get("subpage"), stem, where)
     if subpage:
         subpage["tile"] = TILES[zlib.crc32(stem.encode()) % len(TILES)]
     return Page(
@@ -335,7 +335,7 @@ def build_page(source, message):
     )
 
 
-def build_subpage(subpage, where):
+def build_subpage(subpage, stem, where):
     if not subpage:
         return {}
     for required in ("title", "icon"):
@@ -346,6 +346,7 @@ def build_subpage(subpage, where):
     return {
         "title": subpage["title"],
         "icon": subpage["icon"],
+        "about": subpage.get("about") or f"lng_serein_page_{stem}_about",
         "keywords": cpp_keywords(subpage.get("keywords", [])),
     }
 
@@ -578,7 +579,9 @@ def check_visuals(pages, known_strings, known_icons):
     unknown = sorted({row.icon for row in rows if row.icon not in known_icons})
     if unknown:
         raise SchemaError(f"settings rows use unknown icons: {unknown}")
-    missing = sorted({row.about for row in rows if row.about not in known_strings})
+    abouts = {row.about for row in rows}
+    abouts |= {page.subpage["about"] for page in pages if page.subpage}
+    missing = sorted(about for about in abouts if about not in known_strings)
     if missing:
         raise SchemaError(f"settings rows use unknown descriptions: {missing}")
     notes = {

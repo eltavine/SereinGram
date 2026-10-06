@@ -440,6 +440,7 @@ inline void AddLayout(
 }
 
 inline constexpr auto kSubpageTitle = &tr::lng_serein_messages;
+inline constexpr auto kSubpageAbout = &tr::lng_serein_page_messages_about;
 inline const auto kSubpageIcon = &st::menuIconChatBubble;
 inline const auto kSubpageTile = &st::settingsIconBg3;
 
@@ -452,6 +453,7 @@ inline void AddSubpageButton(
 		.icon = kSubpageIcon,
 		.tile = kSubpageTile,
 		.keywords = { u"messages"_q, u"time"_q },
+		.about = *kSubpageAbout,
 	});
 }
 

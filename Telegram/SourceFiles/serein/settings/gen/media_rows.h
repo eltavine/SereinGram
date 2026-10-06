@@ -223,6 +223,7 @@ inline void AddLayout(
 }
 
 inline constexpr auto kSubpageTitle = &tr::lng_serein_media;
+inline constexpr auto kSubpageAbout = &tr::lng_serein_page_media_about;
 inline const auto kSubpageIcon = &st::menuIconPhoto;
 inline const auto kSubpageTile = &st::settingsIconBg3;
 
@@ -235,6 +236,7 @@ inline void AddSubpageButton(
 		.icon = kSubpageIcon,
 		.tile = kSubpageTile,
 		.keywords = { u"media"_q, u"sticker"_q, u"emoji"_q },
+		.about = *kSubpageAbout,
 	});
 }
 

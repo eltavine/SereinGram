@@ -69,10 +69,9 @@ void AddFeatured(SectionBuilder &builder) {
 	using namespace rpl::mappers;
 	const auto controller = builder.controller();
 	auto &account = ForAccount(builder.session());
-	builder.addButton({
+	AddRow(builder, {
 		.id = u"serein/home/ghost"_q,
 		.title = (*Ghost::kSubpageTitle)(),
-		.icon = { Ghost::kSubpageIcon },
 		.label = StateLabel(rpl::combine(
 			account.Value(Ghost::kGhostMode),
 			ForDevice().Value(Ghost::kGhostAllAccounts)) | rpl::map(_1 || _2)),
@@ -82,11 +81,15 @@ void AddFeatured(SectionBuilder &builder) {
 			}
 		},
 		.keywords = { u"ghost"_q, u"stealth"_q, u"online"_q, u"read"_q },
+		.visual = {
+			.icon = Ghost::kSubpageIcon,
+			.tile = Ghost::kSubpageTile,
+			.about = *Ghost::kSubpageAbout,
+		},
 	});
-	builder.addButton({
+	AddRow(builder, {
 		.id = u"serein/home/history"_q,
 		.title = (*HistorySettings::kSubpageTitle)(),
-		.icon = { HistorySettings::kSubpageIcon },
 		.label = StateLabel(rpl::combine(
 			account.Value(HistorySettings::kHistorySaveDeleted),
 			account.Value(HistorySettings::kHistorySaveEdits)
@@ -97,17 +100,26 @@ void AddFeatured(SectionBuilder &builder) {
 			}
 		},
 		.keywords = { u"deleted"_q, u"edited"_q, u"history"_q },
+		.visual = {
+			.icon = HistorySettings::kSubpageIcon,
+			.tile = HistorySettings::kSubpageTile,
+			.about = *HistorySettings::kSubpageAbout,
+		},
 	});
-	builder.addButton({
+	AddRow(builder, {
 		.id = u"serein/home/presets"_q,
 		.title = tr::lng_serein_presets(),
-		.icon = { &st::menuIconCustomize },
 		.onClick = [=] {
 			if (controller) {
 				Presets::ShowPresets(controller);
 			}
 		},
 		.keywords = { u"preset"_q, u"setup"_q, u"quick"_q },
+		.visual = {
+			.icon = &st::menuIconCustomize,
+			.tile = &st::settingsIconBg5,
+			.about = tr::lng_serein_home_presets_about,
+		},
 	});
 	if (controller) {
 		crl::on_main(controller, [=] { Presets::OfferPresetsOnce(controller); });
@@ -130,10 +142,9 @@ void AddUpdateCheck(SectionBuilder &builder) {
 		return;
 	}
 	const auto controller = builder.controller();
-	builder.addButton({
+	AddRow(builder, {
 		.id = u"serein/home/check-updates"_q,
 		.title = tr::lng_serein_update_check_now(),
-		.icon = { &st::menuIconDownload },
 		.label = Updates::StateValue(
 		) | rpl::map([](const Updates::UpdateState &state) {
 			return (state.status == Updates::Status::Checking)
@@ -151,6 +162,11 @@ void AddUpdateCheck(SectionBuilder &builder) {
 			}));
 		},
 		.keywords = { u"update"_q, u"version"_q, u"GitHub"_q },
+		.visual = {
+			.icon = &st::menuIconDownload,
+			.tile = &st::settingsIconBg2,
+			.about = tr::lng_serein_home_update_about,
+		},
 	});
 }
 
@@ -159,32 +175,44 @@ void AddAbout(SectionBuilder &builder) {
 	builder.addSkip();
 	builder.addSubsectionTitle(tr::lng_serein_home_about());
 	const auto controller = builder.controller();
-	builder.addButton({
+	AddRow(builder, {
 		.id = u"serein/home/about"_q,
 		.title = tr::lng_serein_about_title(),
-		.icon = { &st::menuIconInfo },
 		.onClick = [=] {
 			if (controller) {
 				controller->show(Box(Serein::AboutBox));
 			}
 		},
 		.keywords = { u"about"_q, u"disclaimer"_q, u"license"_q },
+		.visual = {
+			.icon = &st::menuIconInfo,
+			.tile = &st::settingsIconBg4,
+			.about = tr::lng_serein_home_info_about,
+		},
 	});
 	AddUpdateCheck(builder);
-	builder.addButton({
+	AddRow(builder, {
 		.title = tr::lng_serein_source_code(),
-		.icon = { &st::menuIconLink },
 		.onClick = [] {
 			UrlClickHandler::Open(u"https://github.com/eltavine/SereinGram"_q);
 		},
+		.visual = {
+			.icon = &st::menuIconLink,
+			.tile = &st::settingsIconBg8,
+			.about = tr::lng_serein_home_source_about,
+		},
 	});
-	builder.addButton({
+	AddRow(builder, {
 		.title = tr::lng_serein_licenses(),
-		.icon = { &st::menuIconFile },
 		.onClick = [=] {
 			if (controller) {
 				ShowLicenses(controller);
 			}
+		},
+		.visual = {
+			.icon = &st::menuIconFile,
+			.tile = &st::settingsIconBg1,
+			.about = tr::lng_serein_home_licenses_about,
 		},
 	});
 	builder.addSkip();
