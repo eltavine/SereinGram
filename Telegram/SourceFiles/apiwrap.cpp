@@ -111,6 +111,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "storage/file_upload.h"
 #include "storage/storage_account.h"
 #include "serein/hooks/ghost.h"
+#include "serein/hooks/history.h"
 
 namespace {
 
@@ -4806,6 +4807,7 @@ void ApiWrap::sendMessage(
 		history,
 		_session->user()).flags;
 	TextUtilities::PrepareForSending(left, prepareFlags);
+	Serein::Hooks::QuoteDeletedReply(history, action.replyTo, left);
 
 	HistoryItem *lastMessage = nullptr;
 

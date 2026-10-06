@@ -33,6 +33,7 @@ set(serein_sources
     serein/features/history/deleted_marks.cpp
     serein/features/history/media_store.cpp
     serein/features/history/model/recorder.cpp
+    serein/features/history/model/reply_quote.cpp
     serein/features/history/model/window.cpp
     serein/features/online/model/presence.cpp
     serein/features/updates/model/manifest.cpp
@@ -53,6 +54,7 @@ set(serein_sources
     serein/features/history/restore.cpp
     serein/features/history/backend.cpp
     serein/features/history/capture.cpp
+    serein/features/history/deleted_reply.cpp
     serein/features/history/recording.cpp
     serein/features/history/wire.cpp
     serein/features/history/wire_cache.cpp

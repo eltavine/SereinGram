@@ -8,6 +8,7 @@
 class History;
 class HistoryItem;
 class QPainter;
+struct FullReplyTo;
 struct TextWithEntities;
 
 namespace Serein::Hooks {
@@ -35,6 +36,10 @@ void OnHistorySliceAdded(gsl::not_null<::History*> history);
 	gsl::not_null<::History*> history,
 	qint64 messageId,
 	const QString &fallback);
+void QuoteDeletedReply(
+	gsl::not_null<::History*> history,
+	FullReplyTo &replyTo,
+	TextWithEntities &text);
 
 class FadedPaint final {
 public:

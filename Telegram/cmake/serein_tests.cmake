@@ -53,6 +53,7 @@ set(serein_test_sources
     serein/tests/test_text_entities.cpp
     serein/tests/test_id_list.cpp
     serein/tests/test_history_entities.cpp
+    serein/tests/test_reply_quote.cpp
     serein/tests/test_online_presence.cpp
     serein/tests/text_entity_support.cpp
     serein/adapters/openssl/aes_gcm_cipher.cpp
@@ -67,6 +68,7 @@ set(serein_test_sources
     serein/display/text_entities.cpp
     serein/features/history/media_store.cpp
     serein/features/history/model/recorder.cpp
+    serein/features/history/model/reply_quote.cpp
     serein/features/history/model/window.cpp
     serein/features/online/model/presence.cpp
     serein/features/updates/model/manifest.cpp
