@@ -109,6 +109,25 @@
       "app": true,
       "libraries": true
     },
+    "serein/features/inspector/model/": {
+      "own": [
+        "serein/features/inspector/model/"
+      ],
+      "app": false,
+      "libraries": true
+    },
+    "serein/features/inspector/": {
+      "own": [
+        "serein/features/inspector/",
+        "serein/core/",
+        "serein/schema/",
+        "serein/ports/",
+        "serein/hooks/",
+        "serein/display/"
+      ],
+      "app": true,
+      "libraries": true
+    },
     "serein/features/instant_view/": {
       "own": [
         "serein/features/instant_view/",

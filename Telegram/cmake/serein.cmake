@@ -58,6 +58,14 @@ set(serein_sources
     serein/features/history/recording.cpp
     serein/features/history/wire.cpp
     serein/features/history/wire_cache.cpp
+    serein/features/inspector/box.cpp
+    serein/features/inspector/dump.cpp
+    serein/features/inspector/menu.cpp
+    serein/features/inspector/model/facts.cpp
+    serein/features/inspector/model/render.cpp
+    serein/features/inspector/model/tl_tree.cpp
+    serein/features/inspector/sources.cpp
+    serein/app/inspector.cpp
     serein/app/lifecycle.cpp
     serein/app/main_menu.cpp
     serein/app/message_menu.cpp
@@ -92,6 +100,7 @@ set(serein_sources
     serein/features/stories/publisher.cpp
     serein/app/ghost_menu.cpp
     serein/features/ghost/send.cpp
+    serein/display/icon_tile.cpp
     serein/display/json_files.cpp
     serein/display/peer_id.cpp
     serein/display/reorder_row.cpp

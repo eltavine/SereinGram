@@ -2,12 +2,12 @@
 
 #include "serein/features/ghost/read_until_here.h"
 #include "serein/features/history/menu.h"
+#include "serein/features/inspector/menu.h"
 #include "serein/filters/hide_message_menu.h"
 #include "serein/filters/menu.h"
 #include "serein/menu/batch.h"
 #include "serein/menu/buttons.h"
 #include "serein/menu/contributors.h"
-#include "serein/menu/details.h"
 #include "serein/menu/media.h"
 #include "serein/menu/rating.h"
 #include "serein/menu/reminder.h"
@@ -67,7 +67,7 @@ void RegisterMessageMenu() {
 	AddItemAction(Ghost::InsertReadUntilHereAction);
 	AddItemAction(HistoryFeature::InsertHistoryExclusionAction);
 	AddItemAction(Menu::InsertButtonDataAction);
-	AddItemAction(Menu::InsertDetailsAction);
+	AddItemAction(Inspector::InsertDetailsAction);
 	AddItemAction(Messages::InsertCopyMarkdownAction);
 	AddItemAction(Filters::InsertHideMessageAction);
 }

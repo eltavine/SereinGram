@@ -1,6 +1,7 @@
 #include "serein/app/modules.h"
 
 #include "serein/app/history_storage.h"
+#include "serein/app/inspector.h"
 #include "serein/app/message_menu.h"
 #include "serein/chats/reading_tracking.h"
 #include "serein/chats/recent_tracking.h"
@@ -46,6 +47,7 @@ constexpr auto kModules = std::array{
 	Module{ "chats.sorting", nullptr, Chats::WatchSorting },
 	Module{ "app.shortcuts", StartShortcuts },
 	Module{ "app.message_menu", RegisterMessageMenu },
+	Module{ "app.inspector", RegisterInspector },
 	Module{ "privacy.auto_demo", Privacy::StartAutoDemoMode },
 	Module{ "privacy.settings_lock", StartSettingsLock },
 	Module{ "media.voice_denoise", Media::StartVoiceDenoise },

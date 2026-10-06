@@ -25,6 +25,12 @@ sereinSettingsAbout: FlatLabel(settingsExperimentalAbout) {
 sereinSettingsAboutPadding: margins(60px, 0px, 22px, 11px);
 sereinSettingsAboutPlainPadding: margins(22px, 0px, 22px, 10px);
 
+sereinInspectorWidth: 480px;
+sereinInspectorTextPadding: margins(22px, 4px, 22px, 8px);
+sereinInspectorRaw: FlatLabel(defaultFlatLabel) {
+	minWidth: 100px;
+}
+
 sereinSnapshotWidth: 640px;
 sereinSnapshotPadding: 16px;
 sereinSnapshotHeaderHeight: 40px;

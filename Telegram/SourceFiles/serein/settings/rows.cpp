@@ -1,5 +1,6 @@
 #include "serein/settings/rows.h"
 
+#include "serein/display/icon_tile.h"
 #include "serein/settings/restart.h"
 #include "settings/settings_common.h"
 #include "ui/layers/generic_box.h"
@@ -19,34 +20,6 @@
 
 namespace Serein {
 namespace {
-
-void AddTile(
-		not_null<Ui::SettingsButton*> button,
-		const style::icon &icon,
-		const style::color &tile) {
-	const auto widget = Ui::CreateChild<Ui::RpWidget>(button.get());
-	const auto size = st::sereinSettingsTileSize;
-	widget->setAttribute(Qt::WA_TransparentForMouseEvents);
-	widget->resize(size, size);
-	widget->show();
-	button->sizeValue(
-	) | rpl::on_next([=](QSize outer) {
-		widget->moveToLeft(
-			st::sereinSettingsTileLeft,
-			(outer.height() - size) / 2,
-			outer.width());
-	}, widget->lifetime());
-	widget->paintRequest(
-	) | rpl::on_next([=, &icon, &tile] {
-		auto p = QPainter(widget);
-		auto hq = PainterHighQualityEnabler(p);
-		const auto radius = st::sereinSettingsTileRadius;
-		p.setPen(Qt::NoPen);
-		p.setBrush(tile->b);
-		p.drawRoundedRect(widget->rect(), radius, radius);
-		icon.paintInCenter(p, widget->rect(), st::settingsIconFg->c);
-	}, widget->lifetime());
-}
 
 [[nodiscard]] RowVisual VisualOf(
 		const style::icon *icon,
@@ -180,7 +153,10 @@ Ui::SettingsButton *AddRow(
 				st));
 			if (const auto icon = args.visual.icon) {
 				const auto tile = args.visual.tile;
-				AddTile(button, *icon, tile ? *tile : st::settingsIconBg4);
+				Display::AddIconTile(
+					button,
+					*icon,
+					tile ? *tile : st::settingsIconBg4);
 			}
 			if (args.label) {
 				::Settings::CreateRightLabel(

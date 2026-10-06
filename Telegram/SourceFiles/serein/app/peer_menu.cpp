@@ -9,6 +9,7 @@
 #include "serein/chats/quick_actions.h"
 #include "serein/features/history/chat_row.h"
 #include "serein/features/history/viewer.h"
+#include "serein/features/inspector/box.h"
 #include "serein/features/stories/composer.h"
 #include "serein/filters/model.h"
 #include "serein/filters/reveal.h"
@@ -105,6 +106,11 @@ void FillHistoryMenu(
 	}
 	if (!topic) {
 		Chats::FillQuickActions(addAction, controller, peer);
+	}
+	if (!topic && ForDevice().Get(Chats::kChatQuickActions)) {
+		addAction(tr::lng_serein_inspector_chat_title(tr::now), [=] {
+			Inspector::ShowPeerDetails(controller, peer);
+		}, &st::menuIconInfo);
 	}
 	if (!topic) {
 		FillReadExceptionAction(addAction, controller, peer);
