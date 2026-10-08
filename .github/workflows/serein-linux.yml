@@ -344,7 +344,9 @@ jobs:
           install -Dm755 "out/$CONFIG/SereinGram" "$app/usr/bin/SereinGram"
           install -Dm644 Telegram/Resources/art/icon256.png \
             "$app/io.github.eltavine.SereinGram.png"
-          sed '/^DBusActivatable=/d' lib/xdg/io.github.eltavine.SereinGram.desktop \
+          # appimage.github.io runs desktop-file-validate 0.26, which rejects SingleMainWindow.
+          sed -e '/^DBusActivatable=/d' -e '/^SingleMainWindow=/d' \
+            lib/xdg/io.github.eltavine.SereinGram.desktop \
             > "$app/io.github.eltavine.SereinGram.desktop"
           ln -s usr/bin/SereinGram "$app/AppRun"
           retry=tools/serein/retry.sh
