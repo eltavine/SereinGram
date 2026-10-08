@@ -28,6 +28,10 @@ until you turn something on SereinGram behaves like Telegram Desktop.
 
 中文用户请阅读[简体中文说明](#简体中文)。
 
+> [!TIP]
+> On a phone? [SereinGram for Android](https://github.com/eltavine/SereinGram-Android)
+> brings SereinGram to Android.
+
 ## Contents
 
 - [Highlights](#highlights)
@@ -295,7 +299,8 @@ No stable version has been released yet. The
 pre-release is rebuilt from every push to `develop` once the complete CI
 (guards, tests, every platform and every package) has passed, and it always
 holds only the latest build. Stable releases will appear as `vX.Y.Z` on the
-[releases page](https://github.com/eltavine/SereinGram/releases).
+[releases page](https://github.com/eltavine/SereinGram/releases). For
+Android, see [SereinGram for Android](https://github.com/eltavine/SereinGram-Android).
 
 > [!WARNING]
 > Until SereinGram's own API credentials are configured, Nightly builds are
@@ -748,7 +753,7 @@ exception of Telegram Desktop. See [LICENSE](LICENSE) and [LEGAL](LEGAL).
 
 ### 简介
 
-SereinGram 是一款基于 [Telegram Desktop](https://github.com/telegramdesktop/tdesktop) 的非官方、自由开源 Telegram 桌面客户端，支持 macOS、Windows 与主流 Linux 发行版。它保留 Telegram 的全部官方功能，并加入幽灵模式、已删除消息与编辑历史、消息过滤、主播模式、自选的翻译、转写与 AI 服务、代理工具等大量可选增强。所有增强默认关闭；什么都不开启时，SereinGram 的行为与 Telegram Desktop 一致。
+SereinGram 是一款基于 [Telegram Desktop](https://github.com/telegramdesktop/tdesktop) 的非官方、自由开源 Telegram 桌面客户端，支持 macOS、Windows 与主流 Linux 发行版。它保留 Telegram 的全部官方功能，并加入幽灵模式、已删除消息与编辑历史、消息过滤、主播模式、自选的翻译、转写与 AI 服务、代理工具等大量可选增强。所有增强默认关闭；什么都不开启时，SereinGram 的行为与 Telegram Desktop 一致。Android 版见 [SereinGram for Android](https://github.com/eltavine/SereinGram-Android)。
 
 产品规格、架构与发布约定的中文文档见 [docs/serein](docs/serein/README.md)，逐项功能与状态见[功能矩阵](docs/serein/features.md)。
 
@@ -759,6 +764,7 @@ SereinGram 是一款基于 [Telegram Desktop](https://github.com/telegramdesktop
 - Windows：安装包或便携版。程序尚未签名，SmartScreen 提示时选择“更多信息”，再选“仍要运行”。
 - macOS：通用版，或 Apple 芯片、Intel 专用磁盘映像。程序只有 ad-hoc 签名、未经公证，首次打开被拦截后，到“系统设置 → 隐私与安全性”中选择“仍要打开”。
 - Linux：`.deb`、`.rpm`、AppImage、便携版、Flatpak、Snap、Arch Linux 软件包与 Nix flake，详见 [Linux 发行版](docs/serein/linux.md)。
+- Android：见 [SereinGram for Android](https://github.com/eltavine/SereinGram-Android)。
 - 下载后可用 `SHA256SUMS` 校验，方法见上文的 [Verify your download](#verify-your-download)。
 
 ### 声明
