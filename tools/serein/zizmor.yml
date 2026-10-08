@@ -9,7 +9,3 @@ rules:
   misfeature:
     ignore:
       - serein-win.yml
-  # commitlint and its preset are installed at exact versions; there is no lockfile to install from.
-  adhoc-packages:
-    ignore:
-      - serein-guards.yml

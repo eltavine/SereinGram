@@ -2,7 +2,8 @@
 """Fail when a SereinGram-owned source file exceeds the line limit.
 
 Upstream Telegram Desktop files are exempt: only paths listed under
-"owned" in the policy are checked.
+"owned" in the policy are checked. So are the files listed under
+"generated", which tools write, such as lockfiles.
 """
 
 import argparse
@@ -14,6 +15,7 @@ from pathlib import Path
 
 DEFAULT_POLICY = Path(__file__).resolve().parent / "policy" / "file_size.json"
 POLICY_KEYS = {"schema_version", "max_lines", "owned", "extensions", "filenames"}
+OPTIONAL_KEYS = {"generated"}
 
 
 class PolicyError(Exception):
@@ -25,14 +27,21 @@ def load_policy(path):
         policy = json.loads(Path(path).read_text(encoding="utf-8"))
     except (OSError, ValueError) as error:
         raise PolicyError(f"cannot read policy {path}: {error}") from error
-    if not isinstance(policy, dict) or set(policy) != POLICY_KEYS:
-        raise PolicyError(f"policy {path} must have exactly {sorted(POLICY_KEYS)}")
+    if (
+        not isinstance(policy, dict)
+        or not POLICY_KEYS <= set(policy) <= POLICY_KEYS | OPTIONAL_KEYS
+    ):
+        raise PolicyError(
+            f"policy {path} must have {sorted(POLICY_KEYS)}, may have {sorted(OPTIONAL_KEYS)}, "
+            "and nothing else"
+        )
+    policy.setdefault("generated", [])
     if policy["schema_version"] != 1:
         raise PolicyError(f"unsupported policy schema {policy['schema_version']}")
     limit = policy["max_lines"]
     if not isinstance(limit, int) or isinstance(limit, bool) or limit <= 0:
         raise PolicyError("max_lines must be a positive integer")
-    for key in ("owned", "extensions", "filenames"):
+    for key in ("owned", "generated", "extensions", "filenames"):
         values = policy[key]
         if not isinstance(values, list) or not all(
             isinstance(value, str) and value for value in values
@@ -81,6 +90,8 @@ def find_violations(root, policy):
     violations = []
     for name in list_files(root):
         if not is_owned(name, policy["owned"]) or not is_source(name, policy):
+            continue
+        if is_owned(name, policy["generated"]):
             continue
         full = Path(root) / name
         if not full.is_file():
