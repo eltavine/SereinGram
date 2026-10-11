@@ -17,6 +17,8 @@
 #include "styles/style_layers.h"
 #include "styles/style_widgets.h"
 
+#include <openssl/crypto.h>
+
 namespace Serein {
 namespace {
 
@@ -79,17 +81,28 @@ void GuardSettings(not_null<Ui::VerticalLayout*> content, Fn<void()> build) {
 		st::boxRowPadding,
 		style::al_left);
 	const auto submit = [=] {
-		const auto passcode = field->getLastText().toUtf8();
-		if (!Core::App().domain().local().checkPasscode(passcode)) {
-			field->selectAll();
-			field->showError();
-			return;
+		auto passcode = field->getLastText().toUtf8();
+		const auto started = Core::App().domain().tryPasscode(
+			passcode,
+			crl::guard(row, [=](bool correct) {
+				field->setDisabled(false);
+				unlock->setDisabled(false);
+				if (!correct || Core::App().passcodeLocked()) {
+					field->selectAll();
+					field->showError();
+					return;
+				}
+				Unlocked = true;
+				crl::on_main(row, [=] {
+					content->clear();
+					build();
+				});
+			}));
+		OPENSSL_cleanse(passcode.data(), passcode.size());
+		if (started) {
+			field->setDisabled(true);
+			unlock->setDisabled(true);
 		}
-		Unlocked = true;
-		crl::on_main(content, [=] {
-			content->clear();
-			build();
-		});
 	};
 	unlock->setClickedCallback(submit);
 	QObject::connect(
