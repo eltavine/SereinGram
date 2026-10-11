@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "upstream": "https://github.com/telegramdesktop/tdesktop.git#dev",
-  "base": "d8594c011756265de4385408540bd9f7c787a003",
+  "base": "6fed91ffab9861771a75f29df65031b3c80b6941",
   "source_root": "Telegram/SourceFiles/",
   "owned_extra": [
     "docs/serein/",
@@ -31,9 +31,9 @@
   "submodule_overrides": [],
   "budget": {
     "all_files": 235,
-    "all_added_lines": 1704,
+    "all_added_lines": 1707,
     "source_files": 167,
-    "source_added_lines": 1507,
+    "source_added_lines": 1509,
     "direct_include_files": 0,
     "upstream_headers": 164
   }

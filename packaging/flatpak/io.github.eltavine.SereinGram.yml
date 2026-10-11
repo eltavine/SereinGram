@@ -229,7 +229,7 @@ modules:
         sha256: 6dcfbca271d76a6502741a2c0dc6fc98ef7dd0b7b4cfd0abcebb285a86a26f33
       - type: git
         url: https://github.com/desktop-app/patches.git
-        commit: ebcd707f1763651089e3e7220ddd4f97cbcf87e0
+        commit: aec474953ff7ee9b6e4cd9b8658288ea86d124f3
         dest: patches
       - type: shell
         commands:
@@ -247,7 +247,7 @@ modules:
     sources:
       - type: git
         url: https://github.com/desktop-app/tg_owt.git
-        commit: e2d0e88d1bde6cc600da5dc92581dc97e4c1e685
+        commit: d1cf250ea73de26c4c1f0a3c8173eb2648efbb04
     cleanup:
       - '*'
 
@@ -263,28 +263,50 @@ modules:
     cleanup:
       - '*'
 
-  - name: tlottie
+  - name: tdesktop_rust
     buildsystem: simple
     build-options:
       env:
-        CARGO_HOME: /run/build/tlottie/cargo
+        CARGO_HOME: /run/build/tdesktop_rust/cargo
     build-commands:
-      - cargo rustc --offline --lib --release --locked --features c-api --crate-type
-        staticlib
-      - objcopy --strip-debug target/release/libtlottie.a $FLATPAK_DEST/lib/libtlottie.a
-      - install -Dm644 include/tlottie.h $FLATPAK_DEST/include/tlottie/tlottie.h
+      - |
+        set -euo pipefail
+        cargo new --lib --vcs none tdesktop_rust
+        cd tdesktop_rust
+        printf 'pub use ::tlottie;\npub use ::wallet_engine;\n' > src/lib.rs
+        cargo add --path ../tlottie --features c-api
+        cargo add --path ../wallet-engine
+        cargo rustc --lib --release \
+          --crate-type staticlib --crate-type cdylib \
+          -- --print native-static-libs
+        mkdir -p $FLATPAK_DEST/lib $FLATPAK_DEST/include/tlottie $FLATPAK_DEST/include/wallet_engine
+        objcopy --strip-debug target/release/libtdesktop_rust.a $FLATPAK_DEST/lib/libtdesktop_rust.a
+        cp ../tlottie/include/tlottie.h $FLATPAK_DEST/include/tlottie/tlottie.h
+        cargo run --locked --manifest-path ../wallet-engine/bindgen/cpp/bindgen/Cargo.toml -- \
+          --library --out-dir $FLATPAK_DEST/include/wallet_engine \
+          target/release/libtdesktop_rust.so
     sources:
       - type: git
+        dest: tlottie
         url: https://github.com/dkaraush/tlottie.git
-        commit: 31f1b542f88e7b4be9a01e749920d857535fc715
+        commit: 92df98dc209bc39b1e567ec74a8c86a0af5239de
+        x-cargo-lock:
+          - Cargo.lock
+      - type: git
+        dest: wallet-engine
+        url: https://github.com/i582/wallet-engine.git
+        commit: e59e0d89d7ee90c388bf36e3334c5b276f396697
+        x-cargo-lock:
+          - Cargo.lock
+          - bindgen/cpp/Cargo.lock
       - type: git
         url: https://github.com/desktop-app/patches.git
-        commit: ebcd707f1763651089e3e7220ddd4f97cbcf87e0
+        commit: aec474953ff7ee9b6e4cd9b8658288ea86d124f3
         dest: patches
       - type: shell
         commands:
-          - git apply $PWD/patches/tlottie.patch
-      - tlottie-cargo-sources.yml
+          - git -C wallet-engine apply $PWD/patches/wallet-engine.patch
+      - tdesktop-rust-cargo-sources.json
     cleanup:
       - '*'
 

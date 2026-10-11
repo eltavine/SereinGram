@@ -12,6 +12,7 @@ PINS = {
     "webrtc": "2" * 40,
     "tlottie": "3" * 40,
     "patches": "4" * 40,
+    "wallet-engine": "5" * 40,
 }
 STALE = "9" * 40
 

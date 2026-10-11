@@ -141,7 +141,7 @@ jobs:
           "./$REPO_NAME/Telegram/build/prepare/mac.sh" silent
 
       - name: Free up some disk space.
-        run: find Libraries '(' '(' ! '(' -name '*.a' -o -name '*.h' -o -name '*.hpp' -o -name '*.inc' -o -name '*.cmake' -o -name '*.pc' -o -path '*/include/*' -o -path '*/objects-*' -o -path '*/cache_keys/*' -o -path '*/patches/*' -o -perm +111 ')' -type f ')' -o -empty ')' -delete
+        run: find Libraries '(' '(' ! '(' -name '*.a' -o -name '*.h' -o -name '*.hpp' -o -name '*.inc' -o -name '*.cmake' -o -name '*.pc' -o -path '*/include/*' -o -path '*/objects-*' -o -path '*/cache_keys/*' -o -path '*/patches/*' -o -path '*/wallet_engine/*' -o '(' '(' -path '*/tlottie/*' -o -path '*/wallet-engine/*' -o -path '*/tdesktop_rust/*' ')' ! -path '*/target/*' ')' -o -perm +111 ')' -type f ')' -o -empty ')' -delete
 
       - name: Save the libraries cache.
         if: env.SAVE_CACHE == 'true' && steps.cache-libs.outputs.cache-hit != 'true'

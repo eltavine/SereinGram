@@ -112,3 +112,6 @@
 [submodule "Telegram/ThirdParty/quirc"]
 	path = Telegram/ThirdParty/quirc
 	url = https://github.com/dlbeer/quirc.git
+[submodule "Telegram/ThirdParty/zxcvbn"]
+	path = Telegram/ThirdParty/zxcvbn
+	url = https://github.com/tsyrogit/zxcvbn-c.git

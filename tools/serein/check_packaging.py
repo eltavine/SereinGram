@@ -17,6 +17,7 @@ FLATPAK_SOURCES = {
     "webrtc": "https://github.com/desktop-app/tg_owt.git",
     "tlottie": "https://github.com/dkaraush/tlottie.git",
     "patches": "https://github.com/desktop-app/patches.git",
+    "wallet-engine": "https://github.com/i582/wallet-engine.git",
 }
 PKGBUILD_COMMIT = re.compile(r"^_td_commit=([0-9a-f]{40})$", re.M)
 RECIPES = (SNAP, PKGBUILD, FLATPAK, "packaging/nix/package.nix", "flake.nix")
@@ -121,7 +122,7 @@ def main(argv=None):
             print(f"Updated {change}.")
             if change.startswith("tlottie "):
                 print(
-                    "Regenerate packaging/flatpak/tlottie-cargo-sources.yml "
+                    "Regenerate packaging/flatpak/tdesktop-rust-cargo-sources.json "
                     "from the new tlottie Cargo.lock."
                 )
     found = problems(args.root)
