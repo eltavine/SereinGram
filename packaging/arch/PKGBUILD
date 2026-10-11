@@ -7,7 +7,10 @@
 pkgname=sereingram-desktop-git
 _repo=SereinGram
 _td_commit=51743dfd01dff6179e2d8f7095729caa4e2222e9
-pkgver=7.2.10.r0.g0000000
+_tlottie_commit=92df98dc209bc39b1e567ec74a8c86a0af5239de
+_wallet_engine_commit=e59e0d89d7ee90c388bf36e3334c5b276f396697
+_patches_commit=aec474953ff7ee9b6e4cd9b8658288ea86d124f3
+pkgver=7.3.1.r0.g0000000
 pkgrel=1
 pkgdesc='Telegram Desktop based client with optional privacy and customization features'
 arch=('x86_64' 'aarch64')
@@ -53,7 +56,6 @@ depends=(
   'qt6-svg'
   'qt6-wayland'
   'rnnoise'
-  'tlottie'
   'xxhash'
   'zlib'
 )
@@ -71,6 +73,7 @@ makedepends=(
   'python'
   'qt6-shadertools'
   'range-v3'
+  'rust'
   'tl-expected'
   'vulkan-headers'
 )
@@ -85,8 +88,14 @@ conflicts=('sereingram-desktop')
 source=(
   "$_repo::git+https://github.com/eltavine/SereinGram.git#branch=develop"
   "td::git+https://github.com/tdlib/td.git#commit=$_td_commit"
+  "tlottie::git+https://github.com/dkaraush/tlottie.git#commit=$_tlottie_commit"
+  "wallet-engine::git+https://github.com/i582/wallet-engine.git#commit=$_wallet_engine_commit"
+  "patches::git+https://github.com/desktop-app/patches.git#commit=$_patches_commit"
 )
 sha256sums=('SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
             'SKIP')
 
 pkgver() {
@@ -100,6 +109,11 @@ pkgver() {
 prepare() {
   cd "$_repo"
   git submodule update --init --recursive --depth 1 --jobs 8
+  git -C "$srcdir/wallet-engine" apply "$srcdir/patches/wallet-engine.patch"
+  mkdir -p "$srcdir/tdesktop_rust"
+  cp -r packaging/rust/. "$srcdir/tdesktop_rust/"
+  cargo fetch --locked --manifest-path "$srcdir/tdesktop_rust/Cargo.toml"
+  cargo fetch --locked --manifest-path "$srcdir/wallet-engine/bindgen/cpp/bindgen/Cargo.toml"
 }
 
 build() {
@@ -129,10 +143,23 @@ build() {
   cmake --build td/build
   cmake --install td/build
 
+  cargo build --offline --locked --release --manifest-path tdesktop_rust/Cargo.toml
+  local rust_prefix="$srcdir/tdesktop_rust/install"
+  install -Dm644 tdesktop_rust/target/release/libtdesktop_rust.a "$rust_prefix/lib/libtdesktop_rust.a"
+  install -Dm644 tlottie/include/tlottie.h "$rust_prefix/include/tlottie/tlottie.h"
+  (
+    cd tdesktop_rust
+    CARGO_NET_OFFLINE=true cargo run --offline --locked \
+      --manifest-path ../wallet-engine/bindgen/cpp/bindgen/Cargo.toml -- \
+      --library --out-dir "$rust_prefix/include/wallet_engine" \
+      target/release/libtdesktop_rust.so
+  )
+
   cmake -S "$_repo" -B build -G Ninja \
     -DCMAKE_BUILD_TYPE=None \
     -DCMAKE_INSTALL_PREFIX=/usr \
     -Dtde2e_DIR="$srcdir/td/install/lib/cmake/tde2e" \
+    -DCMAKE_PREFIX_PATH="$rust_prefix" \
     "${credentials[@]}" \
     "${published[@]}"
   cmake --build build

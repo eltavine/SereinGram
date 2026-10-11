@@ -5,9 +5,9 @@
 {
   lib,
   stdenv,
+  callPackage,
   telegram-desktop,
   pango,
-  tlottie,
   src,
   version ? null,
   apiId ? null,
@@ -16,6 +16,7 @@
 }:
 
 let
+  rustLibraries = callPackage ./tdesktop-rust.nix { };
   versionLines = lib.splitString "\n" (builtins.readFile (src + "/Telegram/build/version"));
   versionLine = lib.findFirst (lib.hasPrefix "AppVersionStr ") "AppVersionStr 0" versionLines;
 
@@ -37,7 +38,9 @@ let
 
       # The upstream recipe adds these two for its own package name only.
       buildInputs =
-        previousAttrs.buildInputs ++ lib.optionals stdenv.hostPlatform.isLinux [ pango ] ++ [ tlottie ];
+        previousAttrs.buildInputs
+        ++ lib.optionals stdenv.hostPlatform.isLinux [ pango ]
+        ++ [ rustLibraries ];
 
       cmakeFlags =
         lib.filter (flag: !lib.hasPrefix "-DTDESKTOP_API_" flag) previousAttrs.cmakeFlags ++ credentials;

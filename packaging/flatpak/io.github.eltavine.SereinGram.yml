@@ -271,14 +271,8 @@ modules:
     build-commands:
       - |
         set -euo pipefail
-        cargo new --lib --vcs none tdesktop_rust
         cd tdesktop_rust
-        printf 'pub use ::tlottie;\npub use ::wallet_engine;\n' > src/lib.rs
-        cargo add --path ../tlottie --features c-api
-        cargo add --path ../wallet-engine
-        cargo rustc --lib --release \
-          --crate-type staticlib --crate-type cdylib \
-          -- --print native-static-libs
+        cargo build --offline --locked --release
         mkdir -p $FLATPAK_DEST/lib $FLATPAK_DEST/include/tlottie $FLATPAK_DEST/include/wallet_engine
         objcopy --strip-debug target/release/libtdesktop_rust.a $FLATPAK_DEST/lib/libtdesktop_rust.a
         cp ../tlottie/include/tlottie.h $FLATPAK_DEST/include/tlottie/tlottie.h
@@ -306,6 +300,15 @@ modules:
       - type: shell
         commands:
           - git -C wallet-engine apply $PWD/patches/wallet-engine.patch
+      - type: file
+        path: ../rust/Cargo.toml
+        dest: tdesktop_rust
+      - type: file
+        path: ../rust/Cargo.lock
+        dest: tdesktop_rust
+      - type: file
+        path: ../rust/src/lib.rs
+        dest: tdesktop_rust/src
       - tdesktop-rust-cargo-sources.json
     cleanup:
       - '*'
