@@ -66,8 +66,8 @@ jobs:
 
       - name: Formatting.
         run: |
-          nix fmt flake.nix packaging/nix/package.nix
-          git diff --exit-code -- flake.nix packaging/nix/package.nix
+          nix fmt flake.nix packaging/nix/*.nix
+          git diff --exit-code -- flake.nix packaging/nix/
 
       - name: Build with the test-only credentials.
         run: nix build --print-build-logs ".#checks.${{ matrix.system }}.sereingram"

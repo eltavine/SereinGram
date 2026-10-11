@@ -16,10 +16,10 @@ cd rnnoise
 ./autogen.sh
 EOF
 
-FROM builder AS tlottie
+FROM patches AS tdesktop_rust
 RUN <<EOF
-cargo rustc --lib --release --target x86_64-unknown-linux-gnu
-objcopy --strip-debug target/x86_64-unknown-linux-gnu/release/libtlottie.a out.a
+cargo rustc --lib --release --crate-type staticlib --crate-type cdylib
+objcopy --strip-debug target/release/libtdesktop_rust.a out.a
 EOF
 """
 
@@ -39,10 +39,11 @@ def gnu_sed():
 
 
 class PatchDockerfileTest(unittest.TestCase):
-    def test_switches_the_rust_target_and_fixes_rnnoise(self):
+    def test_keeps_native_rust_and_fixes_rnnoise(self):
         text = patch_dockerfile.patch(DOCKERFILE)
         self.assertNotIn("x86_64-unknown-linux-gnu", text)
-        self.assertEqual(text.count("aarch64-unknown-linux-gnu"), 2)
+        self.assertNotIn("--target", text)
+        self.assertIn("target/release/libtdesktop_rust.a", text)
         self.assertIn("cd rnnoise\nsed -i ", text)
         self.assertLess(text.index("sed -i "), text.index("./autogen.sh"))
 
@@ -60,7 +61,9 @@ class PatchDockerfileTest(unittest.TestCase):
 
     def test_fails_when_upstream_moves(self):
         with self.assertRaises(patch_dockerfile.PatchError):
-            patch_dockerfile.patch(DOCKERFILE.replace("x86_64", "riscv64"))
+            patch_dockerfile.patch(DOCKERFILE.replace(" AS tdesktop_rust", " AS tlottie"))
+        with self.assertRaises(patch_dockerfile.PatchError):
+            patch_dockerfile.patch(DOCKERFILE.replace("--lib", "--lib --target x86_64"))
         with self.assertRaises(patch_dockerfile.PatchError):
             patch_dockerfile.patch(DOCKERFILE.replace("cd rnnoise\n", ""))
 
@@ -69,7 +72,7 @@ class PatchDockerfileTest(unittest.TestCase):
             path = Path(temp) / "Dockerfile"
             path.write_text(DOCKERFILE)
             self.assertEqual(patch_dockerfile.main([str(path)]), 0)
-            self.assertIn("aarch64-unknown-linux-gnu", path.read_text())
+            self.assertIn("target/release/libtdesktop_rust.a", path.read_text())
             self.assertEqual(patch_dockerfile.main([str(path)]), 1)
 
 

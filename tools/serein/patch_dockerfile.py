@@ -1,7 +1,7 @@
 """Adapt the generated upstream Linux Dockerfile to an arm64 build.
 
-Upstream builds that image only on x86_64. On arm64 the tlottie stage needs the
-aarch64 Rust target, and rnnoise v0.2 needs its upstream commit 372f7b4b76: the
+The combined Rust archive uses the container's native target. On arm64
+rnnoise v0.2 needs its upstream commit 372f7b4b76: the
 release's NEON header includes os_support.h, which the release does not ship.
 Each change fails loudly when the upstream text it relies on moves.
 """
@@ -10,7 +10,7 @@ import argparse
 import sys
 from pathlib import Path
 
-RUST_TARGETS = ("x86_64-unknown-linux-gnu", "aarch64-unknown-linux-gnu")
+RUST_STAGE = "FROM patches AS tdesktop_rust\n"
 RNNOISE_STAGE = "cd rnnoise\n"
 RNNOISE_FIX = (
     'sed -i -e \'s|#include "os_support.h"|#include "opus_types.h"\\n#include "common.h"|\' '
@@ -23,11 +23,15 @@ class PatchError(Exception):
 
 
 def patch(text):
-    if RUST_TARGETS[0] not in text:
-        raise PatchError("the tlottie stage no longer names the x86_64 Rust target")
+    if RNNOISE_FIX in text:
+        raise PatchError("the rnnoise fix is already applied")
+    if text.count(RUST_STAGE) != 1:
+        raise PatchError("the combined Rust stage changed")
+    rust = text.split(RUST_STAGE, 1)[1].split("\nFROM ", 1)[0]
+    if "--target " in rust or "target/release/libtdesktop_rust.a" not in rust:
+        raise PatchError("the combined Rust stage no longer uses the native target")
     if text.count(RNNOISE_STAGE) != 1:
         raise PatchError("the rnnoise stage changed")
-    text = text.replace(*RUST_TARGETS)
     return text.replace(RNNOISE_STAGE, RNNOISE_STAGE + RNNOISE_FIX)
 
 

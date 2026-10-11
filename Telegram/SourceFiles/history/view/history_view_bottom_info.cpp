@@ -493,7 +493,8 @@ void BottomInfo::layoutDateText() {
 		? QString()
 		: editedPrimary
 		? Serein::Messages::FormatEditedDate(_data.date, _data.editedDate)
-		: edited + ((_data.flags & Data::Flag::ForwardedDate)
+		: edited + ((_data.flags
+			& (Data::Flag::ForwardedDate | Data::Flag::FullDate))
 		? Serein::Messages::FormatSavedFrom(_data.date)
 		: Serein::Messages::FormatTime(_data.date.time()));
 	const auto prefix = (!author.isEmpty() && !date.isEmpty())
@@ -673,6 +674,8 @@ BottomInfo::Data BottomInfoDataFromMessage(not_null<Message*> message) {
 	}
 	if (message->context() == Context::ShortcutMessages) {
 		result.flags |= Flag::Shortcut;
+	} else if (message->context() == Context::MediaEditor) {
+		result.flags |= Flag::FullDate;
 	}
 	if (!item->isPost()
 		|| !item->hasRealFromId()

@@ -17,8 +17,15 @@ FLATPAK_SOURCES = {
     "webrtc": "https://github.com/desktop-app/tg_owt.git",
     "tlottie": "https://github.com/dkaraush/tlottie.git",
     "patches": "https://github.com/desktop-app/patches.git",
+    "wallet-engine": "https://github.com/i582/wallet-engine.git",
 }
-PKGBUILD_COMMIT = re.compile(r"^_td_commit=([0-9a-f]{40})$", re.M)
+PKGBUILD_PINS = {
+    "tde2e": "_td_commit",
+    "tlottie": "_tlottie_commit",
+    "patches": "_patches_commit",
+    "wallet-engine": "_wallet_engine_commit",
+}
+NIX_RUST = "packaging/nix/tdesktop-rust.nix"
 RECIPES = (SNAP, PKGBUILD, FLATPAK, "packaging/nix/package.nix", "flake.nix")
 LITERAL_CREDENTIALS = re.compile(r"TDESKTOP_API_(?:ID|HASH)(?::STRING)?=\s*[0-9a-f]")
 QT_ARCHIVE = re.compile(r"/qt-everywhere-src-([0-9.]+)\.tar\.xz$", re.M)
@@ -34,6 +41,11 @@ def snap_value(text, part, key):
 
 def flatpak_commits(text, url):
     return re.findall(rf"url: {re.escape(url)}\n\s+commit: ([0-9a-f]{{40}})", text)
+
+
+def pkgbuild_pin(part):
+    name = PKGBUILD_PINS.get(part)
+    return re.compile(rf"^{name}=([0-9a-f]{{40}})$", re.M) if name else None
 
 
 def problems(root):
@@ -56,16 +68,25 @@ def problems(root):
                     f"{FLATPAK} pins {url} at {commit[:10]}, but {SNAP} "
                     f"uses {expected[:10]} for {part}."
                 )
-        if part == "tde2e":
-            match = PKGBUILD_COMMIT.search(pkgbuild)
+        pattern = pkgbuild_pin(part)
+        if pattern:
+            name = PKGBUILD_PINS[part]
+            label = "tdlib" if part == "tde2e" else part
+            match = pattern.search(pkgbuild)
             if not match:
-                result.append(f"{PKGBUILD} has no 40-character _td_commit.")
+                result.append(f"{PKGBUILD} has no 40-character {name}.")
             elif match.group(1) != expected:
                 result.append(
-                    f"{PKGBUILD} pins tdlib {match.group(1)[:10]}, but "
-                    f"{SNAP} builds tde2e from {expected[:10]}; update "
-                    "_td_commit."
+                    f"{PKGBUILD} pins {label} {match.group(1)[:10]}, but "
+                    f"{SNAP} builds {part} from {expected[:10]}; update {name}."
                 )
+        nix = root / NIX_RUST
+        if (
+            part in ("tlottie", "wallet-engine", "patches")
+            and nix.exists()
+            and expected not in nix.read_text(encoding="utf-8")
+        ):
+            result.append(f"{NIX_RUST} must update the {part} source and its hash.")
     for path in RECIPES:
         recipe = root / path
         if recipe.exists() and LITERAL_CREDENTIALS.search(recipe.read_text(encoding="utf-8")):
@@ -96,9 +117,10 @@ def update(root):
             continue
         source = re.compile(rf"(url: {re.escape(url)}\n\s+commit: )([0-9a-f]{{40}})")
         stale = {match.group(2) for match in source.finditer(texts[FLATPAK])}
-        if part == "tde2e":
-            stale |= set(PKGBUILD_COMMIT.findall(texts[PKGBUILD]))
-            texts[PKGBUILD] = PKGBUILD_COMMIT.sub(f"_td_commit={expected}", texts[PKGBUILD])
+        pattern = pkgbuild_pin(part)
+        if pattern:
+            stale |= set(pattern.findall(texts[PKGBUILD]))
+            texts[PKGBUILD] = pattern.sub(f"{PKGBUILD_PINS[part]}={expected}", texts[PKGBUILD])
         texts[FLATPAK] = source.sub(
             lambda match, expected=expected: match.group(1) + expected, texts[FLATPAK]
         )
@@ -121,7 +143,7 @@ def main(argv=None):
             print(f"Updated {change}.")
             if change.startswith("tlottie "):
                 print(
-                    "Regenerate packaging/flatpak/tlottie-cargo-sources.yml "
+                    "Regenerate packaging/flatpak/tdesktop-rust-cargo-sources.json "
                     "from the new tlottie Cargo.lock."
                 )
     found = problems(args.root)
