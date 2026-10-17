@@ -21,7 +21,7 @@ let
     sha256 = "45d22ed481dc4fab07390abfa811c095c424e11c745e87b9d0d27b40efa17da2";
   };
   walletPatch = fetchurl {
-    url = "https://raw.githubusercontent.com/desktop-app/patches/aec474953ff7ee9b6e4cd9b8658288ea86d124f3/wallet-engine.patch";
+    url = "https://raw.githubusercontent.com/desktop-app/patches/f7433965ed33996c641a822c78a81eef3526c9e7/wallet-engine.patch";
     sha256 = "b40aba82c39a42d0526a85ecfa40d613baa57b1a2d6600e601a42a1576b3b822";
   };
   sources = builtins.fromJSON (builtins.readFile ../flatpak/tdesktop-rust-cargo-sources.json);

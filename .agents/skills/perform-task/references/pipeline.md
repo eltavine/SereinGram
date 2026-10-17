@@ -267,6 +267,10 @@ prompts, plus the host-specific orchestration rules.
   with the parent's concrete justification that the phase has no complexity.
   Apply the host mapping, including Claude's `opus` pin for `medium` or
   justified `high` work.
+- On Claude Code, assessment, every review and the convergence and
+  campaign-cap assessments run as Codex CLI leaves unless the invocation opted
+  out; see the Claude adapter's review and assessment provider. Prompts,
+  artifacts, completion checks and verdict handling are unchanged.
 - Keep implementation units sequential unless the assessed plan proves
   disjoint write sets and capacity makes parallel edits safe.
 - Never duplicate the performer or an implementation unit with uncertain
@@ -390,8 +394,10 @@ Run sequentially:
 
 Every unfinished task follows one adaptive implementation path. Task size,
 repository location, and whether Telegram is eventually launched do not select
-a profile. Before editing, Phase 2 assessment records the task's actual failure
-surfaces and writes both of these contracts:
+a profile. The one exception is a code-health task of class Q0, Q1 or Q2,
+which runs the [mechanical lane](mechanical-lane.md): its class bounds the
+change to what a tool can prove. Before editing, Phase 2 assessment records
+the task's actual failure surfaces and writes both of these contracts:
 
 ```text
 Expected surfaces:

@@ -229,7 +229,7 @@ modules:
         sha256: 6dcfbca271d76a6502741a2c0dc6fc98ef7dd0b7b4cfd0abcebb285a86a26f33
       - type: git
         url: https://github.com/desktop-app/patches.git
-        commit: aec474953ff7ee9b6e4cd9b8658288ea86d124f3
+        commit: f7433965ed33996c641a822c78a81eef3526c9e7
         dest: patches
       - type: shell
         commands:
@@ -247,7 +247,7 @@ modules:
     sources:
       - type: git
         url: https://github.com/desktop-app/tg_owt.git
-        commit: d1cf250ea73de26c4c1f0a3c8173eb2648efbb04
+        commit: 07fb35bc33b3e79125a1beab7690e830f183f5d8
     cleanup:
       - '*'
 
@@ -295,7 +295,7 @@ modules:
           - bindgen/cpp/Cargo.lock
       - type: git
         url: https://github.com/desktop-app/patches.git
-        commit: aec474953ff7ee9b6e4cd9b8658288ea86d124f3
+        commit: f7433965ed33996c641a822c78a81eef3526c9e7
         dest: patches
       - type: shell
         commands:
