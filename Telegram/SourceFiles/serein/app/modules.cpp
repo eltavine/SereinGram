@@ -10,6 +10,7 @@
 #include "serein/features/history/wire_cache.h"
 #include "serein/features/updates/checker.h"
 #include "serein/privacy/auto_demo.h"
+#include "serein/privacy/screenshot_protection.h"
 #include "serein/filters/subscription.h"
 
 #include "serein/app/shortcuts.h"
@@ -49,6 +50,7 @@ constexpr auto kModules = std::array{
 	Module{ "app.message_menu", RegisterMessageMenu },
 	Module{ "app.inspector", RegisterInspector },
 	Module{ "privacy.auto_demo", Privacy::StartAutoDemoMode },
+	Module{ "privacy.screenshot_protection", Privacy::StartScreenshotProtection },
 	Module{ "privacy.settings_lock", StartSettingsLock },
 	Module{ "media.voice_denoise", Media::StartVoiceDenoise },
 	Module{ "messages.selection_limit", Messages::StartSelectionLimit },
