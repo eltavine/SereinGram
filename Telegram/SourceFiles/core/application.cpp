@@ -189,8 +189,6 @@ Application::Application()
 	_private->proxyRotation = std::make_unique<ProxyRotationManager>();
 
 	_platformIntegration->init();
-	_screenshotProtection->addContentReason(
-		Serein::Hooks::Privacy::DemoModeValue(), _lifetime);
 	Serein::Hooks::Privacy::DemoModeValue()
 		| rpl::on_next([=](bool) {
 			updateWindowTitles();

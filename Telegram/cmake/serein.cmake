@@ -133,6 +133,7 @@ set(serein_sources
     serein/settings/ghost_exceptions.cpp
     serein/settings/subpages.cpp
     serein/privacy/auto_demo.cpp
+    serein/privacy/screenshot_protection.cpp
     serein/privacy/login_token.cpp
     serein/privacy/qr_decode.cpp
     serein/privacy/qr_scan.cpp
