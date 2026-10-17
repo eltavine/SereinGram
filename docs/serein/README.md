@@ -69,7 +69,7 @@ Linux 发行版打包：
 - 提交前可运行 `python3 tools/serein/check_commit_message.py <信息文件>` 做同样的检查；执行 `git config core.hooksPath tools/serein/githooks` 可在本地启用 `commit-msg` 钩子自动检查。
 - 该规则优先于 `AGENTS.md` 中“标题一行”的约定。
 - 只检查主线（first-parent）上的提交：同步上游时检查合并提交本身，随合并进入的上游提交保持原样，不按本规范检查。
-- 历史例外仅限已发布的上游 squash 提交 `ac08a8d5ef06938b76d381e308fc59a0c246dfda`（PR #11）：GitHub 自动拼接的上游提交正文不符合正文规则；该提交仍参与密钥扫描，新提交照常检查。后续同步上游使用 merge commit，合并信息采用简洁的英文说明。
+- 历史例外仅限已发布的上游 squash 提交 `ac08a8d5ef06938b76d381e308fc59a0c246dfda`（PR #11）与 `b6c3c4acabeac2d0ff41dc734ab6564b7dbcfe1a`（PR #13）：GitHub 自动拼接的上游提交正文不符合正文规则；这些提交仍参与密钥扫描，新提交照常检查。后续同步上游使用 merge commit，合并信息采用简洁的英文说明。
 
 ## 6. 界面翻译
 

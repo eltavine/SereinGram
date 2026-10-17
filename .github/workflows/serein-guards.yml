@@ -179,10 +179,12 @@ jobs:
           failed=0
           for sha in $(git rev-list --first-parent --reverse "$RANGE"); do
             echo "Checking $(git log -1 --format='%h %s' "$sha")"
-            if [[ "$sha" == ac08a8d5ef06938b76d381e308fc59a0c246dfda ]]; then
-              echo "Grandfathering the published PR #11 upstream squash message."
-              continue
-            fi
+            case "$sha" in
+              ac08a8d5ef06938b76d381e308fc59a0c246dfda|b6c3c4acabeac2d0ff41dc734ab6564b7dbcfe1a)
+                echo "Grandfathering a published upstream squash message."
+                continue
+                ;;
+            esac
             git log -1 --format=%B "$sha" \
               | tools/serein/node_modules/.bin/commitlint --config tools/serein/commitlint.config.mjs --verbose \
               || failed=1
