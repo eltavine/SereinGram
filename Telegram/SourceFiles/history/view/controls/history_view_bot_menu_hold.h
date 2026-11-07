@@ -7,6 +7,9 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #pragma once
 
+#include <cstdlib>
+#include <utility>
+
 #include <rpl/lifetime.h>
 
 #include "base/event_filter.h"
