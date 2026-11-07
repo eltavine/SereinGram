@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "ui/filter_icons.h"
+#include "serein/hooks/chats/folder_icons.h"
 
 #include "ui/emoji_config.h"
 #include "data/data_chat_filters.h"
@@ -277,6 +278,7 @@ const auto kIcons = std::vector<FilterIcons>{
 } // namespace
 
 const FilterIcons &LookupFilterIcon(FilterIcon icon) {
+	if (const auto extra = Serein::Chats::ExtraFolderIcon(icon)) return *extra;
 	Expects(static_cast<int>(icon) < kIcons.size());
 
 	return kIcons[static_cast<int>(icon)];
@@ -297,7 +299,7 @@ std::optional<FilterIcon> LookupFilterIconByEmoji(const QString &emoji) {
 		return result;
 	}();
 	const auto i = kMap.find(Ui::Emoji::Find(emoji));
-	return (i != end(kMap)) ? std::make_optional(i->second) : std::nullopt;
+	return (i != end(kMap)) ? std::make_optional(i->second) : Serein::Chats::FindExtraFolderIcon(emoji);
 }
 
 FilterIcon ComputeDefaultFilterIcon(const Data::ChatFilter &filter) {

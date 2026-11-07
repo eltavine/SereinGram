@@ -98,6 +98,8 @@ enum class Command {
 	SereinToggleGhostMode,
 	SereinToggleDemoMode,
 	SereinRecentChats,
+	SereinHiddenChats,
+	SereinHiddenAccounts,
 };
 
 [[maybe_unused]] constexpr auto kShowFolder = {
@@ -185,6 +187,10 @@ void Change(
 	Command command,
 	std::optional<Command> restore = {});
 void ResetToDefaults();
+void RestoreDefaultFor(
+	QKeySequence was,
+	QKeySequence now,
+	Command command);
 
 [[nodiscard]] bool AllowWithoutModifiers(int key);
 

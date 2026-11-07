@@ -12,7 +12,7 @@
 
 namespace Serein::Media {
 
-inline const auto kToggleRows = std::array<ToggleRow, 15>{ {
+inline const auto kToggleRows = std::array<ToggleRow, 19>{ {
 	{
 		.option = &kHideStickerTime,
 		.title = tr::lng_serein_hide_sticker_time,
@@ -148,6 +148,42 @@ inline const auto kToggleRows = std::array<ToggleRow, 15>{ {
 		.tile = &st::settingsIconBg1,
 		.about = tr::lng_serein_story_posting_about,
 	},
+	{
+		.option = &kExpandedAudioPlayer,
+		.title = tr::lng_serein_expanded_audio_player,
+		.id = u"serein/media/expanded-audio-player"_q,
+		.keywords = {  },
+		.icon = &st::menuIconVideoChat,
+		.tile = &st::settingsIconBg1,
+		.about = tr::lng_serein_expanded_audio_player_about,
+	},
+	{
+		.option = &kRememberPlaybackPosition,
+		.title = tr::lng_serein_remember_playback_position,
+		.id = u"serein/media/remember-playback-position"_q,
+		.keywords = {  },
+		.icon = &st::menuIconTimer,
+		.tile = &st::settingsIconBg1,
+		.about = tr::lng_serein_remember_playback_position_about,
+	},
+	{
+		.option = &kSpacePlayback,
+		.title = tr::lng_serein_space_playback,
+		.id = u"serein/media/space-playback"_q,
+		.keywords = {  },
+		.icon = &st::menuIconVideoChat,
+		.tile = &st::settingsIconBg1,
+		.about = tr::lng_serein_space_playback_about,
+	},
+	{
+		.option = &kSequentialDownloads,
+		.title = tr::lng_serein_sequential_downloads,
+		.id = u"serein/media/sequential-downloads"_q,
+		.keywords = {  },
+		.icon = &st::menuIconDownload,
+		.tile = &st::settingsIconBg1,
+		.about = tr::lng_serein_sequential_downloads_about,
+	},
 } };
 
 inline void AddLayout(
@@ -219,7 +255,12 @@ inline void AddLayout(
 	AddToggle(builder, kToggleRows[13]);
 	AddNote(builder, tr::lng_serein_denoise_voice_messages_note);
 	AddToggle(builder, kToggleRows[14]);
-	EndSection(builder, tr::lng_serein_story_posting_note);
+	AddNote(builder, tr::lng_serein_story_posting_note);
+	AddToggle(builder, kToggleRows[15]);
+	AddToggle(builder, kToggleRows[16]);
+	AddToggle(builder, kToggleRows[17]);
+	AddToggle(builder, kToggleRows[18]);
+	EndSection(builder);
 }
 
 inline constexpr auto kSubpageTitle = &tr::lng_serein_media;

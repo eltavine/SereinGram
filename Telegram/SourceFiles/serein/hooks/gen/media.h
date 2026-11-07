@@ -2,7 +2,12 @@
 #pragma once
 
 #include <QtCore/QString>
+#include <gsl/pointers>
 #include <rpl/producer.h>
+
+namespace Main {
+class Session;
+} // namespace Main
 
 namespace Serein::Hooks::Media {
 
@@ -42,5 +47,17 @@ namespace Serein::Hooks::Media {
 [[nodiscard]] rpl::producer<bool> DenoiseVoiceMessagesValue();
 [[nodiscard]] bool StoryPosting();
 [[nodiscard]] rpl::producer<bool> StoryPostingValue();
+[[nodiscard]] bool ExpandedAudioPlayer();
+[[nodiscard]] rpl::producer<bool> ExpandedAudioPlayerValue();
+[[nodiscard]] bool RememberPlaybackPosition();
+[[nodiscard]] rpl::producer<bool> RememberPlaybackPositionValue();
+[[nodiscard]] bool SpacePlayback();
+[[nodiscard]] rpl::producer<bool> SpacePlaybackValue();
+[[nodiscard]] int DownloadsCategory(gsl::not_null<Main::Session*> session);
+[[nodiscard]] rpl::producer<int> DownloadsCategoryValue(gsl::not_null<Main::Session*> session);
+[[nodiscard]] bool DownloadsAllAccounts(gsl::not_null<Main::Session*> session);
+[[nodiscard]] rpl::producer<bool> DownloadsAllAccountsValue(gsl::not_null<Main::Session*> session);
+[[nodiscard]] bool SequentialDownloads();
+[[nodiscard]] rpl::producer<bool> SequentialDownloadsValue();
 
 } // namespace Serein::Hooks::Media

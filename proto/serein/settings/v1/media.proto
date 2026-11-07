@@ -231,4 +231,22 @@ message MediaSettings {
     note: "lng_serein_story_posting_note"
     icon: "menuIconStoriesSavedSection"
   }];
+  optional bool expanded_audio_player = 19 [(serein.options.v1.field) = {icon: "menuIconVideoChat"}];
+  optional bool remember_playback_position = 20 [(serein.options.v1.field) = {icon: "menuIconTimer"}];
+  optional bool space_playback = 21 [(serein.options.v1.field) = {icon: "menuIconVideoChat"}];
+  optional int32 downloads_category = 22 [
+    (serein.options.v1.field) = {
+      hidden: true
+      scope: SCOPE_ACCOUNT
+    },
+    (buf.validate.field).int32 = {
+      gte: 0
+      lte: 4
+    }
+  ];
+  optional bool downloads_all_accounts = 23 [(serein.options.v1.field) = {
+    hidden: true
+    scope: SCOPE_ACCOUNT
+  }];
+  optional bool sequential_downloads = 24 [(serein.options.v1.field) = {icon: "menuIconDownload"}];
 }

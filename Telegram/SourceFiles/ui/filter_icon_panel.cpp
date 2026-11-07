@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "ui/filter_icon_panel.h"
+#include "serein/hooks/chats/folder_icons.h"
 
 #include "ui/widgets/shadow.h"
 #include "ui/image/image_prepare.h"
@@ -70,6 +71,7 @@ constexpr auto kIcons = std::array{
 
 FilterIconPanel::FilterIconPanel(QWidget *parent)
 : RpWidget(parent)
+, _icons(Serein::Chats::FolderIconChoices(kIcons))
 , _inner(Ui::CreateChild<Ui::RpWidget>(this))
 , _innerBg(st::emojiPanRadius, st::dialogsBg)
 , _shadow(st::emojiPanAnimation.shadow) {
@@ -105,7 +107,7 @@ void FilterIconPanel::setup() {
 }
 
 void FilterIconPanel::setupInner() {
-	const auto count = kIcons.size();
+	const auto count = _icons.size();
 	const auto rows = (count / kIconsPerRow)
 		+ ((count % kIconsPerRow) ? 1 : 0);
 	const auto single = st::windowFilterIconSingle;
@@ -129,7 +131,7 @@ void FilterIconPanel::setupInner() {
 			tr::lng_filters_icon_header(tr::now));
 
 		const auto selected = (_pressed >= 0) ? _pressed : _selected;
-		for (auto i = 0; i != kIcons.size(); ++i) {
+		for (auto i = 0; i != _icons.size(); ++i) {
 			const auto rect = countRect(i);
 			if (!rect.intersects(clip)) {
 				continue;
@@ -142,7 +144,7 @@ void FilterIconPanel::setupInner() {
 					st::dialogsBgOver,
 					Ui::StickerHoverCorners);
 			}
-			const auto icon = LookupFilterIcon(kIcons[i]).normal;
+			const auto icon = LookupFilterIcon(_icons[i]).normal;
 			icon->paintInCenter(
 				p,
 				rect,
@@ -222,7 +224,7 @@ void FilterIconPanel::mouseMove(QPoint position) {
 		const auto column = point.x() / st::windowFilterIconSingle.width();
 		const auto row = point.y() / st::windowFilterIconSingle.height();
 		const auto index = row * kIconsPerRow + column;
-		setSelected(index < kIcons.size() ? index : -1);
+		setSelected(index < _icons.size() ? index : -1);
 	}
 }
 
@@ -240,9 +242,9 @@ void FilterIconPanel::mouseRelease(Qt::MouseButton button) {
 	const auto pressed = _pressed;
 	setPressed(-1);
 	if (pressed == _selected && pressed >= 0) {
-		Assert(pressed < kIcons.size());
+		Assert(pressed < _icons.size());
 		_chosen.fire({
-			.icon = kIcons[pressed],
+			.icon = _icons[pressed],
 			.geometry = countRect(pressed).translated(_inner->pos()),
 		});
 	}

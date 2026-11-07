@@ -734,6 +734,8 @@ exception of Telegram Desktop. See [LICENSE](LICENSE) and [LEGAL](LEGAL).
   **Settings → SereinGram → Third-party licenses** and on the About page.
   The libraries Telegram Desktop itself uses keep their licenses as well.
 
+- twidget and litehtml keep their BSD 3-Clause licenses; Gumbo keeps its
+  Apache-2.0 license and QuickJS-ng keeps its MIT license.
 - zxcvbn-c keeps its [MIT license](https://github.com/tsyrogit/zxcvbn-c/blob/master/LICENSE.txt).
 - FrequencyWords by Hermit Dave keeps its
   [Creative Commons Attribution-ShareAlike 4.0 license](https://creativecommons.org/licenses/by-sa/4.0/).

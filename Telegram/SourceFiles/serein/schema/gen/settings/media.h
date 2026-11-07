@@ -144,6 +144,52 @@ inline constexpr auto kStoryPosting = Option<bool>{
 	Category::Media,
 	"lng_serein_story_posting",
 	0 };
+inline constexpr auto kExpandedAudioPlayer = Option<bool>{
+	"serein.expandedAudioPlayer",
+	Scope::Device,
+	false,
+	Category::Media,
+	"lng_serein_expanded_audio_player",
+	0 };
+inline constexpr auto kRememberPlaybackPosition = Option<bool>{
+	"serein.rememberPlaybackPosition",
+	Scope::Device,
+	false,
+	Category::Media,
+	"lng_serein_remember_playback_position",
+	0 };
+inline constexpr auto kSpacePlayback = Option<bool>{
+	"serein.spacePlayback",
+	Scope::Device,
+	false,
+	Category::Media,
+	"lng_serein_space_playback",
+	0 };
+inline constexpr auto kDownloadsCategory = Option<int>{
+	"serein.downloadsCategory",
+	Scope::Account,
+	0,
+	Category::Media,
+	"lng_serein_downloads_category",
+	static_cast<unsigned>(Flag::Hidden),
+	[](const int &value) {
+		return (value == 0)
+			|| ((value >= 0) && (value <= 4));
+	} };
+inline constexpr auto kDownloadsAllAccounts = Option<bool>{
+	"serein.downloadsAllAccounts",
+	Scope::Account,
+	false,
+	Category::Media,
+	"lng_serein_downloads_all_accounts",
+	static_cast<unsigned>(Flag::Hidden) };
+inline constexpr auto kSequentialDownloads = Option<bool>{
+	"serein.sequentialDownloads",
+	Scope::Device,
+	false,
+	Category::Media,
+	"lng_serein_sequential_downloads",
+	0 };
 
 inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kStickerScale));
@@ -164,6 +210,12 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kDownloadsPerChat));
 	Expects(registry.Add(kDenoiseVoiceMessages));
 	Expects(registry.Add(kStoryPosting));
+	Expects(registry.Add(kExpandedAudioPlayer));
+	Expects(registry.Add(kRememberPlaybackPosition));
+	Expects(registry.Add(kSpacePlayback));
+	Expects(registry.Add(kDownloadsCategory));
+	Expects(registry.Add(kDownloadsAllAccounts));
+	Expects(registry.Add(kSequentialDownloads));
 }
 
 } // namespace Serein::Media

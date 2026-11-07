@@ -37,6 +37,7 @@ const auto kInertDefaults = std::map<std::string_view, std::string_view>{
 };
 
 const auto kGatedMenuActions = std::map<Serein::Menu::ActionId, std::string_view>{
+	{ Serein::Menu::ActionId::DownloadQueue, "needs sequential downloads, off by default" },
 	{ Serein::Menu::ActionId::EditHistory, "needs history recording, off by default" },
 	{ Serein::Menu::ActionId::DeletedMessages, "needs history recording, off by default" },
 	{ Serein::Menu::ActionId::RestoredMedia, "only in the history viewer, which needs recording" },

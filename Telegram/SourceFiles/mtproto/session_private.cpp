@@ -348,10 +348,6 @@ void SessionPrivate::cdnConfigChanged() {
 	connectToServer(true);
 }
 
-int32 SessionPrivate::getShiftedDcId() const {
-	return _shiftedDcId;
-}
-
 void SessionPrivate::dcOptionsChanged() {
 	_retryTimeout = 1;
 	connectToServer(true);
@@ -574,6 +570,7 @@ MTPVector<MTPJSONObjectValue> SessionPrivate::prepareInitParams() {
 }
 
 void SessionPrivate::tryToSend() {
+	if (!_instance->networkEnabled()) return;
 	DEBUG_LOG(("MTP Info: tryToSend for dc %1.").arg(_shiftedDcId));
 	if (!_connection) {
 		DEBUG_LOG(("MTP Info: not yet connected in dc %1.").arg(_shiftedDcId));
@@ -1013,6 +1010,7 @@ void SessionPrivate::restartNow() {
 }
 
 void SessionPrivate::connectToServer(bool afterConfig) {
+	if (!_instance->networkEnabled()) return;
 	if (afterConfig && (!_testConnections.empty() || _connection)) {
 		return;
 	}
@@ -1338,7 +1336,8 @@ void SessionPrivate::handleReceived() {
 			return restart();
 		}
 
-		if ((messageLength > kMaxMessageLength)
+		if ((messageLength < kIntSize)
+			|| (messageLength > kMaxMessageLength)
 			|| (messageLength & 0x03)
 			|| (paddingSize < kMinPaddingSize)
 			|| (paddingSize > kMaxPaddingSize)) {
@@ -1851,7 +1850,7 @@ SessionPrivate::HandleResult SessionPrivate::handleOneReceived(
 	} return HandleResult::Success;
 
 	case mtpc_rpc_result: {
-		if (from + 3 > end) {
+		if (end - from < 4) {
 			return HandleResult::ParseError;
 		}
 		auto response = mtpBuffer();
@@ -2668,9 +2667,13 @@ void SessionPrivate::onError(
 		LOG(("Protocol Error: -429 flood code returned!"));
 	} else if (errorCode == -444) {
 		LOG(("Protocol Error: -444 bad dc_id code returned!"));
-		InvokeQueued(_instance, [instance = _instance] {
-			instance->badConfigurationError();
-		});
+		const auto &proxy = _options->proxy;
+		if (proxy.type == ProxyData::Type::Mtproto
+			|| proxy.type == ProxyData::Type::Web) {
+			InvokeQueued(_instance, [instance = _instance, proxy] {
+				instance->badConfigurationError(proxy);
+			});
+		}
 	}
 	removeTestConnection(connection);
 

@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "info/downloads/info_downloads_widget.h"
+#include "serein/hooks/media/downloads.h"
 
 #include "info/downloads/info_downloads_inner_widget.h"
 #include "info/info_controller.h"
@@ -104,17 +105,30 @@ void Widget::selectionAction(SelectionAction action) {
 }
 
 void Widget::fillTopBarMenu(const Ui::Menu::MenuCallback &addAction) {
-	const auto window = controller()->parentController();
+	Serein::Media::FillDownloadFilters(&controller()->session(), addAction);
+	AddDeleteAllAction(this, controller(), addAction);
+}
+
+void AddDeleteAllAction(
+		not_null<QWidget*> widget,
+		not_null<Controller*> controller,
+		const Ui::Menu::MenuCallback &addAction) {
+	const auto window = controller->parentController();
 	const auto deleteAll = [=] {
 		auto &manager = Core::App().downloadManager();
 		const auto phrase = tr::lng_downloads_delete_sure_all(tr::now);
 		const auto added = manager.loadedHasNonCloudFile()
 			? QString()
 			: tr::lng_downloads_delete_in_cloud(tr::now);
-		const auto deleteSure = [=, &manager](Fn<void()> close) {
-			Ui::PostponeCall(this, close);
-			manager.deleteAll();
-		};
+		const auto session = &controller->session();
+		const auto ids = Serein::Media::VisibleDownloadIds(session);
+		const auto deleteSure = crl::guard(widget, [=, &manager](Fn<void()> close) {
+			Ui::PostponeCall(widget, close);
+			const auto visible = Serein::Media::VisibleDownloadIds(session);
+			auto confirmed = std::vector<GlobalMsgId>();
+			ranges::set_intersection(ids, visible, std::back_inserter(confirmed));
+			manager.deleteFiles(confirmed);
+		});
 		window->show(Ui::MakeConfirmBox({
 			.text = phrase + (added.isEmpty() ? QString() : "\n\n" + added),
 			.confirmed = deleteSure,

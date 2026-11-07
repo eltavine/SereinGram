@@ -31,7 +31,8 @@ QJsonObject Parse(const QByteArray &raw) {
 } // namespace
 
 Visibility DefaultVisibility(ActionId id) {
-	if (id == ActionId::EditHistory
+	if (id == ActionId::DownloadQueue
+		|| id == ActionId::EditHistory
 		|| id == ActionId::DeletedMessages
 		|| id == ActionId::RestoredMedia
 		|| id == ActionId::ReadUntilHere

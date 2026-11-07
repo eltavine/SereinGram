@@ -12,7 +12,7 @@
 
 namespace Serein::Chats {
 
-inline const auto kToggleRows = std::array<ToggleRow, 19>{ {
+inline const auto kToggleRows = std::array<ToggleRow, 20>{ {
 	{
 		.option = &kCompactList,
 		.title = tr::lng_serein_compact_chat_list,
@@ -184,6 +184,15 @@ inline const auto kToggleRows = std::array<ToggleRow, 19>{ {
 		.tile = &st::settingsIconBg6,
 		.about = tr::lng_serein_chat_settings_menu_about,
 	},
+	{
+		.option = &kChatListTools,
+		.title = tr::lng_serein_chat_list_tools,
+		.id = u"serein/chats/chat-list-tools"_q,
+		.keywords = {  },
+		.icon = &st::menuIconAdmin,
+		.tile = &st::settingsIconBg6,
+		.about = tr::lng_serein_chat_list_tools_about,
+	},
 } };
 
 struct CustomRows {
@@ -262,6 +271,18 @@ inline void AddLayout(
 	AddNote(builder, tr::lng_serein_local_pinning_note);
 	AddToggle(builder, kToggleRows[18]);
 	AddNote(builder, tr::lng_serein_chat_settings_menu_note);
+	AddToggle(builder, kToggleRows[19]);
+	AddChoice(builder, {
+		.option = &kFolderIconPack,
+		.title = tr::lng_serein_folder_icon_pack,
+		.id = u"serein/chats/folder-icon-pack"_q,
+		.keywords = {  },
+		.values = { 0, 1, 2 },
+		.labels = { tr::lng_serein_sort_date_default, tr::lng_serein_folder_icons_work, tr::lng_serein_folder_icons_leisure },
+		.icon = &st::menuIconPalette,
+		.tile = &st::settingsIconBg6,
+		.about = tr::lng_serein_folder_icon_pack_about,
+	});
 	custom.cleanup();
 	EndSection(builder);
 }

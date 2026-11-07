@@ -12,6 +12,17 @@
 
 namespace Serein::Links {
 
+inline const auto kToggleRows = std::array<ToggleRow, 1>{ {
+	{
+		.option = &kStripTrackingParameters,
+		.title = tr::lng_serein_strip_tracking_parameters,
+		.id = u"serein/links/strip-tracking-parameters"_q,
+		.keywords = {  },
+		.icon = &st::menuIconLink,
+		.tile = &st::settingsIconBg3,
+		.about = tr::lng_serein_strip_tracking_parameters_about,
+	},
+} };
 
 struct CustomRows {
 	CustomRow linkRules;
@@ -23,6 +34,7 @@ inline void AddLayout(
 		const CustomRows &custom) {
 	custom.linkRules();
 	custom.previewLinkRules();
+	AddToggle(builder, kToggleRows[0]);
 }
 
 } // namespace Serein::Links

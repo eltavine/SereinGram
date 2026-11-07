@@ -147,7 +147,7 @@ TEST_CASE("Options") {
 		"unknown refresh option");
 	auto chats = Registry();
 	Chats::RegisterOptions(chats);
-	Require(chats.All().size() == 29, "chat option count");
+	Require(chats.All().size() == 33, "chat option count");
 	Require(!Chats::kChatSettingsMenu.fallback, "the chat settings entry is opt-in");
 	Require(!Chats::kLocalPinning.fallback
 		&& Chats::kLocalPins.scope == Scope::Account
@@ -188,7 +188,7 @@ TEST_CASE("Options") {
 		Flag::RefreshDialogList), "stories use widget refresh");
 	auto interface = Registry();
 	Interface::RegisterOptions(interface);
-	Require(interface.All().size() == 26, "interface option count");
+	Require(interface.All().size() == 28, "interface option count");
 	for (const auto option : {
 			&Interface::kOnlineStatusInChats,
 			&Interface::kOnlineStatusInHeader,
@@ -331,7 +331,7 @@ TEST_CASE("Options") {
 	}
 	auto media = Registry();
 	Media::RegisterOptions(media);
-	Require(media.All().size() == 18, "media option count");
+	Require(media.All().size() == 24, "media option count");
 	Require(media.HasFlag(Media::kStickerScale.key,
 		Flag::RefreshMessageView), "sticker scale refresh flag");
 	Require(!media.HasFlag(Media::kRecentStickerLimit.key,
@@ -340,7 +340,7 @@ TEST_CASE("Options") {
 		Flag::RefreshMessageView), "video autoplay refresh flag");
 	auto privacy = Registry();
 	Privacy::RegisterOptions(privacy);
-	Require(privacy.All().size() == 14, "privacy option count");
+	Require(privacy.All().size() == 20, "privacy option count");
 	Require(!Privacy::kAutoDemoMode.fallback
 		&& Privacy::kAutoDemoMode.scope == Scope::Device
 		&& privacy.HasFlag(Privacy::kAutoDemoMode.key, Flag::Exportable),

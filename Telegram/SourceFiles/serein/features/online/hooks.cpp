@@ -11,6 +11,10 @@
 #include "history/history.h"
 #include "main/main_session.h"
 #include "ui/painter.h"
+#include "ui/rp_widget.h"
+#include "ui/ui_utility.h"
+
+#include <QtCore/QTimer>
 #include "styles/style_chat.h"
 #include "styles/style_serein.h"
 
@@ -86,6 +90,58 @@ QString LinkTooltip(
 			base::unixtime::now(),
 			true)
 		: fallback;
+}
+
+bool ShowPrivateAvatar(PeerData *peer) {
+	return Enabled(Serein::Interface::kOnlineStatusOnSenders) && StatusUser(peer);
+}
+
+void BindAvatar(
+		gsl::not_null<Ui::RpWidget*> widget,
+		gsl::not_null<PeerData*> peer,
+		Fn<void()> visibilityChanged) {
+	if (!StatusUser(peer)) {
+		return;
+	}
+	const auto badge = Ui::CreateChild<Ui::RpWidget>(widget);
+	badge->setAttribute(Qt::WA_TransparentForMouseEvents);
+	widget->sizeValue() | rpl::on_next([=](QSize size) {
+		badge->setGeometry(QRect(QPoint(), size));
+	}, badge->lifetime());
+	badge->paintRequest() | rpl::on_next([=] {
+		const auto user = StatusUser(peer);
+		if (!user || !Enabled(Serein::Interface::kOnlineStatusOnSenders)
+			|| !user->lastseen().isOnline(base::unixtime::now())) {
+			return;
+		}
+		auto painter = QPainter(badge);
+		auto quality = PainterHighQualityEnabler(painter);
+		const auto size = st::sereinSenderOnlineSize;
+		auto pen = st::windowBg->p;
+		pen.setWidthF(st::sereinSenderOnlineStroke);
+		painter.setPen(pen);
+		painter.setBrush(st::dialogsOnlineBadgeFg->b);
+		painter.drawEllipse(badge->width() - size - 1,
+			badge->height() - size - 1, size, size);
+	}, badge->lifetime());
+	const auto timer = new QTimer(badge);
+	timer->setInterval(1000);
+	QObject::connect(timer, &QTimer::timeout, badge, [=] {
+		if (badge->isVisible()) badge->update();
+	});
+	ForDevice().Value(
+		Serein::Interface::kOnlineStatusOnSenders
+	) | rpl::on_next([=](bool enabled) {
+		if (enabled) {
+			timer->start();
+		} else {
+			timer->stop();
+		}
+		badge->update();
+	}, badge->lifetime());
+	ForDevice().Value(Serein::Interface::kOnlineStatusOnSenders)
+	| rpl::skip(1) | rpl::on_next(std::move(visibilityChanged), badge->lifetime());
+	badge->show();
 }
 
 void PaintSender(

@@ -93,7 +93,7 @@ public:
 	void requestConfigIfOld();
 	void requestCDNConfig();
 	void setUserPhone(const QString &phone);
-	void badConfigurationError();
+	void badConfigurationError(const ProxyData &proxy);
 	void syncHttpUnixtime();
 
 	void restartedByTimeout(ShiftedDcId shiftedDcId);
@@ -103,6 +103,7 @@ public:
 	-> rpl::producer<mtpRequestId>;
 	[[nodiscard]] rpl::producer<> frozenErrorReceived() const;
 
+	void setNetworkEnabled(bool enabled);
 	void restart();
 	void restart(ShiftedDcId shiftedDcId);
 	[[nodiscard]] int32 dcstate(ShiftedDcId shiftedDcId = 0);
@@ -518,7 +519,7 @@ rpl::producer<DcId> Instance::Private::mainDcIdValue() const {
 }
 
 void Instance::Private::requestConfig() {
-	if (_configLoader || isKeysDestroyer()) {
+	if (_configLoader || isKeysDestroyer() || !_instance->networkEnabled()) {
 		return;
 	}
 	_configLoader = std::make_unique<ConfigLoader>(
@@ -541,9 +542,9 @@ void Instance::Private::setUserPhone(const QString &phone) {
 	}
 }
 
-void Instance::Private::badConfigurationError() {
+void Instance::Private::badConfigurationError(const ProxyData &proxy) {
 	if (_mode == Mode::Normal) {
-		Core::App().badMtprotoConfigurationError();
+		Core::App().badMtprotoConfigurationError(proxy);
 	}
 }
 
@@ -609,6 +610,16 @@ void Instance::Private::requestCDNConfig() {
 		});
 		Local::writeSettings();
 	}).send();
+}
+
+void Instance::Private::setNetworkEnabled(bool enabled) {
+	_configLoader.reset();
+	_domainResolver.reset();
+	for (const auto &[id, session] : _sessions) {
+		if (enabled) session->start();
+		else session->stop();
+	}
+	if (enabled) requestConfig();
 }
 
 void Instance::Private::restart() {
@@ -1951,6 +1962,7 @@ Instance::Instance(Mode mode, Fields &&fields)
 }
 
 void Instance::resolveProxyDomain(const QString &host) {
+	if (!networkEnabled()) return;
 	_private->resolveProxyDomain(host);
 }
 
@@ -2002,8 +2014,8 @@ void Instance::setUserPhone(const QString &phone) {
 	_private->setUserPhone(phone);
 }
 
-void Instance::badConfigurationError() {
-	_private->badConfigurationError();
+void Instance::badConfigurationError(const ProxyData &proxy) {
+	_private->badConfigurationError(proxy);
 }
 
 void Instance::syncHttpUnixtime() {
@@ -2032,6 +2044,21 @@ void Instance::requestConfigIfOld() {
 
 void Instance::requestCDNConfig() {
 	_private->requestCDNConfig();
+}
+
+void Instance::setNetworkEnabled(bool enabled) {
+	if (_networkEnabled.exchange(enabled) != enabled) {
+		_private->setNetworkEnabled(enabled);
+		_networkEnabledChanges.fire_copy(enabled);
+	}
+}
+
+bool Instance::networkEnabled() const {
+	return _networkEnabled.load();
+}
+
+rpl::producer<bool> Instance::networkEnabledChanges() const {
+	return _networkEnabledChanges.events();
 }
 
 void Instance::restart() {

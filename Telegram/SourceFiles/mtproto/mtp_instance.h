@@ -10,6 +10,8 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "mtproto/details/mtproto_serialized_request.h"
 #include "mtproto/mtproto_response.h"
 
+#include <atomic>
+
 namespace MTP {
 namespace details {
 
@@ -23,6 +25,7 @@ class Session;
 class DcOptions;
 class Config;
 struct ConfigFields;
+struct ProxyData;
 class AuthKey;
 using AuthKeyPtr = std::shared_ptr<AuthKey>;
 using AuthKeysList = std::vector<AuthKeyPtr>;
@@ -89,6 +92,9 @@ public:
 	[[nodiscard]] AuthKeysList getKeysForWrite() const;
 	void addKeysForDestroy(AuthKeysList &&keys);
 
+	void setNetworkEnabled(bool enabled);
+	[[nodiscard]] bool networkEnabled() const;
+	[[nodiscard]] rpl::producer<bool> networkEnabledChanges() const;
 	void restart();
 	void restart(ShiftedDcId shiftedDcId);
 	int32 dcstate(ShiftedDcId shiftedDcId = 0);
@@ -135,7 +141,7 @@ public:
 	void requestConfigIfOld();
 	void requestCDNConfig();
 	void setUserPhone(const QString &phone);
-	void badConfigurationError();
+	void badConfigurationError(const ProxyData &proxy);
 
 	void restartedByTimeout(ShiftedDcId shiftedDcId);
 	[[nodiscard]] rpl::producer<ShiftedDcId> restartsByTimeout() const;
@@ -240,6 +246,8 @@ private:
 		mtpRequestId afterRequestId);
 
 	class Private;
+	std::atomic<bool> _networkEnabled = true;
+	rpl::event_stream<bool> _networkEnabledChanges;
 	const std::unique_ptr<Private> _private;
 
 };

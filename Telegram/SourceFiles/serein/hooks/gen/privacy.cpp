@@ -118,4 +118,52 @@ rpl::producer<bool> SaveProtectedContentValue() {
 	return ForDevice().Value(Serein::Privacy::kSaveProtectedContent);
 }
 
+bool AutoBackupExports() {
+	return ForDevice().Get(Serein::Privacy::kAutoBackupExports);
+}
+
+rpl::producer<bool> AutoBackupExportsValue() {
+	return ForDevice().Value(Serein::Privacy::kAutoBackupExports);
+}
+
+bool HiddenChatsEnabled() {
+	return ForDevice().Get(Serein::Privacy::kHiddenChatsEnabled);
+}
+
+rpl::producer<bool> HiddenChatsEnabledValue() {
+	return ForDevice().Value(Serein::Privacy::kHiddenChatsEnabled);
+}
+
+QString HiddenChatIds(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Get(Serein::Privacy::kHiddenChatIds);
+}
+
+rpl::producer<QString> HiddenChatIdsValue(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Value(Serein::Privacy::kHiddenChatIds);
+}
+
+bool HiddenAccountsEnabled() {
+	return ForDevice().Get(Serein::Privacy::kHiddenAccountsEnabled);
+}
+
+rpl::producer<bool> HiddenAccountsEnabledValue() {
+	return ForDevice().Value(Serein::Privacy::kHiddenAccountsEnabled);
+}
+
+QString HiddenAccountIds() {
+	return ForDevice().Get(Serein::Privacy::kHiddenAccountIds);
+}
+
+rpl::producer<QString> HiddenAccountIdsValue() {
+	return ForDevice().Value(Serein::Privacy::kHiddenAccountIds);
+}
+
+bool AccountNetworkControls() {
+	return ForDevice().Get(Serein::Privacy::kAccountNetworkControls);
+}
+
+rpl::producer<bool> AccountNetworkControlsValue() {
+	return ForDevice().Value(Serein::Privacy::kAccountNetworkControls);
+}
+
 } // namespace Serein::Hooks::Privacy

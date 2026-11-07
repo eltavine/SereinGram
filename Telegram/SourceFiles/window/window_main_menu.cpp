@@ -7,6 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "window/window_main_menu.h"
 #include "serein/hooks/interface/main_menu.h"
+#include "serein/hooks/privacy/hidden.h"
 
 #include "apiwrap.h"
 #include "base/event_filter.h"
@@ -994,7 +995,7 @@ OthersUnreadState OtherAccountsUnreadStateCurrent(
 	auto counter = 0;
 	auto allMuted = true;
 	for (const auto &[index, account] : domain.accounts()) {
-		if (account.get() == current) {
+		if (account.get() == current || Serein::Privacy::AccountHidden(account.get())) {
 			continue;
 		} else if (const auto session = account->maybeSession()) {
 			counter += session->data().unreadWithMentionsBadge();

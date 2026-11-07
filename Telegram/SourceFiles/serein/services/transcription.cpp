@@ -348,13 +348,16 @@ void ShowCustomTranscription(
 			return;
 		}
 		struct State {
+			explicit State(not_null<Main::Session*> session) : request(session) {
+			}
+
 			ServiceRequest request;
 			std::shared_ptr<Data::DocumentMedia> media;
 			QString result;
 			bool loading = false;
 		};
 		box->setTitle(tr::lng_serein_service_transcription());
-		const auto state = box->lifetime().make_state<State>();
+		const auto state = box->lifetime().make_state<State>(session);
 		state->media = currentDocument->createMediaView();
 		box->addRow(object_ptr<Ui::FlatLabel>(
 			box,

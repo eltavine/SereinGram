@@ -19,6 +19,38 @@ bool Removes(const QString &name, const std::vector<QString> &patterns) {
 
 } // namespace
 
+QString StripTrackingUrl(const QString &original) {
+	if (original.size() > 16384 || original.trimmed() != original
+		|| original.contains(QChar::LineFeed) || original.contains(u' ')) return original;
+	const auto url = QUrl(original, QUrl::StrictMode);
+	if (!url.isValid() || url.host().isEmpty() || !url.userInfo().isEmpty()
+		|| (url.scheme() != u"https"_q && url.scheme() != u"http"_q)
+		|| !url.hasQuery()) return original;
+	auto kept = QStringList();
+	auto changed = false;
+	const auto start = original.indexOf(u'?');
+	const auto hash = original.indexOf(u'#', start + 1);
+	const auto end = hash < 0 ? original.size() : hash;
+	for (const auto &part : QStringView(original).sliced(
+			start + 1, end - start - 1).split(u'&')) {
+		const auto equals = part.indexOf(u'=');
+		const auto key = equals < 0 ? part : part.first(equals);
+		const auto name = QUrl::fromPercentEncoding(key.toUtf8()).toLower();
+		if (name == u"signature"_q || name == u"sig"_q
+			|| name.startsWith(u"x-amz-"_q) || name.startsWith(u"x-goog-"_q)) return original;
+		const auto tracking = name.startsWith(u"utm_"_q)
+			|| name == u"fbclid"_q || name == u"gclid"_q || name == u"dclid"_q
+			|| name == u"msclkid"_q || name == u"twclid"_q || name == u"yclid"_q
+			|| name == u"mc_cid"_q || name == u"mc_eid"_q || name == u"igshid"_q;
+		changed |= tracking;
+		if (!tracking) kept.push_back(part.toString());
+	}
+	if (!changed) return original;
+	return original.first(start)
+		+ (kept.isEmpty() ? QString() : (u'?' + kept.join(u'&')))
+		+ original.sliced(end);
+}
+
 bool ValidLinkRules(const LinkRules &value) {
 	auto ids = QSet<QString>();
 	for (const auto &rule : value.rules) {

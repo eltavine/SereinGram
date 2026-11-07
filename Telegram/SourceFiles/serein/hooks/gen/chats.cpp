@@ -238,4 +238,36 @@ rpl::producer<QString> LocalPinsValue(gsl::not_null<Main::Session*> session) {
 	return ForAccount(session).Value(Serein::Chats::kLocalPins);
 }
 
+bool ChatListTools() {
+	return ForDevice().Get(Serein::Chats::kChatListTools);
+}
+
+rpl::producer<bool> ChatListToolsValue() {
+	return ForDevice().Value(Serein::Chats::kChatListTools);
+}
+
+bool OnlyManagedChats(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Get(Serein::Chats::kOnlyManagedChats);
+}
+
+rpl::producer<bool> OnlyManagedChatsValue(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Value(Serein::Chats::kOnlyManagedChats);
+}
+
+int ChatDateOrder() {
+	return ForDevice().Get(Serein::Chats::kChatDateOrder);
+}
+
+rpl::producer<int> ChatDateOrderValue() {
+	return ForDevice().Value(Serein::Chats::kChatDateOrder);
+}
+
+int FolderIconPack() {
+	return ForDevice().Get(Serein::Chats::kFolderIconPack);
+}
+
+rpl::producer<int> FolderIconPackValue() {
+	return ForDevice().Value(Serein::Chats::kFolderIconPack);
+}
+
 } // namespace Serein::Hooks::Chats

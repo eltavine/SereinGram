@@ -89,6 +89,8 @@ namespace Wallet {
 class Session;
 } // namespace Wallet
 
+namespace Serein::Hooks { class DownloadQueue; }
+
 namespace Main {
 
 class Account;
@@ -250,6 +252,10 @@ public:
 		return *_cachedReactionIconFactory;
 	}
 
+	[[nodiscard]] Serein::Hooks::DownloadQueue &sereinDownloads() const {
+		return *_sereinDownloads;
+	}
+
 	void saveSettings();
 	void saveSettingsDelayed(crl::time delay = kDefaultSaveDelay);
 	void saveSettingsNowIfNeeded();
@@ -257,6 +263,7 @@ public:
 	void addWindow(not_null<Window::SessionController*> controller);
 	[[nodiscard]] auto windows() const
 		-> const base::flat_set<not_null<Window::SessionController*>> &;
+	[[nodiscard]] rpl::producer<> windowAdded() const;
 	[[nodiscard]] Window::SessionController *tryResolveWindow(
 		PeerData *forPeer = nullptr) const;
 
@@ -374,6 +381,7 @@ private:
 	std::unique_ptr<Window::TermsLock> _termsLock;
 
 	base::flat_set<not_null<Window::SessionController*>> _windows;
+	rpl::event_stream<> _windowAdded;
 	base::Timer _saveSettingsTimer;
 
 	rpl::variable<FreezeInfo> _frozen;
@@ -381,6 +389,7 @@ private:
 	QByteArray _tmpPassword;
 	TimeId _tmpPasswordValidUntil = 0;
 
+	std::unique_ptr<Serein::Hooks::DownloadQueue> _sereinDownloads;
 	rpl::lifetime _lifetime;
 
 };

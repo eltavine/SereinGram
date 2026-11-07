@@ -24,6 +24,18 @@ struct Notice {
 
 constexpr auto kNotices = std::array{
 	Notice{
+		"Noto Sans Bamum, Linear A, Tai Tham",
+		"OFL-1.1",
+		"https://github.com/notofonts/noto-fonts",
+		":/serein/licenses/noto.txt",
+	},
+	Notice{
+		"GNU Unifont 17.0.04",
+		"OFL-1.1",
+		"https://unifoundry.com/unifont/",
+		":/serein/licenses/unifont.txt",
+	},
+	Notice{
 		"OpenCC",
 		"Apache-2.0",
 		"https://github.com/BYVoid/OpenCC",

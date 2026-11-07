@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "main/main_domain.h"
+#include "serein/hooks/privacy/hidden.h"
 
 #include "serein/hooks/accounts.h"
 #include "serein/hooks/gen/interface.h"
@@ -204,11 +205,13 @@ const std::vector<Domain::AccountWithIndex> &Domain::accounts() const {
 	return _accounts;
 }
 
-std::vector<not_null<Account*>> Domain::orderedAccounts() const {
+std::vector<not_null<Account*>> Domain::orderedAccounts(bool includeHidden) const {
 	const auto order = Core::App().settings().accountsOrder();
 	auto accounts = ranges::views::all(
 		_accounts
-	) | ranges::views::transform([](const Domain::AccountWithIndex &a) {
+	) | ranges::views::filter([=](const Domain::AccountWithIndex &a) {
+		return includeHidden || !Serein::Privacy::AccountHidden(a.account.get());
+	}) | ranges::views::transform([](const Domain::AccountWithIndex &a) {
 		return not_null{ a.account.get() };
 	}) | ranges::to_vector;
 	ranges::stable_sort(accounts, [&](
@@ -301,10 +304,16 @@ void Domain::notifyUnreadBadgeChanged() {
 	}
 }
 
+void Domain::notifyAccountVisibilityChanged() {
+	_accountsChanges.fire({});
+	updateUnreadBadge();
+}
+
 void Domain::updateUnreadBadge() {
 	_unreadBadge = 0;
 	_unreadBadgeMuted = true;
 	for (const auto &[index, account] : _accounts) {
+		if (Serein::Privacy::AccountHidden(account.get())) continue;
 		if (const auto session = account->maybeSession()) {
 			const auto data = &session->data();
 			_unreadBadge += data->unreadBadge();
@@ -434,7 +443,7 @@ void Domain::closeAccountWindows(not_null<Main::Account*> account) {
 	auto another = (Main::Account*)nullptr;
 	for (auto i = _accounts.begin(); i != _accounts.end(); ++i) {
 		const auto other = not_null(i->account.get());
-		if (other == account) {
+		if (other == account || Serein::Privacy::AccountHidden(other)) {
 			continue;
 		} else if (Core::App().separateWindowFor(other)) {
 			const auto that = Core::App().separateWindowFor(account);
@@ -567,6 +576,7 @@ void Domain::maybeActivate(not_null<Main::Account*> account) {
 }
 
 void Domain::activate(not_null<Main::Account*> account) {
+	account = Serein::Privacy::VisibleAccount(account);
 	if (const auto window = Core::App().separateWindowFor(account)) {
 		window->activate();
 	}

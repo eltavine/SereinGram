@@ -2,7 +2,6 @@
 
 #include "api/api_common.h"
 #include "apiwrap.h"
-#include "base/unixtime.h"
 #include "data/data_document.h"
 #include "data/data_document_media.h"
 #include "data/data_file_origin.h"
@@ -16,12 +15,9 @@
 #include "lang/lang_keys.h"
 #include "main/main_session.h"
 #include "storage/localimageloader.h"
-#include "storage/storage_media_prepare.h"
 #include "ui/chat/attach/attach_prepare.h"
 #include "window/window_session_controller.h"
-#include "styles/style_boxes.h"
 
-#include <QtCore/QDir>
 #include <QtCore/QFile>
 
 namespace Serein {
@@ -31,24 +27,6 @@ constexpr auto kSearchLimit = 20;
 constexpr auto kMaximumBackupBytes = 8 * 1024 * 1024;
 constexpr auto kFileName = "sereingram-settings.json";
 constexpr auto kTag = "#SereinGramSettings";
-
-struct Loading {
-	std::shared_ptr<Data::DocumentMedia> media;
-	rpl::lifetime lifetime;
-};
-
-[[nodiscard]] QString WriteBackupFile(const QByteArray &data) {
-	const auto folder = QDir::temp().filePath(
-		u"SereinGram/backup-%1"_q.arg(base::unixtime::now()));
-	const auto path = QDir(folder).filePath(QString::fromLatin1(kFileName));
-	auto file = QFile(path);
-	if (!QDir().mkpath(folder)
-		|| !file.open(QIODevice::WriteOnly)
-		|| file.write(data) != data.size()) {
-		return QString();
-	}
-	return path;
-}
 
 [[nodiscard]] DocumentData *FindBackup(
 		not_null<Main::Session*> session,
@@ -91,7 +69,7 @@ struct Loading {
 	}
 	auto file = QFile(document->filepath(true));
 	return file.open(QIODevice::ReadOnly)
-		? file.read(kMaximumBackupBytes)
+		? file.read(kMaximumBackupBytes + 1)
 		: QByteArray();
 }
 
@@ -100,28 +78,29 @@ void Download(
 		not_null<DocumentData*> document,
 		FullMsgId itemId,
 		Fn<void(QByteArray)> done) {
-	const auto loading = controller->lifetime().make_state<Loading>();
-	loading->media = document->createMediaView();
-	document->save(itemId, QString());
+	const auto media = document->createMediaView();
+	if (!document->loading()) {
+		document->save(itemId, QString());
+	}
 	const auto finish = crl::guard(controller, [=] {
-		auto bytes = LoadedBytes(document, loading->media);
-		if (bytes.isEmpty()) {
+		auto bytes = LoadedBytes(document, media);
+		if (bytes.isEmpty() || bytes.size() > kMaximumBackupBytes) {
 			controller->showToast(
 				tr::lng_serein_config_restore_failed(tr::now));
 		} else {
 			done(std::move(bytes));
 		}
 	});
-	if (loading->media->loaded()) {
+	if (!document->loading()) {
 		finish();
 		return;
 	}
-	controller->session().downloaderTaskFinished(
-	) | rpl::filter([=] {
-		return loading->media->loaded() || !document->loading();
+	document->owner().documentLoadProgress(
+	) | rpl::filter([=](not_null<DocumentData*> updated) {
+		return updated == document && !document->loading();
 	}) | rpl::take(1) | rpl::on_next([=] {
 		finish();
-	}, loading->lifetime);
+	}, controller->lifetime());
 }
 
 } // namespace
@@ -130,20 +109,17 @@ void BackUpToSavedMessages(
 		gsl::not_null<Window::SessionController*> controller,
 		const QByteArray &data) {
 	const auto session = &controller->session();
-	const auto path = WriteBackupFile(data);
-	auto list = path.isEmpty()
-		? Ui::PreparedList()
-		: Storage::PrepareMediaList(
-			QStringList{ path },
-			st::sendMediaPreviewSize,
-			session->premium());
-	if (path.isEmpty()
-		|| list.error != Ui::PreparedList::Error::None
-		|| list.files.size() != 1) {
+	if (data.isEmpty() || data.size() > kMaximumBackupBytes) {
 		controller->showToast(tr::lng_serein_config_backup_failed(tr::now));
 		return;
 	}
-	list.files.front().caption = { QString::fromLatin1(kTag), {} };
+	auto list = Ui::PreparedList();
+	auto &file = list.files.emplace_back(QString());
+	file.displayName = QString::fromLatin1(kFileName);
+	file.content = data;
+	file.size = data.size();
+	file.type = Ui::PreparedFile::Type::File;
+	file.caption = { QString::fromLatin1(kTag), {} };
 	auto action = Api::SendAction(session->data().history(session->user()));
 	action.clearDraft = false;
 	session->api().sendFiles(

@@ -98,7 +98,7 @@ void ShowChatSummary(
 			tr::lng_serein_summary_loading(tr::now),
 			st::boxLabel));
 		label->setSelectable(true);
-		const auto request = box->lifetime().make_state<ServiceRequest>();
+		const auto request = box->lifetime().make_state<ServiceRequest>(&controller->session());
 		const auto result = box->lifetime().make_state<QString>();
 		request->json(
 			*service,

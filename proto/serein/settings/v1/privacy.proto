@@ -176,4 +176,26 @@ message PrivacySettings {
     note: "lng_serein_save_protected_content_note"
     icon: "menuIconSaveImage"
   }];
+  optional bool auto_backup_exports = 15 [(serein.options.v1.field) = {hidden: true}];
+  optional bool hidden_chats_enabled = 16 [(serein.options.v1.field) = {
+    section: {
+      title: "lng_serein_hidden_chats"
+      id: "hidden"
+    }
+    icon: "menuIconArchive"
+  }];
+  optional string hidden_chat_ids = 17 [
+    (serein.options.v1.field) = {
+      hidden: true
+      scope: SCOPE_ACCOUNT
+      title: "lng_serein_hidden_chats"
+    },
+    (buf.validate.field).string.max_len = 24000
+  ];
+  optional bool hidden_accounts_enabled = 18 [(serein.options.v1.field) = {icon: "menuIconLock"}];
+  optional string hidden_account_ids = 19 [
+    (serein.options.v1.field) = {hidden: true},
+    (buf.validate.field).string.max_len = 24000
+  ];
+  optional bool account_network_controls = 20 [(serein.options.v1.field) = {icon: "menuIconNetwork"}];
 }

@@ -865,7 +865,7 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_config_backup" = "Back up to Saved Messages";
 "lng_serein_config_restore" = "Restore from Saved Messages";
 "lng_serein_config_backup_about" = "A backup is sent to your Saved Messages as a settings file with the settings of this device and of this account, such as ghost mode, so another device can restore it. Restoring lists the changes before applying them. Keys kept in the system credential store are not included.";
-"lng_serein_config_backup_done" = "The settings file is being sent to Saved Messages.";
+"lng_serein_config_backup_done" = "Settings backup queued for Saved Messages.";
 "lng_serein_config_backup_failed" = "Could not prepare the settings file.";
 "lng_serein_config_restore_none" = "No SereinGram settings backup was found in Saved Messages.";
 "lng_serein_config_restore_failed" = "Could not download the settings backup.";
@@ -1074,8 +1074,8 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_online_status_in_chats_about" = "Private chats show the contact's status before the time, like “online” or “5 min ago”. Detailed mode shows the exact time.";
 "lng_serein_online_status_in_header" = "Exact last seen in chats and profiles";
 "lng_serein_online_status_in_header_about" = "Chat headers, profiles and member lists show when a contact was last online as an exact time. Detailed mode adds seconds.";
-"lng_serein_online_status_on_senders" = "Online dots on group senders";
-"lng_serein_online_status_on_senders_about" = "Adds a green dot to the avatars of group members who are online now. In detailed mode, hovering an avatar shows their last seen time.";
+"lng_serein_online_status_on_senders" = "Online dots on chat avatars";
+"lng_serein_online_status_on_senders_about" = "Shows a private chat avatar in the header and marks online contacts and group senders with a green dot. Detailed mode shows group senders’ last seen time on hover.";
 "lng_serein_online_status_self" = "Show my status in the main menu";
 "lng_serein_online_status_self_about" = "Adds a main menu row telling whether others currently see you online or offline, taking ghost mode into account.";
 "lng_serein_online_status_detailed" = "Detailed online status";
@@ -1310,3 +1310,103 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_proxy_notes_row_about" = "Add a short note to each proxy; it appears after the address in the proxy list.";
 "lng_serein_custom_doh_row_about" = "Use a DNS-over-HTTPS server of your choice to help Telegram connect on restricted networks.";
 "lng_serein_dc_status_row_about" = "Open a list of Telegram data centers with their location and response time, and check again at any time.";
+
+"lng_serein_fonts" = "Fonts";
+"lng_serein_monospace_font" = "Monospaced font";
+"lng_serein_monospace_font_about" = "Choose a system monospaced font, preview it, or restore the default. Restart to apply.";
+"lng_serein_monospace_ligatures" = "Programming ligatures";
+"lng_serein_monospace_ligatures_about" = "Join programming character sequences when supported by the monospaced font. Restart to apply.";
+"lng_serein_font_default" = "Use default font";
+
+"lng_serein_forward_original" = "Forward with sender and caption";
+"lng_serein_forward_no_sender" = "Forward without sender name";
+"lng_serein_forward_no_caption" = "Forward without sender and caption";
+"lng_serein_forward_saved" = "Forward to Saved Messages";
+
+"lng_serein_expanded_audio_player" = "Expanded audio player";
+"lng_serein_expanded_audio_player_about" = "Double-click the music player to show artwork and full playback controls.";
+"lng_serein_remember_playback_position" = "Remember playback position";
+"lng_serein_remember_playback_position_about" = "Resume music and videos of any length from their last playback position.";
+"lng_serein_space_playback" = "Space to pause or resume";
+"lng_serein_space_playback_about" = "Toggle playback with Space when focus is outside a text editor or button.";
+"lng_serein_save_cover" = "Save cover image";
+
+"lng_serein_downloads_all_accounts" = "All accounts";
+"lng_serein_downloads_all" = "All files";
+"lng_serein_downloads_archives" = "Archives (ZIP, RAR, 7z)";
+"lng_serein_downloads_music" = "Music";
+"lng_serein_downloads_video" = "Video";
+"lng_serein_downloads_other" = "Other files";
+
+"lng_serein_native_sound" = "Notification sounds";
+"lng_serein_native_desktop" = "Desktop notifications";
+"lng_serein_native_large_emoji" = "Large emoji";
+"lng_serein_native_replace_emoji" = "Replace emoji";
+"lng_serein_native_suggest_emoji" = "Suggest emoji";
+"lng_serein_native_suggest_stickers" = "Suggest stickers";
+"lng_serein_native_loop_stickers" = "Loop animated stickers";
+"lng_serein_native_spellcheck" = "Spell checking";
+"lng_serein_native_muted_counter" = "Count muted chats";
+"lng_serein_native_count_messages" = "Count unread messages";
+"lng_serein_native_pinned_notifications" = "Pinned message notifications";
+"lng_serein_native_video_acceleration" = "Hardware video acceleration";
+"lng_serein_native_archive_collapsed" = "Collapsed archive";
+"lng_serein_native_archive_menu" = "Archive in main menu";
+"lng_serein_native_chat_folders" = "Chat folders";
+"lng_serein_native_invalid" = "Invalid Telegram settings backup.";
+"lng_serein_native_changed" = "Telegram settings changed. Open the import preview again.";
+"lng_serein_auto_backup_exports" = "Automatically back up exported settings";
+"lng_serein_auto_backup_exports_about" = "After saving an exported settings file, also send a copy to Saved Messages for this account.";
+
+"lng_serein_sequential_downloads" = "Sequential download queue";
+"lng_serein_sequential_downloads_about" = "Add messages to a per-account download queue from their context menu. Choose a folder once; files download in order.";
+"lng_serein_download_queue" = "Download queue";
+"lng_serein_queue_add" = "Add to download queue";
+"lng_serein_queue_cancel" = "Cancel queued downloads";
+"lng_serein_queue_status" = "Queued: {pending} · Failed or skipped: {amount}";
+"lng_serein_downloads_photo" = "Photo";
+
+"lng_serein_menu_clear_cache" = "Clear cached media";
+"lng_serein_cache_cleared" = "Cached media cleared. Files saved to your folders are kept.";
+
+"lng_serein_strip_tracking_parameters" = "Clean tracking parameters";
+"lng_serein_strip_tracking_parameters_about" = "Remove common tracking parameters when copying or pasting a web link. Signed links are kept intact.";
+
+"lng_serein_hidden_chats" = "Hidden chats";
+"lng_serein_hidden_chats_limit" = "You can hide up to 1,000 chats.";
+"lng_serein_hidden_accounts" = "Hidden accounts";
+"lng_serein_hidden_chats_enabled" = "Hide chats";
+"lng_serein_hidden_chats_enabled_about" = "Allow hiding chats from the chat list. Restore them from Hidden chats in the main menu or Ctrl+Alt+H.";
+"lng_serein_hidden_accounts_enabled" = "Hide accounts";
+"lng_serein_hidden_accounts_enabled_about" = "Protect hidden accounts with the local app passcode. Open the manager with Ctrl+Alt+Shift+H.";
+"lng_serein_hide_chat" = "Hide chat";
+"lng_serein_restore_chat" = "Restore chat";
+"lng_serein_hide_current_account" = "Hide current account";
+"lng_serein_hidden_requires_passcode" = "Set a local app passcode before using hidden accounts.";
+"lng_serein_hide_account_unavailable" = "Keep another signed-in account visible and set a local app passcode first.";
+"lng_serein_hidden_accounts_about" = "Hidden accounts disappear from account lists and notifications. Select an account below to restore it.";
+
+"lng_serein_account_network_controls" = "Account connection controls";
+"lng_serein_account_network_controls_about" = "Pause Telegram connections and transfers for one account from the main menu. Reconnect there, or restart the app, to resume.";
+"lng_serein_disconnect_account" = "Power off this account";
+"lng_serein_reconnect_account" = "Reconnect this account";
+"lng_serein_account_network_paused" = "Telegram connections paused for this account.";
+"lng_serein_account_network_resumed" = "Telegram connections resumed for this account.";
+
+"lng_serein_chat_list_tools" = "Chat list toolbar tools";
+"lng_serein_chat_list_tools_about" = "Show administrator-only filtering and date sorting beside chat search.";
+"lng_serein_admin_chats" = "Administrator chats";
+"lng_serein_sort_date" = "Sort chats by date";
+"lng_serein_sort_date_default" = "Telegram order";
+"lng_serein_sort_date_newest" = "Newest first";
+"lng_serein_sort_date_oldest" = "Oldest first";
+
+"lng_serein_bot_login" = "Log in with a bot token";
+"lng_serein_bot_token" = "Bot token";
+"lng_serein_bot_login_about" = "Enter a token for your bot from BotFather. Telegram limits the actions available to bot accounts.";
+"lng_serein_bot_login_failed" = "Could not log in with this bot token. Check the token or try again later.";
+
+"lng_serein_folder_icon_pack" = "Additional folder icons";
+"lng_serein_folder_icon_pack_about" = "Add the selected pack to the folder icon picker. Existing folder icons are kept.";
+"lng_serein_folder_icons_work" = "Work";
+"lng_serein_folder_icons_leisure" = "Leisure";

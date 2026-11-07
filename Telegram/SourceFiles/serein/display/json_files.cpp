@@ -12,7 +12,8 @@ namespace Serein::Display {
 void SaveJsonFile(
 		const QString &name,
 		QByteArray bytes,
-		Fn<void(QString text)> notify) {
+		Fn<void(QString text)> notify,
+		Fn<void()> saved) {
 	FileDialog::GetWritePath(
 		Core::App().getFileDialogParent(),
 		tr::lng_serein_config_export(tr::now),
@@ -26,6 +27,7 @@ void SaveJsonFile(
 			const auto written = file.open(QIODevice::WriteOnly)
 				&& (file.write(bytes) == bytes.size())
 				&& file.commit();
+			if (written && saved) saved();
 			notify(written
 				? tr::lng_serein_config_exported(tr::now)
 				: tr::lng_serein_config_write_error(tr::now));

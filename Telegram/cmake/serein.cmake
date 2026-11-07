@@ -1,4 +1,6 @@
 set(serein_sources
+    serein/chats/folder_icons.cpp
+    serein/chats/list_tools.cpp
     serein/chats/layout.cpp
     serein/chats/list_refresher.cpp
     serein/chats/promotions.cpp
@@ -19,6 +21,8 @@ set(serein_sources
     serein/core/exchange.cpp
     serein/core/patterns.cpp
     serein/core/id_list.cpp
+    serein/app/native_settings.cpp
+    serein/adapters/tdesktop/native_settings.cpp
     serein/app/options.cpp
     serein/adapters/tdesktop/prefs.cpp
     serein/schema/codec.cpp
@@ -106,6 +110,7 @@ set(serein_sources
     serein/display/reorder_row.cpp
     serein/display/text_entities.cpp
     serein/display/view_refresher.cpp
+    serein/interface/fonts.cpp
     serein/interface/main_menu.cpp
     serein/interface/app_icon.cpp
     serein/interface/main_menu_model.cpp
@@ -127,6 +132,7 @@ set(serein_sources
     serein/chats/shown_filters.cpp
     serein/chats/shown_order.cpp
     serein/interface/roundness.cpp
+    serein/settings/fonts.cpp
     serein/settings/interface.cpp
     serein/settings/restart.cpp
     serein/settings/rows.cpp
@@ -157,6 +163,7 @@ set(serein_sources
     serein/messages/markdown_menu.cpp
     serein/menu/details.cpp
     serein/menu/model.cpp
+    serein/menu/forward.cpp
     serein/menu/repeat.cpp
     serein/menu/reminder.cpp
     serein/menu/selection.cpp
@@ -166,6 +173,11 @@ set(serein_sources
     serein/media/download_names.cpp
     serein/media/force_preview.cpp
     serein/media/sticker_rounding.cpp
+    serein/media/cache.cpp
+    serein/media/downloads.cpp
+    serein/media/download_queue.cpp
+    serein/media/queue_menu.cpp
+    serein/media/player.cpp
     serein/media/voice_denoise.cpp
     serein/messages/format.cpp
     serein/messages/markdown.cpp
@@ -190,6 +202,7 @@ set(serein_sources
     serein/filters/subscription.cpp
     serein/filters/hide_message_menu.cpp
     serein/filters/menu.cpp
+    serein/links/clipboard.cpp
     serein/links/model.cpp
     serein/links/open.cpp
     serein/links/settings.cpp
@@ -197,6 +210,9 @@ set(serein_sources
     serein/snapshot/snapshot.cpp
     serein/privacy/profile.cpp
     serein/privacy/sessions.cpp
+    serein/privacy/bot_login.cpp
+    serein/privacy/network.cpp
+    serein/privacy/hidden.cpp
     serein/privacy/alias.cpp
     serein/privacy/alias_model.cpp
     serein/privacy/alias_rules.cpp

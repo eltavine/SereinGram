@@ -304,4 +304,36 @@ message ChatsSettings {
     scope: SCOPE_ACCOUNT
     validator: "ValidLocalPins"
   }];
+  optional bool chat_list_tools = 30 [(serein.options.v1.field) = {icon: "menuIconAdmin"}];
+  optional bool only_managed_chats = 31 [(serein.options.v1.field) = {
+    hidden: true
+    scope: SCOPE_ACCOUNT
+    title: "lng_serein_admin_chats"
+  }];
+  optional int32 chat_date_order = 32 [
+    (serein.options.v1.field) = {
+      hidden: true
+      title: "lng_serein_sort_date"
+    },
+    (buf.validate.field).int32 = {
+      gte: 0
+      lte: 2
+    }
+  ];
+  optional int32 folder_icon_pack = 33 [
+    (serein.options.v1.field) = {
+      icon: "menuIconPalette"
+      choice: {
+        labels: [
+          "lng_serein_sort_date_default",
+          "lng_serein_folder_icons_work",
+          "lng_serein_folder_icons_leisure"
+        ]
+      }
+    },
+    (buf.validate.field).int32 = {
+      gte: 0
+      lte: 2
+    }
+  ];
 }

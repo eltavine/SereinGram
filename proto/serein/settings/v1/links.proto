@@ -27,4 +27,5 @@ message LinkSettings {
     ]
     custom_ui: true
   }];
+  optional bool strip_tracking_parameters = 3 [(serein.options.v1.field) = {icon: "menuIconLink"}];
 }

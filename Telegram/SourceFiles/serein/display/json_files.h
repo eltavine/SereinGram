@@ -10,7 +10,8 @@ namespace Serein::Display {
 void SaveJsonFile(
 	const QString &name,
 	QByteArray bytes,
-	Fn<void(QString text)> notify);
+	Fn<void(QString text)> notify,
+	Fn<void()> saved = {});
 void OpenJsonFile(
 	qint64 maximumBytes,
 	Fn<void(QByteArray bytes)> done,

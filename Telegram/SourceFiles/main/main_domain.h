@@ -76,7 +76,8 @@ public:
 
 	[[nodiscard]] auto accounts() const
 		-> const std::vector<AccountWithIndex> &;
-	[[nodiscard]] std::vector<not_null<Account*>> orderedAccounts() const;
+	[[nodiscard]] std::vector<not_null<Account*>> orderedAccounts(
+		bool includeHidden = false) const;
 	[[nodiscard]] rpl::producer<Account*> activeValue() const;
 	[[nodiscard]] rpl::producer<> accountsChanges() const;
 	[[nodiscard]] Account *maybeLastOrSomeAuthedAccount();
@@ -93,6 +94,7 @@ public:
 	[[nodiscard]] bool unreadBadgeMuted() const;
 	[[nodiscard]] rpl::producer<> unreadBadgeChanges() const;
 	void notifyUnreadBadgeChanged();
+	void notifyAccountVisibilityChanged();
 
 	[[nodiscard]] not_null<Main::Account*> add(MTP::Environment environment);
 	void maybeActivate(not_null<Main::Account*> account);

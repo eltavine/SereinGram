@@ -6,6 +6,9 @@
 #include "serein/filters/hide_message_menu.h"
 #include "serein/filters/menu.h"
 #include "serein/menu/batch.h"
+#include "serein/media/queue_menu.h"
+#include "serein/media/cache.h"
+#include "serein/menu/forward.h"
 #include "serein/menu/buttons.h"
 #include "serein/menu/contributors.h"
 #include "serein/menu/media.h"
@@ -37,6 +40,7 @@ void AddSelectionActions() {
 		if (!context.item && context.selected.empty()) {
 			return;
 		}
+		Media::InsertQueueAction(context.menu, context.item, context.controller, context.selected);
 		Menu::InsertBatchActions(
 			context.menu,
 			context.item,
@@ -56,9 +60,11 @@ void AddSelectionActions() {
 void RegisterMessageMenu() {
 	AddItemAction(Menu::InsertQuickRatingActions);
 	AddItemAction(Menu::InsertRepeatActions);
+	AddItemAction(Menu::InsertForwardActions);
 	AddItemAction(Menu::InsertReminderAction);
 	AddSelectionActions();
 	AddItemAction(Menu::InsertMediaInfoAction);
+	AddItemAction(Media::InsertClearCacheAction);
 	AddItemAction(Messages::InsertReadingAction);
 	AddItemAction(Filters::InsertAuthorAction);
 	AddItemAction(HistoryFeature::InsertEditHistoryAction);

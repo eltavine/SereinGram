@@ -1,7 +1,13 @@
 // Generated from proto/serein/settings/v1/privacy.proto by tools/serein/codegen; do not edit.
 #pragma once
 
+#include <QtCore/QString>
+#include <gsl/pointers>
 #include <rpl/producer.h>
+
+namespace Main {
+class Session;
+} // namespace Main
 
 namespace Serein::Hooks::Privacy {
 
@@ -33,5 +39,17 @@ namespace Serein::Hooks::Privacy {
 [[nodiscard]] rpl::producer<bool> HideCreateTodoValue();
 [[nodiscard]] bool SaveProtectedContent();
 [[nodiscard]] rpl::producer<bool> SaveProtectedContentValue();
+[[nodiscard]] bool AutoBackupExports();
+[[nodiscard]] rpl::producer<bool> AutoBackupExportsValue();
+[[nodiscard]] bool HiddenChatsEnabled();
+[[nodiscard]] rpl::producer<bool> HiddenChatsEnabledValue();
+[[nodiscard]] QString HiddenChatIds(gsl::not_null<Main::Session*> session);
+[[nodiscard]] rpl::producer<QString> HiddenChatIdsValue(gsl::not_null<Main::Session*> session);
+[[nodiscard]] bool HiddenAccountsEnabled();
+[[nodiscard]] rpl::producer<bool> HiddenAccountsEnabledValue();
+[[nodiscard]] QString HiddenAccountIds();
+[[nodiscard]] rpl::producer<QString> HiddenAccountIdsValue();
+[[nodiscard]] bool AccountNetworkControls();
+[[nodiscard]] rpl::producer<bool> AccountNetworkControlsValue();
 
 } // namespace Serein::Hooks::Privacy

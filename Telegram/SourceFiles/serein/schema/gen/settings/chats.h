@@ -237,6 +237,42 @@ inline const auto kLocalPins = Option<QString>{
 	"lng_serein_local_pins",
 	static_cast<unsigned>(Flag::Hidden),
 	&ValidLocalPins };
+inline constexpr auto kChatListTools = Option<bool>{
+	"serein.chatListTools",
+	Scope::Device,
+	false,
+	Category::Chats,
+	"lng_serein_chat_list_tools",
+	0 };
+inline constexpr auto kOnlyManagedChats = Option<bool>{
+	"serein.onlyManagedChats",
+	Scope::Account,
+	false,
+	Category::Chats,
+	"lng_serein_admin_chats",
+	static_cast<unsigned>(Flag::Hidden) };
+inline constexpr auto kChatDateOrder = Option<int>{
+	"serein.chatDateOrder",
+	Scope::Device,
+	0,
+	Category::Chats,
+	"lng_serein_sort_date",
+	static_cast<unsigned>(Flag::Hidden),
+	[](const int &value) {
+		return (value == 0)
+			|| ((value >= 0) && (value <= 2));
+	} };
+inline constexpr auto kFolderIconPack = Option<int>{
+	"serein.folderIconPack",
+	Scope::Device,
+	0,
+	Category::Chats,
+	"lng_serein_folder_icon_pack",
+	0,
+	[](const int &value) {
+		return (value == 0)
+			|| ((value >= 0) && (value <= 2));
+	} };
 
 inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kCompactList));
@@ -268,6 +304,10 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kRecentChats));
 	Expects(registry.Add(kReadingPositions));
 	Expects(registry.Add(kLocalPins));
+	Expects(registry.Add(kChatListTools));
+	Expects(registry.Add(kOnlyManagedChats));
+	Expects(registry.Add(kChatDateOrder));
+	Expects(registry.Add(kFolderIconPack));
 }
 
 } // namespace Serein::Chats

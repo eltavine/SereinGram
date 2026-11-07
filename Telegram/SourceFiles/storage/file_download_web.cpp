@@ -7,6 +7,8 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "storage/file_download_web.h"
 
+#include "main/main_session.h"
+#include "mtproto/mtp_instance.h"
 #include "storage/cache/storage_cache_types.h"
 #include "base/timer.h"
 #include "base/weak_ptr.h"
@@ -580,8 +582,14 @@ bool webFileLoader::streamLoading() const {
 void webFileLoader::startLoading() {
 	if (_finished) {
 		return;
+	} else if (!session().mtp().networkEnabled()) {
+		cancel();
+		return;
 	} else if (!_manager) {
 		_manager = GetManager();
+		session().mtp().networkEnabledChanges() | rpl::on_next([=](bool enabled) {
+			if (!enabled) cancel();
+		}, _managerLifetime);
 		_manager->updates(
 			this
 		) | rpl::on_next([=](const Update &data) {

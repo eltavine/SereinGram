@@ -4,6 +4,7 @@
 #include "serein/chats/options.h"
 #include "serein/display/reorder_row.h"
 #include "data/data_chat_filters.h"
+#include "data/data_folder.h"
 #include "data/data_peer.h"
 #include "data/data_session.h"
 #include "data/data_user.h"
@@ -35,6 +36,10 @@ constexpr auto kMime = "application/x-serein-chat-sort-rule";
 
 // Below server pins (0xFFFFFFFF000000FF minus index), above date keys.
 constexpr auto kLocalPinBase = 0xFFFFFFFE00000000ULL;
+
+[[nodiscard]] int DateOrder() {
+	return ForDevice().Get(kChatListTools) ? ForDevice().Get(kChatDateOrder) : 0;
+}
 
 int &SortConfig() {
 	static auto value = ForDevice().Get(kChatSort);
@@ -86,6 +91,9 @@ void RefreshSorting(gsl::not_null<Main::Session*> session) {
 		}
 	};
 	collect(session->data().chatsList());
+	if (const auto archive = session->data().folderLoaded(Data::Folder::kId)) {
+		collect(archive->chatsList());
+	}
 	for (const auto &filter : session->data().chatsFilters().list()) {
 		collect(session->data().chatsFilters().chatsList(filter.id()));
 	}
@@ -97,7 +105,7 @@ void RefreshSorting(gsl::not_null<Main::Session*> session) {
 } // namespace
 
 bool SortingEnabled() {
-	return (SortConfig() & 15) != 0 || HasLocalPins();
+	return (SortConfig() & 15) != 0 || HasLocalPins() || DateOrder() != 0;
 }
 
 uint64 SortKey(const Dialogs::Entry &entry, uint64 original) {
@@ -115,6 +123,12 @@ uint64 SortKey(const Dialogs::Entry &entry, uint64 original) {
 				return kLocalPinBase + uint64(pins.end() - pin);
 			}
 		}
+	}
+	const auto dateOrder = DateOrder();
+	if (dateOrder && original) {
+		const auto time = (original >> 32) & 0x7FFFFFFFULL;
+		const auto ordered = (dateOrder == 2) ? (0x7FFFFFFFULL - time) : time;
+		return (ordered << 32) | (original & 0xFFFFFFFFULL);
 	}
 	const auto config = SortConfig();
 	const auto enabled = config & 15;
@@ -146,7 +160,7 @@ void WatchSorting(gsl::not_null<Main::Session*> session) {
 	session->lifetime().add([=] { LocalPins().erase(session); });
 	ForDevice().changes(
 	) | rpl::filter([](auto key) {
-		return key == kChatSort.key || key == kLocalPinning.key;
+		return key == kChatSort.key || key == kLocalPinning.key || key == kChatDateOrder.key || key == kChatListTools.key;
 	}) | rpl::on_next([=] {
 		SortConfig() = ForDevice().Get(kChatSort);
 		ReadLocalPins(session);
