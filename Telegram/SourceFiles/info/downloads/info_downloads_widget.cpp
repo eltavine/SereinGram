@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "info/downloads/info_downloads_widget.h"
-#include "serein/hooks/media/downloads.h"
+#include "serein/hooks/media/download_filters.h"
 
 #include "info/downloads/info_downloads_inner_widget.h"
 #include "info/info_controller.h"

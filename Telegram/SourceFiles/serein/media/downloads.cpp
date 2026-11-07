@@ -1,4 +1,4 @@
-#include "serein/hooks/media/downloads.h"
+#include "serein/hooks/media/download_filters.h"
 
 #include "serein/media/options.h"
 #include "serein/hooks/media/download_queue.h"

@@ -1,30 +1,19 @@
 #pragma once
 
-#include "base/basic_types.h"
+#include <QtCore/QDir>
 
-#include <vector>
+#include <gsl/pointers>
 
-struct FullMsgId;
-struct GlobalMsgId;
-#include <rpl/lifetime.h>
+class DocumentData;
 
-namespace Main { class Session; }
-namespace Ui::Menu { struct MenuCallback; }
-class HistoryItem;
+namespace Data {
+struct FileOrigin;
+} // namespace Data
 
-namespace Serein::Media {
+namespace Serein::Hooks::Media {
 
-[[nodiscard]] bool DownloadVisible(
-	gsl::not_null<Main::Session*> session,
-	gsl::not_null<const HistoryItem*> item);
-void WatchDownloadFilters(
-	gsl::not_null<Main::Session*> session,
-	Fn<void()> refresh,
-	rpl::lifetime &lifetime);
-void FillDownloadFilters(
-	gsl::not_null<Main::Session*> session,
-	const Ui::Menu::MenuCallback &addAction);
-[[nodiscard]] std::vector<GlobalMsgId> VisibleDownloadIds(
-	gsl::not_null<Main::Session*> session);
+[[nodiscard]] QDir ChatDownloadDirectory(
+	gsl::not_null<DocumentData*> document,
+	const Data::FileOrigin &origin);
 
-} // namespace Serein::Media
+} // namespace Serein::Hooks::Media
