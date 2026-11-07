@@ -38,4 +38,12 @@ rpl::producer<QString> HiddenMessagesValue(gsl::not_null<Main::Session*> session
 	return ForAccount(session).Value(Serein::Filters::kHiddenMessages);
 }
 
+QByteArray KeywordAlerts(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Get(Serein::Filters::kKeywordAlerts);
+}
+
+rpl::producer<QByteArray> KeywordAlertsValue(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Value(Serein::Filters::kKeywordAlerts);
+}
+
 } // namespace Serein::Hooks::Filters

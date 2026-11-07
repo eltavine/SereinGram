@@ -102,6 +102,14 @@ rpl::producer<bool> FadeDeletedMessagesValue() {
 	return ForDevice().Value(Serein::Messages::kFadeDeletedMessages);
 }
 
+bool HighlightHistoryMarks() {
+	return ForDevice().Get(Serein::Messages::kHighlightHistoryMarks);
+}
+
+rpl::producer<bool> HighlightHistoryMarksValue() {
+	return ForDevice().Value(Serein::Messages::kHighlightHistoryMarks);
+}
+
 bool ShowChannelBadge() {
 	return ForDevice().Get(Serein::Messages::kShowChannelBadge);
 }

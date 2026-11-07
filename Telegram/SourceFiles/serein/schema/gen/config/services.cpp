@@ -191,4 +191,77 @@ QByteArray SerializeServicesConfig(const ServicesConfig &value) {
 	return Codec::Serialize(object);
 }
 
+bool Read(
+		const QJsonValue &json,
+		SendTranslations &result,
+		Codec::Error &error,
+		const QString &path) {
+	if (!json.isObject()) {
+		return Codec::FailExpected(error, path, "an object");
+	}
+	const auto object = json.toObject();
+	if (!Codec::KnownKeys(object, {
+			QLatin1StringView("languages"),
+		}, error, path)) {
+		return false;
+	} else if (!Codec::RequiredKeys(object, {
+			QLatin1StringView("languages"),
+		}, error, path)) {
+		return false;
+	}
+	result = SendTranslations();
+	return true
+		&& Codec::ReadField(object, QLatin1StringView("languages"), result.languages, error, path);
+}
+
+QJsonValue Write(const SendTranslations &value) {
+	auto object = QJsonObject();
+	Codec::WriteField(object, QLatin1StringView("languages"), value.languages);
+	return object;
+}
+
+bool Validate(
+		const SendTranslations &value,
+		Codec::Error &error,
+		const QString &path) {
+	if (!(qsizetype(value.languages.size()) <= 500)) {
+		return Codec::Fail(error, Codec::Child(path, QLatin1StringView("languages")), QString::fromLatin1("violates the schema rules"));
+	}
+	for (const auto &[key, item] : value.languages) {
+		if (!(Codec::Matches(key, QString::fromUtf8("^[1-9][0-9]{0,19}$")))) {
+			return Codec::Fail(error, Codec::Entry(Codec::Child(path, QLatin1StringView("languages")), key), QString::fromLatin1("violates the schema rules"));
+		}
+		if (!(Codec::Matches(item, QString::fromUtf8("^[a-z]{2,3}(_[A-Za-z0-9]{2,8}){0,2}$")))) {
+			return Codec::Fail(error, Codec::Entry(Codec::Child(path, QLatin1StringView("languages")), key), QString::fromLatin1("violates the schema rules"));
+		}
+	}
+	return true;
+}
+
+std::optional<SendTranslations> ParseSendTranslations(
+		const QByteArray &raw,
+		Codec::Error *error) {
+	auto ignored = Codec::Error();
+	auto &out = error ? *error : ignored;
+	auto object = Codec::ParseObject(raw, out);
+	if (!object) {
+		return std::nullopt;
+	} else if (object->value(QLatin1StringView("version")) != QJsonValue(1)) {
+		Codec::Fail(out, QString::fromLatin1("version"), QString::fromLatin1("unsupported version"));
+		return std::nullopt;
+	}
+	object->remove(QLatin1StringView("version"));
+	auto result = SendTranslations();
+	if (!Read(*object, result, out, QString()) || !Validate(result, out, QString())) {
+		return std::nullopt;
+	}
+	return result;
+}
+
+QByteArray SerializeSendTranslations(const SendTranslations &value) {
+	auto object = Write(value).toObject();
+	object.insert(QLatin1StringView("version"), 1);
+	return Codec::Serialize(object);
+}
+
 } // namespace Serein::ServicesSchema

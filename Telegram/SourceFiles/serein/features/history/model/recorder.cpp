@@ -25,7 +25,9 @@ constexpr auto kSecondsPerDay = qint64(86400);
 		&& !policy.excludedPeers.contains(snapshot.peerId)
 		&& snapshot.peerId != 0
 		&& snapshot.messageId > 0
-		&& (!snapshot.text.isEmpty() || !snapshot.mediaSummary.isEmpty());
+		&& (!snapshot.text.isEmpty()
+			|| !snapshot.mediaSummary.isEmpty()
+			|| !snapshot.tlMessage.isEmpty());
 }
 
 } // namespace
@@ -91,21 +93,35 @@ bool Recorder::prune(const Policy &policy) {
 }
 
 bool Recorder::record(History::RecordKind kind, const Snapshot &snapshot) {
+	return _store.save(RecordFromSnapshot(
+		kind,
+		snapshot,
+		_store.nextRevision(snapshot.peerId, snapshot.messageId),
+		_now()));
+}
+
+History::Record RecordFromSnapshot(
+		History::RecordKind kind,
+		const Snapshot &snapshot,
+		int revision,
+		qint64 recordedAt) {
 	auto record = History::Record();
 	record.kind = kind;
 	record.peerId = snapshot.peerId;
 	record.messageId = snapshot.messageId;
 	record.topicRootId = snapshot.topicRootId;
-	record.revision = _store.nextRevision(snapshot.peerId, snapshot.messageId);
+	record.revision = revision;
 	record.date = snapshot.date;
-	record.recordedAt = _now();
+	record.recordedAt = recordedAt;
 	record.fromPeerId = snapshot.fromPeerId;
 	record.text = snapshot.text;
 	record.entities = snapshot.entities;
 	record.mediaSummary = snapshot.mediaSummary;
 	record.localPath = snapshot.localPath;
 	record.cachedMediaName = snapshot.cachedMediaName;
-	return _store.save(record);
+	record.apiLayer = snapshot.tlMessage.isEmpty() ? 0 : snapshot.apiLayer;
+	record.tlMessage = snapshot.tlMessage;
+	return record;
 }
 
 } // namespace Serein::HistoryFeature

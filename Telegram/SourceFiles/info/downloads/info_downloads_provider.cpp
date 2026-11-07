@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "info/downloads/info_downloads_provider.h"
+#include "serein/hooks/media/download_filters.h"
 
 #include "info/media/info_media_widget.h"
 #include "info/media/info_media_list_section.h"
@@ -37,6 +38,7 @@ using namespace Media;
 Provider::Provider(not_null<AbstractController*> controller)
 : _controller(controller)
 , _storiesAddToAlbumId(_controller->storiesAddToAlbumId()) {
+	Serein::Media::WatchDownloadFilters(&_controller->session(), [=] { _refreshed.fire({}); }, _lifetime);
 	style::PaletteChanged(
 	) | rpl::on_next([=] {
 		for (auto &layout : _layouts) {
@@ -76,11 +78,13 @@ bool Provider::isPossiblyMyItem(not_null<const HistoryItem*> item) {
 }
 
 std::optional<int> Provider::fullCount() {
-	return _queryWords.empty()
-		? _fullCount
-		: (_foundCount || _fullCount.has_value())
-		? _foundCount
-		: std::optional<int>();
+	const auto session = &_controller->session();
+	const auto search = searchMode();
+	const auto count = int(ranges::count_if(_elements, [=](const Element &element) {
+		return (!search || element.found)
+			&& Serein::Media::DownloadVisible(session, element.item);
+	}));
+	return (count || _fullCount.has_value()) ? std::optional(count) : std::nullopt;
 }
 
 void Provider::restart() {
@@ -323,11 +327,14 @@ std::vector<ListSection> Provider::fillSections(
 	result.emplace_back(Type::File, sectionDelegate());
 	auto &section = result.back();
 	for (const auto &element : ranges::views::reverse(_elements)) {
-		if (search && !element.found) {
+		if ((search && !element.found) || !Serein::Media::DownloadVisible(&_controller->session(), element.item)) {
 			continue;
 		} else if (auto layout = getLayout(element, delegate)) {
 			section.addItem(layout);
 		}
+	}
+	if (section.empty()) {
+		return {};
 	}
 	section.finishSection();
 	return result;
@@ -359,7 +366,7 @@ BaseLayout *Provider::lookupLayout(const HistoryItem *item) {
 }
 
 bool Provider::isMyItem(not_null<const HistoryItem*> item) {
-	return _downloading.contains(item) || _downloaded.contains(item);
+	return Serein::Media::DownloadVisible(&_controller->session(), item) && (_downloading.contains(item) || _downloaded.contains(item));
 }
 
 bool Provider::isAfter(

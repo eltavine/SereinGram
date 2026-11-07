@@ -1,5 +1,7 @@
 #include "serein/filters/model.h"
 
+#include "serein/core/patterns.h"
+
 #include <QtCore/QElapsedTimer>
 #include <QtCore/QJsonArray>
 #include <QtCore/QJsonDocument>
@@ -18,36 +20,6 @@ constexpr auto kMaxText = 16384;
 constexpr auto kMaxMatches = 256;
 constexpr auto kMaxWorkMs = 20;
 constexpr auto kMaxConfigBytes = 128 * 1024;
-constexpr auto kMaxCachedPatterns = 256;
-
-QString RegexPrefix() {
-	return u"(*NO_JIT)(*LIMIT_MATCH=10000)(*LIMIT_DEPTH=64)(*LIMIT_HEAP=1024)"_q;
-}
-
-QRegularExpression CompilePattern(const QString &pattern, bool caseInsensitive) {
-	return QRegularExpression(
-		RegexPrefix() + pattern,
-		QRegularExpression::UseUnicodePropertiesOption
-			| (caseInsensitive
-				? QRegularExpression::CaseInsensitiveOption
-				: QRegularExpression::NoPatternOption));
-}
-
-[[nodiscard]] QRegularExpression CachedPattern(
-		const QString &pattern,
-		bool caseInsensitive) {
-	static auto cache = std::map<std::pair<QString, bool>, QRegularExpression>();
-	auto key = std::pair(pattern, caseInsensitive);
-	if (const auto i = cache.find(key); i != end(cache)) {
-		return i->second;
-	}
-	if (cache.size() >= kMaxCachedPatterns) {
-		cache.clear();
-	}
-	auto expression = CompilePattern(pattern, caseInsensitive);
-	expression.optimize();
-	return cache.emplace(std::move(key), std::move(expression)).first->second;
-}
 
 bool ValidId(const QString &id) {
 	auto ok = false;
@@ -198,7 +170,7 @@ bool ValidFilterRules(const FilterRules &value) {
 			|| !ValidText(rule.pattern, 2048, false)
 			|| !ValidText(rule.replacement, 4096, true)
 			|| (rule.reversed && rule.action != u"hide"_q)
-			|| !CompilePattern(rule.pattern, rule.caseInsensitive).isValid()) {
+			|| !SafePattern(rule.pattern, rule.caseInsensitive).isValid()) {
 			return false;
 		}
 		seen.insert(rule.id);
@@ -272,7 +244,7 @@ Result Apply(
 		if (!rule.enabled || !inScope) {
 			continue;
 		}
-		const auto expression = CachedPattern(
+		const auto expression = CachedSafePattern(
 			rule.pattern,
 			rule.caseInsensitive);
 		const auto &action = rule.action;

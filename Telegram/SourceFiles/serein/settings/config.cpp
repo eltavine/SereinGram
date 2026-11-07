@@ -1,7 +1,11 @@
 #include "serein/settings/config.h"
+#include "serein/settings/ayu_migration.h"
+#include "serein/settings/exchange_preview.h"
 
 #include "serein/core/exchange.h"
 #include "serein/hooks/core/language.h"
+#include "serein/hooks/settings/native.h"
+#include "serein/privacy/options.h"
 #include "serein/settings/cloud_backup.h"
 #include "serein/settings/chats.h"
 #include "serein/settings/compose.h"
@@ -15,12 +19,14 @@
 #include "serein/settings/rules.h"
 #include "serein/settings/services.h"
 #include "serein/settings/page.h"
+#include "serein/settings/rows.h"
 #include "serein/display/json_files.h"
 #include "core/application.h"
 #include "core/version.h"
 #include "lang/lang_instance.h"
 #include "lang/lang_keys.h"
 #include "lang_auto_counts.h"
+#include "main/main_session.h"
 #include "settings/settings_builder.h"
 #include "settings/settings_common_session.h"
 #include "ui/layers/generic_box.h"
@@ -43,6 +49,7 @@ using namespace ::Settings;
 using namespace ::Settings::Builder;
 
 constexpr auto kMaximumImportBytes = 8 * 1024 * 1024;
+constexpr auto kBackupVersion = 4;
 
 class ConfigSection final : public Page<ConfigSection> {
 public:
@@ -56,12 +63,18 @@ public:
 
 };
 
-QString Title(const OptionInfo &info) {
-	const auto key = QByteArray(info.titleKey.data(), info.titleKey.size());
-	const auto index = Lang::GetKeyIndex(QLatin1String(key));
-	return (index == Lang::kKeysCount)
-		? QString::fromUtf8(key)
-		: LocalizedValue(Lang::GetInstance(), index);
+[[nodiscard]] ExchangeExport ExportAll(
+		not_null<Window::SessionController*> controller) {
+	auto result = Exchange::Export(
+		ForDevice(),
+		AccountOptions(controller),
+		RegisteredOptions());
+	result.data = QJsonDocument(QJsonObject{
+		{ u"version"_q, kBackupVersion },
+		{ u"serein"_q, QJsonDocument::fromJson(result.data).object() },
+		{ u"telegram"_q, Hooks::ExportNativeSettings(&controller->session()) },
+	}).toJson(QJsonDocument::Indented);
+	return result;
 }
 
 Settings::Type CategorySection(Category category) {
@@ -79,54 +92,26 @@ Settings::Type CategorySection(Category category) {
 	Unexpected("Invalid Serein option category.");
 }
 
-void AddText(not_null<Ui::GenericBox*> box, const QString &text) {
-	const auto label = box->addRow(object_ptr<Ui::FlatLabel>(
-		box, text, st::boxLabel));
-	label->setSelectable(true);
-	label->setBreakEverywhere(true);
-}
-
-QString ValueText(const OptionInfo &info, const QByteArray &raw) {
-	const auto value = raw.isEmpty() ? info.fallbackRaw : raw;
-	if (info.type == OptionInfo::ValueType::Boolean) {
-		return (value == "1")
-			? tr::lng_serein_config_on(tr::now)
-			: tr::lng_serein_config_off(tr::now);
-	}
-	auto result = (info.type == OptionInfo::ValueType::String)
-		? QString::fromUtf8(value.mid(1))
-		: QString::fromUtf8(value);
-	constexpr auto kPreviewLength = 120;
-	if (result.size() > kPreviewLength) {
-		result.truncate(kPreviewLength);
-		if (result.back().isHighSurrogate()) {
-			result.chop(1);
-		}
-		result += QChar(0x2026);
-	}
-	return result;
-}
-
 void ShowModified(not_null<Window::SessionController*> controller) {
-	const auto exported = Exchange::Export(ForDevice(), RegisteredOptions());
-	const auto values = QJsonDocument::fromJson(exported.data
-		).object().value(u"options"_q).toObject();
+	const auto root = QJsonDocument::fromJson(ExportAll(controller).data).object().value(u"serein"_q).toObject();
+	auto keys = root.value(u"options"_q).toObject().keys();
+	keys += root.value(u"account"_q).toObject().keys();
 	const auto entries = SearchRegistry::Instance().collectAll(
 		&controller->session());
 	controller->show(Box([=](not_null<Ui::GenericBox*> box) {
 		box->setTitle(tr::lng_serein_config_modified());
-		AddText(box, tr::lng_serein_config_modified_about(tr::now));
-		if (values.isEmpty()) {
-			AddText(box, tr::lng_serein_config_no_changes(tr::now));
+		AddSelectableText(box, tr::lng_serein_config_modified_about(tr::now));
+		if (keys.isEmpty()) {
+			AddSelectableText(box, tr::lng_serein_config_no_changes(tr::now));
 		}
-		for (auto i = values.begin(); i != values.end(); ++i) {
-			const auto encodedKey = i.key().toUtf8();
+		for (const auto &key : keys) {
+			const auto encodedKey = key.toUtf8();
 			const auto info = RegisteredOptions().Find(std::string_view(
 				encodedKey.constData(), encodedKey.size()));
 			if (!info) {
 				continue;
 			}
-			const auto title = Title(*info);
+			const auto title = OptionTitle(*info);
 			const auto fallback = CategorySection(info->category);
 			const auto found = ranges::find_if(entries, [&](const SearchEntry &entry) {
 				return entry.section == fallback && entry.title == title;
@@ -135,7 +120,7 @@ void ShowModified(not_null<Window::SessionController*> controller) {
 				? found->section : fallback;
 			const auto id = (found != entries.end()) ? found->id : QString();
 			const auto button = box->addRow(object_ptr<Ui::SettingsButton>(
-				box, rpl::single(title), st::settingsButtonNoIcon));
+				box, rpl::single(ScopedOptionTitle(*info)), st::settingsButtonNoIcon));
 			button->setClickedCallback(crl::guard(controller, [=] {
 				box->closeBox();
 				if (!id.isEmpty()) {
@@ -148,88 +133,75 @@ void ShowModified(not_null<Window::SessionController*> controller) {
 	}));
 }
 
-struct PlanTexts {
-	tr::phrase<> title;
-	tr::phrase<> about;
-	tr::phrase<> apply;
-	tr::phrase<> done;
-};
-
-void ShowPlan(
+void PreviewImport(
 		not_null<Window::SessionController*> controller,
-		const ExchangePlan &plan,
-		const PlanTexts &texts) {
-	if (!plan.error.isEmpty()) {
-		controller->showToast(plan.error);
-		return;
-	}
-	controller->show(Box([=](not_null<Ui::GenericBox*> box) {
-		box->setTitle(texts.title());
-		AddText(box, texts.about(tr::now));
-		AddText(box, tr::lng_serein_config_changes(
-			tr::now, lt_amount, QString::number(plan.changes.size())));
-		for (const auto &change : plan.changes) {
-			const auto encodedKey = change.key.toUtf8();
-			const auto info = RegisteredOptions().Find(std::string_view(
-				encodedKey.constData(), encodedKey.size()));
-			if (info) {
-				AddText(box, Title(*info) + u"\n"_q
-					+ ValueText(*info, change.before)
-					+ u" → "_q + ValueText(*info, change.after));
-			}
-		}
-		if (!plan.skippedKeys.isEmpty()) {
-			AddText(box, tr::lng_serein_config_unknown(
-				tr::now, lt_amount, QString::number(plan.skippedKeys.size()))
-				+ u"\n"_q + plan.skippedKeys.mid(0, 20).join('\n'));
-		}
-		if (!plan.changes.empty()) {
-			box->addButton(texts.apply(),
-				crl::guard(controller, [=] {
-					const auto result = Exchange::Apply(
-						ForDevice(), RegisteredOptions(), plan);
-					if (!result.applied) {
-						box->showToast(result.error);
-						return;
-					}
-					box->closeBox();
-					controller->showToast(texts.done(tr::now));
-					if (ranges::any_of(plan.changes, [](const ExchangeChange &change) {
-						const auto key = change.key.toUtf8();
-						const auto info = RegisteredOptions().Find(std::string_view(
-							key.constData(), key.size()));
-						return info && (info->flags
-							& static_cast<unsigned>(Flag::RequiresRestart));
-					})) {
-						ShowRestartPrompt(controller);
-					}
-				}));
-		}
-		box->addButton(tr::lng_cancel(), [=] { box->closeBox(); });
-	}));
+		const QByteArray &settings,
+		const NativeSettingsPlan &native = {},
+		const QStringList &skipped = {}) {
+	auto plan = Exchange::PlanImport(
+		ForDevice(),
+		AccountOptions(controller),
+		RegisteredOptions(),
+		settings);
+	plan.skippedKeys += skipped;
+	ShowExchangePreview(controller, plan, {
+		.title = tr::lng_serein_config_preview,
+		.about = tr::lng_serein_config_import_about,
+		.apply = tr::lng_serein_config_apply,
+		.done = tr::lng_serein_config_imported,
+	}, native);
 }
 
 void ShowImport(
 		not_null<Window::SessionController*> controller,
 		const QByteArray &bytes) {
-	ShowPlan(
-		controller,
-		Exchange::PlanImport(ForDevice(), RegisteredOptions(), bytes),
-		{
-			.title = tr::lng_serein_config_preview,
-			.about = tr::lng_serein_config_import_about,
-			.apply = tr::lng_serein_config_apply,
-			.done = tr::lng_serein_config_imported,
-		});
+	if (bytes.size() > kMaximumImportBytes) {
+		controller->showToast(tr::lng_serein_config_invalid(tr::now));
+		return;
+	}
+	auto settings = bytes;
+	auto native = NativeSettingsPlan();
+	const auto root = QJsonDocument::fromJson(bytes).object();
+	const auto version = root.value(u"version"_q);
+	if (version == QJsonValue(3) || version == QJsonValue(kBackupVersion)) {
+		if (root.size() != 3
+			|| !root.value(u"serein"_q).isObject() || !root.value(u"telegram"_q).isObject()) {
+			controller->showToast(tr::lng_serein_native_invalid(tr::now));
+			return;
+		}
+		settings = QJsonDocument(root.value(u"serein"_q).toObject()).toJson();
+		native = Hooks::PlanNativeSettings(&controller->session(), root.value(u"telegram"_q).toObject());
+	}
+	PreviewImport(controller, settings, native);
+}
+
+void ShowAyuImport(
+		not_null<Window::SessionController*> controller,
+		const QByteArray &bytes) {
+	if (bytes.size() > kMaximumImportBytes) {
+		controller->showToast(tr::lng_serein_config_invalid(tr::now));
+		return;
+	}
+	const auto migration = MigrateAyuSettings(
+		QJsonDocument::fromJson(bytes).object(),
+		controller->session().userId().bare);
+	if (migration.settings.isEmpty()) {
+		controller->showToast(tr::lng_serein_config_ayu_invalid(tr::now));
+		return;
+	}
+	PreviewImport(controller, migration.settings, {}, migration.skippedKeys);
 }
 
 void ShowReset(not_null<Window::SessionController*> controller) {
-	const auto plan = Exchange::PlanReset(ForDevice(), RegisteredOptions());
+	const auto plan = Exchange::PlanReset(
+		ForDevice(),
+		AccountOptions(controller),
+		RegisteredOptions());
 	if (plan.error.isEmpty() && plan.changes.empty()) {
 		controller->showToast(tr::lng_serein_config_no_changes(tr::now));
 		return;
 	}
-	ShowPlan(controller, plan, {
+	ShowExchangePreview(controller, plan, {
 		.title = tr::lng_serein_config_reset,
 		.about = tr::lng_serein_config_reset_about,
 		.apply = tr::lng_serein_config_reset_apply,
@@ -238,7 +210,7 @@ void ShowReset(not_null<Window::SessionController*> controller) {
 }
 
 void Export(not_null<Window::SessionController*> controller) {
-	const auto exported = Exchange::Export(ForDevice(), RegisteredOptions());
+	const auto exported = ExportAll(controller);
 	if (!exported.invalidKeys.isEmpty()) {
 		controller->showToast(tr::lng_serein_config_invalid(tr::now));
 		return;
@@ -248,14 +220,20 @@ void Export(not_null<Window::SessionController*> controller) {
 		exported.data,
 		crl::guard(controller, [=](QString text) {
 			controller->showToast(text);
+		}), crl::guard(controller, [=] {
+			if (ForDevice().Get(Privacy::kAutoBackupExports)) {
+				BackUpToSavedMessages(controller, exported.data);
+			}
 		}));
 }
 
-void Import(not_null<Window::SessionController*> controller) {
+void Import(
+		not_null<Window::SessionController*> controller,
+		void (*show)(not_null<Window::SessionController*>, const QByteArray &)) {
 	Display::OpenJsonFile(
 		kMaximumImportBytes,
 		crl::guard(controller, [=](QByteArray bytes) {
-			ShowImport(controller, bytes);
+			show(controller, bytes);
 		}),
 		crl::guard(controller, [=](QString text) {
 			controller->showToast(text);
@@ -263,7 +241,7 @@ void Import(not_null<Window::SessionController*> controller) {
 }
 
 void BackUp(not_null<Window::SessionController*> controller) {
-	const auto exported = Exchange::Export(ForDevice(), RegisteredOptions());
+	const auto exported = ExportAll(controller);
 	if (!exported.invalidKeys.isEmpty()) {
 		controller->showToast(tr::lng_serein_config_invalid(tr::now));
 		return;
@@ -297,57 +275,113 @@ void CopyDiagnostics(not_null<Window::SessionController*> controller) {
 	controller->showToast(tr::lng_serein_config_copy_report(tr::now));
 }
 
+constexpr auto kTitle = &tr::lng_serein_config_title;
+const auto kIcon = &st::menuIconStorage;
+
 const auto kMeta = BuildHelper({
 	.id = ConfigSection::Id(),
 	.parentId = HomeId(),
-	.title = &tr::lng_serein_config_title,
-	.icon = &st::menuIconChatBubble,
+	.title = kTitle,
+	.icon = kIcon,
 }, [](SectionBuilder &builder) {
 	const auto controller = builder.controller();
-	builder.addDividerText(tr::lng_serein_config_scope());
-	builder.addButton({
-		.id = u"serein/config/modified"_q,
-		.title = tr::lng_serein_config_modified(),
-		.st = &st::settingsButtonNoIcon,
-		.onClick = [=] { ShowModified(controller); },
+	AddSection(builder, {
+		u"serein/config/files"_q,
+		tr::lng_serein_section_config_files,
+		{ u"export"_q, u"import"_q, u"ayugram"_q },
 	});
-	builder.addButton({
+	AddRow(builder, {
 		.id = u"serein/config/export"_q,
 		.title = tr::lng_serein_config_export(),
-		.st = &st::settingsButtonNoIcon,
 		.onClick = [=] { Export(controller); },
+		.visual = {
+			.icon = &st::menuIconExportTheme,
+			.about = tr::lng_serein_config_export_about,
+		},
 	});
-	builder.addButton({
+	AddRow(builder, {
 		.id = u"serein/config/import"_q,
 		.title = tr::lng_serein_config_import(),
-		.st = &st::settingsButtonNoIcon,
-		.onClick = [=] { Import(controller); },
+		.onClick = [=] { Import(controller, ShowImport); },
+		.visual = {
+			.icon = &st::menuIconImportTheme,
+			.about = tr::lng_serein_config_import_row_about,
+		},
 	});
-	builder.addButton({
+	AddRow(builder, {
+		.id = u"serein/config/import-ayugram"_q,
+		.title = tr::lng_serein_config_import_ayu(),
+		.onClick = [=] { Import(controller, ShowAyuImport); },
+		.visual = {
+			.icon = &st::menuIconImportTheme,
+			.about = tr::lng_serein_config_import_ayu_about,
+		},
+	});
+	EndSection(builder, tr::lng_serein_config_scope);
+	AddSection(builder, {
+		u"serein/config/saved-backup"_q,
+		tr::lng_serein_section_config_backup,
+		{ u"backup"_q, u"restore"_q },
+	});
+	AddToggle(builder, {
+		.option = &Privacy::kAutoBackupExports,
+		.title = tr::lng_serein_auto_backup_exports,
+		.id = u"serein/config/auto-backup"_q,
+		.icon = &st::menuIconSavedMessages,
+		.about = tr::lng_serein_auto_backup_exports_about,
+	});
+	AddRow(builder, {
 		.id = u"serein/config/backup"_q,
 		.title = tr::lng_serein_config_backup(),
-		.st = &st::settingsButtonNoIcon,
 		.onClick = [=] { BackUp(controller); },
+		.visual = {
+			.icon = &st::menuIconSavedMessages,
+			.about = tr::lng_serein_config_backup_row_about,
+		},
 	});
-	builder.addButton({
+	AddRow(builder, {
 		.id = u"serein/config/restore"_q,
 		.title = tr::lng_serein_config_restore(),
-		.st = &st::settingsButtonNoIcon,
 		.onClick = [=] { Restore(controller); },
+		.visual = {
+			.icon = &st::menuIconRestore,
+			.about = tr::lng_serein_config_restore_about,
+		},
 	});
-	builder.addDividerText(tr::lng_serein_config_backup_about());
-	builder.addButton({
+	EndSection(builder, tr::lng_serein_config_backup_about);
+	AddSection(builder, {
+		u"serein/config/review"_q,
+		tr::lng_serein_section_config_review,
+		{ u"modified"_q, u"reset"_q, u"diagnostics"_q },
+	});
+	AddRow(builder, {
+		.id = u"serein/config/modified"_q,
+		.title = tr::lng_serein_config_modified(),
+		.onClick = [=] { ShowModified(controller); },
+		.visual = {
+			.icon = &st::menuIconEdit,
+			.about = tr::lng_serein_config_modified_row_about,
+		},
+	});
+	AddRow(builder, {
 		.id = u"serein/config/reset"_q,
 		.title = tr::lng_serein_config_reset(),
-		.st = &st::settingsButtonNoIcon,
 		.onClick = [=] { ShowReset(controller); },
+		.visual = {
+			.icon = &st::menuIconRetractVote,
+			.about = tr::lng_serein_config_reset_row_about,
+		},
 	});
-	builder.addButton({
+	AddRow(builder, {
 		.id = u"serein/config/diagnostics"_q,
 		.title = tr::lng_serein_config_diagnostics(),
-		.st = &st::settingsButtonNoIcon,
 		.onClick = [=] { CopyDiagnostics(controller); },
+		.visual = {
+			.icon = &st::menuIconCopy,
+			.about = tr::lng_serein_config_diagnostics_about,
+		},
 	});
+	EndSection(builder);
 });
 
 const SectionBuildMethod ConfigSection::kBuild = kMeta.build;
@@ -356,6 +390,17 @@ const SectionBuildMethod ConfigSection::kBuild = kMeta.build;
 
 Settings::Type ConfigId() {
 	return ConfigSection::Id();
+}
+
+void AddConfigButton(SectionBuilder &builder) {
+	AddPageButton(builder, {
+		.title = (*kTitle)(),
+		.section = ConfigSection::Id(),
+		.icon = kIcon,
+		.tile = &st::settingsIconBg6,
+		.keywords = { u"backup"_q, u"import"_q, u"export"_q },
+		.about = tr::lng_serein_page_config_about,
+	});
 }
 
 } // namespace Serein

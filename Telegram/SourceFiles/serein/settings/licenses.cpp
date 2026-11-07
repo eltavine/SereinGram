@@ -2,6 +2,7 @@
 
 #include "lang/lang_keys.h"
 #include "ui/layers/generic_box.h"
+#include "ui/layers/show.h"
 #include "ui/widgets/buttons.h"
 #include "ui/widgets/labels.h"
 #include "window/window_session_controller.h"
@@ -22,6 +23,18 @@ struct Notice {
 };
 
 constexpr auto kNotices = std::array{
+	Notice{
+		"Noto Sans Bamum, Linear A, Tai Tham",
+		"OFL-1.1",
+		"https://github.com/notofonts/noto-fonts",
+		":/serein/licenses/noto.txt",
+	},
+	Notice{
+		"GNU Unifont 17.0.04",
+		"OFL-1.1",
+		"https://unifoundry.com/unifont/",
+		":/serein/licenses/unifont.txt",
+	},
 	Notice{
 		"OpenCC",
 		"Apache-2.0",
@@ -80,33 +93,35 @@ void LicenseBox(not_null<Ui::GenericBox*> box, Notice notice) {
 
 } // namespace
 
-void ShowLicenses(gsl::not_null<Window::SessionController*> controller) {
-	controller->show(Box([=](not_null<Ui::GenericBox*> box) {
-		box->setTitle(tr::lng_serein_licenses());
-		box->addRow(object_ptr<Ui::FlatLabel>(
+void LicensesBox(not_null<Ui::GenericBox*> box) {
+	box->setTitle(tr::lng_serein_licenses());
+	box->addRow(object_ptr<Ui::FlatLabel>(
+		box,
+		tr::lng_serein_licenses_about(),
+		st::boxLabel));
+	for (const auto &notice : kNotices) {
+		const auto text = QString::fromLatin1(notice.name)
+			+ u" · "_q
+			+ QString::fromLatin1(notice.license)
+			+ u'\n'
+			+ QString::fromLatin1(notice.url);
+		const auto label = box->addRow(object_ptr<Ui::FlatLabel>(
 			box,
-			tr::lng_serein_licenses_about(),
+			text,
 			st::boxLabel));
-		for (const auto &notice : kNotices) {
-			const auto text = QString::fromLatin1(notice.name)
-				+ u" · "_q
-				+ QString::fromLatin1(notice.license)
-				+ u'\n'
-				+ QString::fromLatin1(notice.url);
-			const auto label = box->addRow(object_ptr<Ui::FlatLabel>(
-				box,
-				text,
-				st::boxLabel));
-			label->setSelectable(true);
-			const auto view = box->addRow(object_ptr<Ui::LinkButton>(
-				box,
-				tr::lng_serein_licenses_view(tr::now)));
-			view->setClickedCallback([=] {
-				controller->show(Box(LicenseBox, notice));
-			});
-		}
-		box->addButton(tr::lng_close(), [=] { box->closeBox(); });
-	}));
+		label->setSelectable(true);
+		const auto view = box->addRow(object_ptr<Ui::LinkButton>(
+			box,
+			tr::lng_serein_licenses_view(tr::now)));
+		view->setClickedCallback([=] {
+			box->uiShow()->showBox(Box(LicenseBox, notice));
+		});
+	}
+	box->addButton(tr::lng_close(), [=] { box->closeBox(); });
+}
+
+void ShowLicenses(gsl::not_null<Window::SessionController*> controller) {
+	controller->show(Box(LicensesBox));
 }
 
 } // namespace Serein

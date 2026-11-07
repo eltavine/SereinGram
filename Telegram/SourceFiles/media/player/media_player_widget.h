@@ -49,7 +49,8 @@ public:
 	Widget(
 		QWidget *parent,
 		not_null<Ui::RpWidget*> dropdownsParent,
-		not_null<Window::SessionController*> controller);
+		not_null<Window::SessionController*> controller,
+		bool allowExpand = true);
 	~Widget();
 
 	void setCloseCallback(Fn<void()> callback);

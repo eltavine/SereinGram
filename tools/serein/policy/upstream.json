@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "upstream": "https://github.com/telegramdesktop/tdesktop.git#dev",
-  "base": "d8594c011756265de4385408540bd9f7c787a003",
+  "base": "7381fb1df75d863eb3463fdddef57a2ac51f1d56",
   "source_root": "Telegram/SourceFiles/",
   "owned_extra": [
     "docs/serein/",
@@ -10,6 +10,8 @@
     "Telegram/Resources/qrc/serein.qrc",
     "Telegram/build/api_credentials.local.cmake.example",
     "BRANDING.md",
+    "README.md",
+    ".github/ISSUE_TEMPLATE/",
     "Telegram/Resources/qrc/serein_opencc.qrc",
     "Telegram/ThirdParty/OpenCC",
     "Telegram/Resources/serein/",
@@ -26,13 +28,15 @@
   "hook_include_prefixes": [
     "serein/hooks/"
   ],
-  "submodule_overrides": [],
+  "submodule_overrides": [
+    "Telegram/lib_ui"
+  ],
   "budget": {
-    "all_files": 230,
-    "all_added_lines": 1664,
-    "source_files": 161,
-    "source_added_lines": 1439,
+    "all_files": 276,
+    "all_added_lines": 2074,
+    "source_files": 195,
+    "source_added_lines": 1862,
     "direct_include_files": 0,
-    "upstream_headers": 145
+    "upstream_headers": 182
   }
 }

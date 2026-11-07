@@ -1,0 +1,18 @@
+[package]
+name = "tdesktop_rust"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.96.1"
+publish = false
+
+[lib]
+crate-type = ["staticlib", "cdylib"]
+
+[dependencies]
+tlottie = { path = "../tlottie", features = ["c-api"] }
+wallet-engine = { path = "../wallet-engine" }
+
+[profile.release]
+opt-level = 3
+lto = false
+panic = "unwind"

@@ -208,6 +208,10 @@ void Step::finish(const MTPUser &user, QImage &&photo) {
 		}
 	}
 
+	if (user.c_user().is_bot()) {
+		createSession(user, std::move(photo), {}, false);
+		return;
+	}
 	api().request(MTPmessages_GetDialogFilters(
 	)).done([=](const MTPmessages_DialogFilters &result) {
 		const auto &d = result.data();
@@ -388,14 +392,6 @@ void Step::fillSentCodeData(const MTPDauth_sentCode &data) {
 	}, [&](const MTPDauth_sentCodeTypeSetUpEmailRequired &) {
 		getData()->emailStatus = EmailStatus::SetupRequired;
 	});
-}
-
-void Step::showDescription() {
-	_description->show(anim::type::normal);
-}
-
-void Step::hideDescription() {
-	_description->hide(anim::type::normal);
 }
 
 void Step::paintContentSnapshot(QPainter &p, const QPixmap &snapshot, float64 alpha, float64 howMuchHidden) {

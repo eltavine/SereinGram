@@ -46,6 +46,11 @@ public:
 		Storage::Cache::Database *cache = nullptr);
 
 	void setLoaderPriority(int priority);
+	void disableCacheWrites();
+	static void ClearCache(
+		Storage::Cache::Database &cache,
+		const Storage::Cache::Key &base,
+		int64 size);
 
 	// Any thread.
 	[[nodiscard]] int64 size() const;

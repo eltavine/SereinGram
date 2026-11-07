@@ -2,6 +2,7 @@
 
 #include "serein/schema/gen/history/record.h"
 
+#include <compare>
 #include <optional>
 #include <vector>
 
@@ -23,8 +24,51 @@ struct HistoryQuery {
 	std::optional<qint64> recordedBefore;
 	std::optional<qint64> minMessageId;
 	std::optional<qint64> maxMessageId;
-	int limit = 50;
+	std::optional<int> limit;
 };
+
+struct RecordKey {
+	qint64 messageId = 0;
+	int revision = 0;
+
+	friend inline auto operator<=>(
+		const RecordKey &,
+		const RecordKey &) = default;
+};
+
+struct RecordBound {
+	RecordKey key;
+	bool inclusive = false;
+};
+
+enum class RecordsOrder {
+	Ascending,
+	Descending,
+};
+
+struct RecordsQuery {
+	qint64 peerId = 0;
+	std::optional<History::RecordKind> kind;
+	std::optional<qint64> messageId;
+	std::optional<RecordBound> from;
+	std::optional<RecordBound> till;
+	RecordsOrder order = RecordsOrder::Ascending;
+	std::optional<int> limit;
+};
+
+struct PeerSummary {
+	qint64 peerId = 0;
+	int count = 0;
+	qint64 lastRecordedAt = 0;
+
+	friend inline bool operator==(
+		const PeerSummary &,
+		const PeerSummary &) = default;
+};
+
+[[nodiscard]] inline RecordKey KeyOf(const History::Record &record) {
+	return { record.messageId, record.revision };
+}
 
 class HistoryStore {
 public:
@@ -36,7 +80,12 @@ public:
 	[[nodiscard]] virtual std::vector<History::Record> versions(
 		qint64 peerId,
 		qint64 messageId) = 0;
-	[[nodiscard]] virtual std::vector<qint64> peersWithDeleted(int limit) = 0;
+	[[nodiscard]] virtual std::vector<History::Record> records(
+		const RecordsQuery &query) = 0;
+	// Ignores the order and the limit of the query.
+	[[nodiscard]] virtual int count(const RecordsQuery &query) = 0;
+	[[nodiscard]] virtual std::vector<PeerSummary> peersWithDeleted(
+		std::optional<int> limit) = 0;
 	[[nodiscard]] virtual int nextRevision(qint64 peerId, qint64 messageId) = 0;
 	[[nodiscard]] virtual bool clearPeer(qint64 peerId) = 0;
 	[[nodiscard]] virtual bool clearAll() = 0;

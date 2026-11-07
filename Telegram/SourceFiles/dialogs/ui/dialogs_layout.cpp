@@ -7,6 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "dialogs/ui/dialogs_layout.h"
 #include "serein/hooks/chats/layout.h"
+#include "serein/hooks/online.h"
 #include "serein/hooks/gen/privacy.h"
 
 #include "base/options.h"
@@ -435,7 +436,8 @@ void PaintDialogDate(
 	const auto resolved = fakeRow
 		? fakeRow->dateText(date, context.now)
 		: entry->chatListTimestampText(date, context.now);
-	PaintRowTopRight(p, resolved.text, rectForName, context, resolved.width);
+	const auto online = Serein::Hooks::Online::RowPrefix(entry);
+	PaintRowTopRight(p, online + resolved.text, rectForName, context, online.isEmpty() ? resolved.width : -1);
 }
 
 template <typename PaintItemCallback>

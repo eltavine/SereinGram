@@ -6,6 +6,7 @@
 namespace Serein::Interface {
 
 [[nodiscard]] bool ValidMainMenuBytes(const QByteArray &value);
+[[nodiscard]] bool ValidQuietHoursBytes(const QByteArray &value);
 
 inline constexpr auto kBubbleRoundness = Option<int>{
 	"serein.bubbleRoundness",
@@ -82,6 +83,20 @@ inline constexpr auto kIgnoreChatTheme = Option<bool>{
 	Category::Interface,
 	"lng_serein_ignore_chat_theme",
 	0 };
+inline const auto kMonospaceFont = Option<QString>{
+	"serein.monospaceFont",
+	Scope::Device,
+	QString(),
+	Category::Interface,
+	"lng_serein_monospace_font",
+	static_cast<unsigned>(Flag::RequiresRestart) };
+inline constexpr auto kMonospaceLigatures = Option<bool>{
+	"serein.monospaceLigatures",
+	Scope::Device,
+	false,
+	Category::Interface,
+	"lng_serein_monospace_ligatures",
+	static_cast<unsigned>(Flag::RequiresRestart) };
 inline const auto kMainMenuConfig = Option<QByteArray>{
 	"serein.mainMenu",
 	Scope::Device,
@@ -90,13 +105,13 @@ inline const auto kMainMenuConfig = Option<QByteArray>{
 	"lng_serein_main_menu",
 	0,
 	&ValidMainMenuBytes };
-inline constexpr auto kHideAppIconBadge = Option<bool>{
-	"serein.hideAppIconBadge",
+inline constexpr auto kMenuShortcuts = Option<bool>{
+	"serein.menuShortcuts",
 	Scope::Device,
 	false,
 	Category::Interface,
-	"lng_serein_hide_app_icon_badge",
-	0 };
+	"lng_serein_menu_shortcuts",
+	static_cast<unsigned>(Flag::RequiresRestart) };
 inline constexpr auto kNotificationDelay = Option<int>{
 	"serein.notificationDelay",
 	Scope::Device,
@@ -126,13 +141,21 @@ inline constexpr auto kCenterTopNotifications = Option<bool>{
 	Category::Interface,
 	"lng_serein_center_top_notifications",
 	0 };
-inline constexpr auto kMenuShortcuts = Option<bool>{
-	"serein.menuShortcuts",
+inline const auto kQuietHours = Option<QByteArray>{
+	"serein.quietHours",
+	Scope::Device,
+	QByteArray(),
+	Category::Interface,
+	"lng_serein_quiet_hours",
+	0,
+	&ValidQuietHoursBytes };
+inline constexpr auto kHideAppIconBadge = Option<bool>{
+	"serein.hideAppIconBadge",
 	Scope::Device,
 	false,
 	Category::Interface,
-	"lng_serein_menu_shortcuts",
-	static_cast<unsigned>(Flag::RequiresRestart) };
+	"lng_serein_hide_app_icon_badge",
+	0 };
 inline const auto kGlobalShortcut = Option<QByteArray>{
 	"serein.globalShortcut",
 	Scope::Device,
@@ -161,6 +184,48 @@ inline constexpr auto kCheckUpdates = Option<bool>{
 	Category::Interface,
 	"lng_serein_check_updates",
 	0 };
+inline constexpr auto kOnlineStatusInChats = Option<bool>{
+	"serein.onlineStatusInChats",
+	Scope::Device,
+	false,
+	Category::Interface,
+	"lng_serein_online_status_in_chats",
+	static_cast<unsigned>(Flag::RefreshDialogList) };
+inline constexpr auto kOnlineStatusInHeader = Option<bool>{
+	"serein.onlineStatusInHeader",
+	Scope::Device,
+	false,
+	Category::Interface,
+	"lng_serein_online_status_in_header",
+	0 };
+inline constexpr auto kOnlineStatusOnSenders = Option<bool>{
+	"serein.onlineStatusOnSenders",
+	Scope::Device,
+	false,
+	Category::Interface,
+	"lng_serein_online_status_on_senders",
+	static_cast<unsigned>(Flag::RefreshMessageView) };
+inline constexpr auto kOnlineStatusSelf = Option<bool>{
+	"serein.onlineStatusSelf",
+	Scope::Device,
+	false,
+	Category::Interface,
+	"lng_serein_online_status_self",
+	0 };
+inline constexpr auto kOnlineStatusDetailed = Option<bool>{
+	"serein.onlineStatusDetailed",
+	Scope::Device,
+	false,
+	Category::Interface,
+	"lng_serein_online_status_detailed",
+	static_cast<unsigned>(Flag::RefreshDialogList) | static_cast<unsigned>(Flag::RefreshMessageView) };
+inline constexpr auto kPresetsOffered = Option<bool>{
+	"serein.presetsOffered",
+	Scope::Device,
+	false,
+	Category::Interface,
+	"lng_serein_presets_offered",
+	static_cast<unsigned>(Flag::Hidden) };
 
 inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kBubbleRoundness));
@@ -172,16 +237,25 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kThemeReplyColors));
 	Expects(registry.Add(kHideReplyThumbnail));
 	Expects(registry.Add(kIgnoreChatTheme));
+	Expects(registry.Add(kMonospaceFont));
+	Expects(registry.Add(kMonospaceLigatures));
 	Expects(registry.Add(kMainMenuConfig));
-	Expects(registry.Add(kHideAppIconBadge));
+	Expects(registry.Add(kMenuShortcuts));
 	Expects(registry.Add(kNotificationDelay));
 	Expects(registry.Add(kOtherDeviceNotificationDelay));
 	Expects(registry.Add(kCenterTopNotifications));
-	Expects(registry.Add(kMenuShortcuts));
+	Expects(registry.Add(kQuietHours));
+	Expects(registry.Add(kHideAppIconBadge));
 	Expects(registry.Add(kGlobalShortcut));
 	Expects(registry.Add(kHalfwidthUiPunctuation));
 	Expects(registry.Add(kMoreAccounts));
 	Expects(registry.Add(kCheckUpdates));
+	Expects(registry.Add(kOnlineStatusInChats));
+	Expects(registry.Add(kOnlineStatusInHeader));
+	Expects(registry.Add(kOnlineStatusOnSenders));
+	Expects(registry.Add(kOnlineStatusSelf));
+	Expects(registry.Add(kOnlineStatusDetailed));
+	Expects(registry.Add(kPresetsOffered));
 }
 
 } // namespace Serein::Interface

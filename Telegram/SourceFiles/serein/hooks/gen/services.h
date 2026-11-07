@@ -22,21 +22,27 @@ namespace Serein::Hooks::ServiceSettings {
 [[nodiscard]] rpl::producer<bool> ChatTranslationWithoutPremiumValue();
 [[nodiscard]] bool AutoTranslateChats(gsl::not_null<Main::Session*> session);
 [[nodiscard]] rpl::producer<bool> AutoTranslateChatsValue(gsl::not_null<Main::Session*> session);
+[[nodiscard]] QByteArray SendTranslations(gsl::not_null<Main::Session*> session);
+[[nodiscard]] rpl::producer<QByteArray> SendTranslationsValue(gsl::not_null<Main::Session*> session);
 [[nodiscard]] bool InstantViewTranslation();
 [[nodiscard]] rpl::producer<bool> InstantViewTranslationValue();
+[[nodiscard]] int AutoTranscribe(gsl::not_null<Main::Session*> session);
+[[nodiscard]] rpl::producer<int> AutoTranscribeValue(gsl::not_null<Main::Session*> session);
 [[nodiscard]] QString ProxySubscription();
 [[nodiscard]] rpl::producer<QString> ProxySubscriptionValue();
 [[nodiscard]] QByteArray ProxyNotes();
 [[nodiscard]] rpl::producer<QByteArray> ProxyNotesValue();
 [[nodiscard]] bool PauseProxyOnVpn();
 [[nodiscard]] rpl::producer<bool> PauseProxyOnVpnValue();
-[[nodiscard]] bool ProxyPausedByVpn();
-[[nodiscard]] rpl::producer<bool> ProxyPausedByVpnValue();
 [[nodiscard]] QString CustomDoh();
 [[nodiscard]] rpl::producer<QString> CustomDohValue();
+[[nodiscard]] bool SystemDns();
+[[nodiscard]] rpl::producer<bool> SystemDnsValue();
 [[nodiscard]] bool FasterTransfers();
 [[nodiscard]] rpl::producer<bool> FasterTransfersValue();
 [[nodiscard]] bool AndroidWebApps();
 [[nodiscard]] rpl::producer<bool> AndroidWebAppsValue();
+[[nodiscard]] bool ProxyPausedByVpn();
+[[nodiscard]] rpl::producer<bool> ProxyPausedByVpnValue();
 
 } // namespace Serein::Hooks::ServiceSettings

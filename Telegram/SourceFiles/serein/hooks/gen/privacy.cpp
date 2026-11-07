@@ -30,22 +30,6 @@ rpl::producer<bool> LockSettingsValue() {
 	return ForDevice().Value(Serein::Privacy::kLockSettings);
 }
 
-bool HideReadTime() {
-	return ForDevice().Get(Serein::Privacy::kHideReadTime);
-}
-
-rpl::producer<bool> HideReadTimeValue() {
-	return ForDevice().Value(Serein::Privacy::kHideReadTime);
-}
-
-bool HideSharePhonePrompt() {
-	return ForDevice().Get(Serein::Privacy::kHideSharePhonePrompt);
-}
-
-rpl::producer<bool> HideSharePhonePromptValue() {
-	return ForDevice().Value(Serein::Privacy::kHideSharePhonePrompt);
-}
-
 int ProfileIdFormat() {
 	return ForDevice().Get(Serein::Privacy::kProfileIdFormat);
 }
@@ -102,6 +86,22 @@ rpl::producer<bool> HideProfileGiftsValue() {
 	return ForDevice().Value(Serein::Privacy::kHideProfileGifts);
 }
 
+bool HideReadTime() {
+	return ForDevice().Get(Serein::Privacy::kHideReadTime);
+}
+
+rpl::producer<bool> HideReadTimeValue() {
+	return ForDevice().Value(Serein::Privacy::kHideReadTime);
+}
+
+bool HideSharePhonePrompt() {
+	return ForDevice().Get(Serein::Privacy::kHideSharePhonePrompt);
+}
+
+rpl::producer<bool> HideSharePhonePromptValue() {
+	return ForDevice().Value(Serein::Privacy::kHideSharePhonePrompt);
+}
+
 bool HideCreateTodo() {
 	return ForDevice().Get(Serein::Privacy::kHideCreateTodo);
 }
@@ -116,6 +116,54 @@ bool SaveProtectedContent() {
 
 rpl::producer<bool> SaveProtectedContentValue() {
 	return ForDevice().Value(Serein::Privacy::kSaveProtectedContent);
+}
+
+bool AutoBackupExports() {
+	return ForDevice().Get(Serein::Privacy::kAutoBackupExports);
+}
+
+rpl::producer<bool> AutoBackupExportsValue() {
+	return ForDevice().Value(Serein::Privacy::kAutoBackupExports);
+}
+
+bool HiddenChatsEnabled() {
+	return ForDevice().Get(Serein::Privacy::kHiddenChatsEnabled);
+}
+
+rpl::producer<bool> HiddenChatsEnabledValue() {
+	return ForDevice().Value(Serein::Privacy::kHiddenChatsEnabled);
+}
+
+QString HiddenChatIds(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Get(Serein::Privacy::kHiddenChatIds);
+}
+
+rpl::producer<QString> HiddenChatIdsValue(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Value(Serein::Privacy::kHiddenChatIds);
+}
+
+bool HiddenAccountsEnabled() {
+	return ForDevice().Get(Serein::Privacy::kHiddenAccountsEnabled);
+}
+
+rpl::producer<bool> HiddenAccountsEnabledValue() {
+	return ForDevice().Value(Serein::Privacy::kHiddenAccountsEnabled);
+}
+
+QString HiddenAccountIds() {
+	return ForDevice().Get(Serein::Privacy::kHiddenAccountIds);
+}
+
+rpl::producer<QString> HiddenAccountIdsValue() {
+	return ForDevice().Value(Serein::Privacy::kHiddenAccountIds);
+}
+
+bool AccountNetworkControls() {
+	return ForDevice().Get(Serein::Privacy::kAccountNetworkControls);
+}
+
+rpl::producer<bool> AccountNetworkControlsValue() {
+	return ForDevice().Value(Serein::Privacy::kAccountNetworkControls);
 }
 
 } // namespace Serein::Hooks::Privacy

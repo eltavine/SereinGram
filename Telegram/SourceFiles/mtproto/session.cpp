@@ -13,6 +13,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "core/application.h"
 #include "core/core_settings.h"
 #include "base/unixtime.h"
+#include "test/test_l10n_seams.h"
 
 namespace MTP {
 namespace details {
@@ -216,6 +217,9 @@ void Session::watchDcOptionsChanges() {
 
 void Session::start() {
 	killConnection();
+	if (!_instance->networkEnabled()) {
+		return;
+	}
 	_private = new SessionPrivate(
 		_instance,
 		_thread.get(),
@@ -322,6 +326,7 @@ void Session::sendAnything(crl::time msCanWait) {
 }
 
 void Session::needToResumeAndSend() {
+	if (!_instance->networkEnabled()) return;
 	if (_killed) {
 		DEBUG_LOG(("Session Info: can't resume a killed session"));
 		return;
@@ -423,6 +428,9 @@ QString Session::transport() const {
 void Session::sendPrepared(
 		const SerializedRequest &request,
 		crl::time msCanWait) {
+	if (Test::HoldRequest(_instance, request)) {
+		return;
+	}
 	DEBUG_LOG(("MTP Info: adding request to toSendMap, msCanWait %1"
 		).arg(msCanWait));
 	{

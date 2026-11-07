@@ -188,6 +188,9 @@ DomainResolver::DomainResolver(Fn<void(
 }
 
 void DomainResolver::resolve(const QString &domain) {
+	if (Serein::Network::ResolveWithSystemDns(this, domain, _callback)) {
+		return;
+	}
 	resolve({ domain, false });
 	resolve({ domain, true });
 }

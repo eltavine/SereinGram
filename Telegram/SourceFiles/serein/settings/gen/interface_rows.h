@@ -5,71 +5,157 @@
 #include "lang/lang_keys.h"
 #include "serein/schema/gen/settings/interface.h"
 #include "serein/settings/rows.h"
+#include "styles/style_menu_icons.h"
+#include "styles/style_serein.h"
 
 #include <array>
 
 namespace Serein::Interface {
 
-inline const auto kToggleRows = std::array<ToggleRow, 10>{ {
+inline const auto kToggleRows = std::array<ToggleRow, 16>{ {
 	{
-		&kWideChannelPosts,
-		tr::lng_serein_wide_channel_posts,
-		u"serein/interface/wide-channel-posts"_q,
-		{ u"channel"_q, u"width"_q },
+		.option = &kWideChannelPosts,
+		.title = tr::lng_serein_wide_channel_posts,
+		.id = u"serein/interface/wide-channel-posts"_q,
+		.keywords = { u"channel"_q, u"width"_q },
+		.icon = &st::menuIconEnlarge,
+		.tile = &st::settingsIconBg1,
+		.about = tr::lng_serein_wide_channel_posts_about,
 	},
 	{
-		&kHideBubbleTail,
-		tr::lng_serein_hide_bubble_tail,
-		u"serein/interface/hide-bubble-tail"_q,
-		{ u"bubble"_q, u"tail"_q },
+		.option = &kHideBubbleTail,
+		.title = tr::lng_serein_hide_bubble_tail,
+		.id = u"serein/interface/hide-bubble-tail"_q,
+		.keywords = { u"bubble"_q, u"tail"_q },
+		.icon = &st::menuIconChatBubble,
+		.tile = &st::settingsIconBg1,
+		.about = tr::lng_serein_hide_bubble_tail_about,
 	},
 	{
-		&kThemeReplyColors,
-		tr::lng_serein_theme_reply_colors,
-		u"serein/interface/theme-reply-colors"_q,
-		{ u"reply"_q, u"quote"_q, u"color"_q },
+		.option = &kThemeReplyColors,
+		.title = tr::lng_serein_theme_reply_colors,
+		.id = u"serein/interface/theme-reply-colors"_q,
+		.keywords = { u"reply"_q, u"quote"_q, u"color"_q },
+		.icon = &st::menuIconChangeColors,
+		.tile = &st::settingsIconBg1,
+		.about = tr::lng_serein_theme_reply_colors_about,
 	},
 	{
-		&kHideReplyThumbnail,
-		tr::lng_serein_hide_reply_thumbnail,
-		u"serein/interface/hide-reply-thumbnail"_q,
-		{ u"reply"_q, u"thumbnail"_q },
+		.option = &kHideReplyThumbnail,
+		.title = tr::lng_serein_hide_reply_thumbnail,
+		.id = u"serein/interface/hide-reply-thumbnail"_q,
+		.keywords = { u"reply"_q, u"thumbnail"_q },
+		.icon = &st::menuIconReply,
+		.tile = &st::settingsIconBg1,
+		.about = tr::lng_serein_hide_reply_thumbnail_about,
 	},
 	{
-		&kIgnoreChatTheme,
-		tr::lng_serein_ignore_chat_theme,
-		u"serein/interface/ignore-chat-theme"_q,
-		{ u"chat"_q, u"theme"_q, u"wallpaper"_q },
+		.option = &kIgnoreChatTheme,
+		.title = tr::lng_serein_ignore_chat_theme,
+		.id = u"serein/interface/ignore-chat-theme"_q,
+		.keywords = { u"chat"_q, u"theme"_q, u"wallpaper"_q },
+		.icon = &st::menuIconPhoto,
+		.tile = &st::settingsIconBg1,
+		.about = tr::lng_serein_ignore_chat_theme_about,
 	},
 	{
-		&kHideAppIconBadge,
-		tr::lng_serein_hide_app_icon_badge,
-		u"serein/interface/hide-app-icon-badge"_q,
-		{ u"dock"_q, u"icon"_q, u"badge"_q },
+		.option = &kMonospaceLigatures,
+		.title = tr::lng_serein_monospace_ligatures,
+		.id = u"serein/interface/monospace-ligatures"_q,
+		.keywords = {  },
+		.icon = &st::menuIconFont,
+		.tile = &st::settingsIconBg8,
+		.about = tr::lng_serein_monospace_ligatures_about,
 	},
 	{
-		&kCenterTopNotifications,
-		tr::lng_serein_center_top_notifications,
-		u"serein/interface/center-top-notifications"_q,
-		{ u"notification"_q, u"position"_q, u"center"_q },
+		.option = &kMenuShortcuts,
+		.title = tr::lng_serein_menu_shortcuts,
+		.id = u"serein/interface/menu-shortcuts"_q,
+		.keywords = { u"main menu"_q, u"tray"_q, u"ghost"_q, u"presentation"_q, u"recent chats"_q },
+		.icon = &st::menuIconToMainMenu,
+		.tile = &st::settingsIconBg4,
+		.about = tr::lng_serein_menu_shortcuts_about,
 	},
 	{
-		&kMenuShortcuts,
-		tr::lng_serein_menu_shortcuts,
-		u"serein/interface/menu-shortcuts"_q,
-		{ u"main menu"_q, u"tray"_q, u"ghost"_q, u"presentation"_q, u"recent chats"_q },
+		.option = &kCenterTopNotifications,
+		.title = tr::lng_serein_center_top_notifications,
+		.id = u"serein/interface/center-top-notifications"_q,
+		.keywords = { u"notification"_q, u"position"_q, u"center"_q },
+		.icon = &st::menuIconNotifications,
+		.tile = &st::settingsIconBg2,
+		.about = tr::lng_serein_center_top_notifications_about,
 	},
 	{
-		&kHalfwidthUiPunctuation,
-		tr::lng_serein_halfwidth_ui_punctuation,
-		u"serein/interface/halfwidth-ui-punctuation"_q,
-		{ u"text"_q, u"punctuation"_q },
+		.option = &kHideAppIconBadge,
+		.title = tr::lng_serein_hide_app_icon_badge,
+		.id = u"serein/interface/hide-app-icon-badge"_q,
+		.keywords = { u"dock"_q, u"icon"_q, u"badge"_q },
+		.icon = &st::menuIconDockBounce,
+		.tile = &st::settingsIconBg2,
+		.about = tr::lng_serein_hide_app_icon_badge_about,
 	},
 	{
-		&kMoreAccounts,
-		tr::lng_serein_more_accounts,
-		u"serein/interface/more-accounts"_q,
-		{ u"accounts"_q, u"limit"_q, u"multiple"_q },
+		.option = &kHalfwidthUiPunctuation,
+		.title = tr::lng_serein_halfwidth_ui_punctuation,
+		.id = u"serein/interface/halfwidth-ui-punctuation"_q,
+		.keywords = { u"text"_q, u"punctuation"_q },
+		.icon = &st::menuIconTranslate,
+		.tile = &st::settingsIconBg5,
+		.about = tr::lng_serein_halfwidth_ui_punctuation_about,
+	},
+	{
+		.option = &kMoreAccounts,
+		.title = tr::lng_serein_more_accounts,
+		.id = u"serein/interface/more-accounts"_q,
+		.keywords = { u"accounts"_q, u"limit"_q, u"multiple"_q },
+		.icon = &st::menuIconAddAccount,
+		.tile = &st::settingsIconBg5,
+		.about = tr::lng_serein_more_accounts_about,
+	},
+	{
+		.option = &kOnlineStatusInChats,
+		.title = tr::lng_serein_online_status_in_chats,
+		.id = u"serein/interface/online-status-in-chats"_q,
+		.keywords = { u"online"_q, u"last seen"_q, u"chat list"_q },
+		.icon = &st::menuIconChats,
+		.tile = &st::settingsIconBg3,
+		.about = tr::lng_serein_online_status_in_chats_about,
+	},
+	{
+		.option = &kOnlineStatusInHeader,
+		.title = tr::lng_serein_online_status_in_header,
+		.id = u"serein/interface/online-status-in-header"_q,
+		.keywords = { u"online"_q, u"last seen"_q, u"profile"_q, u"seconds"_q },
+		.icon = &st::menuIconProfile,
+		.tile = &st::settingsIconBg3,
+		.about = tr::lng_serein_online_status_in_header_about,
+	},
+	{
+		.option = &kOnlineStatusOnSenders,
+		.title = tr::lng_serein_online_status_on_senders,
+		.id = u"serein/interface/online-status-on-senders"_q,
+		.keywords = { u"online"_q, u"avatar"_q, u"group"_q, u"sender"_q },
+		.icon = &st::menuIconGroups,
+		.tile = &st::settingsIconBg3,
+		.about = tr::lng_serein_online_status_on_senders_about,
+	},
+	{
+		.option = &kOnlineStatusSelf,
+		.title = tr::lng_serein_online_status_self,
+		.id = u"serein/interface/online-status-self"_q,
+		.keywords = { u"online"_q, u"invisible"_q, u"ghost"_q, u"my status"_q },
+		.icon = &st::menuIconStealth,
+		.tile = &st::settingsIconBg3,
+		.about = tr::lng_serein_online_status_self_about,
+	},
+	{
+		.option = &kOnlineStatusDetailed,
+		.title = tr::lng_serein_online_status_detailed,
+		.id = u"serein/interface/online-status-detailed"_q,
+		.keywords = { u"online"_q, u"last seen"_q, u"detailed"_q, u"exact time"_q },
+		.icon = &st::menuIconWhenOnline,
+		.tile = &st::settingsIconBg3,
+		.about = tr::lng_serein_online_status_detailed_about,
 	},
 } };
 
@@ -77,9 +163,11 @@ struct CustomRows {
 	CustomRow bubbleRoundness;
 	CustomRow avatarRoundness;
 	CustomRow uniformAvatarShapes;
+	CustomRow monospaceFont;
 	CustomRow mainMenu;
 	CustomRow notificationDelay;
 	CustomRow otherDeviceNotificationDelay;
+	CustomRow quietHours;
 	CustomRow globalShortcut;
 	CustomRow checkUpdates;
 };
@@ -95,6 +183,7 @@ inline void AddLayout(
 	custom.bubbleRoundness();
 	custom.avatarRoundness();
 	custom.uniformAvatarShapes();
+	EndSection(builder);
 	AddSection(builder, {
 		u"serein/interface/message-style"_q,
 		tr::lng_serein_message_style,
@@ -112,50 +201,84 @@ inline void AddLayout(
 			return QString::number(value) + u"%"_q;
 		},
 		.hint = tr::lng_serein_text_width_hint,
+		.icon = &st::menuIconFont,
+		.tile = &st::settingsIconBg1,
+		.about = tr::lng_serein_text_message_width_about,
 	});
 	AddToggle(builder, kToggleRows[0]);
 	AddToggle(builder, kToggleRows[1]);
 	AddToggle(builder, kToggleRows[2]);
 	AddToggle(builder, kToggleRows[3]);
 	AddToggle(builder, kToggleRows[4]);
+	EndSection(builder);
+	AddSection(builder, {
+		u"serein/interface/fonts"_q,
+		tr::lng_serein_fonts,
+		{  },
+	});
+	custom.monospaceFont();
+	AddToggle(builder, kToggleRows[5]);
+	EndSection(builder);
 	AddSection(builder, {
 		u"serein/interface/main-menu-heading"_q,
 		tr::lng_serein_main_menu,
 		{ u"menu"_q, u"title"_q },
 	});
 	custom.mainMenu();
+	AddToggle(builder, kToggleRows[6]);
+	EndSection(builder, tr::lng_serein_menu_shortcuts_note);
 	AddSection(builder, {
-		u"serein/interface/window-notification"_q,
-		tr::lng_serein_window_notification,
-		{ u"window"_q, u"notification"_q },
+		u"serein/interface/notifications"_q,
+		tr::lng_serein_section_notifications,
+		{ u"notification"_q, u"window"_q },
 	});
-	AddToggle(builder, kToggleRows[5]);
 	custom.notificationDelay();
 	custom.otherDeviceNotificationDelay();
-	AddToggle(builder, kToggleRows[6]);
-	AddNote(builder, tr::lng_serein_center_top_notifications_note);
 	AddToggle(builder, kToggleRows[7]);
-	AddNote(builder, tr::lng_serein_menu_shortcuts_note);
-	custom.globalShortcut();
-	AddSection(builder, {
-		u"serein/interface/text"_q,
-		tr::lng_serein_ui_text,
-		{ u"text"_q, u"punctuation"_q },
-	});
+	AddNote(builder, tr::lng_serein_center_top_notifications_note);
+	custom.quietHours();
 	AddToggle(builder, kToggleRows[8]);
+	EndSection(builder);
 	AddSection(builder, {
-		u"serein/interface/accounts"_q,
-		tr::lng_serein_accounts,
-		{ u"accounts"_q },
+		u"serein/interface/app"_q,
+		tr::lng_serein_section_app,
+		{ u"shortcut"_q, u"accounts"_q, u"updates"_q },
 	});
+	custom.globalShortcut();
 	AddToggle(builder, kToggleRows[9]);
+	AddToggle(builder, kToggleRows[10]);
 	AddNote(builder, tr::lng_serein_more_accounts_note);
-	AddSection(builder, {
-		u"serein/interface/updates"_q,
-		tr::lng_serein_updates,
-		{ u"updates"_q },
-	});
 	custom.checkUpdates();
+	EndSection(builder);
+	AddSection(builder, {
+		u"serein/interface/online"_q,
+		tr::lng_serein_section_online_status,
+		{ u"online"_q, u"last seen"_q, u"presence"_q },
+	});
+	AddToggle(builder, kToggleRows[11]);
+	AddToggle(builder, kToggleRows[12]);
+	AddToggle(builder, kToggleRows[13]);
+	AddToggle(builder, kToggleRows[14]);
+	AddToggle(builder, kToggleRows[15]);
+	EndSection(builder);
+}
+
+inline constexpr auto kSubpageTitle = &tr::lng_serein_interface;
+inline constexpr auto kSubpageAbout = &tr::lng_serein_page_interface_about;
+inline const auto kSubpageIcon = &st::menuIconPalette;
+inline const auto kSubpageTile = &st::settingsIconBg6;
+
+inline void AddSubpageButton(
+		::Settings::Builder::SectionBuilder &builder,
+		::Settings::Type section) {
+	AddPageButton(builder, {
+		.title = (*kSubpageTitle)(),
+		.section = section,
+		.icon = kSubpageIcon,
+		.tile = kSubpageTile,
+		.keywords = { u"interface"_q, u"appearance"_q },
+		.about = *kSubpageAbout,
+	});
 }
 
 } // namespace Serein::Interface

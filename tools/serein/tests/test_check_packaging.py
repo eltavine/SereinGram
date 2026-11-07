@@ -12,6 +12,7 @@ PINS = {
     "webrtc": "2" * 40,
     "tlottie": "3" * 40,
     "patches": "4" * 40,
+    "wallet-engine": "5" * 40,
 }
 STALE = "9" * 40
 
@@ -41,7 +42,10 @@ class CheckPackagingTest(unittest.TestCase):
         files = {
             check_packaging.SNAP: "\n".join(snap) + "\n",
             check_packaging.FLATPAK: "\n".join(flatpak) + "\n",
-            check_packaging.PKGBUILD: f"_td_commit={td or PINS['tde2e']}\n",
+            check_packaging.PKGBUILD: "".join(
+                f"{name}={td or PINS[part] if part == 'tde2e' else PINS[part]}\n"
+                for part, name in check_packaging.PKGBUILD_PINS.items()
+            ),
         }
         for name, text in files.items():
             path = self.root / name
@@ -62,6 +66,21 @@ class CheckPackagingTest(unittest.TestCase):
         found = check_packaging.problems(self.root)
         self.assertEqual(len(found), 1)
         self.assertIn("patches.git at 9999999999", found[0])
+
+    def test_reports_stale_arch_rust_and_nix_sources(self):
+        arch = self.root / check_packaging.PKGBUILD
+        arch.write_text(arch.read_text().replace(PINS["wallet-engine"], STALE))
+        nix = self.root / check_packaging.NIX_RUST
+        nix.parent.mkdir(parents=True)
+        nix.write_text(PINS["tlottie"] + PINS["patches"])
+        found = check_packaging.problems(self.root)
+        self.assertEqual(len(found), 2, found)
+        self.assertIn("pins wallet-engine 9999999999", found[0])
+        self.assertIn("wallet-engine source and its hash", found[1])
+        self.assertEqual(
+            check_packaging.update(self.root),
+            [f"wallet-engine {STALE[:10]} -> {PINS['wallet-engine'][:10]}"],
+        )
 
     def test_reports_qt_version_drift(self):
         self.write(qt="6.11.1")

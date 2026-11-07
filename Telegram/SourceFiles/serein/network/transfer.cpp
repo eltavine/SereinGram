@@ -29,4 +29,8 @@ int UploadSessionWindow(int standard) {
 	return Faster() ? (standard * kFastUploadWindowFactor) : standard;
 }
 
+bool PreferLargeUploadParts() {
+	return Faster();
+}
+
 } // namespace Serein::Network

@@ -100,7 +100,8 @@ std::optional<MTPMessageReplyHeader> PrepareLogReply(
 					| Flag::f_quote
 					| Flag::f_quote_entities
 					| Flag::f_quote_offset
-					| Flag::f_quote_text;
+					| Flag::f_quote_text
+					| Flag::f_quote_rich;
 				return MTP_messageReplyHeader(
 					MTP_flags((data.vflags().v & ~removeFlags)
 						| Flag::f_reply_to_msg_id),
@@ -113,7 +114,8 @@ std::optional<MTPMessageReplyHeader> PrepareLogReply(
 					MTPVector<MTPMessageEntity>(), // quote_entities
 					MTPint(), // quote_offset
 					MTPint(), // todo_item_id
-					MTPbytes()); // poll_option
+					MTPbytes(), // poll_option
+					MTPVector<MTPRichText>()); // quote_rich
 			}
 		}
 		return {};
@@ -121,6 +123,8 @@ std::optional<MTPMessageReplyHeader> PrepareLogReply(
 		return std::optional<MTPMessageReplyHeader>();
 	});
 }
+
+} // namespace
 
 MTPMessage PrepareLogMessage(const MTPMessage &message, TimeId newDate) {
 	return message.match([&](const MTPDmessageEmpty &data) {
@@ -210,6 +214,8 @@ MTPMessage PrepareLogMessage(const MTPMessage &message, TimeId newDate) {
 			data.vrich_message() ? *data.vrich_message() : MTPRichMessage());
 	});
 }
+
+namespace {
 
 bool MediaCanHaveCaption(const MTPMessage &message) {
 	if (message.type() != mtpc_message) {
@@ -1400,14 +1406,11 @@ void GenerateItems(
 	const auto createChangeLocation = [&](const LogLocation &action) {
 		action.vnew_value().match([&](const MTPDchannelLocation &data) {
 			const auto address = qs(data.vaddress());
-			const auto link = data.vgeo_point().match([&](
-					const MTPDgeoPoint &data) {
-				return tr::link(
-					address,
-					LocationClickHandler::Url(Data::LocationPoint(data)));
-			}, [&](const MTPDgeoPointEmpty &) {
-				return TextWithEntities{ .text = address };
-			});
+			const auto point = Data::LocationPoint::FromMTP(
+				data.vgeo_point());
+			const auto link = point
+				? tr::link(address, LocationClickHandler::Url(*point))
+				: tr::marked(address);
 			const auto text = tr::lng_admin_log_changed_location_chat(
 				tr::now,
 				lt_from,
@@ -1995,7 +1998,7 @@ void GenerateItems(
 		const auto nextColor = (now.type() == mtpc_peerColor)
 			? now.c_peerColor().vcolor()
 			: tl::conditional<MTPint>();
-		if (prevColor != nextColor) {
+		if (prevColor.value_or(-1) != nextColor.value_or(-1)) {
 			const auto wrap = [&](tl::conditional<MTPint> value) {
 				return value
 					? value->v

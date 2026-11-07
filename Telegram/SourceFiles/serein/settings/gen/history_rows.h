@@ -6,59 +6,105 @@
 #include "serein/schema/gen/settings/history.h"
 #include "serein/settings/rows.h"
 #include "styles/style_menu_icons.h"
+#include "styles/style_serein.h"
 
 #include <array>
 
 namespace Serein::HistorySettings {
 
-inline const auto kToggleRows = std::array<ToggleRow, 6>{ {
+inline const auto kToggleRows = std::array<ToggleRow, 7>{ {
 	{
-		&kHistorySaveDeleted,
-		tr::lng_serein_history_save_deleted,
-		u"serein/history/history-save-deleted"_q,
-		{ u"deleted"_q, u"anti-recall"_q, u"history"_q },
+		.option = &kHistorySaveDeleted,
+		.title = tr::lng_serein_history_save_deleted,
+		.id = u"serein/history/history-save-deleted"_q,
+		.keywords = { u"deleted"_q, u"anti-recall"_q, u"history"_q },
+		.icon = &st::menuIconDelete,
+		.tile = &st::settingsIconBg3,
+		.about = tr::lng_serein_history_save_deleted_about,
 	},
 	{
-		&kHistoryKeepDeletedInPlace,
-		tr::lng_serein_history_keep_deleted_in_place,
-		u"serein/history/history-keep-deleted-in-place"_q,
-		{ u"deleted"_q, u"anti-recall"_q, u"in chat"_q },
+		.option = &kHistorySaveEdits,
+		.title = tr::lng_serein_history_save_edits,
+		.id = u"serein/history/history-save-edits"_q,
+		.keywords = { u"edit"_q, u"history"_q },
+		.icon = &st::menuIconEdit,
+		.tile = &st::settingsIconBg3,
+		.about = tr::lng_serein_history_save_edits_about,
 	},
 	{
-		&kHistoryKeepExpiredMedia,
-		tr::lng_serein_history_keep_expired_media,
-		u"serein/history/history-keep-expired-media"_q,
-		{ u"self-destruct"_q, u"view once"_q, u"expired"_q, u"media"_q },
+		.option = &kHistoryIncludeBots,
+		.title = tr::lng_serein_history_include_bots,
+		.id = u"serein/history/history-include-bots"_q,
+		.keywords = { u"bots"_q, u"history"_q },
+		.icon = &st::menuIconBot,
+		.tile = &st::settingsIconBg3,
+		.about = tr::lng_serein_history_include_bots_about,
 	},
 	{
-		&kHistoryKeepRemovedChats,
-		tr::lng_serein_history_keep_removed_chats,
-		u"serein/history/history-keep-removed-chats"_q,
-		{ u"banned"_q, u"kicked"_q, u"removed"_q, u"channel"_q, u"group"_q },
+		.option = &kHistoryKeepDeletedInPlace,
+		.title = tr::lng_serein_history_keep_deleted_in_place,
+		.id = u"serein/history/history-keep-deleted-in-place"_q,
+		.keywords = { u"deleted"_q, u"anti-recall"_q, u"in chat"_q },
+		.icon = &st::menuIconShowInChat,
+		.tile = &st::settingsIconBg6,
+		.about = tr::lng_serein_history_keep_deleted_in_place_about,
 	},
 	{
-		&kHistorySaveEdits,
-		tr::lng_serein_history_save_edits,
-		u"serein/history/history-save-edits"_q,
-		{ u"edit"_q, u"history"_q },
+		.option = &kHistoryQuoteDeletedReplies,
+		.title = tr::lng_serein_history_quote_deleted_replies,
+		.id = u"serein/history/history-quote-deleted-replies"_q,
+		.keywords = { u"reply"_q, u"quote"_q, u"deleted"_q },
+		.icon = &st::menuIconReply,
+		.tile = &st::settingsIconBg6,
+		.about = tr::lng_serein_history_quote_deleted_replies_about,
 	},
 	{
-		&kHistoryIncludeBots,
-		tr::lng_serein_history_include_bots,
-		u"serein/history/history-include-bots"_q,
-		{ u"bots"_q, u"history"_q },
+		.option = &kHistoryKeepExpiredMedia,
+		.title = tr::lng_serein_history_keep_expired_media,
+		.id = u"serein/history/history-keep-expired-media"_q,
+		.keywords = { u"self-destruct"_q, u"view once"_q, u"expired"_q, u"media"_q },
+		.icon = &st::menuIconTTL,
+		.tile = &st::settingsIconBg6,
+		.about = tr::lng_serein_history_keep_expired_media_about,
+	},
+	{
+		.option = &kHistoryKeepRemovedChats,
+		.title = tr::lng_serein_history_keep_removed_chats,
+		.id = u"serein/history/history-keep-removed-chats"_q,
+		.keywords = { u"banned"_q, u"kicked"_q, u"removed"_q, u"channel"_q, u"group"_q },
+		.icon = &st::menuIconRemovedUsers,
+		.tile = &st::settingsIconBg6,
+		.about = tr::lng_serein_history_keep_removed_chats_about,
 	},
 } };
 
 inline void AddLayout(
 		::Settings::Builder::SectionBuilder &builder) {
+	AddSection(builder, {
+		u"serein/history/record"_q,
+		tr::lng_serein_section_history_record,
+		{ u"deleted"_q, u"edited"_q, u"bots"_q },
+	});
 	AddToggle(builder, kToggleRows[0]);
 	AddToggle(builder, kToggleRows[1]);
 	AddToggle(builder, kToggleRows[2]);
+	EndSection(builder);
+	AddSection(builder, {
+		u"serein/history/deleted"_q,
+		tr::lng_serein_section_history_deleted,
+		{ u"deleted"_q, u"media"_q },
+	});
 	AddToggle(builder, kToggleRows[3]);
-	AddNote(builder, tr::lng_serein_history_keep_removed_chats_note);
 	AddToggle(builder, kToggleRows[4]);
 	AddToggle(builder, kToggleRows[5]);
+	AddToggle(builder, kToggleRows[6]);
+	AddNote(builder, tr::lng_serein_history_keep_removed_chats_note);
+	EndSection(builder, tr::lng_serein_section_history_deleted_note);
+	AddSection(builder, {
+		u"serein/history/storage"_q,
+		tr::lng_serein_section_history_storage,
+		{ u"storage"_q, u"days"_q, u"limit"_q },
+	});
 	AddNumber(builder, {
 		.option = &kHistoryRetentionDays,
 		.title = tr::lng_serein_history_retention_days,
@@ -70,6 +116,9 @@ inline void AddLayout(
 		.format = [](int value) {
 			return tr::lng_days(tr::now, lt_count, value);
 		},
+		.icon = &st::menuIconHourglass,
+		.tile = &st::settingsIconBg1,
+		.about = tr::lng_serein_history_retention_days_about,
 	});
 	AddNumber(builder, {
 		.option = &kHistoryMaxRecords,
@@ -79,21 +128,28 @@ inline void AddLayout(
 		.minimum = 1,
 		.maximum = 10000000,
 		.zeroLabel = tr::lng_serein_history_unlimited,
+		.icon = &st::menuIconStorage,
+		.tile = &st::settingsIconBg1,
+		.about = tr::lng_serein_history_max_records_about,
 	});
-	AddNote(builder, tr::lng_serein_history_note);
+	EndSection(builder, tr::lng_serein_history_note);
 }
 
 inline constexpr auto kSubpageTitle = &tr::lng_serein_history_page;
+inline constexpr auto kSubpageAbout = &tr::lng_serein_page_history_about;
 inline const auto kSubpageIcon = &st::menuIconRestore;
+inline const auto kSubpageTile = &st::settingsIconBg3;
 
 inline void AddSubpageButton(
 		::Settings::Builder::SectionBuilder &builder,
 		::Settings::Type section) {
-	builder.addSectionButton({
+	AddPageButton(builder, {
 		.title = (*kSubpageTitle)(),
-		.targetSection = section,
-		.icon = { kSubpageIcon },
+		.section = section,
+		.icon = kSubpageIcon,
+		.tile = kSubpageTile,
 		.keywords = { u"deleted"_q, u"edited"_q, u"anti-recall"_q, u"history"_q },
+		.about = *kSubpageAbout,
 	});
 }
 

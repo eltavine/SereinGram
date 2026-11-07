@@ -45,9 +45,9 @@ Linux 发行版打包：
 - `packaging/flatpak/`：GNOME 运行时上的 Flatpak 清单，构建本地检出，CI 工作流 `serein-flatpak.yml` 生成 `.flatpak` 包。
 - `flake.nix` 与 `packaging/nix/package.nix`：基于 nixpkgs 的 telegram-desktop 配方构建，CI 工作流 `serein-nix.yml` 在 x86_64 与 aarch64 上构建并启动。
 - `snap/snapcraft.yaml`：core24 上的 Snap 配方，CI 工作流 `serein-snap.yml` 构建、安装并启动；配方不含凭据，构建时才加入。
-- `tools/serein/linux_package_test.sh`：在 Ubuntu、Debian、Linux Mint、Fedora、openSUSE 与 Arch Linux 的容器中安装软件包并检查文件与动态库。
-- 打包者必须使用自己的 API 凭据：PKGBUILD 读取环境变量 `SEREIN_API_ID` 与 `SEREIN_API_HASH`，Flatpak 读取被忽略的 `Telegram/build/api_credentials.local.cmake`，Nix 包通过 `apiId` 与 `apiHash` 参数传入，Snap 在构建用的配方副本中加入；`check_packaging.py` 拒绝在已提交的配方中写入凭据；缺少凭据时构建报错。以系统库构建时不检查 GitHub 更新，由包管理器负责更新。
-- `tools/serein/check_packaging.py` 要求两份配方锁定的依赖版本与 `snap/snapcraft.yaml` 一致。`upstream_sync.py` 合并上游后自动改写两份配方中 tdlib、tg_owt、tlottie 与 patches 的提交（也可运行 `check_packaging.py --update`）；Qt 版本变化需要新的源码包校验值，tlottie 提交变化需要重新生成 `tlottie-cargo-sources.yml`，这两项由检查报出后手动更新。
+- `tools/serein/linux_package_test.sh`：在 Ubuntu、Debian、Linux Mint、Fedora、openSUSE 与 Arch Linux 的容器中安装软件包并检查文件与动态库，镜像源的偶发故障会重试。
+- 打包者必须使用自己的 API 凭据：PKGBUILD 读取环境变量 `SEREIN_API_ID` 与 `SEREIN_API_HASH`，Flatpak 读取被忽略的 `Telegram/build/api_credentials.local.cmake`，Nix 包通过 `apiId` 与 `apiHash` 参数传入，Snap 在构建用的配方副本中加入；`check_packaging.py` 拒绝在已提交的配方中写入凭据；缺少凭据时构建报错。以系统库构建时不检查 GitHub 更新，由包管理器负责更新；CI 为 GitHub 发布构建的 Flatpak、Snap 与 Arch 软件包以 `SEREIN_BUILD_PACKAGE` 写入产物类型，仍检查 GitHub 更新。
+- `tools/serein/check_packaging.py` 要求两份配方锁定的依赖版本与 `snap/snapcraft.yaml` 一致。`upstream_sync.py` 合并上游后自动改写两份配方中 tdlib、tg_owt、tlottie、wallet-engine 与 patches 的提交（也可运行 `check_packaging.py --update`）；Qt 版本变化需要新的源码包校验值，Rust 依赖提交变化需要更新 `packaging/rust/Cargo.lock` 与 `tdesktop-rust-cargo-sources.json`，并校准 Nix 源码包的 SHA-256，这两项由检查报出后手动更新。
 
 ## 3. 标识与状态
 
@@ -60,7 +60,7 @@ Linux 发行版打包：
 1. 三平台 CI 构建成功，`test_serein` 全部通过。
 2. 守卫全部通过：格式与风格、Lint、静态分析、AddressSanitizer 与 UndefinedBehaviorSanitizer 下的核心测试、AddressSanitizer 与 UndefinedBehaviorSanitizer 下的核心测试、依赖与配置校验、源文件行数、模块边界、上游侵入预算、`buf lint` 与 `buf breaking`、生成代码无漂移、三语文案一致、门面命名空间遮蔽、功能矩阵格式、工作流 actionlint，以及三平台的启动冒烟测试。本地用 `tools/serein/check_all.sh` 一次运行全部守卫与核心测试。
 3. 发布说明分别列出本版本 `Verified` 与仅 `Implemented` 的功能。
-4. 发布流程：`serein-release.yml` 每天从 `develop` 构建 Release 配置的 Nightly，推送 `v*` 标签时构建正式版草稿；全部产物不签名、不公证，名称、校验文件与清单格式固定，约定见 [releases.md](releases.md)；应用内的 GitHub 更新检查只提示正式版。
+4. 发布流程：每次推送到 `develop`，`serein-nightly.yml` 跑完全部 CI 后清空并重新填充固定的 `nightly` 发布，并由 Telegram bot 把二进制产物发到频道；正式版只能手动运行 `serein-release.yml`，构建正式版草稿；全部产物不签名、不公证，直接发布可执行文件与软件包本身、不打压缩包，名称、校验文件与清单格式固定，约定见 [releases.md](releases.md)；应用内的 GitHub 更新检查只提示正式版。
 
 ## 5. 提交规范
 
@@ -69,6 +69,7 @@ Linux 发行版打包：
 - 提交前可运行 `python3 tools/serein/check_commit_message.py <信息文件>` 做同样的检查；执行 `git config core.hooksPath tools/serein/githooks` 可在本地启用 `commit-msg` 钩子自动检查。
 - 该规则优先于 `AGENTS.md` 中“标题一行”的约定。
 - 只检查主线（first-parent）上的提交：同步上游时检查合并提交本身，随合并进入的上游提交保持原样，不按本规范检查。
+- 历史例外仅限已发布的上游 squash 提交 `ac08a8d5ef06938b76d381e308fc59a0c246dfda`（PR #11）与 `b6c3c4acabeac2d0ff41dc734ab6564b7dbcfe1a`（PR #13）：GitHub 自动拼接的上游提交正文不符合正文规则；这些提交仍参与密钥扫描，新提交照常检查。后续同步上游使用 merge commit，合并信息采用简洁的英文说明。
 
 ## 6. 界面翻译
 

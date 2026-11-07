@@ -1,10 +1,13 @@
 #include "serein/privacy/alias.h"
+
+#include "serein/core/session_lifetime.h"
 #include "serein/privacy/options.h"
 
 #include "data/data_peer.h"
 #include "data/data_channel.h"
 #include "data/data_session.h"
 #include "lang/lang_keys.h"
+#include "main/main_account.h"
 #include "main/main_session.h"
 #include "main/session/session_show.h"
 #include "ui/layers/generic_box.h"
@@ -52,7 +55,12 @@ State &ForSession(not_null<Main::Session*> session) {
 		}
 	}, state->lifetime);
 	const auto inserted = states.emplace(session, std::move(state)).first;
-	session->lifetime().add([session] { States().erase(session); });
+	// History() asks for aliases inside Session(), before its lifetime exists.
+	details::BindSessionCleanup(
+		session,
+		session->account().sessionValue(),
+		[session] { States().erase(session); },
+		inserted->second->lifetime);
 	return *inserted->second;
 }
 

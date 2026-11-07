@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "window/window_saved_windows.h"
+#include "serein/hooks/privacy/hidden.h"
 
 #include "apiwrap.h"
 #include "base/call_delayed.h"
@@ -871,7 +872,9 @@ Main::Session *SavedWindows::sessionFor(const SavedWindow &data) const {
 			break;
 		}
 	}
-	const auto session = account ? account->maybeSession() : nullptr;
+	const auto session = (account && !Serein::Privacy::AccountHidden(account))
+		? account->maybeSession()
+		: nullptr;
 	if (!session
 		|| (data.userPeer != 0
 			&& session->userPeerId().value != data.userPeer)) {
@@ -1206,7 +1209,8 @@ void SavedWindows::waitPeer(
 	const auto maybeRearm = [=] {
 		if (batchResolveDone(session)
 			&& owner->chatsListLoaded(nullptr)
-			&& !batchResolveCovered(session, peerId)) {
+			&& !batchResolveCovered(session, peerId)
+			&& !owner->peerLoaded(peerId)) {
 			rearmBatchResolve(session);
 		}
 	};

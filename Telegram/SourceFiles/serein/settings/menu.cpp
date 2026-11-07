@@ -85,8 +85,10 @@ const style::icon *Icon(Menu::ActionId id) {
 	case Menu::ActionId::FilterAuthor: return &st::menuIconBlock;
 	case Menu::ActionId::EditHistory: return &st::menuIconEdit;
 	case Menu::ActionId::DeletedMessages: return &st::menuIconRestore;
+	case Menu::ActionId::RestoredMedia: return &st::menuIconPhoto;
 	case Menu::ActionId::ReadUntilHere: return &st::menuIconMarkRead;
 	case Menu::ActionId::HistoryExclusion: return &st::menuIconBlock;
+	case Menu::ActionId::CopyMarkdown: return &st::menuIconCopy;
 	case Menu::ActionId::ButtonData:
 	case Menu::ActionId::MessageDetails: return &st::menuIconInfo;
 	case Menu::ActionId::SelectRange: return &st::menuIconSelect;
@@ -121,8 +123,8 @@ void VisibilityBox(not_null<Ui::GenericBox*> box, Menu::ActionId id) {
 const auto kMeta = BuildHelper({
 	.id = MenuSection::Id(),
 	.parentId = HomeId(),
-	.title = &tr::lng_serein_menu,
-	.icon = &st::menuIconChatBubble,
+	.title = Menu::kSubpageTitle,
+	.icon = Menu::kSubpageIcon,
 }, [](SectionBuilder &builder) {
 	const auto controller = builder.controller();
 	Menu::AddLayout(builder, {

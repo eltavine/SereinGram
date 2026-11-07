@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "options": {
+    "serein.hideSponsoredMessages": true,
+    "serein.hideProxySponsor": true,
+    "serein.hidePremiumPromotions": true,
+    "serein.hideBirthdaySuggestions": true,
+    "serein.hideRecommendedChannels": true,
+    "serein.hideGiftButton": true,
+    "serein.hideStarsReactionButton": true,
+    "serein.hideRecommendedStickers": true,
+    "serein.hideRecommendedEmoji": true,
+    "serein.hideGifCategories": true,
+    "serein.hideGreetingSticker": true,
+    "serein.disablePremiumStickerEffects": true,
+    "serein.disableMessageEffects": true,
+    "serein.hideProfileGifts": true
+  }
+}

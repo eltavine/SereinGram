@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "options": {
+    "serein.secondsInMessages": true,
+    "serein.showMessageId": true,
+    "serein.showServiceTime": true,
+    "serein.profileIdFormat": 1,
+    "serein.showProfileDc": true,
+    "serein.showRegistrationDate": true,
+    "serein.showContactStatus": true
+  }
+}

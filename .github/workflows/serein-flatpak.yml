@@ -3,7 +3,6 @@ name: Serein Flatpak.
 on:
   push:
     branches:
-      - develop
       - main
     paths:
       - 'packaging/flatpak/**'
@@ -17,6 +16,9 @@ on:
         type: string
         default: ''
       ref:
+        type: string
+        default: ''
+      channel:
         type: string
         default: ''
     secrets:
@@ -59,16 +61,18 @@ jobs:
         run: rm -rf /host/dotnet/* /host/android/* /host/ghc/*
 
       - name: Clone.
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
           ref: ${{ inputs.ref }}
           submodules: recursive
 
-      - name: Provide the API credentials.
+      - name: Provide the API credentials and the release channel.
         env:
           SEREIN_API_ID: ${{ secrets.SEREIN_API_ID }}
           SEREIN_API_HASH: ${{ secrets.SEREIN_API_HASH }}
+          CHANNEL: ${{ inputs.channel }}
+          COMMIT: ${{ inputs.ref || github.sha }}
         run: |
           file=Telegram/build/api_credentials.local.cmake
           if [ -n "$SEREIN_API_ID" ]; then
@@ -78,9 +82,15 @@ jobs:
             # Without the repository secrets, build with the test-only credentials.
             echo 'set(TDESKTOP_API_TEST ON CACHE BOOL "" FORCE)' > "$file"
           fi
+          if [ -n "$CHANNEL" ]; then
+            printf 'set(%s %s CACHE STRING "" FORCE)\n' \
+              SEREIN_BUILD_PACKAGE flatpak \
+              SEREIN_BUILD_CHANNEL "$CHANNEL" \
+              SEREIN_BUILD_COMMIT "$COMMIT" >> "$file"
+          fi
 
       - name: Build the bundle.
-        uses: flathub-infra/flatpak-github-actions/flatpak-builder@933e9e8ca36e85046ebca8e211f0785c6becac40 # master
+        uses: flatpak/flatpak-github-actions/flatpak-builder@79327416609af08178ad73b352877e51450790b3 # v6.8
         with:
           bundle: ${{ env.ASSET }}.flatpak
           manifest-path: packaging/flatpak/io.github.eltavine.SereinGram.yml
@@ -90,10 +100,10 @@ jobs:
           # cache quota would evict the platform workflows' dependency caches.
           cache: false
 
-      - uses: actions/upload-artifact@v7
-        name: Upload artifact.
+      - name: Upload the bundle.
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: ${{ env.ASSET }}-flatpak
           path: ${{ env.ASSET }}.flatpak
+          archive: false
           if-no-files-found: error
           retention-days: 3

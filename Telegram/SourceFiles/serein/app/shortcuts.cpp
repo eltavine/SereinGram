@@ -2,8 +2,10 @@
 
 #include "serein/chats/recent_tracking.h"
 
+#include "serein/hooks/interface/shortcuts.h"
 #include "serein/features/ghost/model/policy.h"
 #include "serein/privacy/options.h"
+#include "serein/privacy/hidden.h"
 #include "core/application.h"
 #include "core/shortcuts.h"
 #include "lang/lang_keys.h"
@@ -61,6 +63,18 @@ void StartShortcuts() {
 	Shortcuts::Requests(
 	) | rpl::on_next([](not_null<Shortcuts::Request*> request) {
 		using Command = Shortcuts::Command;
+		const auto window = Core::App().activeWindow();
+		const auto controller = window ? window->sessionController() : nullptr;
+		request->check(Command::SereinHiddenChats) && request->handle([=] {
+			if (!controller || !ForDevice().Get(Privacy::kHiddenChatsEnabled)) return false;
+			Privacy::ShowHiddenChats(controller);
+			return true;
+		});
+		request->check(Command::SereinHiddenAccounts) && request->handle([=] {
+			if (!controller || !Privacy::HiddenAccountsAvailable()) return false;
+			Privacy::ShowHiddenAccounts(controller);
+			return true;
+		});
 		request->check(Command::SereinToggleGhostMode)
 			&& request->handle(ToggleGhostMode);
 		request->check(Command::SereinToggleDemoMode)
@@ -71,3 +85,27 @@ void StartShortcuts() {
 }
 
 } // namespace Serein::App
+
+namespace Serein::Hooks {
+
+std::vector<ShortcutEntry> ShortcutEntries() {
+	using Command = Shortcuts::Command;
+	auto result = std::vector<ShortcutEntry>();
+	result.push_back({
+		Command::SereinToggleGhostMode,
+		tr::lng_serein_shortcut_ghost(),
+	});
+	result.push_back({
+		Command::SereinToggleDemoMode,
+		tr::lng_serein_shortcut_presentation(),
+	});
+	result.push_back({
+		Command::SereinRecentChats,
+		tr::lng_serein_shortcut_recent_chats(),
+	});
+	result.push_back({ Command::SereinHiddenChats, tr::lng_serein_hidden_chats() });
+	result.push_back({ Command::SereinHiddenAccounts, tr::lng_serein_hidden_accounts() });
+	return result;
+}
+
+} // namespace Serein::Hooks

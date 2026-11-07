@@ -4,6 +4,15 @@ set(serein_test_sources
     serein/tests/test_main.cpp
     serein/tests/test_lang.cpp
     serein/tests/test_options.cpp
+    serein/tests/test_session_lifetime.cpp
+    serein/tests/test_exchange.cpp
+    serein/tests/test_ayu_migration.cpp
+    serein/tests/test_presets.cpp
+    serein/tests/test_markdown.cpp
+    serein/tests/test_quiet_hours.cpp
+    serein/tests/test_keyword_alerts.cpp
+    serein/tests/test_send_translations.cpp
+    serein/tests/test_cleanup.cpp
     serein/tests/test_spacing.cpp
     serein/tests/test_services.cpp
     serein/tests/test_updates.cpp
@@ -45,15 +54,35 @@ set(serein_test_sources
     serein/tests/test_text_entities.cpp
     serein/tests/test_id_list.cpp
     serein/tests/test_history_entities.cpp
+    serein/tests/test_reply_quote.cpp
+    serein/tests/test_inspector.cpp
+    serein/tests/test_purge.cpp
+    serein/tests/test_jump.cpp
+    serein/tests/test_online_presence.cpp
     serein/tests/text_entity_support.cpp
     serein/adapters/openssl/aes_gcm_cipher.cpp
     serein/features/ghost/model/policy.cpp
     serein/features/ghost/model/exceptions.cpp
+    serein/features/presets/model/catalog.cpp
+    serein/features/quiet_hours/model/schedule.cpp
+    serein/features/keyword_alerts/model/keywords.cpp
+    serein/features/send_translation/model/languages.cpp
+    serein/features/cleanup/model/candidates.cpp
     serein/features/history/entities.cpp
     serein/display/text_entities.cpp
     serein/features/history/media_store.cpp
     serein/features/history/model/recorder.cpp
-    serein/features/updates/model/release.cpp
+    serein/features/history/model/reply_quote.cpp
+    serein/features/history/model/window.cpp
+    serein/features/inspector/model/facts.cpp
+    serein/features/inspector/model/render.cpp
+    serein/features/inspector/model/tl_tree.cpp
+    serein/features/jump/model/target.cpp
+    serein/features/purge/model/job.cpp
+    serein/features/purge/model/plan.cpp
+    serein/features/online/model/presence.cpp
+    serein/features/updates/model/manifest.cpp
+    serein/features/updates/model/version.cpp
     serein/features/regdate/model/estimate.cpp
     serein/features/stories/model/post.cpp
     serein/schema/codec.cpp
@@ -62,6 +91,7 @@ set(serein_test_sources
     serein/chats/reading_positions.cpp
     serein/chats/local_pins.cpp
     serein/messages/chinese.cpp
+    serein/messages/markdown.cpp
     serein/messages/persian_calendar.cpp
     serein/privacy/alias_rules.cpp
     serein/privacy/recorders.cpp
@@ -75,6 +105,8 @@ set(serein_test_sources
     serein/privacy/qr_decode.cpp
     serein/compose/validators.cpp
     serein/core/exchange.cpp
+    serein/settings/ayu_migration.cpp
+    serein/core/patterns.cpp
     serein/core/id_list.cpp
     serein/interface/main_menu_model.cpp
     serein/interface/punctuation.cpp
@@ -101,4 +133,5 @@ set(serein_sql_test_sources
     serein/tests/test_history_store.cpp
     serein/tests/test_history_recorder.cpp
     serein/tests/test_history_media.cpp
+    serein/tests/test_history_window.cpp
 )

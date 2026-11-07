@@ -148,6 +148,10 @@ Uploader::Entry::Entry(
 
 void Uploader::Entry::setDocSize(int64 size) {
 	docSize = size;
+	if (Serein::Network::PreferLargeUploadParts() && size >= kDocumentUploadPartSize4) {
+		setPartSize(kDocumentUploadPartSize4);
+		return;
+	}
 	constexpr auto limit0 = 1024 * 1024;
 	constexpr auto limit1 = 32 * limit0;
 	if (docSize >= limit0 || !setPartSize(kDocumentUploadPartSize0)) {
@@ -467,6 +471,11 @@ void Uploader::runTranscode(FullMsgId itemId) {
 							return !std::get_if<QImage>(&layer);
 						}),
 					end(fallback.overlay));
+				using StillSource = Media::Encode::StillSource;
+				if (const auto still = std::get_if<StillSource>(
+						&fallback.source)) {
+					still->music.clear();
+				}
 				result = Media::Encode::Run(std::move(fallback), nullptr);
 			}
 			bytes = std::move(result.bytes);
@@ -860,6 +869,7 @@ auto Uploader::sendSlicedPart(not_null<Entry*> entry, uchar dcIndex)
 	), {
 		.itemId = itemId,
 		.bytes = partBytes,
+		.part = index,
 		.dcIndex = dcIndex,
 	});
 	return SendResult::Success;

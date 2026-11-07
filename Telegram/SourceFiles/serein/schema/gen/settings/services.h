@@ -7,6 +7,7 @@
 namespace Serein::ServiceSettings {
 
 [[nodiscard]] bool ValidServicesBytes(const QByteArray &value);
+[[nodiscard]] bool ValidSendTranslationsBytes(const QByteArray &value);
 [[nodiscard]] bool ValidProxyNotes(const QByteArray &value);
 
 inline const auto kServicesConfig = Option<QByteArray>{
@@ -45,6 +46,14 @@ inline constexpr auto kAutoTranslateChats = Option<bool>{
 	Category::Services,
 	"lng_serein_auto_translate_chats",
 	0 };
+inline const auto kSendTranslations = Option<QByteArray>{
+	"serein.sendTranslations",
+	Scope::Account,
+	QByteArray(),
+	Category::Services,
+	"lng_serein_send_translation",
+	0,
+	&ValidSendTranslationsBytes };
 inline constexpr auto kInstantViewTranslation = Option<bool>{
 	"serein.instantViewTranslation",
 	Scope::Device,
@@ -52,6 +61,17 @@ inline constexpr auto kInstantViewTranslation = Option<bool>{
 	Category::Services,
 	"lng_serein_instant_view_translation",
 	0 };
+inline constexpr auto kAutoTranscribe = Option<int>{
+	"serein.autoTranscribe",
+	Scope::Account,
+	0,
+	Category::Services,
+	"lng_serein_auto_transcribe",
+	0,
+	[](const int &value) {
+		return (value == 0)
+			|| ((value >= 0) && (value <= 2));
+	} };
 inline const auto kProxySubscription = Option<QString>{
 	"serein.proxySubscription",
 	Scope::Device,
@@ -78,13 +98,6 @@ inline constexpr auto kPauseProxyOnVpn = Option<bool>{
 	Category::Services,
 	"lng_serein_proxy_vpn",
 	0 };
-inline constexpr auto kProxyPausedByVpn = Option<bool>{
-	"serein.proxyPausedByVpn",
-	Scope::Device,
-	false,
-	Category::Services,
-	"lng_serein_proxy_vpn",
-	static_cast<unsigned>(Flag::Hidden) };
 inline const auto kCustomDoh = Option<QString>{
 	"serein.customDoh",
 	Scope::Device,
@@ -96,6 +109,13 @@ inline const auto kCustomDoh = Option<QString>{
 		return (value == QString())
 			|| ((value.toUcs4().size() <= 253) && (Codec::Matches(value, QString::fromUtf8("^(([A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?\\.)+[A-Za-z]{2,63})?$"))));
 	} };
+inline constexpr auto kSystemDns = Option<bool>{
+	"serein.systemDns",
+	Scope::Device,
+	false,
+	Category::Services,
+	"lng_serein_system_dns",
+	0 };
 inline constexpr auto kFasterTransfers = Option<bool>{
 	"serein.fasterTransfers",
 	Scope::Device,
@@ -110,6 +130,13 @@ inline constexpr auto kAndroidWebApps = Option<bool>{
 	Category::Services,
 	"lng_serein_android_web_apps",
 	0 };
+inline constexpr auto kProxyPausedByVpn = Option<bool>{
+	"serein.proxyPausedByVpn",
+	Scope::Device,
+	false,
+	Category::Services,
+	"lng_serein_proxy_vpn",
+	static_cast<unsigned>(Flag::Hidden) };
 
 inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kServicesConfig));
@@ -117,14 +144,17 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kTranslationContext));
 	Expects(registry.Add(kChatTranslationWithoutPremium));
 	Expects(registry.Add(kAutoTranslateChats));
+	Expects(registry.Add(kSendTranslations));
 	Expects(registry.Add(kInstantViewTranslation));
+	Expects(registry.Add(kAutoTranscribe));
 	Expects(registry.Add(kProxySubscription));
 	Expects(registry.Add(kProxyNotes));
 	Expects(registry.Add(kPauseProxyOnVpn));
-	Expects(registry.Add(kProxyPausedByVpn));
 	Expects(registry.Add(kCustomDoh));
+	Expects(registry.Add(kSystemDns));
 	Expects(registry.Add(kFasterTransfers));
 	Expects(registry.Add(kAndroidWebApps));
+	Expects(registry.Add(kProxyPausedByVpn));
 }
 
 } // namespace Serein::ServiceSettings

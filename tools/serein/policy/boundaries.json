@@ -109,6 +109,61 @@
       "app": true,
       "libraries": true
     },
+    "serein/features/inspector/model/": {
+      "own": [
+        "serein/features/inspector/model/"
+      ],
+      "app": false,
+      "libraries": true
+    },
+    "serein/features/inspector/": {
+      "own": [
+        "serein/features/inspector/",
+        "serein/core/",
+        "serein/schema/",
+        "serein/ports/",
+        "serein/hooks/",
+        "serein/display/"
+      ],
+      "app": true,
+      "libraries": true
+    },
+    "serein/features/jump/model/": {
+      "own": [
+        "serein/features/jump/model/"
+      ],
+      "app": false,
+      "libraries": true
+    },
+    "serein/features/jump/": {
+      "own": [
+        "serein/features/jump/",
+        "serein/core/",
+        "serein/schema/",
+        "serein/ports/",
+        "serein/hooks/"
+      ],
+      "app": true,
+      "libraries": true
+    },
+    "serein/features/purge/model/": {
+      "own": [
+        "serein/features/purge/model/"
+      ],
+      "app": false,
+      "libraries": true
+    },
+    "serein/features/purge/": {
+      "own": [
+        "serein/features/purge/",
+        "serein/core/",
+        "serein/schema/",
+        "serein/ports/",
+        "serein/hooks/"
+      ],
+      "app": true,
+      "libraries": true
+    },
     "serein/features/instant_view/": {
       "own": [
         "serein/features/instant_view/",
@@ -143,6 +198,24 @@
       "app": true,
       "libraries": true
     },
+    "serein/features/online/": {
+      "own": [
+        "serein/features/online/",
+        "serein/core/",
+        "serein/schema/",
+        "serein/ports/",
+        "serein/hooks/"
+      ],
+      "app": true,
+      "libraries": true
+    },
+    "serein/features/online/model/": {
+      "own": [
+        "serein/features/online/model/"
+      ],
+      "app": false,
+      "libraries": true
+    },
     "serein/display/": {
       "own": [
         "serein/display/",
@@ -173,7 +246,9 @@
         "serein/schema/",
         "serein/ports/",
         "serein/hooks/",
-        "serein/display/"
+        "serein/display/",
+        "serein/features/cleanup/model/",
+        "serein/media/cache.h"
       ],
       "app": true,
       "libraries": true
@@ -299,7 +374,8 @@
         "serein/ports/",
         "serein/hooks/",
         "serein/display/",
-        "serein/adapters/qtnetwork/"
+        "serein/adapters/qtnetwork/",
+        "serein/features/send_translation/model/"
       ],
       "app": true,
       "libraries": true
@@ -330,6 +406,10 @@
         "serein/compose/",
         "serein/features/ghost/model/",
         "serein/features/history/",
+        "serein/features/presets/model/",
+        "serein/features/updates/checker.h",
+        "serein/features/quiet_hours/model/",
+        "serein/features/keyword_alerts/model/",
         "serein/filters/",
         "serein/interface/",
         "serein/links/",
@@ -365,6 +445,59 @@
         "serein/"
       ],
       "app": true,
+      "libraries": true
+    },
+    "serein/features/presets/model/": {
+      "own": [
+        "serein/features/presets/model/"
+      ],
+      "app": false,
+      "libraries": true
+    },
+    "serein/features/quiet_hours/model/": {
+      "own": [
+        "serein/features/quiet_hours/model/",
+        "serein/schema/",
+        "serein/core/"
+      ],
+      "app": false,
+      "libraries": true
+    },
+    "serein/features/keyword_alerts/model/": {
+      "own": [
+        "serein/features/keyword_alerts/model/",
+        "serein/schema/",
+        "serein/core/"
+      ],
+      "app": false,
+      "libraries": true
+    },
+    "serein/features/notifications/": {
+      "own": [
+        "serein/features/notifications/",
+        "serein/features/quiet_hours/model/",
+        "serein/features/keyword_alerts/model/",
+        "serein/core/",
+        "serein/schema/",
+        "serein/hooks/"
+      ],
+      "app": true,
+      "libraries": true
+    },
+    "serein/features/send_translation/model/": {
+      "own": [
+        "serein/features/send_translation/model/",
+        "serein/schema/",
+        "serein/core/"
+      ],
+      "app": false,
+      "libraries": true
+    },
+    "serein/features/cleanup/model/": {
+      "own": [
+        "serein/features/cleanup/model/"
+      ],
+      "app": false,
       "libraries": true
     }
   }

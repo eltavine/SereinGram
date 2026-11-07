@@ -15,7 +15,7 @@ struct Entry {
 	const char *titleKey;
 };
 
-inline constexpr auto kEntries = std::array<Entry, 35>({{
+inline constexpr auto kEntries = std::array<Entry, 40>({{
 	{ ActionId::Reply, "lng_serein_menu_reply" },
 	{ ActionId::Edit, "lng_serein_menu_edit" },
 	{ ActionId::Copy, "lng_serein_menu_copy" },
@@ -30,6 +30,9 @@ inline constexpr auto kEntries = std::array<Entry, 35>({{
 	{ ActionId::Image, "lng_serein_menu_image" },
 	{ ActionId::Delete, "lng_serein_menu_delete" },
 	{ ActionId::StickerPack, "lng_serein_menu_sticker_pack" },
+	{ ActionId::ForwardToSaved, "lng_serein_forward_saved" },
+	{ ActionId::DownloadQueue, "lng_serein_queue_add" },
+	{ ActionId::ClearCache, "lng_serein_menu_clear_cache" },
 	{ ActionId::Repeat, "lng_serein_menu_repeat" },
 	{ ActionId::RepeatAsCopy, "lng_serein_menu_repeat_as_copy" },
 	{ ActionId::ForwardWithoutQuote, "lng_serein_menu_forward_without_quote" },
@@ -41,10 +44,12 @@ inline constexpr auto kEntries = std::array<Entry, 35>({{
 	{ ActionId::FilterAuthor, "lng_serein_filter_author_hide" },
 	{ ActionId::EditHistory, "lng_serein_menu_edit_history" },
 	{ ActionId::DeletedMessages, "lng_serein_menu_deleted_messages" },
+	{ ActionId::RestoredMedia, "lng_serein_menu_restored_media" },
 	{ ActionId::ReadUntilHere, "lng_serein_menu_read_until_here" },
 	{ ActionId::HistoryExclusion, "lng_serein_menu_history_exclude" },
 	{ ActionId::ButtonData, "lng_serein_menu_button_data" },
 	{ ActionId::MessageDetails, "lng_serein_menu_details" },
+	{ ActionId::CopyMarkdown, "lng_serein_menu_copy_markdown" },
 	{ ActionId::SelectRange, "lng_serein_menu_select_range" },
 	{ ActionId::BatchUnpin, "lng_serein_menu_unpin_selected" },
 	{ ActionId::QuickRatingFirst, "lng_serein_menu_quick_rating_first" },

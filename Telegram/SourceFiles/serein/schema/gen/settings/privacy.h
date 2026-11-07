@@ -26,20 +26,6 @@ inline constexpr auto kLockSettings = Option<bool>{
 	Category::Privacy,
 	"lng_serein_lock_settings",
 	0 };
-inline constexpr auto kHideReadTime = Option<bool>{
-	"serein.hideReadTime",
-	Scope::Device,
-	false,
-	Category::Privacy,
-	"lng_serein_hide_read_time",
-	0 };
-inline constexpr auto kHideSharePhonePrompt = Option<bool>{
-	"serein.hideSharePhonePrompt",
-	Scope::Device,
-	false,
-	Category::Privacy,
-	"lng_serein_hide_share_phone_prompt",
-	0 };
 inline constexpr auto kProfileIdFormat = Option<int>{
 	"serein.profileIdFormat",
 	Scope::Device,
@@ -93,6 +79,20 @@ inline constexpr auto kHideProfileGifts = Option<bool>{
 	Category::Privacy,
 	"lng_serein_hide_profile_gifts",
 	0 };
+inline constexpr auto kHideReadTime = Option<bool>{
+	"serein.hideReadTime",
+	Scope::Device,
+	false,
+	Category::Privacy,
+	"lng_serein_hide_read_time",
+	0 };
+inline constexpr auto kHideSharePhonePrompt = Option<bool>{
+	"serein.hideSharePhonePrompt",
+	Scope::Device,
+	false,
+	Category::Privacy,
+	"lng_serein_hide_share_phone_prompt",
+	0 };
 inline constexpr auto kHideCreateTodo = Option<bool>{
 	"serein.hideCreateTodo",
 	Scope::Device,
@@ -107,13 +107,61 @@ inline constexpr auto kSaveProtectedContent = Option<bool>{
 	Category::Privacy,
 	"lng_serein_save_protected_content",
 	0 };
+inline constexpr auto kAutoBackupExports = Option<bool>{
+	"serein.autoBackupExports",
+	Scope::Device,
+	false,
+	Category::Privacy,
+	"lng_serein_auto_backup_exports",
+	static_cast<unsigned>(Flag::Hidden) };
+inline constexpr auto kHiddenChatsEnabled = Option<bool>{
+	"serein.hiddenChatsEnabled",
+	Scope::Device,
+	false,
+	Category::Privacy,
+	"lng_serein_hidden_chats_enabled",
+	0 };
+inline const auto kHiddenChatIds = Option<QString>{
+	"serein.hiddenChatIds",
+	Scope::Account,
+	QString(),
+	Category::Privacy,
+	"lng_serein_hidden_chats",
+	static_cast<unsigned>(Flag::Hidden),
+	[](const QString &value) {
+		return (value == QString())
+			|| ((value.toUcs4().size() <= 24000));
+	} };
+inline constexpr auto kHiddenAccountsEnabled = Option<bool>{
+	"serein.hiddenAccountsEnabled",
+	Scope::Device,
+	false,
+	Category::Privacy,
+	"lng_serein_hidden_accounts_enabled",
+	0 };
+inline const auto kHiddenAccountIds = Option<QString>{
+	"serein.hiddenAccountIds",
+	Scope::Device,
+	QString(),
+	Category::Privacy,
+	"lng_serein_hidden_account_ids",
+	static_cast<unsigned>(Flag::Hidden),
+	[](const QString &value) {
+		return (value == QString())
+			|| ((value.toUcs4().size() <= 24000));
+	} };
+inline constexpr auto kAccountNetworkControls = Option<bool>{
+	"serein.accountNetworkControls",
+	Scope::Device,
+	false,
+	Category::Privacy,
+	"lng_serein_account_network_controls",
+	0 };
 
 inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kDemoMode));
 	Expects(registry.Add(kAutoDemoMode));
 	Expects(registry.Add(kLockSettings));
-	Expects(registry.Add(kHideReadTime));
-	Expects(registry.Add(kHideSharePhonePrompt));
 	Expects(registry.Add(kProfileIdFormat));
 	Expects(registry.Add(kShowProfileDc));
 	Expects(registry.Add(kShowRegistrationDate));
@@ -121,8 +169,16 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kShowSessionDetails));
 	Expects(registry.Add(kLocalNames));
 	Expects(registry.Add(kHideProfileGifts));
+	Expects(registry.Add(kHideReadTime));
+	Expects(registry.Add(kHideSharePhonePrompt));
 	Expects(registry.Add(kHideCreateTodo));
 	Expects(registry.Add(kSaveProtectedContent));
+	Expects(registry.Add(kAutoBackupExports));
+	Expects(registry.Add(kHiddenChatsEnabled));
+	Expects(registry.Add(kHiddenChatIds));
+	Expects(registry.Add(kHiddenAccountsEnabled));
+	Expects(registry.Add(kHiddenAccountIds));
+	Expects(registry.Add(kAccountNetworkControls));
 }
 
 } // namespace Serein::Privacy

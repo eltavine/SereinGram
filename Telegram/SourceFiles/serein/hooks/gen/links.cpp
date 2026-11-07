@@ -22,4 +22,12 @@ rpl::producer<bool> PreviewLinkRulesValue() {
 	return ForDevice().Value(Serein::Links::kPreviewLinkRules);
 }
 
+bool StripTrackingParameters() {
+	return ForDevice().Get(Serein::Links::kStripTrackingParameters);
+}
+
+rpl::producer<bool> StripTrackingParametersValue() {
+	return ForDevice().Value(Serein::Links::kStripTrackingParameters);
+}
+
 } // namespace Serein::Hooks::Links

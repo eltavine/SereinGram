@@ -11,47 +11,16 @@ message MenuSettings {
     cpp_namespace: "Menu"
     scope: SCOPE_DEVICE
     category: CATEGORY_MENU
+    subpage: {
+      title: "lng_serein_menu"
+      icon: "menuIconReorder"
+      keywords: [
+        "menu",
+        "actions"
+      ]
+    }
   };
 
-  optional bool confirm_repeat = 2 [(serein.options.v1.field) = {
-    title: "lng_serein_menu_confirm_repeat"
-    keywords: [
-      "repeat",
-      "confirm"
-    ]
-  }];
-  // Non-empty texts add menu items that reply to the message with them.
-  optional string quick_rating_first = 3 [
-    (serein.options.v1.field) = {
-      section: {
-        title: "lng_serein_quick_rating"
-        id: "quick-rating"
-        keywords: [
-          "rating",
-          "reply"
-        ]
-      }
-      keywords: [
-        "rating",
-        "reply",
-        "great"
-      ]
-      text: {placeholder: "lng_serein_quick_rating_unset"}
-    },
-    (buf.validate.field).string.max_len = 256
-  ];
-  optional string quick_rating_second = 4 [
-    (serein.options.v1.field) = {
-      keywords: [
-        "rating",
-        "reply",
-        "poor"
-      ]
-      note: "lng_serein_quick_rating_note"
-      text: {placeholder: "lng_serein_quick_rating_unset"}
-    },
-    (buf.validate.field).string.max_len = 256
-  ];
   optional bytes message_menu = 1 [(serein.options.v1.field) = {
     section: {
       title: "lng_serein_menu_items"
@@ -67,4 +36,47 @@ message MenuSettings {
     validator: "ValidateConfig"
     note: "lng_serein_menu_note"
   }];
+  optional bool confirm_repeat = 2 [(serein.options.v1.field) = {
+    section: {
+      title: "lng_serein_section_repeat_rating"
+      id: "repeat-rating"
+      keywords: [
+        "repeat",
+        "rating",
+        "reply"
+      ]
+    }
+    title: "lng_serein_menu_confirm_repeat"
+    keywords: [
+      "repeat",
+      "confirm"
+    ]
+    icon: "menuIconRepeat"
+  }];
+  // Non-empty texts add menu items that reply to the message with them.
+  optional string quick_rating_first = 3 [
+    (serein.options.v1.field) = {
+      keywords: [
+        "rating",
+        "reply",
+        "great"
+      ]
+      text: {placeholder: "lng_serein_quick_rating_unset"}
+      icon: "menuIconLike"
+    },
+    (buf.validate.field).string.max_len = 256
+  ];
+  optional string quick_rating_second = 4 [
+    (serein.options.v1.field) = {
+      keywords: [
+        "rating",
+        "reply",
+        "poor"
+      ]
+      note: "lng_serein_quick_rating_note"
+      text: {placeholder: "lng_serein_quick_rating_unset"}
+      icon: "menuIconReply"
+    },
+    (buf.validate.field).string.max_len = 256
+  ];
 }

@@ -10,8 +10,10 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "base/platform/base_platform_info.h"
 #include "base/event_filter.h"
 #include "base/parse_helper.h"
+#include "base/qt/qt_possible_keys.h"
 #include "core/application.h"
 #include "core/version.h"
+#include "lang/lang_keys.h"
 #include "mainwindow.h"
 #include "mainwidget.h"
 #include "window/window_controller.h"
@@ -130,6 +132,7 @@ const auto CommandByName = base::flat_map<QString, Command>{
 	{ u"show_chat_preview"_q             , Command::ShowChatPreview },
 
 	{ u"record_voice"_q                  , Command::RecordVoice },
+	{ u"stash_message"_q                 , Command::StashMessage },
 
 	// Shortcuts that have no default values.
 	{ u"message"_q                       , Command::JustSendMessage },
@@ -146,6 +149,8 @@ const auto CommandByName = base::flat_map<QString, Command>{
 	{ u"serein_toggle_ghost_mode"_q      , Command::SereinToggleGhostMode },
 	{ u"serein_toggle_presentation_mode"_q, Command::SereinToggleDemoMode },
 	{ u"serein_recent_chats"_q           , Command::SereinRecentChats },
+	{ u"serein_hidden_chats"_q, Command::SereinHiddenChats },
+	{ u"serein_hidden_accounts"_q, Command::SereinHiddenAccounts },
 	//
 };
 
@@ -174,6 +179,8 @@ const base::flat_map<Command, QString> &CommandNames() {
 	Command::SereinToggleGhostMode,
 	Command::SereinToggleDemoMode,
 	Command::SereinRecentChats,
+	Command::SereinHiddenChats,
+	Command::SereinHiddenAccounts,
 };
 
 class Manager {
@@ -187,6 +194,9 @@ public:
 	void toggleSupport(bool toggled);
 	void listen(not_null<QWidget*> widget);
 	[[nodiscard]] bool handles(const QKeySequence &sequence) const;
+	[[nodiscard]] bool matchesCommand(
+		not_null<QKeyEvent*> event,
+		Command command) const;
 
 	[[nodiscard]] const QStringList &errors() const;
 
@@ -201,6 +211,10 @@ public:
 		Command command,
 		std::optional<Command> restore);
 	void resetToDefaults();
+	void restoreDefaultFor(
+		QKeySequence was,
+		QKeySequence now,
+		Command command);
 
 private:
 	void fillDefaults();
@@ -362,6 +376,25 @@ void Manager::resetToDefaults() {
 	writeCustomFile();
 }
 
+void Manager::restoreDefaultFor(
+		QKeySequence was,
+		QKeySequence now,
+		Command command) {
+	if (!was.isEmpty()) {
+		remove(was, command);
+	}
+	if (now.isEmpty()) {
+		writeCustomFile();
+		return;
+	}
+	if (_shortcuts.contains(now)) {
+		set(now, command, false);
+	} else {
+		set(now, command, true);
+	}
+	writeCustomFile();
+}
+
 std::vector<Command> Manager::lookup(not_null<QObject*> object) const {
 	auto result = std::vector<Command>();
 	auto i = _commandByObject.findFirst(object);
@@ -394,6 +427,21 @@ void Manager::listen(not_null<QWidget*> widget) {
 
 bool Manager::handles(const QKeySequence &sequence) const {
 	return _shortcuts.contains(sequence);
+}
+
+bool Manager::matchesCommand(
+		not_null<QKeyEvent*> event,
+		Command command) const {
+	for (const auto &combination : base::PossibleKeys(event)) {
+		const auto i = _shortcuts.find(QKeySequence(combination));
+		if (i == end(_shortcuts)) {
+			continue;
+		}
+		if (ranges::contains(lookup(i->second.get()), command)) {
+			return true;
+		}
+	}
+	return false;
 }
 
 void Manager::pruneListened() {
@@ -483,6 +531,8 @@ bool Manager::readCustomFile() {
 void Manager::fillDefaults() {
 	const auto ctrl = Platform::IsMac() ? u"meta"_q : u"ctrl"_q;
 
+	set(u"ctrl+alt+h"_q, Command::SereinHiddenChats);
+	set(u"ctrl+alt+shift+h"_q, Command::SereinHiddenAccounts);
 	set(u"ctrl+w"_q                  , Command::Close);
 	set(u"ctrl+f4"_q                 , Command::Close);
 	set(u"ctrl+l"_q                  , Command::Lock);
@@ -547,6 +597,8 @@ void Manager::fillDefaults() {
 	set(u"ctrl+]"_q                  , Command::ShowChatPreview);
 
 	set(u"ctrl+r"_q                  , Command::RecordVoice);
+
+	set(u"ctrl+s"_q                  , Command::StashMessage);
 
 	_defaults = keysCurrents();
 }
@@ -1028,6 +1080,17 @@ void ResetToDefaults() {
 	Data.resetToDefaults();
 }
 
+void RestoreDefaultFor(
+		QKeySequence was,
+		QKeySequence now,
+		Command command) {
+	Data.restoreDefaultFor(was, now, command);
+}
+
+bool MatchesCommand(not_null<QKeyEvent*> event, Command command) {
+	return Data.matchesCommand(event, command);
+}
+
 bool AllowWithoutModifiers(int key) {
 	const auto service = {
 		Qt::Key_Escape,
@@ -1059,6 +1122,40 @@ bool AllowWithoutModifiers(int key) {
 		Qt::Key_ScrollLock,
 	};
 	return (key >= 0x80) && !ranges::contains(service, key);
+}
+
+QString ToDisplayString(const QKeySequence &sequence) {
+	static const auto names = QRegularExpression(
+		u"(?<=^|[+ ])(Up|Down|Left|Right|Space)(?=$|[+,])"_q);
+	auto result = QString();
+	const auto text = sequence.toString();
+	auto from = 0;
+	auto matches = names.globalMatch(text);
+	while (matches.hasNext()) {
+		const auto match = matches.next();
+		const auto name = match.capturedView(1);
+		result += QStringView(text).mid(from, match.capturedStart() - from);
+		result += (name == u"Up"_q)
+			? QString(QChar(0x2191))
+			: (name == u"Down"_q)
+			? QString(QChar(0x2193))
+			: (name == u"Left"_q)
+			? QString(QChar(0x2190))
+			: (name == u"Right"_q)
+			? QString(QChar(0x2192))
+			: tr::lng_keys_legend_space(tr::now);
+		from = match.capturedEnd();
+	}
+	result += QStringView(text).mid(from);
+	if (!Platform::IsMac()) {
+		return result;
+	}
+	// Qt swaps modifiers on mac: Cmd arrives as "Ctrl+", Control as "Meta+".
+	return result
+		.replace(u"Ctrl+"_q, QString(QChar(0x2318)))
+		.replace(u"Meta+"_q, QString(QChar(0x2303)))
+		.replace(u"Alt+"_q, QString(QChar(0x2325)))
+		.replace(u"Shift+"_q, QString(QChar(0x21E7)));
 }
 
 void Finish() {

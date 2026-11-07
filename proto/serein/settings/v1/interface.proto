@@ -10,6 +10,14 @@ message InterfaceSettings {
     cpp_namespace: "Interface"
     scope: SCOPE_DEVICE
     category: CATEGORY_INTERFACE
+    subpage: {
+      title: "lng_serein_interface"
+      icon: "menuIconPalette"
+      keywords: [
+        "interface",
+        "appearance"
+      ]
+    }
   };
 
   optional int32 bubble_roundness = 1 [
@@ -60,6 +68,7 @@ message InterfaceSettings {
         suffix: "%"
         hint: "lng_serein_text_width_hint"
       }
+      icon: "menuIconFont"
     },
     (buf.validate.field).int32 = {
       gte: 50
@@ -72,6 +81,7 @@ message InterfaceSettings {
       "width"
     ]
     refresh: REFRESH_MESSAGE_VIEW
+    icon: "menuIconEnlarge"
   }];
   optional bool hide_bubble_tail = 6 [(serein.options.v1.field) = {
     keywords: [
@@ -79,6 +89,7 @@ message InterfaceSettings {
       "tail"
     ]
     refresh: REFRESH_MESSAGE_VIEW
+    icon: "menuIconChatBubble"
   }];
   optional bool theme_reply_colors = 7 [(serein.options.v1.field) = {
     keywords: [
@@ -87,6 +98,7 @@ message InterfaceSettings {
       "color"
     ]
     refresh: REFRESH_MESSAGE_VIEW
+    icon: "menuIconChangeColors"
   }];
   optional bool hide_reply_thumbnail = 8 [(serein.options.v1.field) = {
     keywords: [
@@ -94,6 +106,7 @@ message InterfaceSettings {
       "thumbnail"
     ]
     refresh: REFRESH_MESSAGE_VIEW
+    icon: "menuIconReply"
   }];
   optional bool ignore_chat_theme = 9 [(serein.options.v1.field) = {
     keywords: [
@@ -101,6 +114,20 @@ message InterfaceSettings {
       "theme",
       "wallpaper"
     ]
+    icon: "menuIconPhoto"
+  }];
+  optional string monospace_font = 27 [(serein.options.v1.field) = {
+    section: {
+      title: "lng_serein_fonts"
+      id: "fonts"
+    }
+    custom_ui: true
+    restart: true
+    icon: "menuIconFont"
+  }];
+  optional bool monospace_ligatures = 28 [(serein.options.v1.field) = {
+    restart: true
+    icon: "menuIconFont"
   }];
   optional bytes main_menu = 10 [(serein.options.v1.field) = {
     section: {
@@ -114,33 +141,42 @@ message InterfaceSettings {
     cpp_name: "kMainMenuConfig"
     validator: "ValidMainMenuBytes"
   }];
-  optional bool hide_app_icon_badge = 11 [(serein.options.v1.field) = {
-    section: {
-      title: "lng_serein_window_notification"
-      id: "window-notification"
-      keywords: [
-        "window",
-        "notification"
+  optional bool menu_shortcuts = 18 [(serein.options.v1.field) = {
+    keywords: [
+      "main menu",
+      "tray",
+      "ghost",
+      "presentation",
+      "recent chats"
+    ]
+    note: "lng_serein_menu_shortcuts_note"
+    restart: true
+    icon: "menuIconToMainMenu"
+  }];
+  optional int32 notification_delay = 12 [
+    (serein.options.v1.field) = {
+      section: {
+        title: "lng_serein_section_notifications"
+        id: "notifications"
+        keywords: [
+          "notification",
+          "window"
+        ]
+      }
+    },
+    (buf.validate.field).int32 = {
+      in: [
+        0,
+        500,
+        1000,
+        2000,
+        5000,
+        10000,
+        30000,
+        60000
       ]
     }
-    keywords: [
-      "dock",
-      "icon",
-      "badge"
-    ]
-  }];
-  optional int32 notification_delay = 12 [(buf.validate.field).int32 = {
-    in: [
-      0,
-      500,
-      1000,
-      2000,
-      5000,
-      10000,
-      30000,
-      60000
-    ]
-  }];
+  ];
   optional int32 other_device_notification_delay = 13 [(buf.validate.field).int32 = {
     in: [
       0,
@@ -160,19 +196,37 @@ message InterfaceSettings {
       "center"
     ]
     note: "lng_serein_center_top_notifications_note"
+    icon: "menuIconNotifications"
   }];
-  optional bool menu_shortcuts = 18 [(serein.options.v1.field) = {
+  optional bytes quiet_hours = 21 [(serein.options.v1.field) = {
+    title: "lng_serein_quiet_hours"
     keywords: [
-      "main menu",
-      "tray",
-      "ghost",
-      "presentation",
-      "recent chats"
+      "quiet",
+      "do not disturb",
+      "schedule",
+      "night"
     ]
-    note: "lng_serein_menu_shortcuts_note"
-    restart: true
+    custom_ui: true
+    validator: "ValidQuietHoursBytes"
+  }];
+  optional bool hide_app_icon_badge = 11 [(serein.options.v1.field) = {
+    keywords: [
+      "dock",
+      "icon",
+      "badge"
+    ]
+    icon: "menuIconDockBounce"
   }];
   optional bytes global_shortcut = 19 [(serein.options.v1.field) = {
+    section: {
+      title: "lng_serein_section_app"
+      id: "app"
+      keywords: [
+        "shortcut",
+        "accounts",
+        "updates"
+      ]
+    }
     title: "lng_serein_global_shortcut"
     keywords: [
       "global",
@@ -184,39 +238,23 @@ message InterfaceSettings {
     custom_ui: true
   }];
   optional bool halfwidth_ui_punctuation = 14 [(serein.options.v1.field) = {
-    section: {
-      title: "lng_serein_ui_text"
-      id: "text"
-      keywords: [
-        "text",
-        "punctuation"
-      ]
-    }
     keywords: [
       "text",
       "punctuation"
     ]
     restart: true
+    icon: "menuIconTranslate"
   }];
   optional bool more_accounts = 15 [(serein.options.v1.field) = {
-    section: {
-      title: "lng_serein_accounts"
-      id: "accounts"
-      keywords: ["accounts"]
-    }
     keywords: [
       "accounts",
       "limit",
       "multiple"
     ]
     note: "lng_serein_more_accounts_note"
+    icon: "menuIconAddAccount"
   }];
   optional bool check_updates = 16 [(serein.options.v1.field) = {
-    section: {
-      title: "lng_serein_updates"
-      id: "updates"
-      keywords: ["updates"]
-    }
     keywords: [
       "updates",
       "GitHub",
@@ -225,4 +263,64 @@ message InterfaceSettings {
     default_bool: true
     custom_ui: true
   }];
+  optional bool online_status_in_chats = 22 [(serein.options.v1.field) = {
+    section: {
+      title: "lng_serein_section_online_status"
+      id: "online"
+      keywords: [
+        "online",
+        "last seen",
+        "presence"
+      ]
+    }
+    keywords: [
+      "online",
+      "last seen",
+      "chat list"
+    ]
+    refresh: REFRESH_DIALOG_LIST
+    icon: "menuIconChats"
+  }];
+  optional bool online_status_in_header = 23 [(serein.options.v1.field) = {
+    keywords: [
+      "online",
+      "last seen",
+      "profile",
+      "seconds"
+    ]
+    icon: "menuIconProfile"
+  }];
+  optional bool online_status_on_senders = 24 [(serein.options.v1.field) = {
+    keywords: [
+      "online",
+      "avatar",
+      "group",
+      "sender"
+    ]
+    refresh: REFRESH_MESSAGE_VIEW
+    icon: "menuIconGroups"
+  }];
+  optional bool online_status_self = 25 [(serein.options.v1.field) = {
+    keywords: [
+      "online",
+      "invisible",
+      "ghost",
+      "my status"
+    ]
+    icon: "menuIconStealth"
+  }];
+  optional bool online_status_detailed = 26 [(serein.options.v1.field) = {
+    keywords: [
+      "online",
+      "last seen",
+      "detailed",
+      "exact time"
+    ]
+    refresh: [
+      REFRESH_DIALOG_LIST,
+      REFRESH_MESSAGE_VIEW
+    ]
+    icon: "menuIconWhenOnline"
+  }];
+  optional bool presets_offered = 20 [(serein.options.v1.field) = {hidden: true}];
 }

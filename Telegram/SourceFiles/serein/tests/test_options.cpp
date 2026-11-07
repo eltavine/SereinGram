@@ -15,6 +15,7 @@
 #include "serein/schema/gen/settings/ghost.h"
 #include "serein/schema/gen/settings/history.h"
 #include "serein/hooks/messages/time_format.h"
+#include "serein/tests/memory_prefs.h"
 #include "serein/tests/require.h"
 
 #include <doctest/doctest.h>
@@ -30,22 +31,7 @@
 
 namespace {
 
-class MemoryPrefs final : public Serein::RawPrefs {
-public:
-	[[nodiscard]] QByteArray read(std::string_view key) override {
-		const auto found = values.find(std::string(key));
-		return (found == values.end()) ? QByteArray() : found->second;
-	}
-	void write(std::string_view key, const QByteArray &value) override {
-		values[std::string(key)] = value;
-	}
-	void clear(std::string_view key) override {
-		values.erase(std::string(key));
-	}
-
-	std::map<std::string, QByteArray> values;
-
-};
+using Serein::Tests::MemoryPrefs;
 
 [[nodiscard]] bool ValidPercent(const int &value) {
 	return value >= 0 && value <= 100;
@@ -139,7 +125,7 @@ TEST_CASE("Options") {
 	Require(registry.All().size() == 1, "registry count");
 	auto messages = Registry();
 	Messages::RegisterOptions(messages);
-	Require(messages.All().size() == 36, "message option count");
+	Require(messages.All().size() == 37, "message option count");
 	Require(Messages::kFadeDeletedMessages.fallback, "deleted messages not faded by default");
 	auto refreshCount = 0;
 	for (const auto &entry : messages.All()) {
@@ -147,7 +133,7 @@ TEST_CASE("Options") {
 		Require(entry.category == Category::Messages, "message option category");
 		refreshCount += messages.HasFlag(entry.key, Flag::RefreshMessageView);
 	}
-	Require(refreshCount == 23, "message refresh option count");
+	Require(refreshCount == 24, "message refresh option count");
 	Require(Messages::kReadingChinese.validate(0)
 		&& Messages::kReadingChinese.validate(1)
 		&& Messages::kReadingChinese.validate(2)
@@ -161,7 +147,8 @@ TEST_CASE("Options") {
 		"unknown refresh option");
 	auto chats = Registry();
 	Chats::RegisterOptions(chats);
-	Require(chats.All().size() == 28, "chat option count");
+	Require(chats.All().size() == 33, "chat option count");
+	Require(!Chats::kChatSettingsMenu.fallback, "the chat settings entry is opt-in");
 	Require(!Chats::kLocalPinning.fallback
 		&& Chats::kLocalPins.scope == Scope::Account
 		&& Chats::kLocalPins.validate(QString::fromLatin1("7,9"))
@@ -201,7 +188,31 @@ TEST_CASE("Options") {
 		Flag::RefreshDialogList), "stories use widget refresh");
 	auto interface = Registry();
 	Interface::RegisterOptions(interface);
-	Require(interface.All().size() == 19, "interface option count");
+	Require(interface.All().size() == 28, "interface option count");
+	for (const auto option : {
+			&Interface::kOnlineStatusInChats,
+			&Interface::kOnlineStatusInHeader,
+			&Interface::kOnlineStatusOnSenders,
+			&Interface::kOnlineStatusSelf,
+			&Interface::kOnlineStatusDetailed }) {
+		Require(!option->fallback && option->scope == Scope::Device,
+			"online status options must be device opt-ins");
+	}
+	Require(interface.HasFlag(Interface::kOnlineStatusInChats.key,
+			Flag::RefreshDialogList)
+		&& interface.HasFlag(Interface::kOnlineStatusOnSenders.key,
+			Flag::RefreshMessageView)
+		&& interface.HasFlag(Interface::kOnlineStatusDetailed.key,
+			Flag::RefreshDialogList)
+		&& interface.HasFlag(Interface::kOnlineStatusDetailed.key,
+			Flag::RefreshMessageView),
+		"online status refresh flags");
+	Require(interface.HasFlag(Interface::kQuietHours.key, Flag::Exportable)
+		&& Interface::kQuietHours.fallback.isEmpty(),
+		"quiet hours must start off and travel with exported settings");
+	Require(interface.HasFlag(Interface::kPresetsOffered.key, Flag::Hidden)
+		&& Interface::kPresetsOffered.scope == Scope::Device,
+		"the preset offer must stay internal device state");
 	Require(!Interface::kMoreAccounts.fallback
 		&& Interface::kMoreAccounts.scope == Scope::Device,
 		"more accounts must be a device opt-in");
@@ -320,7 +331,7 @@ TEST_CASE("Options") {
 	}
 	auto media = Registry();
 	Media::RegisterOptions(media);
-	Require(media.All().size() == 18, "media option count");
+	Require(media.All().size() == 24, "media option count");
 	Require(media.HasFlag(Media::kStickerScale.key,
 		Flag::RefreshMessageView), "sticker scale refresh flag");
 	Require(!media.HasFlag(Media::kRecentStickerLimit.key,
@@ -329,7 +340,7 @@ TEST_CASE("Options") {
 		Flag::RefreshMessageView), "video autoplay refresh flag");
 	auto privacy = Registry();
 	Privacy::RegisterOptions(privacy);
-	Require(privacy.All().size() == 14, "privacy option count");
+	Require(privacy.All().size() == 20, "privacy option count");
 	Require(!Privacy::kAutoDemoMode.fallback
 		&& Privacy::kAutoDemoMode.scope == Scope::Device
 		&& privacy.HasFlag(Privacy::kAutoDemoMode.key, Flag::Exportable),
@@ -426,6 +437,9 @@ TEST_CASE("Options") {
 		HistorySettings::kHistorySaveEdits.scope,
 		HistorySettings::kHistoryExcludedPeers.scope,
 		ServiceSettings::kAutoTranslateChats.scope,
+		ServiceSettings::kSendTranslations.scope,
+		ServiceSettings::kAutoTranscribe.scope,
+		Filters::kKeywordAlerts.scope,
 	};
 	Require(std::ranges::all_of(accountScoped, [](Scope scope) {
 		return scope == Scope::Account;

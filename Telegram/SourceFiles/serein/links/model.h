@@ -10,6 +10,8 @@
 
 namespace Serein::Links {
 
+[[nodiscard]] QString StripTrackingUrl(const QString &url);
+
 struct Result {
 	QUrl url;
 	QString error;

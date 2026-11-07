@@ -3,12 +3,12 @@ name: Serein guards.
 on:
   push:
     branches:
-      - develop
       - main
   pull_request:
     branches:
       - develop
   workflow_dispatch:
+  workflow_call:
 
 permissions:
   contents: read
@@ -17,11 +17,11 @@ jobs:
 
   guards:
     name: Architecture guards
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Clone.
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
@@ -32,7 +32,7 @@ jobs:
           version: 1.72.0
 
       - name: Set up uv.
-        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6.8.0
+        uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
 
       - name: Tool self-tests.
         run: uv run --with jinja2==3.1.6 python -m unittest discover -s tools/serein/tests -v
@@ -53,7 +53,7 @@ jobs:
       - name: YAML passes yamllint.
         run: |
           git ls-files -z '.github/workflows/serein-*.yml' 'packaging/**/*.yml' 'packaging/**/*.yaml' \
-            crowdin.yml tools/serein/yamllint.yml \
+            crowdin.yml tools/serein/yamllint.yml tools/serein/zizmor.yml \
           | xargs -0 uvx yamllint@1.37.1 --strict -c tools/serein/yamllint.yml
 
       - name: Documentation passes markdownlint.
@@ -66,6 +66,9 @@ jobs:
 
       - name: Module boundaries hold.
         run: python3 tools/serein/check_boundaries.py
+
+      - name: Settings sections build for the settings search.
+        run: python3 tools/serein/check_settings_index.py
 
       - name: Feature matrix uses defined statuses.
         run: python3 tools/serein/check_features.py
@@ -81,8 +84,8 @@ jobs:
 
       - name: Desktop entry and AppStream metadata validate.
         run: |
-          sudo apt-get update
-          sudo apt-get install -y desktop-file-utils appstream
+          tools/serein/retry.sh 3 30 sudo apt-get update -o Acquire::Retries=3
+          tools/serein/retry.sh 3 30 sudo apt-get install -y -o Acquire::Retries=3 desktop-file-utils appstream
           desktop-file-validate lib/xdg/io.github.eltavine.SereinGram.desktop
           appstreamcli validate --no-net --explain lib/xdg/io.github.eltavine.SereinGram.metainfo.xml
 
@@ -99,9 +102,11 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          bash <(curl -sSfL https://raw.githubusercontent.com/rhysd/actionlint/v1.7.12/scripts/download-actionlint.bash) 1.7.12
+          curl -sSfL --retry 5 --retry-all-errors --retry-delay 10 -o "$RUNNER_TEMP/download-actionlint.bash" \
+            https://raw.githubusercontent.com/rhysd/actionlint/v1.7.12/scripts/download-actionlint.bash
+          bash "$RUNNER_TEMP/download-actionlint.bash" 1.7.12
           ./actionlint .github/workflows/serein-*.yml
-          uvx zizmor@1.16.3 .github/workflows/serein-*.yml
+          uvx zizmor@1.30.1 --config tools/serein/zizmor.yml .github/workflows/serein-*.yml
 
       - name: Fetch comparison baselines.
         env:
@@ -141,22 +146,22 @@ jobs:
 
   commits:
     name: Commit messages and secrets
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Clone.
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
           fetch-depth: 200
 
       - name: Set up Node.
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 22
 
       - name: Install commitlint.
-        run: npm install --no-save --no-package-lock @commitlint/cli@19.8.1 @commitlint/config-conventional@19.8.1
+        run: npm ci --prefix tools/serein --no-audit --no-fund
 
       - name: Commit range.
         env:
@@ -174,8 +179,14 @@ jobs:
           failed=0
           for sha in $(git rev-list --first-parent --reverse "$RANGE"); do
             echo "Checking $(git log -1 --format='%h %s' "$sha")"
+            case "$sha" in
+              ac08a8d5ef06938b76d381e308fc59a0c246dfda|b6c3c4acabeac2d0ff41dc734ab6564b7dbcfe1a)
+                echo "Grandfathering a published upstream squash message."
+                continue
+                ;;
+            esac
             git log -1 --format=%B "$sha" \
-              | npx commitlint --config tools/serein/commitlint.config.mjs --verbose \
+              | tools/serein/node_modules/.bin/commitlint --config tools/serein/commitlint.config.mjs --verbose \
               || failed=1
           done
           exit "$failed"
@@ -185,7 +196,7 @@ jobs:
           GITLEAKS_SHA256: 551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb
         run: |
           archive="$RUNNER_TEMP/gitleaks.tar.gz"
-          curl -sSfL -o "$archive" \
+          curl -sSfL --retry 5 --retry-all-errors --retry-delay 10 -o "$archive" \
             https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz
           echo "$GITLEAKS_SHA256  $archive" | sha256sum -c -
           tar -xzf "$archive" -C "$RUNNER_TEMP" gitleaks
@@ -194,11 +205,11 @@ jobs:
 
   core-tests:
     name: Core tests and static analysis
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Clone.
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
@@ -211,7 +222,9 @@ jobs:
             Telegram/ThirdParty/quirc Telegram/ThirdParty/QR
 
       - name: Install OpenSSL headers.
-        run: sudo apt-get update && sudo apt-get install -y libssl-dev
+        run: |
+          tools/serein/retry.sh 3 30 sudo apt-get update -o Acquire::Retries=3
+          tools/serein/retry.sh 3 30 sudo apt-get install -y -o Acquire::Retries=3 libssl-dev
 
       - name: Set up Qt.
         uses: jurplel/install-qt-action@a9c63c7c123f3069cff414e7e482d95dfa9d8125 # v4.4.1
@@ -220,7 +233,7 @@ jobs:
           cache: true
 
       - name: Set up uv.
-        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6.8.0
+        uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
 
       # Same warnings as the Linux platform build, which fails on any of them.
       - name: Build.
@@ -242,11 +255,11 @@ jobs:
 
   sanitizers:
     name: Core tests with sanitizers
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Clone.
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
@@ -259,7 +272,9 @@ jobs:
             Telegram/ThirdParty/quirc Telegram/ThirdParty/QR
 
       - name: Install OpenSSL headers.
-        run: sudo apt-get update && sudo apt-get install -y libssl-dev
+        run: |
+          tools/serein/retry.sh 3 30 sudo apt-get update -o Acquire::Retries=3
+          tools/serein/retry.sh 3 30 sudo apt-get install -y -o Acquire::Retries=3 libssl-dev
 
       - name: Set up Qt.
         uses: jurplel/install-qt-action@a9c63c7c123f3069cff414e7e482d95dfa9d8125 # v4.4.1

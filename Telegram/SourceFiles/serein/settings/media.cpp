@@ -5,6 +5,7 @@
 #include "serein/settings/gen/media_rows.h"
 #include "serein/settings/home.h"
 #include "serein/settings/page.h"
+#include "serein/settings/rows.h"
 #include "lang/lang_keys.h"
 #include "settings/settings_builder.h"
 #include "settings/settings_common_session.h"
@@ -40,17 +41,20 @@ public:
 const auto kMeta = BuildHelper({
 	.id = MediaSection::Id(),
 	.parentId = HomeId(),
-	.title = &tr::lng_serein_media,
-	.icon = &st::menuIconChatBubble,
+	.title = Media::kSubpageTitle,
+	.icon = Media::kSubpageIcon,
 }, [](SectionBuilder &builder) {
 	const auto controller = builder.controller();
 	Media::AddLayout(builder);
-	builder.addButton({
+	AddRow(builder, {
 		.id = u"serein/media/sticker-catalog"_q,
 		.title = tr::lng_serein_catalog_title(),
-		.st = &st::settingsButtonNoIcon,
 		.onClick = [=] { ShowStickerCatalog(controller); },
 		.keywords = { u"sticker"_q, u"catalog"_q },
+		.visual = {
+			.icon = &st::menuIconExportTheme,
+			.about = tr::lng_serein_catalog_title_about,
+		},
 	});
 });
 

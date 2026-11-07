@@ -47,7 +47,8 @@ public:
 			EditedPrimary  = 0x800,
 			Ephemeral      = 0x1000,
 			Updated        = 0x2000,
-			HideDate       = 0x4000,
+			FullDate       = 0x4000,
+			HideDate       = 0x8000,
 			//Unread, // We don't want to pass and update it in Date for now.
 		};
 		friend inline constexpr bool is_flag_type(Flag) { return true; };
@@ -56,6 +57,7 @@ public:
 		QDateTime date;
 		QDateTime editedDate;
 		QString author;
+		TextWithEntities sereinMarks;
 		EffectId effectId = 0;
 		int64 tonStake = 0;
 		int stars = 0;
@@ -83,6 +85,7 @@ public:
 		int outerWidth,
 		bool unread,
 		bool inverted,
+		bool leftToRight,
 		const PaintContext &context) const;
 
 	[[nodiscard]] auto takeEffectAnimation()

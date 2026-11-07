@@ -27,6 +27,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "api/api_todo_lists.h"
 #include "api/api_self_destruct.h"
 #include "api/api_sensitive_content.h"
+#include "api/api_share_themes.h"
 #include "api/api_global_privacy.h"
 #include "api/api_reactions_notify_settings.h"
 #include "api/api_updates.h"
@@ -111,6 +112,8 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "storage/file_upload.h"
 #include "storage/storage_account.h"
 #include "serein/hooks/ghost.h"
+#include "serein/hooks/history.h"
+#include "tgw/tgw_storage.h"
 
 namespace {
 
@@ -174,8 +177,31 @@ void ShowChannelsLimitBox(not_null<PeerData*> peer) {
 	return FileLoadTo(
 		peer->id,
 		action.options,
-		action.replyTo,
+		Serein::Hooks::UploadReplyTo(action),
 		action.replaceMediaOf);
+}
+
+[[nodiscard]] std::unique_ptr<FileLoadTask> PrepareVideoCoverTask(
+		not_null<Main::Session*> session,
+		Ui::PreparedFile &file,
+		const FileLoadTo &to) {
+	return file.videoCover
+		? std::make_unique<FileLoadTask>(FileLoadTask::Args{
+			.session = session,
+			.filepath = file.videoCover->path,
+			.content = file.videoCover->content,
+			.information = std::move(file.videoCover->information),
+			.videoCover = nullptr,
+			.type = SendMediaType::Photo,
+			.to = to,
+			.caption = TextWithTags(),
+			.spoiler = false,
+			.album = nullptr,
+			.forceFile = false,
+			.sendLargePhotos = false,
+			.idOverride = 0,
+		})
+		: nullptr;
 }
 
 [[nodiscard]] QString FormatVideoTimestamp(TimeId seconds) {
@@ -237,7 +263,8 @@ ApiWrap::ApiWrap(not_null<Main::Session*> session)
 , _premium(std::make_unique<Api::Premium>(this))
 , _usernames(std::make_unique<Api::Usernames>(this))
 , _websites(std::make_unique<Api::Websites>(this))
-, _peerColors(std::make_unique<Api::PeerColors>(this)) {
+, _peerColors(std::make_unique<Api::PeerColors>(this))
+, _shareThemes(std::make_unique<Api::ShareThemes>(this)) {
 	crl::on_main(session, [=] {
 		// You can't use _session->lifetime() in the constructor,
 		// only queued, because it is not constructed yet.
@@ -1497,6 +1524,7 @@ void ApiWrap::markContentsRead(not_null<HistoryItem*> item) {
 void ApiWrap::deleteAllFromParticipant(
 		not_null<ChannelData*> channel,
 		not_null<PeerData*> from) {
+	Tgw::ClearParticipantStorage(_session, channel->id, from->id);
 	const auto history = _session->data().historyLoaded(channel);
 	const auto ids = history
 		? history->collectMessagesFromParticipantToDelete(from)
@@ -2135,7 +2163,12 @@ void ApiWrap::saveDraftToCloudDelayed(not_null<Data::Thread*> thread) {
 	if (ShouldSkipPlainDraftCloudSave(_session, thread)) {
 		return;
 	}
-	_draftsSaveRequestIds.emplace(base::make_weak(thread), 0);
+	const auto [i, inserted] = _draftSaves.emplace(
+		base::make_weak(thread),
+		DraftSaveState());
+	if (!inserted && i->second.requestId) {
+		i->second.changedWhileSaving = true;
+	}
 	if (!_draftsSaveTimer.isActive()) {
 		_draftsSaveTimer.callOnce(kSaveCloudDraftTimeout);
 	}
@@ -2196,7 +2229,9 @@ void ApiWrap::clearHistory(not_null<PeerData*> peer, bool revoke) {
 }
 
 void ApiWrap::deleteConversation(not_null<PeerData*> peer, bool revoke) {
-	if (const auto chat = peer->asChat()) {
+	const auto chat = peer->asChat();
+	// Leaving first hands a legacy group to its successor at once.
+	if (chat && !(revoke && chat->amCreator())) {
 		request(MTPmessages_DeleteChatUser(
 			MTP_flags(0),
 			chat->inputChat(),
@@ -2369,7 +2404,7 @@ mtpRequestId ApiWrap::saveDraftToCloud(
 	if (!requestId) {
 		return 0;
 	}
-	_draftsSaveRequestIds.emplace_or_assign(weak, requestId);
+	_draftSaves.emplace_or_assign(weak, DraftSaveState{ requestId });
 	return requestId;
 }
 
@@ -2472,9 +2507,9 @@ mtpRequestId ApiWrap::savePreparedDraftToCloud(
 		if (cloudDraft) {
 			cloudDraft->saveRequestId = id;
 		}
-		const auto i = _draftsSaveRequestIds.find(weak);
-		if (i != _draftsSaveRequestIds.cend()) {
-			i->second = id;
+		const auto i = _draftSaves.find(weak);
+		if (i != _draftSaves.cend()) {
+			i->second.requestId = id;
 		}
 	};
 	const auto failCleanup = [=](
@@ -2496,11 +2531,17 @@ mtpRequestId ApiWrap::savePreparedDraftToCloud(
 				}
 			}
 		}
-		const auto i = _draftsSaveRequestIds.find(weak);
-		if (i != _draftsSaveRequestIds.cend()
-			&& i->second == requestId) {
-			_draftsSaveRequestIds.erase(i);
+		const auto i = _draftSaves.find(weak);
+		if (i != _draftSaves.cend()
+			&& i->second.requestId == requestId) {
+			const auto changed = i->second.changedWhileSaving;
+			_draftSaves.erase(i);
 			checkQuitPreventFinished();
+			if (changed) {
+				if (const auto strong = weak.get()) {
+					saveDraftToCloudDelayed(strong);
+				}
+			}
 		}
 		if (callbacks && callbacks->fail) {
 			callbacks->fail(error);
@@ -2537,11 +2578,17 @@ mtpRequestId ApiWrap::savePreparedDraftToCloud(
 					history->draftSavedToCloud(topicRootId, monoforumPeerId);
 				}
 			}
-			const auto i = _draftsSaveRequestIds.find(weak);
-			if (i != _draftsSaveRequestIds.cend()
-				&& i->second == requestId) {
-				_draftsSaveRequestIds.erase(i);
+			const auto i = _draftSaves.find(weak);
+			if (i != _draftSaves.cend()
+				&& i->second.requestId == requestId) {
+				const auto changed = i->second.changedWhileSaving;
+				_draftSaves.erase(i);
 				checkQuitPreventFinished();
+				if (changed) {
+					if (const auto strong = weak.get()) {
+						saveDraftToCloudDelayed(strong);
+					}
+				}
 			}
 			if (callbacks && callbacks->done) {
 				callbacks->done();
@@ -2582,18 +2629,18 @@ mtpRequestId ApiWrap::savePreparedDraftToCloud(
 }
 
 void ApiWrap::saveDraftsToCloud() {
-	for (auto i = begin(_draftsSaveRequestIds); i != end(_draftsSaveRequestIds);) {
+	for (auto i = begin(_draftSaves); i != end(_draftSaves);) {
 		const auto weak = i->first;
 		const auto thread = weak.get();
 		if (!thread) {
-			i = _draftsSaveRequestIds.erase(i);
+			i = _draftSaves.erase(i);
 			continue;
-		} else if (i->second) {
+		} else if (i->second.requestId) {
 			++i;
 			continue; // sent already - keep in-flight saves tracked so
 			          // quit prevention waits for their done/fail handler.
 		} else if (ShouldSkipPlainDraftCloudSave(_session, thread)) {
-			i = _draftsSaveRequestIds.erase(i);
+			i = _draftSaves.erase(i);
 			continue;
 		}
 
@@ -2613,26 +2660,30 @@ void ApiWrap::saveDraftsToCloud() {
 				monoforumPeerId,
 				nullptr);
 		}
-		i->second = savePreparedDraftToCloud(thread, *cloudDraft, true);
-		if (!i->second) {
-			i = _draftsSaveRequestIds.erase(i);
+		const auto requestId = savePreparedDraftToCloud(
+			thread,
+			*cloudDraft,
+			true);
+		if (!requestId) {
+			i = _draftSaves.erase(i);
 			continue;
 		}
+		i->second = DraftSaveState{ requestId };
 		++i;
 	}
 }
 
 bool ApiWrap::isQuitPrevent() {
-	if (_draftsSaveRequestIds.empty()) {
+	if (_draftSaves.empty()) {
 		return false;
 	}
 	LOG(("ApiWrap prevents quit, saving drafts..."));
 	saveDraftsToCloud();
-	return !_draftsSaveRequestIds.empty();
+	return !_draftSaves.empty();
 }
 
 void ApiWrap::checkQuitPreventFinished() {
-	if (_draftsSaveRequestIds.empty()) {
+	if (_draftSaves.empty()) {
 		if (Core::Quitting()) {
 			LOG(("ApiWrap doesn't prevent quit any more."));
 		}
@@ -2683,11 +2734,6 @@ void ApiWrap::clearWebPageRequest(not_null<WebPageData*> page) {
 	if (_webPagesPending.empty() && _webPagesTimer.isActive()) {
 		_webPagesTimer.cancel();
 	}
-}
-
-void ApiWrap::clearWebPageRequests() {
-	_webPagesPending.clear();
-	_webPagesTimer.cancel();
 }
 
 void ApiWrap::resolveWebPages() {
@@ -2888,6 +2934,10 @@ void ApiWrap::refreshFileReference(
 				request(MTPstories_GetStoriesByID(
 					_session->data().peer(storyId.peer)->input(),
 					MTP_vector<MTPint>(1, MTP_int(storyId.story))));
+			} else if ((item->isScheduled() || item->isBusinessShortcut())
+				&& (item->isSending() || item->hasFailed())) {
+				// Not sent yet, there is no server id to request.
+				fail();
 			} else if (item->isScheduled()) {
 				const auto realId = _session->scheduledMessages().lookupId(
 					item);
@@ -4197,12 +4247,13 @@ void ApiWrap::sendSharedContact(
 
 	const auto history = action.history;
 	const auto peer = history->peer;
+	const auto replyTo = Serein::Hooks::DetachDeletedReply(action);
 
 	const auto newId = FullMsgId(
 		peer->id,
 		_session->data().nextLocalMessageId());
 	auto flags = NewMessageFlags(peer);
-	if (action.replyTo) {
+	if (replyTo) {
 		flags |= MessageFlag::HasReplyInfo;
 	}
 	FillMessagePostFlags(action, peer, flags);
@@ -4216,7 +4267,7 @@ void ApiWrap::sendSharedContact(
 		.id = newId.msg,
 		.flags = flags,
 		.from = NewMessageFromId(action),
-		.replyTo = action.replyTo,
+		.replyTo = replyTo,
 		.date = NewMessageDate(action.options),
 		.shortcutId = action.options.shortcutId,
 		.starsPaid = action.options.starsApproved,
@@ -4293,23 +4344,7 @@ void ApiWrap::editMedia(
 		.filepath = file.path,
 		.content = file.content,
 		.information = std::move(file.information),
-		.videoCover = (file.videoCover
-			? std::make_unique<FileLoadTask>(FileLoadTask::Args{
-				.session = &session(),
-				.filepath = file.videoCover->path,
-				.content = file.videoCover->content,
-				.information = std::move(file.videoCover->information),
-				.videoCover = nullptr,
-				.type = SendMediaType::Photo,
-				.to = to,
-				.caption = TextWithTags(),
-				.spoiler = false,
-				.album = nullptr,
-				.forceFile = false,
-				.sendLargePhotos = false,
-				.idOverride = 0,
-			})
-			: nullptr),
+		.videoCover = PrepareVideoCoverTask(&session(), file, to),
 		.type = type,
 		.to = to,
 		.caption = caption,
@@ -4370,23 +4405,7 @@ void ApiWrap::sendFiles(
 			.filepath = file.path,
 			.content = file.content,
 			.information = std::move(file.information),
-			.videoCover = (file.videoCover
-				? std::make_unique<FileLoadTask>(FileLoadTask::Args{
-					.session = &session(),
-					.filepath = file.videoCover->path,
-					.content = file.videoCover->content,
-					.information = std::move(file.videoCover->information),
-					.videoCover = nullptr,
-					.type = SendMediaType::Photo,
-					.to = to,
-					.caption = TextWithTags(),
-					.spoiler = false,
-					.album = nullptr,
-					.forceFile = false,
-					.sendLargePhotos = false,
-					.idOverride = 0,
-				})
-				: nullptr),
+			.videoCover = PrepareVideoCoverTask(&session(), file, to),
 			.type = uploadWithType,
 			.to = fileTo,
 			.caption = std::move(file.caption),
@@ -4508,6 +4527,7 @@ void ApiWrap::sendRichMessage(
 			Iv::FlattenRichPageSummary(page).text);
 	if (!ephemeral) {
 		StripEphemeralReply(_session, action.replyTo);
+		action.replyTo = Serein::Hooks::DetachDeletedReply(action);
 	}
 	const auto newId = FullMsgId(
 		peer->id,
@@ -4806,6 +4826,7 @@ void ApiWrap::sendMessage(
 		history,
 		_session->user()).flags;
 	TextUtilities::PrepareForSending(left, prepareFlags);
+	Serein::Hooks::QuoteDeletedReply(action, left);
 
 	HistoryItem *lastMessage = nullptr;
 
@@ -5125,6 +5146,7 @@ void ApiWrap::sendInlineResult(
 		Fn<void(bool)> done) {
 	StripEphemeralReply(_session, action.replyTo);
 	sendAction(action);
+	action.replyTo = Serein::Hooks::DetachDeletedReply(action);
 
 	const auto history = action.history;
 	const auto peer = history->peer;
@@ -5373,6 +5395,7 @@ void ApiWrap::sendMediaWithRandomId(
 		}
 		return;
 	}
+	Serein::Hooks::OnMediaSending(item, options);
 
 	auto caption = item->originalText();
 	TextUtilities::Trim(caption);
@@ -5621,6 +5644,7 @@ void ApiWrap::sendAlbumIfReady(not_null<SendingAlbum*> album) {
 		}
 		return;
 	}
+	Serein::Hooks::OnMediaSending(sample, album->options);
 	if (album->options.price > 0) {
 		sendMultiPaidMedia(sample, album);
 		return;
@@ -5937,4 +5961,8 @@ Api::Websites &ApiWrap::websites() {
 
 Api::PeerColors &ApiWrap::peerColors() {
 	return *_peerColors;
+}
+
+Api::ShareThemes &ApiWrap::shareThemes() {
+	return *_shareThemes;
 }

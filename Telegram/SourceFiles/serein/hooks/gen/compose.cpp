@@ -118,6 +118,14 @@ rpl::producer<bool> BotCommandsToDraftValue() {
 	return ForDevice().Value(Serein::Compose::kBotCommandsToDraft);
 }
 
+bool MentionMenu() {
+	return ForDevice().Get(Serein::Compose::kMentionMenu);
+}
+
+rpl::producer<bool> MentionMenuValue() {
+	return ForDevice().Value(Serein::Compose::kMentionMenu);
+}
+
 int InputPlaceholderMode() {
 	return ForDevice().Get(Serein::Compose::kInputPlaceholderMode);
 }
@@ -134,12 +142,20 @@ rpl::producer<bool> DisableAutoMarkdownValue() {
 	return ForDevice().Value(Serein::Compose::kDisableAutoMarkdown);
 }
 
-bool DisableLinkPreview() {
-	return ForDevice().Get(Serein::Compose::kDisableLinkPreview);
+bool FormatToolbar() {
+	return ForDevice().Get(Serein::Compose::kFormatToolbar);
 }
 
-rpl::producer<bool> DisableLinkPreviewValue() {
-	return ForDevice().Value(Serein::Compose::kDisableLinkPreview);
+rpl::producer<bool> FormatToolbarValue() {
+	return ForDevice().Value(Serein::Compose::kFormatToolbar);
+}
+
+QString DefaultCodeLanguage() {
+	return ForDevice().Get(Serein::Compose::kDefaultCodeLanguage);
+}
+
+rpl::producer<QString> DefaultCodeLanguageValue() {
+	return ForDevice().Value(Serein::Compose::kDefaultCodeLanguage);
 }
 
 bool SpaceOnSend() {
@@ -158,60 +174,12 @@ rpl::producer<bool> SpaceOnEditValue() {
 	return ForDevice().Value(Serein::Compose::kSpaceOnEdit);
 }
 
-bool MentionMenu() {
-	return ForDevice().Get(Serein::Compose::kMentionMenu);
-}
-
-rpl::producer<bool> MentionMenuValue() {
-	return ForDevice().Value(Serein::Compose::kMentionMenu);
-}
-
-bool RememberForwardOptions() {
-	return ForDevice().Get(Serein::Compose::kRememberForwardOptions);
-}
-
-rpl::producer<bool> RememberForwardOptionsValue() {
-	return ForDevice().Value(Serein::Compose::kRememberForwardOptions);
-}
-
-int LastForwardOptions() {
-	return ForDevice().Get(Serein::Compose::kLastForwardOptions);
-}
-
-rpl::producer<int> LastForwardOptionsValue() {
-	return ForDevice().Value(Serein::Compose::kLastForwardOptions);
-}
-
-bool CaptionAboveMedia() {
-	return ForDevice().Get(Serein::Compose::kCaptionAboveMedia);
-}
-
-rpl::producer<bool> CaptionAboveMediaValue() {
-	return ForDevice().Value(Serein::Compose::kCaptionAboveMedia);
-}
-
 bool DraftTranslation() {
 	return ForDevice().Get(Serein::Compose::kDraftTranslation);
 }
 
 rpl::producer<bool> DraftTranslationValue() {
 	return ForDevice().Value(Serein::Compose::kDraftTranslation);
-}
-
-bool FormatToolbar() {
-	return ForDevice().Get(Serein::Compose::kFormatToolbar);
-}
-
-rpl::producer<bool> FormatToolbarValue() {
-	return ForDevice().Value(Serein::Compose::kFormatToolbar);
-}
-
-QString DefaultCodeLanguage() {
-	return ForDevice().Get(Serein::Compose::kDefaultCodeLanguage);
-}
-
-rpl::producer<QString> DefaultCodeLanguageValue() {
-	return ForDevice().Value(Serein::Compose::kDefaultCodeLanguage);
 }
 
 QByteArray QuickReplies() {
@@ -236,6 +204,38 @@ QByteArray LinkInlineBots() {
 
 rpl::producer<QByteArray> LinkInlineBotsValue() {
 	return ForDevice().Value(Serein::Compose::kLinkInlineBots);
+}
+
+bool DisableLinkPreview() {
+	return ForDevice().Get(Serein::Compose::kDisableLinkPreview);
+}
+
+rpl::producer<bool> DisableLinkPreviewValue() {
+	return ForDevice().Value(Serein::Compose::kDisableLinkPreview);
+}
+
+bool CaptionAboveMedia() {
+	return ForDevice().Get(Serein::Compose::kCaptionAboveMedia);
+}
+
+rpl::producer<bool> CaptionAboveMediaValue() {
+	return ForDevice().Value(Serein::Compose::kCaptionAboveMedia);
+}
+
+bool SendSilently() {
+	return ForDevice().Get(Serein::Compose::kSendSilently);
+}
+
+rpl::producer<bool> SendSilentlyValue() {
+	return ForDevice().Value(Serein::Compose::kSendSilently);
+}
+
+bool OwnerSendAs() {
+	return ForDevice().Get(Serein::Compose::kOwnerSendAs);
+}
+
+rpl::producer<bool> OwnerSendAsValue() {
+	return ForDevice().Value(Serein::Compose::kOwnerSendAs);
 }
 
 bool ConfirmSticker() {
@@ -286,20 +286,20 @@ rpl::producer<bool> ForwardBeforeCommentValue() {
 	return ForDevice().Value(Serein::Compose::kForwardBeforeComment);
 }
 
-bool SendSilently() {
-	return ForDevice().Get(Serein::Compose::kSendSilently);
+bool RememberForwardOptions() {
+	return ForDevice().Get(Serein::Compose::kRememberForwardOptions);
 }
 
-rpl::producer<bool> SendSilentlyValue() {
-	return ForDevice().Value(Serein::Compose::kSendSilently);
+rpl::producer<bool> RememberForwardOptionsValue() {
+	return ForDevice().Value(Serein::Compose::kRememberForwardOptions);
 }
 
-bool OwnerSendAs() {
-	return ForDevice().Get(Serein::Compose::kOwnerSendAs);
+int LastForwardOptions() {
+	return ForDevice().Get(Serein::Compose::kLastForwardOptions);
 }
 
-rpl::producer<bool> OwnerSendAsValue() {
-	return ForDevice().Value(Serein::Compose::kOwnerSendAs);
+rpl::producer<int> LastForwardOptionsValue() {
+	return ForDevice().Value(Serein::Compose::kLastForwardOptions);
 }
 
 } // namespace Serein::Hooks::Compose

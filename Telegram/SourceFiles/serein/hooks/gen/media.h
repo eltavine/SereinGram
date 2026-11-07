@@ -2,7 +2,12 @@
 #pragma once
 
 #include <QtCore/QString>
+#include <gsl/pointers>
 #include <rpl/producer.h>
+
+namespace Main {
+class Session;
+} // namespace Main
 
 namespace Serein::Hooks::Media {
 
@@ -20,27 +25,39 @@ namespace Serein::Hooks::Media {
 [[nodiscard]] rpl::producer<bool> HideRecommendedStickersValue();
 [[nodiscard]] bool HideRecommendedEmoji();
 [[nodiscard]] rpl::producer<bool> HideRecommendedEmojiValue();
-[[nodiscard]] bool HideGifCategories();
-[[nodiscard]] rpl::producer<bool> HideGifCategoriesValue();
 [[nodiscard]] bool HideGreetingSticker();
 [[nodiscard]] rpl::producer<bool> HideGreetingStickerValue();
 [[nodiscard]] bool StickerPackAuthor();
 [[nodiscard]] rpl::producer<bool> StickerPackAuthorValue();
 [[nodiscard]] QString StickerAuthorBot();
 [[nodiscard]] rpl::producer<QString> StickerAuthorBotValue();
+[[nodiscard]] bool HideGifCategories();
+[[nodiscard]] rpl::producer<bool> HideGifCategoriesValue();
 [[nodiscard]] bool DisableVideoAutoplay();
 [[nodiscard]] rpl::producer<bool> DisableVideoAutoplayValue();
 [[nodiscard]] bool GifPlaybackControls();
 [[nodiscard]] rpl::producer<bool> GifPlaybackControlsValue();
+[[nodiscard]] bool Mp4FilePreview();
+[[nodiscard]] rpl::producer<bool> Mp4FilePreviewValue();
 [[nodiscard]] bool ForceClickPreview();
 [[nodiscard]] rpl::producer<bool> ForceClickPreviewValue();
 [[nodiscard]] bool DownloadsPerChat();
 [[nodiscard]] rpl::producer<bool> DownloadsPerChatValue();
-[[nodiscard]] bool Mp4FilePreview();
-[[nodiscard]] rpl::producer<bool> Mp4FilePreviewValue();
 [[nodiscard]] bool DenoiseVoiceMessages();
 [[nodiscard]] rpl::producer<bool> DenoiseVoiceMessagesValue();
 [[nodiscard]] bool StoryPosting();
 [[nodiscard]] rpl::producer<bool> StoryPostingValue();
+[[nodiscard]] bool ExpandedAudioPlayer();
+[[nodiscard]] rpl::producer<bool> ExpandedAudioPlayerValue();
+[[nodiscard]] bool RememberPlaybackPosition();
+[[nodiscard]] rpl::producer<bool> RememberPlaybackPositionValue();
+[[nodiscard]] bool SpacePlayback();
+[[nodiscard]] rpl::producer<bool> SpacePlaybackValue();
+[[nodiscard]] int DownloadsCategory(gsl::not_null<Main::Session*> session);
+[[nodiscard]] rpl::producer<int> DownloadsCategoryValue(gsl::not_null<Main::Session*> session);
+[[nodiscard]] bool DownloadsAllAccounts(gsl::not_null<Main::Session*> session);
+[[nodiscard]] rpl::producer<bool> DownloadsAllAccountsValue(gsl::not_null<Main::Session*> session);
+[[nodiscard]] bool SequentialDownloads();
+[[nodiscard]] rpl::producer<bool> SequentialDownloadsValue();
 
 } // namespace Serein::Hooks::Media

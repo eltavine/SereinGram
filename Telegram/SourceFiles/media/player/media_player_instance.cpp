@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "media/player/media_player_instance.h"
+#include "serein/hooks/gen/media.h"
 
 #include "data/data_document.h"
 #include "data/data_session.h"
@@ -127,16 +128,20 @@ void finish(not_null<Audio::Instance*> instance) {
 void SaveLastPlaybackPosition(
 		not_null<DocumentData*> document,
 		const TrackState &state) {
-	const auto limit = document->isVideoFile()
+	const auto limit = Serein::Hooks::Media::RememberPlaybackPosition()
+		? TimeId(1)
+		: document->isVideoFile()
 		? kMinLengthForSavePositionVideo
 		: kMinLengthForSavePositionMusic;
 	const auto time = (state.position == kTimeUnknown
 		|| state.length == kTimeUnknown
+		|| state.frequency <= 0
 		|| state.state == State::PausedAtEnd
 		|| IsStopped(state.state))
 		? TimeId(0)
 		: (state.length >= limit * state.frequency)
 		? (state.position / state.frequency) * crl::time(1000)
+			+ ((state.position % state.frequency) * crl::time(1000)) / state.frequency
 		: TimeId(0);
 	const auto &session = document->session();
 	if (session.local().mediaLastPlaybackPosition(document->id) != time) {
@@ -378,6 +383,20 @@ void Instance::clearStreamed(not_null<Data*> data, bool savePosition) {
 
 	_roundPlaying = false;
 	Core::App().floatPlayerToggleGifsPaused(false);
+}
+
+void Instance::savePlaybackPositions() {
+	if (!Serein::Hooks::Media::RememberPlaybackPosition()) {
+		return;
+	}
+	for (const auto type : { AudioMsgId::Type::Song, AudioMsgId::Type::Voice }) {
+		const auto data = getData(type);
+		if (data && data->streamed && !data->streamed->clearing) {
+			SaveLastPlaybackPosition(
+				data->streamed->id.audio(),
+				data->streamed->instance.player().prepareLegacyState());
+		}
+	}
 }
 
 void Instance::refreshPlaylist(not_null<Data*> data) {
@@ -898,6 +917,7 @@ void Instance::play(AudioMsgId::Type type) {
 			emitUpdate(type);
 		}
 		data->resumeOnCallEnd = false;
+		data->resumeOnVoiceEnd = false;
 	}
 }
 
@@ -918,6 +938,9 @@ void Instance::play(
 			audioId.contextId());
 		if (!shared) {
 			return;
+		}
+		if (audioId.type() == AudioMsgId::Type::Voice) {
+			pauseSongForVoice();
 		}
 		playStreamed(audioId, std::move(shared));
 	}
@@ -1007,7 +1030,11 @@ void Instance::stop(AudioMsgId::Type type, bool asFinished) {
 			_listenTracker->finalize();
 		}
 		data->resumeOnCallEnd = false;
+		data->resumeOnVoiceEnd = false;
 		_playerStopped.fire_copy({type});
+		if (type == AudioMsgId::Type::Voice) {
+			resumeSongAfterVoice();
+		}
 	}
 	if (asFinished) {
 		_tracksFinished.fire_copy(type);
@@ -1015,6 +1042,7 @@ void Instance::stop(AudioMsgId::Type type, bool asFinished) {
 }
 
 void Instance::stopAndClear(not_null<Data*> data) {
+	getData(AudioMsgId::Type::Song)->resumeOnVoiceEnd = false;
 	stop(data->type);
 	*data = Data(data->type, data->overview);
 	_tracksFinished.fire_copy(data->type);
@@ -1182,6 +1210,7 @@ void Instance::playPause(AudioMsgId::Type type) {
 			emitUpdate(type);
 		}
 		data->resumeOnCallEnd = false;
+		data->resumeOnVoiceEnd = false;
 	}
 }
 
@@ -1206,6 +1235,33 @@ void Instance::resumeOnCall(AudioMsgId::Type type) {
 			play(type);
 		}
 	}
+}
+
+void Instance::pauseSongForVoice() {
+	const auto state = getState(AudioMsgId::Type::Song);
+	if (!state.id
+		|| IsStopped(state.state)
+		|| IsPaused(state.state)
+		|| state.state == State::Pausing) {
+		return;
+	}
+	pause(AudioMsgId::Type::Song);
+	if (const auto data = getData(AudioMsgId::Type::Song)) {
+		data->resumeOnVoiceEnd = true;
+	}
+}
+
+void Instance::resumeSongAfterVoice(bool force) {
+	const auto data = getData(AudioMsgId::Type::Song);
+	if (!data->resumeOnVoiceEnd && !force) {
+		return;
+	}
+	data->resumeOnVoiceEnd = false;
+	if (Core::App().calls().currentCall()
+		|| Core::App().calls().currentGroupCall()) {
+		return;
+	}
+	play(AudioMsgId::Type::Song);
 }
 
 bool Instance::next(AudioMsgId::Type type) {
@@ -1320,6 +1376,17 @@ void Instance::updatePlaybackSpeed() {
 		}
 		if (const auto streamed = data->streamed.get()) {
 			streamed->instance.setSpeed(LookupPlaybackSpeed(data->current));
+		}
+	}
+}
+
+void Instance::setPlaybackSpeed(float64 speed) {
+	if (const auto data = getData(getActiveType())) {
+		if (!data->current.changeablePlaybackSpeed()) {
+			return;
+		}
+		if (const auto streamed = data->streamed.get()) {
+			streamed->instance.setSpeed(speed);
 		}
 	}
 }
@@ -1442,6 +1509,9 @@ void Instance::emitUpdate(AudioMsgId::Type type, CheckCallback check) {
 		data->isPlaying = !IsStopped(state.state);
 		if (finished) {
 			_tracksFinished.fire_copy(type);
+			if (type == AudioMsgId::Type::Voice) {
+				resumeSongAfterVoice();
+			}
 		}
 	}
 }
@@ -1481,8 +1551,8 @@ void Instance::stopAndClose() {
 	_listenTracker->finalize();
 	_closePlayerRequests.fire({});
 
-	stop(AudioMsgId::Type::Voice);
 	stop(AudioMsgId::Type::Song);
+	stop(AudioMsgId::Type::Voice);
 
 	Shortcuts::ToggleMediaShortcuts(false);
 }
@@ -1563,9 +1633,14 @@ void Instance::handleStreamingError(
 			document,
 			DocumentSaveClickHandler::Mode::ToFile);
 	}
+	const auto resumeSong = (data->type == AudioMsgId::Type::Voice)
+		&& getData(AudioMsgId::Type::Song)->resumeOnVoiceEnd;
 	emitUpdate(data->type);
 	if (data->streamed && data->streamed->instance.player().failed()) {
 		clearStreamed(data);
+	}
+	if (resumeSong && !data->streamed) {
+		resumeSongAfterVoice(true);
 	}
 }
 

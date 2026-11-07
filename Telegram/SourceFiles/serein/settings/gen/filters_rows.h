@@ -5,6 +5,8 @@
 #include "lang/lang_keys.h"
 #include "serein/schema/gen/settings/filters.h"
 #include "serein/settings/rows.h"
+#include "styles/style_menu_icons.h"
+#include "styles/style_serein.h"
 
 #include <array>
 
@@ -15,6 +17,7 @@ struct CustomRows {
 	CustomRow filters;
 	CustomRow ruleSubscription;
 	CustomRow hiddenMessages;
+	CustomRow keywordAlerts;
 };
 
 inline void AddLayout(
@@ -23,6 +26,25 @@ inline void AddLayout(
 	custom.filters();
 	custom.ruleSubscription();
 	custom.hiddenMessages();
+	custom.keywordAlerts();
+}
+
+inline constexpr auto kSubpageTitle = &tr::lng_serein_rules;
+inline constexpr auto kSubpageAbout = &tr::lng_serein_page_filters_about;
+inline const auto kSubpageIcon = &st::menuIconTagFilter;
+inline const auto kSubpageTile = &st::settingsIconBg2;
+
+inline void AddSubpageButton(
+		::Settings::Builder::SectionBuilder &builder,
+		::Settings::Type section) {
+	AddPageButton(builder, {
+		.title = (*kSubpageTitle)(),
+		.section = section,
+		.icon = kSubpageIcon,
+		.tile = kSubpageTile,
+		.keywords = { u"filter"_q, u"link"_q },
+		.about = *kSubpageAbout,
+	});
 }
 
 } // namespace Serein::Filters

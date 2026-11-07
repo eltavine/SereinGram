@@ -5,6 +5,7 @@
 #include "base/basic_types.h"
 
 #include <QtCore/QUuid>
+#include <QtCore/QVariant>
 #include <QtSql/QSqlDatabase>
 #include <QtSql/QSqlError>
 #include <QtSql/QSqlQuery>
@@ -23,6 +24,49 @@ namespace {
 [[nodiscard]] bool Run(const QString &connection, const QString &sql) {
 	auto query = QSqlQuery(Database(connection));
 	return query.exec(sql);
+}
+
+[[nodiscard]] int SqlLimit(std::optional<int> limit) {
+	return limit ? std::max(*limit, 0) : -1;
+}
+
+struct Clause {
+	QString sql;
+	QVariantList values;
+};
+
+[[nodiscard]] Clause Where(const Ports::RecordsQuery &query) {
+	auto result = Clause{ u"peer_id = ?"_q, { query.peerId } };
+	const auto add = [&](const QString &sql, const QVariantList &values) {
+		result.sql += u" AND "_q + sql;
+		result.values += values;
+	};
+	const auto key = [](const Ports::RecordBound &bound) {
+		return QVariantList{ bound.key.messageId, bound.key.revision };
+	};
+	if (const auto kind = query.kind) {
+		add(u"kind = ?"_q, { int(*kind) });
+	}
+	if (const auto messageId = query.messageId) {
+		add(u"message_id = ?"_q, { *messageId });
+	}
+	if (const auto from = query.from) {
+		add(from->inclusive
+			? u"(message_id, revision) >= (?, ?)"_q
+			: u"(message_id, revision) > (?, ?)"_q, key(*from));
+	}
+	if (const auto till = query.till) {
+		add(till->inclusive
+			? u"(message_id, revision) <= (?, ?)"_q
+			: u"(message_id, revision) < (?, ?)"_q, key(*till));
+	}
+	return result;
+}
+
+void Bind(QSqlQuery &query, const QVariantList &values) {
+	for (const auto &value : values) {
+		query.addBindValue(value);
+	}
 }
 
 } // namespace
@@ -175,7 +219,7 @@ std::vector<History::Record> SqlHistoryStore::deleted(
 	if (query.maxMessageId) {
 		select.addBindValue(*query.maxMessageId);
 	}
-	select.addBindValue(std::max(query.limit, 0));
+	select.addBindValue(SqlLimit(query.limit));
 	return Run(select) ? collect(select) : std::vector<History::Record>();
 }
 
@@ -190,16 +234,45 @@ std::vector<History::Record> SqlHistoryStore::versions(
 	return Run(select) ? collect(select) : std::vector<History::Record>();
 }
 
-std::vector<qint64> SqlHistoryStore::peersWithDeleted(int limit) {
+std::vector<History::Record> SqlHistoryStore::records(
+		const Ports::RecordsQuery &query) {
+	const auto where = Where(query);
+	const auto order = (query.order == Ports::RecordsOrder::Ascending)
+		? u"ASC"_q
+		: u"DESC"_q;
 	auto select = QSqlQuery(Database(_connection));
-	select.prepare(u"SELECT peer_id FROM records WHERE kind = ? "
-		"GROUP BY peer_id ORDER BY MAX(recorded_at) DESC LIMIT ?"_q);
+	select.prepare(u"SELECT payload FROM records WHERE "_q
+		+ where.sql
+		+ u" ORDER BY message_id %1, revision %1 LIMIT ?"_q.arg(order));
+	Bind(select, where.values);
+	select.addBindValue(SqlLimit(query.limit));
+	return Run(select) ? collect(select) : std::vector<History::Record>();
+}
+
+int SqlHistoryStore::count(const Ports::RecordsQuery &query) {
+	const auto where = Where(query);
+	auto select = QSqlQuery(Database(_connection));
+	select.prepare(u"SELECT COUNT(*) FROM records WHERE "_q + where.sql);
+	Bind(select, where.values);
+	return (Run(select) && select.next()) ? select.value(0).toInt() : 0;
+}
+
+std::vector<Ports::PeerSummary> SqlHistoryStore::peersWithDeleted(
+		std::optional<int> limit) {
+	auto select = QSqlQuery(Database(_connection));
+	select.prepare(u"SELECT peer_id, COUNT(*), MAX(recorded_at) FROM records "
+		"WHERE kind = ? GROUP BY peer_id "
+		"ORDER BY MAX(recorded_at) DESC, peer_id DESC LIMIT ?"_q);
 	select.addBindValue(int(History::RecordKind::Deleted));
-	select.addBindValue(std::max(limit, 0));
-	auto result = std::vector<qint64>();
+	select.addBindValue(SqlLimit(limit));
+	auto result = std::vector<Ports::PeerSummary>();
 	if (Run(select)) {
 		while (select.next()) {
-			result.push_back(select.value(0).toLongLong());
+			result.push_back({
+				.peerId = select.value(0).toLongLong(),
+				.count = select.value(1).toInt(),
+				.lastRecordedAt = select.value(2).toLongLong(),
+			});
 		}
 	}
 	return result;

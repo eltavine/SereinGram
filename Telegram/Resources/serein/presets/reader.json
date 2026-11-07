@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "options": {
+    "serein.wideChannelPosts": true,
+    "serein.exactMessageCounters": true,
+    "serein.showForwardedMessageDate": true,
+    "serein.rememberReadingPosition": true,
+    "serein.disableScrollToNextChannel": true
+  }
+}

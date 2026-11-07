@@ -81,5 +81,6 @@
         <dbus type="session">io.github.eltavine.SereinGram</dbus>
         <mediatype>x-scheme-handler/tg</mediatype>
         <mediatype>x-scheme-handler/tonsite</mediatype>
+        <mediatype>x-scheme-handler/ton</mediatype>
     </provides>
 </component>

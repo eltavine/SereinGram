@@ -10,6 +10,7 @@
 #include "serein/settings/services_network.h"
 #include "serein/settings/gen/services_rows.h"
 #include "serein/settings/page.h"
+#include "serein/settings/send_translations.h"
 #include "platform/platform_translate_provider.h"
 #include "settings/settings_builder.h"
 #include "settings/settings_common_session.h"
@@ -152,38 +153,43 @@ void TranscriptionSourceBox(not_null<Ui::GenericBox*> box) {
 const auto kMeta = BuildHelper({
 	.id = ServicesSection::Id(),
 	.parentId = HomeId(),
-	.title = &tr::lng_serein_services,
-	.icon = &st::menuIconTranslate,
+	.title = ServiceSettings::kSubpageTitle,
+	.icon = ServiceSettings::kSubpageIcon,
 }, [](SectionBuilder &builder) {
 	const auto controller = builder.controller();
 	ServiceSettings::AddLayout(builder, {
 		.services = [&] {
-			builder.addButton({
+			AddRow(builder, {
 				.id = u"serein/services/translation"_q,
 				.title = tr::lng_serein_service_translation(),
-				.st = &st::settingsButtonNoIcon,
 				.label = ForDevice().Value(kServicesConfig)
 					| rpl::map([](const QByteArray &) {
 						return TranslationSelectionName(Services());
 					}),
 				.onClick = [=] { controller->show(Box(TranslationSourceBox)); },
 				.keywords = { u"translation"_q, u"system"_q },
+				.visual = {
+					.icon = &st::menuIconTranslate,
+					.about = tr::lng_serein_service_translation_about,
+				},
 			});
-			builder.addButton({
+			AddRow(builder, {
 				.id = u"serein/services/transcription"_q,
 				.title = tr::lng_serein_service_transcription(),
-				.st = &st::settingsButtonNoIcon,
 				.label = ForDevice().Value(kServicesConfig)
 					| rpl::map([](const QByteArray &) {
 						return TranscriptionSelectionName(Services());
 					}),
 				.onClick = [=] { controller->show(Box(TranscriptionSourceBox)); },
 				.keywords = { u"transcription"_q, u"voice"_q },
+				.visual = {
+					.icon = &st::menuIconUnmute,
+					.about = tr::lng_serein_service_transcription_about,
+				},
 			});
-			builder.addButton({
+			AddRow(builder, {
 				.id = u"serein/services/instances"_q,
 				.title = tr::lng_serein_services(),
-				.st = &st::settingsButtonNoIcon,
 				.onClick = [=] {
 					const auto current = Services();
 					if (!current) {
@@ -194,17 +200,23 @@ const auto kMeta = BuildHelper({
 					controller->show(Box(ServicesBox, *current));
 				},
 				.keywords = { u"SereinGram"_q, u"LLM"_q, u"API"_q },
+				.visual = {
+					.icon = &st::menuIconManage,
+					.about = tr::lng_serein_services_row_about,
+				},
 			});
-			builder.addDividerText(tr::lng_serein_services_about());
 		},
 		.preferSystemAi = [&] {
 			const auto aiStatus = SystemAiAvailability();
-			const auto aiButton = builder.addButton({
+			const auto aiButton = AddRow(builder, {
 				.id = u"serein/services/system-ai"_q,
 				.title = tr::lng_serein_system_ai(),
-				.st = &st::settingsButtonNoIcon,
 				.toggled = ForDevice().Value(kPreferSystemAi),
 				.keywords = { u"Apple Intelligence"_q, u"AI"_q },
+				.visual = {
+					.icon = &st::menuIconEmojiObjects,
+					.about = tr::lng_serein_system_ai_row_about,
+				},
 			});
 			if (aiButton) {
 				aiButton->setDisabled(aiStatus != 0
@@ -214,16 +226,17 @@ const auto kMeta = BuildHelper({
 					Expects(ForDevice().Set(kPreferSystemAi, value));
 				}, aiButton->lifetime());
 			}
-			builder.addDividerText(tr::lng_serein_system_ai_about());
 			if (aiStatus != 0) {
 				builder.addDividerText(rpl::single(SystemAiStatusText(aiStatus)));
+				builder.addSkip();
 			}
 		},
+		.sendTranslations = [&] { AddSendTranslations(builder); },
 		.proxySubscription = [&] { AddProxySubscriptionRow(builder); },
 		.proxyNotes = [&] { AddProxyToolRows(builder); },
 		.customDoh = [&] { AddCustomDohRow(builder); },
+		.datacenters = [&] { AddDatacenterStatusRow(builder); },
 	});
-	AddDatacenterStatusRow(builder);
 });
 
 const SectionBuildMethod ServicesSection::kBuild = kMeta.build;

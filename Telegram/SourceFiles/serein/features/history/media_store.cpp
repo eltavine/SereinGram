@@ -11,7 +11,6 @@ namespace Serein::HistoryFeature {
 namespace {
 
 constexpr auto kSuffix = QLatin1String(".bin");
-constexpr auto kSealOverhead = 1024;
 
 } // namespace
 
@@ -31,9 +30,7 @@ bool WriteCachedMedia(
 		Ports::Cipher &cipher,
 		const QString &path,
 		const QByteArray &bytes) {
-	if (bytes.isEmpty()
-		|| bytes.size() > kCachedMediaLimit
-		|| !QDir().mkpath(QFileInfo(path).absolutePath())) {
+	if (bytes.isEmpty() || !QDir().mkpath(QFileInfo(path).absolutePath())) {
 		return false;
 	}
 	const auto sealed = cipher.encrypt(bytes);
@@ -51,8 +48,7 @@ std::optional<QByteArray> ReadCachedMedia(
 		Ports::Cipher &cipher,
 		const QString &path) {
 	auto file = QFile(path);
-	if (file.size() > kCachedMediaLimit + kSealOverhead
-		|| !file.open(QIODevice::ReadOnly)) {
+	if (!file.open(QIODevice::ReadOnly)) {
 		return std::nullopt;
 	}
 	return cipher.decrypt(file.readAll());

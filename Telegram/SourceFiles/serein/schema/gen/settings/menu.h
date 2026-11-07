@@ -7,6 +7,14 @@ namespace Serein::Menu {
 
 [[nodiscard]] bool ValidateConfig(const QByteArray &value);
 
+inline const auto kMenuConfig = Option<QByteArray>{
+	"serein.messageMenu",
+	Scope::Device,
+	QByteArray(),
+	Category::Menu,
+	"lng_serein_menu",
+	0,
+	&ValidateConfig };
 inline constexpr auto kConfirmRepeat = Option<bool>{
 	"serein.confirmRepeat",
 	Scope::Device,
@@ -36,20 +44,12 @@ inline const auto kQuickRatingSecond = Option<QString>{
 		return (value == QString())
 			|| ((value.toUcs4().size() <= 256));
 	} };
-inline const auto kMenuConfig = Option<QByteArray>{
-	"serein.messageMenu",
-	Scope::Device,
-	QByteArray(),
-	Category::Menu,
-	"lng_serein_menu",
-	0,
-	&ValidateConfig };
 
 inline void RegisterOptions(Registry &registry) {
+	Expects(registry.Add(kMenuConfig));
 	Expects(registry.Add(kConfirmRepeat));
 	Expects(registry.Add(kQuickRatingFirst));
 	Expects(registry.Add(kQuickRatingSecond));
-	Expects(registry.Add(kMenuConfig));
 }
 
 } // namespace Serein::Menu

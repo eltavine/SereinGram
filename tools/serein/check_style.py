@@ -31,6 +31,7 @@ TEXT_PATTERNS = (
     ".github/workflows/serein-*.yml",
     "lib/xdg/io.github.eltavine.SereinGram.*",
     "BRANDING.md",
+    "README.md",
     "crowdin.yml",
 )
 SKIPPED = re.compile(r"(^|/)(gen|__pycache__|\.venv|node_modules)/")

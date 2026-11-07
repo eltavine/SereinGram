@@ -63,14 +63,14 @@ TEST_CASE("CachedMedia") {
 			"cached media stored in plain text");
 	}
 	Require(ReadCachedMedia(cipher, kept) == bytes, "cached media read back");
-	Require(!WriteCachedMedia(cipher, kept, QByteArray())
-		&& !WriteCachedMedia(
-			cipher,
-			CachedMediaPath(media, 555, 45),
-			QByteArray(kCachedMediaLimit + 1, 'x')),
-		"empty or oversized cached media accepted");
-	Require(!QFileInfo::exists(CachedMediaPath(media, 555, 45)),
-		"oversized cached media left a file");
+	Require(!WriteCachedMedia(cipher, kept, QByteArray()),
+		"empty cached media accepted");
+	const auto large = QByteArray(qsizetype(21) * 1024 * 1024, 'x');
+	const auto largePath = CachedMediaPath(media, 555, 45);
+	Require(WriteCachedMedia(cipher, largePath, large)
+		&& ReadCachedMedia(cipher, largePath) == large,
+		"cached media larger than the former 20 MB cap was refused");
+	Require(QFile::remove(largePath), "large cached media removed");
 
 	auto recorder = Recorder(*store, [] { return qint64(1000000); });
 	auto snapshot = Snapshot();

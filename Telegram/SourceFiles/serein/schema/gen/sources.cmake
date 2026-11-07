@@ -6,6 +6,7 @@ set(serein_generated_sources
     serein/schema/gen/config/links.cpp
     serein/schema/gen/config/main_menu.cpp
     serein/schema/gen/config/menu.cpp
+    serein/schema/gen/config/notifications.cpp
     serein/schema/gen/config/quick_replies.cpp
     serein/schema/gen/config/services.cpp
     serein/schema/gen/config/snapshot.cpp

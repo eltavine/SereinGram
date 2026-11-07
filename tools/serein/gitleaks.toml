@@ -7,3 +7,11 @@ useDefault = true
 description = "Placeholder credentials in the packaging instructions."
 regexTarget = "match"
 regexes = ['''SEREIN_API_HASH=0123456789abcdef''']
+
+[[allowlists]]
+description = "Cargo dependency names mistaken for a secretbox API key."
+targetRules = ["generic-api-key"]
+condition = "AND"
+paths = ['''^packaging/rust/Cargo\.lock$''']
+regexTarget = "secret"
+regexes = ['''^curve25519-dalek$''']

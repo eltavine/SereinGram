@@ -6,10 +6,13 @@ import tempfile
 import unittest
 from pathlib import Path
 
+import git_env
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import release
 
+FIXTURE = Path(__file__).resolve().parent / "fixtures" / "release_manifest.json"
 INFO = {
     "repo": "owner/SereinGram",
     "tag": "nightly",
@@ -20,6 +23,15 @@ INFO = {
     "previous": "b" * 40,
     "since": "the previous nightly",
 }
+NOTICE = (
+    "SereinGram does not yet have developer API credentials configured. This Nightly is "
+    "built with Telegram Desktop\u2019s public test credentials, so login may be limited or "
+    "fail. A new Nightly will be published automatically once credentials are configured."
+)
+
+
+def setUpModule():
+    git_env.disable_background_maintenance()
 
 
 def git(root, *args, message=None):
@@ -33,11 +45,15 @@ def git(root, *args, message=None):
 
 class AssetsTest(unittest.TestCase):
     def test_policy_follows_the_naming_rule(self):
-        assets = release.load_assets()
+        assets, retired = release.load_policy()
         names = [asset["name"] for asset in assets]
         self.assertIn("SereinGram-linux-x86_64.AppImage", names)
-        self.assertIn("SereinGram-macos-universal.dmg", names)
+        for arch in ("universal", "arm64", "x86_64"):
+            self.assertIn(f"SereinGram-macos-{arch}.dmg", names)
         self.assertEqual(len(names), len(set(names)))
+        self.assertIn("SereinGram-windows-x86_64-portable.exe", names)
+        self.assertIn("SereinGram-linux-arm64-portable", names)
+        self.assertIn("SereinGram-linux-x86_64.tar.xz", retired)
 
     def test_rejects_names_outside_the_rule(self):
         for name in (
@@ -45,8 +61,27 @@ class AssetsTest(unittest.TestCase):
             "Serein-linux-x86_64.deb",
             "SereinGram-linux-amd64.deb",
             "SereinGram-linux-x86_64.tar.gz",
+            "SereinGram-linux-x86_64.tar.xz",
+            "SereinGram-windows-x86_64-portable.zip",
         ):
             self.assertIsNone(release.NAME.match(name), name)
+
+    def test_accepts_raw_binaries_and_packages(self):
+        for name in (
+            "SereinGram-linux-x86_64-portable",
+            "SereinGram-windows-arm64-portable.exe",
+            "SereinGram-linux-x86_64.snap",
+            "SereinGram-linux-x86_64.pkg.tar.zst",
+        ):
+            self.assertTrue(release.NAME.match(name), name)
+
+    def test_rejects_a_retired_name_that_is_still_published(self):
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "assets.json"
+            document = {"schema_version": 1, "assets": [DEB_ASSET], "retired": [DEB_ASSET["name"]]}
+            path.write_text(json.dumps(document))
+            with self.assertRaises(release.ReleaseError):
+                release.load_policy(path)
 
     def test_rejects_disagreeing_metadata(self):
         with tempfile.TemporaryDirectory() as temp:
@@ -84,9 +119,12 @@ class CompatibilityTest(unittest.TestCase):
         self.assertEqual(release.compatibility([DEB_ASSET], [DEB_ASSET, extra]), [])
 
     def test_rejects_removed_or_changed_assets(self):
-        self.assertTrue(release.compatibility([DEB_ASSET], [])[0].endswith("renamed"))
+        self.assertIn("cannot be removed", release.compatibility([DEB_ASSET], [])[0])
         changed = dict(DEB_ASSET, kind="rpm")
         self.assertIn("cannot change", release.compatibility([DEB_ASSET], [changed])[0])
+
+    def test_allows_removing_a_retired_asset(self):
+        self.assertEqual(release.compatibility([DEB_ASSET], [], [DEB_ASSET["name"]]), [])
 
     def test_compares_with_a_git_baseline(self):
         with tempfile.TemporaryDirectory() as temp:
@@ -99,6 +137,7 @@ class CompatibilityTest(unittest.TestCase):
             git(root, "commit", "-q", message="chore: assets")
             self.assertEqual(release.check_compatibility(root, "HEAD", [DEB_ASSET]), 0)
             self.assertEqual(release.check_compatibility(root, "HEAD", []), 1)
+            self.assertEqual(release.check_compatibility(root, "HEAD", [], [DEB_ASSET["name"]]), 0)
             self.assertEqual(release.check_compatibility(root, "0" * 40, []), 0)
 
 
@@ -150,6 +189,88 @@ class FilesTest(unittest.TestCase):
             "https://github.com/owner/SereinGram/releases/"
             "download/nightly/SereinGram-linux-x86_64.deb",
         )
+
+    def test_manifest_keeps_what_the_client_reads(self):
+        fixture = json.loads(FIXTURE.read_text(encoding="utf-8"))
+        data = json.loads(release.manifest(self.dir, self.assets, INFO))
+        self.assertEqual(data["schema_version"], fixture["schema_version"])
+        self.assertLessEqual(fixture.keys(), data.keys())
+        self.assertLessEqual(fixture["assets"][0].keys(), data["assets"][0].keys())
+        for asset in fixture["assets"]:
+            self.assertIn(asset["kind"], release.KINDS)
+            self.assertTrue(release.NAME.match(asset["name"]), asset["name"])
+
+    def test_download_table_leaves_out_update_data(self):
+        lines = release.download_lines(
+            "owner/SereinGram",
+            "nightly",
+            [
+                {
+                    "name": "SereinGram-linux-x86_64.AppImage",
+                    "os": "linux",
+                    "arch": "x86_64",
+                    "kind": "appimage",
+                },
+                {
+                    "name": "SereinGram-linux-x86_64.AppImage.zsync",
+                    "os": "linux",
+                    "arch": "x86_64",
+                    "kind": "zsync",
+                },
+            ],
+        )
+        text = "\n".join(lines)
+        self.assertIn("[SereinGram-linux-x86_64.AppImage]", text)
+        self.assertNotIn(".zsync", text)
+
+
+class UploadedTest(unittest.TestCase):
+    def setUp(self):
+        self._temp = tempfile.TemporaryDirectory()
+        self.dir = Path(self._temp.name) / "dist"
+        self.dir.mkdir()
+        (self.dir / "SHA256SUMS").write_bytes(b"x" * 10)
+        (self.dir / "SereinGram-macos-arm64.dmg").write_bytes(b"x" * 20)
+
+    def tearDown(self):
+        self._temp.cleanup()
+
+    @staticmethod
+    def release(*assets):
+        return {
+            "assets": [{"name": name, "size": size, "state": state} for name, size, state in assets]
+        }
+
+    def test_accepts_the_same_files(self):
+        release_data = self.release(
+            ("SHA256SUMS", 10, "uploaded"), ("SereinGram-macos-arm64.dmg", 20, "uploaded")
+        )
+        self.assertEqual(release.uploaded(self.dir, release_data), [])
+
+    def test_reports_every_difference(self):
+        release_data = self.release(
+            ("SHA256SUMS", 9, "uploaded"),
+            ("SereinGram-macos-arm64.dmg", 20, "starter"),
+            ("old.txt", 1, "uploaded"),
+        )
+        self.assertEqual(
+            release.uploaded(self.dir, release_data),
+            [
+                "SereinGram-macos-arm64.dmg: the upload did not finish",
+                "SereinGram-macos-arm64.dmg: missing from the release",
+                "old.txt: not part of this build",
+                "SHA256SUMS: 9 bytes uploaded, 10 built",
+            ],
+        )
+
+    def test_main_reads_the_gh_output(self):
+        output = Path(self._temp.name) / "release.json"
+        output.write_text(json.dumps(self.release(("SHA256SUMS", 10, "uploaded"))))
+        self.assertEqual(release.main(["uploaded", str(self.dir), str(output)]), 1)
+        (self.dir / "SereinGram-macos-arm64.dmg").unlink()
+        self.assertEqual(release.main(["uploaded", str(self.dir), str(output)]), 0)
+        output.write_text("not json")
+        self.assertEqual(release.main(["uploaded", str(self.dir), str(output)]), 1)
 
 
 class NotesTest(unittest.TestCase):
@@ -209,6 +330,7 @@ class NotesTest(unittest.TestCase):
         verify = text.split("## Verify")[1]
         self.assertIn("Open Anyway in System Settings > Privacy & Security", verify)
         self.assertIn("More info and Run anyway", verify)
+        self.assertIn("`chmod +x`", verify)
 
     def test_notes_announce_test_credentials_first(self):
         text = release.notes(
@@ -216,8 +338,8 @@ class NotesTest(unittest.TestCase):
         )
         notice = "\n".join(release.credentials_notice())
         self.assertTrue(text.startswith(notice))
-        self.assertIn("please be patient", notice)
-        self.assertLess(text.index("please be patient"), text.index("**SereinGram"))
+        self.assertEqual(notice.removeprefix("> ").replace("**", "").strip(), NOTICE)
+        self.assertLess(text.index("public test credentials"), text.index("**SereinGram Nightly**"))
         plain = release.notes([], release.load_assets(), dict(INFO, previous=""))
         self.assertNotIn("test credentials", plain)
         self.assertTrue(plain.startswith("**SereinGram Nightly**"))
@@ -261,7 +383,7 @@ class NotesTest(unittest.TestCase):
         )
         self.assertEqual(code, 0)
         self.assertIn("**SereinGram Nightly**", output.read_text())
-        self.assertNotIn("please be patient", output.read_text())
+        self.assertNotIn("public test credentials", output.read_text())
 
     def test_main_passes_the_test_credentials_flag(self):
         _, head = self.build()

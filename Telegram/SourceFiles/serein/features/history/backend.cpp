@@ -8,6 +8,7 @@
 #include "storage/storage_account.h"
 
 #include <QtCore/QFileInfo>
+#include <rpl/event_stream.h>
 
 #include <map>
 
@@ -23,6 +24,13 @@ using BackendMap = std::map<Main::Session*, std::unique_ptr<Backend>>;
 
 [[nodiscard]] BackendMap &Backends() {
 	static auto result = BackendMap();
+	return result;
+}
+
+using ChangesMap = std::map<Main::Session*, rpl::event_stream<qint64>>;
+
+[[nodiscard]] ChangesMap &Changes() {
+	static auto result = ChangesMap();
 	return result;
 }
 
@@ -106,8 +114,29 @@ bool ClearHistory(gsl::not_null<Main::Session*> session, qint64 peerId) {
 		: backend->store->clearAll();
 	if (cleared) {
 		RemoveCachedMedia(backend->mediaDirectory, peerId);
+		NotifyRecordsChanged(session, peerId);
 	}
 	return cleared;
+}
+
+rpl::producer<qint64> RecordsChanged(gsl::not_null<Main::Session*> session) {
+	const auto raw = session.get();
+	const auto [i, fresh] = Changes().try_emplace(raw);
+	if (fresh) {
+		session->lifetime().add([=] {
+			Changes().erase(raw);
+		});
+	}
+	return i->second.events();
+}
+
+void NotifyRecordsChanged(
+		gsl::not_null<Main::Session*> session,
+		qint64 peerId) {
+	const auto &changes = Changes();
+	if (const auto i = changes.find(session.get()); i != end(changes)) {
+		i->second.fire_copy(peerId);
+	}
 }
 
 std::optional<QByteArray> CachedMediaBytes(

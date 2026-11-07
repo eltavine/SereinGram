@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "info/media/info_media_list_widget.h"
+#include "serein/hooks/links/clipboard.h"
 
 #include "info/global_media/info_global_media_provider.h"
 #include "info/media/info_media_common.h"
@@ -38,6 +39,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "history/history.h"
 #include "history/history_item.h"
 #include "history/history_item_helpers.h"
+#include "history/view/history_view_context_menu.h"
 #include "media/stories/media_stories_controller.h" // ...TogglePinnedToast.
 #include "media/stories/media_stories_share.h" // PrepareShareBox.
 #include "media/stories/media_stories_stealth.h"
@@ -250,7 +252,8 @@ void ListWidget::start() {
 			session().data().itemVisibilityQueries(
 			) | rpl::filter([=](
 					const Data::Session::ItemVisibilityQuery &query) {
-				return _provider->isPossiblyMyItem(query.item)
+				return !query.view
+					&& _provider->isPossiblyMyItem(query.item)
 					&& isVisible();
 			}) | rpl::on_next([=](
 					const Data::Session::ItemVisibilityQuery &query) {
@@ -383,11 +386,6 @@ std::optional<int> ListWidget::fullCount() const {
 
 rpl::producer<std::optional<int>> ListWidget::fullCountValue() const {
 	return _fullCountUpdates.events_starting_with(fullCount());
-}
-
-auto ListWidget::globalMediaSliceView() const
--> const std::optional<GlobalMediaSliceView> & {
-	return _globalMediaSliceView;
 }
 
 auto ListWidget::globalMediaSliceViewValue() const
@@ -1484,11 +1482,12 @@ void ListWidget::showContextMenu(
 	if (item->isHistoryEntry()) {
 		_contextMenu->addAction(
 			tr::lng_context_to_msg(tr::now),
-			[=] {
+			crl::guard(this, [=] {
 				if (const auto item = MessageByGlobalId(globalId)) {
+					_controller->notifyJumpToMessage();
 					JumpToMessageClickHandler(item)->onClick({});
 				}
-			},
+			}),
 			&st::menuIconShowInChat);
 	}
 
@@ -1555,7 +1554,7 @@ void ListWidget::showContextMenu(
 			_contextMenu->addAction(
 				actionText,
 				[text = link->copyToClipboardText()] {
-					QGuiApplication::clipboard()->setText(text);
+					QGuiApplication::clipboard()->setText(Serein::Links::CleanCopiedLink(text));
 				},
 				&st::menuIconCopy);
 		}
@@ -1640,6 +1639,11 @@ void ListWidget::showContextMenu(
 						(unpin ? &st::menuIconUnpin : &st::menuIconPin));
 				}
 			}
+			HistoryView::AddPostLinkAction(
+				_contextMenu.get(),
+				_controller->parentController(),
+				item,
+				HistoryView::Context::History);
 			if (selectionData.canForward) {
 				_contextMenu->addAction(
 					tr::lng_context_forward_msg(tr::now),
@@ -2492,6 +2496,13 @@ void ListWidget::performDrag() {
 		pressedHandler->property(
 			kDocumentLinkMediaProperty).toULongLong());
 	if (document) {
+		const auto peer = (_controller->isDownloads() && _pressState.item)
+			? _pressState.item->history()->peer.get()
+			: _controller->key().peer();
+		if ((peer && !peer->allowsForwarding())
+			|| (_pressState.item && _pressState.item->forbidsForward())) {
+			return;
+		}
 		const auto filepath = document->filepath(true);
 		if (filepath.isEmpty()) {
 			return;

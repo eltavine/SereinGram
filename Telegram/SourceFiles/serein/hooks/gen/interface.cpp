@@ -78,6 +78,22 @@ rpl::producer<bool> IgnoreChatThemeValue() {
 	return ForDevice().Value(Serein::Interface::kIgnoreChatTheme);
 }
 
+QString MonospaceFont() {
+	return ForDevice().Get(Serein::Interface::kMonospaceFont);
+}
+
+rpl::producer<QString> MonospaceFontValue() {
+	return ForDevice().Value(Serein::Interface::kMonospaceFont);
+}
+
+bool MonospaceLigatures() {
+	return ForDevice().Get(Serein::Interface::kMonospaceLigatures);
+}
+
+rpl::producer<bool> MonospaceLigaturesValue() {
+	return ForDevice().Value(Serein::Interface::kMonospaceLigatures);
+}
+
 QByteArray MainMenuConfig() {
 	return ForDevice().Get(Serein::Interface::kMainMenuConfig);
 }
@@ -86,12 +102,12 @@ rpl::producer<QByteArray> MainMenuConfigValue() {
 	return ForDevice().Value(Serein::Interface::kMainMenuConfig);
 }
 
-bool HideAppIconBadge() {
-	return ForDevice().Get(Serein::Interface::kHideAppIconBadge);
+bool MenuShortcuts() {
+	return ForDevice().Get(Serein::Interface::kMenuShortcuts);
 }
 
-rpl::producer<bool> HideAppIconBadgeValue() {
-	return ForDevice().Value(Serein::Interface::kHideAppIconBadge);
+rpl::producer<bool> MenuShortcutsValue() {
+	return ForDevice().Value(Serein::Interface::kMenuShortcuts);
 }
 
 int NotificationDelay() {
@@ -118,12 +134,20 @@ rpl::producer<bool> CenterTopNotificationsValue() {
 	return ForDevice().Value(Serein::Interface::kCenterTopNotifications);
 }
 
-bool MenuShortcuts() {
-	return ForDevice().Get(Serein::Interface::kMenuShortcuts);
+QByteArray QuietHours() {
+	return ForDevice().Get(Serein::Interface::kQuietHours);
 }
 
-rpl::producer<bool> MenuShortcutsValue() {
-	return ForDevice().Value(Serein::Interface::kMenuShortcuts);
+rpl::producer<QByteArray> QuietHoursValue() {
+	return ForDevice().Value(Serein::Interface::kQuietHours);
+}
+
+bool HideAppIconBadge() {
+	return ForDevice().Get(Serein::Interface::kHideAppIconBadge);
+}
+
+rpl::producer<bool> HideAppIconBadgeValue() {
+	return ForDevice().Value(Serein::Interface::kHideAppIconBadge);
 }
 
 QByteArray GlobalShortcut() {
@@ -156,6 +180,54 @@ bool CheckUpdates() {
 
 rpl::producer<bool> CheckUpdatesValue() {
 	return ForDevice().Value(Serein::Interface::kCheckUpdates);
+}
+
+bool OnlineStatusInChats() {
+	return ForDevice().Get(Serein::Interface::kOnlineStatusInChats);
+}
+
+rpl::producer<bool> OnlineStatusInChatsValue() {
+	return ForDevice().Value(Serein::Interface::kOnlineStatusInChats);
+}
+
+bool OnlineStatusInHeader() {
+	return ForDevice().Get(Serein::Interface::kOnlineStatusInHeader);
+}
+
+rpl::producer<bool> OnlineStatusInHeaderValue() {
+	return ForDevice().Value(Serein::Interface::kOnlineStatusInHeader);
+}
+
+bool OnlineStatusOnSenders() {
+	return ForDevice().Get(Serein::Interface::kOnlineStatusOnSenders);
+}
+
+rpl::producer<bool> OnlineStatusOnSendersValue() {
+	return ForDevice().Value(Serein::Interface::kOnlineStatusOnSenders);
+}
+
+bool OnlineStatusSelf() {
+	return ForDevice().Get(Serein::Interface::kOnlineStatusSelf);
+}
+
+rpl::producer<bool> OnlineStatusSelfValue() {
+	return ForDevice().Value(Serein::Interface::kOnlineStatusSelf);
+}
+
+bool OnlineStatusDetailed() {
+	return ForDevice().Get(Serein::Interface::kOnlineStatusDetailed);
+}
+
+rpl::producer<bool> OnlineStatusDetailedValue() {
+	return ForDevice().Value(Serein::Interface::kOnlineStatusDetailed);
+}
+
+bool PresetsOffered() {
+	return ForDevice().Get(Serein::Interface::kPresetsOffered);
+}
+
+rpl::producer<bool> PresetsOfferedValue() {
+	return ForDevice().Value(Serein::Interface::kPresetsOffered);
 }
 
 } // namespace Serein::Hooks::Interface

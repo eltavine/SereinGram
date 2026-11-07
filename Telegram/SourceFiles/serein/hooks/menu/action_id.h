@@ -38,6 +38,11 @@ enum class ActionId : int {
 	QuickRatingSecond = 33,
 	Reminder = 34,
 	HideMessage = 35,
+	CopyMarkdown = 36,
+	RestoredMedia = 37,
+	ForwardToSaved = 38,
+	DownloadQueue = 39,
+	ClearCache = 40,
 };
 
 } // namespace Serein::Menu

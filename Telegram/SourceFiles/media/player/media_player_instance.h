@@ -82,6 +82,7 @@ public:
 	void play(AudioMsgId::Type type);
 	void pause(AudioMsgId::Type type);
 	void stop(AudioMsgId::Type type, bool asFinished = false);
+	void savePlaybackPositions();
 	void playPause(AudioMsgId::Type type);
 	bool next(AudioMsgId::Type type);
 	bool previous(AudioMsgId::Type type);
@@ -152,6 +153,7 @@ public:
 	void cancelSeeking(AudioMsgId::Type type);
 
 	void updatePlaybackSpeed();
+	void setPlaybackSpeed(float64 speed);
 
 	[[nodiscard]] bool nextAvailable(AudioMsgId::Type type) const;
 	[[nodiscard]] bool previousAvailable(AudioMsgId::Type type) const;
@@ -222,6 +224,7 @@ private:
 		Main::Session *session = nullptr;
 		bool isPlaying = false;
 		bool resumeOnCallEnd = false;
+		bool resumeOnVoiceEnd = false;
 		std::unique_ptr<Streamed> streamed;
 		std::unique_ptr<ShuffleData> shuffleData;
 		std::unique_ptr<base::PowerSaveBlocker> powerSaveBlocker;
@@ -258,6 +261,9 @@ private:
 
 	void pauseOnCall(AudioMsgId::Type type);
 	void resumeOnCall(AudioMsgId::Type type);
+
+	void pauseSongForVoice();
+	void resumeSongAfterVoice(bool force = false);
 
 	void setCurrent(const AudioMsgId &audioId);
 	void refreshPlaylist(not_null<Data*> data);

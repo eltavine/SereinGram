@@ -18,6 +18,10 @@ namespace AdminLog {
 
 class OwnedItem;
 
+[[nodiscard]] MTPMessage PrepareLogMessage(
+	const MTPMessage &message,
+	TimeId newDate);
+
 void GenerateItems(
 	not_null<HistoryView::ElementDelegate*> delegate,
 	not_null<History*> history,

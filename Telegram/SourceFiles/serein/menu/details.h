@@ -1,20 +1,17 @@
 #pragma once
 
+#include <QtCore/QString>
+
+#include <gsl/pointers>
+
+#include <utility>
+#include <vector>
+
 class HistoryItem;
-
-namespace Ui {
-class PopupMenu;
-} // namespace Ui
-
-namespace Window {
-class SessionController;
-} // namespace Window
 
 namespace Serein::Menu {
 
-void InsertDetailsAction(
-	Ui::PopupMenu *menu,
-	HistoryItem *item,
-	Window::SessionController *controller);
+[[nodiscard]] std::vector<std::pair<QString, QString>> StickerFacts(
+	gsl::not_null<HistoryItem*> item);
 
 } // namespace Serein::Menu

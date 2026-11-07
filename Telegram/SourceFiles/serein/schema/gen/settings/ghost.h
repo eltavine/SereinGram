@@ -70,6 +70,14 @@ inline constexpr auto kGhostExplicitReadReceipts = Option<bool>{
 	Category::Privacy,
 	"lng_serein_ghost_explicit_read_receipts",
 	0 };
+inline const auto kReadReceiptExceptions = Option<QString>{
+	"serein.readReceiptExceptions",
+	Scope::Account,
+	QString(),
+	Category::Privacy,
+	"lng_serein_ghost_read_exceptions",
+	0,
+	&ValidReadReceiptExceptions };
 inline constexpr auto kGhostSendSilently = Option<bool>{
 	"serein.ghostSendSilently",
 	Scope::Account,
@@ -84,14 +92,6 @@ inline constexpr auto kGhostUseScheduledMessages = Option<bool>{
 	Category::Privacy,
 	"lng_serein_ghost_use_scheduled_messages",
 	0 };
-inline const auto kReadReceiptExceptions = Option<QString>{
-	"serein.readReceiptExceptions",
-	Scope::Account,
-	QString(),
-	Category::Privacy,
-	"lng_serein_ghost_read_exceptions",
-	0,
-	&ValidReadReceiptExceptions };
 
 inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kGhostMode));
@@ -103,9 +103,9 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kGhostHideViewIncrements));
 	Expects(registry.Add(kGhostMarkReadAfterSending));
 	Expects(registry.Add(kGhostExplicitReadReceipts));
+	Expects(registry.Add(kReadReceiptExceptions));
 	Expects(registry.Add(kGhostSendSilently));
 	Expects(registry.Add(kGhostUseScheduledMessages));
-	Expects(registry.Add(kReadReceiptExceptions));
 }
 
 } // namespace Serein::Ghost

@@ -231,6 +231,28 @@ void Streaming::keepAlive(not_null<PhotoData*> photo) {
 	keepAlive(_photoDocuments, photo);
 }
 
+void Streaming::clearCache(not_null<DocumentData*> document) {
+	const auto i = _fileReaders.find(document);
+	if (i != end(_fileReaders)) {
+		if (const auto reader = i->second.lock()) {
+			reader->disableCacheWrites();
+		}
+		_fileReaders.erase(i);
+	}
+	const auto j = _fileDocuments.find(document);
+	if (j != end(_fileDocuments)) {
+		const auto shared = j->second.lock();
+		_fileDocuments.erase(j);
+		if (shared) {
+			_keptAlive.remove(shared);
+		}
+	}
+	Reader::ClearCache(
+		_owner->cacheBigFile(),
+		document->bigFileBaseCacheKey(),
+		document->size);
+}
+
 void Streaming::clearKeptAlive() {
 	const auto now = crl::now();
 	auto min = std::numeric_limits<crl::time>::max();

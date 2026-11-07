@@ -62,14 +62,6 @@ rpl::producer<bool> HideRecommendedEmojiValue() {
 	return ForDevice().Value(Serein::Media::kHideRecommendedEmoji);
 }
 
-bool HideGifCategories() {
-	return ForDevice().Get(Serein::Media::kHideGifCategories);
-}
-
-rpl::producer<bool> HideGifCategoriesValue() {
-	return ForDevice().Value(Serein::Media::kHideGifCategories);
-}
-
 bool HideGreetingSticker() {
 	return ForDevice().Get(Serein::Media::kHideGreetingSticker);
 }
@@ -94,6 +86,14 @@ rpl::producer<QString> StickerAuthorBotValue() {
 	return ForDevice().Value(Serein::Media::kStickerAuthorBot);
 }
 
+bool HideGifCategories() {
+	return ForDevice().Get(Serein::Media::kHideGifCategories);
+}
+
+rpl::producer<bool> HideGifCategoriesValue() {
+	return ForDevice().Value(Serein::Media::kHideGifCategories);
+}
+
 bool DisableVideoAutoplay() {
 	return ForDevice().Get(Serein::Media::kDisableVideoAutoplay);
 }
@@ -108,6 +108,14 @@ bool GifPlaybackControls() {
 
 rpl::producer<bool> GifPlaybackControlsValue() {
 	return ForDevice().Value(Serein::Media::kGifPlaybackControls);
+}
+
+bool Mp4FilePreview() {
+	return ForDevice().Get(Serein::Media::kMp4FilePreview);
+}
+
+rpl::producer<bool> Mp4FilePreviewValue() {
+	return ForDevice().Value(Serein::Media::kMp4FilePreview);
 }
 
 bool ForceClickPreview() {
@@ -126,14 +134,6 @@ rpl::producer<bool> DownloadsPerChatValue() {
 	return ForDevice().Value(Serein::Media::kDownloadsPerChat);
 }
 
-bool Mp4FilePreview() {
-	return ForDevice().Get(Serein::Media::kMp4FilePreview);
-}
-
-rpl::producer<bool> Mp4FilePreviewValue() {
-	return ForDevice().Value(Serein::Media::kMp4FilePreview);
-}
-
 bool DenoiseVoiceMessages() {
 	return ForDevice().Get(Serein::Media::kDenoiseVoiceMessages);
 }
@@ -148,6 +148,54 @@ bool StoryPosting() {
 
 rpl::producer<bool> StoryPostingValue() {
 	return ForDevice().Value(Serein::Media::kStoryPosting);
+}
+
+bool ExpandedAudioPlayer() {
+	return ForDevice().Get(Serein::Media::kExpandedAudioPlayer);
+}
+
+rpl::producer<bool> ExpandedAudioPlayerValue() {
+	return ForDevice().Value(Serein::Media::kExpandedAudioPlayer);
+}
+
+bool RememberPlaybackPosition() {
+	return ForDevice().Get(Serein::Media::kRememberPlaybackPosition);
+}
+
+rpl::producer<bool> RememberPlaybackPositionValue() {
+	return ForDevice().Value(Serein::Media::kRememberPlaybackPosition);
+}
+
+bool SpacePlayback() {
+	return ForDevice().Get(Serein::Media::kSpacePlayback);
+}
+
+rpl::producer<bool> SpacePlaybackValue() {
+	return ForDevice().Value(Serein::Media::kSpacePlayback);
+}
+
+int DownloadsCategory(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Get(Serein::Media::kDownloadsCategory);
+}
+
+rpl::producer<int> DownloadsCategoryValue(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Value(Serein::Media::kDownloadsCategory);
+}
+
+bool DownloadsAllAccounts(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Get(Serein::Media::kDownloadsAllAccounts);
+}
+
+rpl::producer<bool> DownloadsAllAccountsValue(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Value(Serein::Media::kDownloadsAllAccounts);
+}
+
+bool SequentialDownloads() {
+	return ForDevice().Get(Serein::Media::kSequentialDownloads);
+}
+
+rpl::producer<bool> SequentialDownloadsValue() {
+	return ForDevice().Value(Serein::Media::kSequentialDownloads);
 }
 
 } // namespace Serein::Hooks::Media

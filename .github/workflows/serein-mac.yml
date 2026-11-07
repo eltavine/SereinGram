@@ -3,7 +3,6 @@ name: Serein MacOS.
 on:
   push:
     branches:
-      - develop
       - main
     paths-ignore:
       - 'docs/**'
@@ -74,12 +73,13 @@ jobs:
 
   macos:
     name: MacOS
-    runs-on: macos-latest
+    runs-on: macos-26
 
     env:
       CONFIG: ${{ inputs.config || 'Debug' }}
-      # Only these runs write caches: every branch and pull request can read the default branch's.
-      SAVE_CACHE: ${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
+      # WHY: only default-branch runs write caches, which every branch and pull request can read.
+      # A schedule event has no repository payload, but scheduled runs only start on the default branch.
+      SAVE_CACHE: ${{ github.event_name == 'schedule' || github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
       PREPARE_PATH: "Telegram/build/prepare/prepare.py"
 
     steps:
@@ -87,7 +87,7 @@ jobs:
         run: echo "REPO_NAME=${GITHUB_REPOSITORY##*/}" >> "$GITHUB_ENV"
 
       - name: Clone.
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
           ref: ${{ inputs.ref }}
@@ -97,10 +97,11 @@ jobs:
       - name: First set up.
         run: |
           sudo chown -R "$(whoami)":admin /usr/local/share
+          retry="$REPO_NAME/tools/serein/retry.sh"
 
-          brew update
+          "$retry" 3 30 brew update
           brew upgrade || true
-          brew install automake libtool meson nasm ninja pkg-config
+          "$retry" 3 30 brew install automake libtool meson nasm ninja pkg-config
 
           # Disable spotlight.
           sudo mdutil -a -i off
@@ -123,7 +124,7 @@ jobs:
 
       - name: Libraries cache.
         id: cache-libs
-        uses: actions/cache/restore@v6
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             Libraries
@@ -140,11 +141,11 @@ jobs:
           "./$REPO_NAME/Telegram/build/prepare/mac.sh" silent
 
       - name: Free up some disk space.
-        run: find Libraries '(' '(' ! '(' -name '*.a' -o -name '*.h' -o -name '*.hpp' -o -name '*.inc' -o -name '*.cmake' -o -name '*.pc' -o -path '*/include/*' -o -path '*/objects-*' -o -path '*/cache_keys/*' -o -path '*/patches/*' -o -perm +111 ')' -type f ')' -o -empty ')' -delete
+        run: find Libraries '(' '(' ! '(' -name '*.a' -o -name '*.h' -o -name '*.hpp' -o -name '*.inc' -o -name '*.cmake' -o -name '*.pc' -o -path '*/include/*' -o -path '*/objects-*' -o -path '*/cache_keys/*' -o -path '*/patches/*' -o -path '*/wallet_engine/*' -o '(' '(' -path '*/tlottie/*' -o -path '*/wallet-engine/*' -o -path '*/tdesktop_rust/*' ')' ! -path '*/target/*' ')' -o -perm +111 ')' -type f ')' -o -empty ')' -delete
 
       - name: Save the libraries cache.
         if: env.SAVE_CACHE == 'true' && steps.cache-libs.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v6
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             Libraries
@@ -190,41 +191,112 @@ jobs:
       - name: Ad-hoc signature.
         run: |
           app="$REPO_NAME/out/$CONFIG/SereinGram.app"
-          lipo "$app/Contents/MacOS/SereinGram" -verify_arch x86_64 arm64
+          for arch in x86_64 arm64; do
+            lipo "$app/Contents/MacOS/SereinGram" -verify_arch "$arch"
+          done
           codesign --force --deep --sign - "$app"
           codesign --verify --deep --strict "$app"
 
       - name: Smoke test.
+        timeout-minutes: 10
         run: |
           python3 "$REPO_NAME/tools/serein/smoke_test.py" \
             "$REPO_NAME/out/$CONFIG/SereinGram.app/Contents/MacOS/SereinGram"
 
-      - name: Name the artifacts.
+      # WHY: the universal app already holds both builds, so the smaller
+      # single-architecture apps are copies of it with one slice kept, signed
+      # again because thinning changes the code that the signature covers.
+      - name: Single-architecture apps.
         run: |
+          for arch in arm64 x86_64; do
+            app="$RUNNER_TEMP/$arch/SereinGram.app"
+            mkdir -p "$RUNNER_TEMP/$arch"
+            ditto "$REPO_NAME/out/$CONFIG/SereinGram.app" "$app"
+            find "$app" -type f -print0 | while IFS= read -r -d '' file; do
+              archs=$(lipo -archs "$file" 2>/dev/null) || continue
+              case "$archs" in
+                *' '*) lipo "$file" -thin "$arch" -output "$file" ;;
+              esac
+            done
+            test "$(lipo -archs "$app/Contents/MacOS/SereinGram")" = "$arch"
+            codesign --force --deep --sign - "$app"
+            codesign --verify --deep --strict "$app"
+          done
+
+      - name: Disk images.
+        run: |
+          retry="$REPO_NAME/tools/serein/retry.sh"
           mkdir artifact
-          hdiutil create -volname SereinGram \
-            -srcfolder "$REPO_NAME/out/$CONFIG/SereinGram.app" \
-            -ov -format UDZO artifact/SereinGram-macos-universal.dmg
+          for flavor in universal arm64 x86_64; do
+            app="$RUNNER_TEMP/$flavor/SereinGram.app"
+            if [ "$flavor" = universal ]; then
+              app="$REPO_NAME/out/$CONFIG/SereinGram.app"
+            fi
+            "$retry" 5 10 hdiutil create -volname SereinGram -srcfolder "$app" \
+              -ov -format UDZO "artifact/SereinGram-macos-$flavor.dmg"
+          done
+
+      - name: Rosetta for the x86_64 app.
+        continue-on-error: true
+        timeout-minutes: 10
+        run: |
+          if ! arch -x86_64 /usr/bin/true 2>/dev/null; then
+            sudo softwareupdate --install-rosetta --agree-to-license
+          fi
+          arch -x86_64 /usr/bin/true
+          echo "ROSETTA=true" >> "$GITHUB_ENV"
 
       - name: Disk image integration test.
+        timeout-minutes: 30
         run: |
-          mount=$(mktemp -d)
-          hdiutil attach -nobrowse -readonly -mountpoint "$mount" artifact/SereinGram-macos-universal.dmg
-          codesign --verify --deep --strict "$mount/SereinGram.app"
-          python3 "$REPO_NAME/tools/serein/smoke_test.py" "$mount/SereinGram.app/Contents/MacOS/SereinGram"
-          # System services may still scan the app that just ran from the volume.
-          for _ in 1 2 3 4 5; do
-            if hdiutil detach "$mount"; then
-              exit 0
+          retry="$REPO_NAME/tools/serein/retry.sh"
+          smoke="$REPO_NAME/tools/serein/smoke_test.py"
+          for flavor in universal arm64 x86_64; do
+            expected=$flavor
+            if [ "$flavor" = universal ]; then
+              expected="arm64 x86_64"
             fi
-            sleep 5
+            mount=$(mktemp -d)
+            "$retry" 5 10 hdiutil attach -nobrowse -readonly -mountpoint "$mount" \
+              "artifact/SereinGram-macos-$flavor.dmg"
+            binary="$mount/SereinGram.app/Contents/MacOS/SereinGram"
+            codesign --verify --deep --strict "$mount/SereinGram.app"
+            archs=$(lipo -archs "$binary" | tr ' ' '\n' | sort | xargs)
+            if [ "$archs" != "$expected" ]; then
+              echo "::error::SereinGram-macos-$flavor.dmg holds $archs instead of $expected."
+              exit 1
+            fi
+            if [ "$flavor" != x86_64 ]; then
+              python3 "$smoke" "$binary"
+            elif [ "${ROSETTA:-}" = true ]; then
+              python3 "$smoke" --timeout 300 "$binary"
+            else
+              echo "::warning::Rosetta 2 could not be installed, so the x86_64 app was not launched."
+            fi
+            # System services may still scan the app that just ran from the volume.
+            "$retry" 5 5 hdiutil detach "$mount" || hdiutil detach -force "$mount"
           done
-          hdiutil detach -force "$mount"
 
-      - uses: actions/upload-artifact@v7
-        name: Upload artifact.
+      - name: Upload the universal disk image.
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: SereinGram-macos-universal
-          path: artifact/
+          path: artifact/SereinGram-macos-universal.dmg
+          archive: false
+          if-no-files-found: error
+          retention-days: 3
+
+      - name: Upload the arm64 disk image.
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          path: artifact/SereinGram-macos-arm64.dmg
+          archive: false
+          if-no-files-found: error
+          retention-days: 3
+
+      - name: Upload the x86_64 disk image.
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          path: artifact/SereinGram-macos-x86_64.dmg
+          archive: false
           if-no-files-found: error
           retention-days: 3

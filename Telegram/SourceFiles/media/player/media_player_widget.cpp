@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "media/player/media_player_widget.h"
+#include "serein/hooks/media/player.h"
 
 #include "platform/platform_specific.h"
 #include "data/data_document.h"
@@ -44,7 +45,8 @@ namespace Player {
 Widget::Widget(
 	QWidget *parent,
 	not_null<Ui::RpWidget*> dropdownsParent,
-	not_null<Window::SessionController*> controller)
+	not_null<Window::SessionController*> controller,
+	bool allowExpand)
 : RpWidget(parent)
 , _controller(controller)
 , _orderMenuParent(dropdownsParent)
@@ -76,6 +78,9 @@ Widget::Widget(
 		[=](bool over) { markOver(over); },
 		[=](bool lastNonDefault) { return speedLookup(lastNonDefault); },
 		[=](float64 speed) { saveSpeed(speed); })) {
+	_speedController->setApplySpeed([=](float64 speed) {
+		instance()->setPlaybackSpeed(speed);
+	});
 	_speedController->realtimeValue(
 	) | rpl::on_next([=](float64 speed) {
 		_speedToggle->setSpeed(speed);
@@ -90,6 +95,9 @@ Widget::Widget(
 	setMouseTracking(true);
 	resize(width(), st::mediaPlayerHeight + st::lineWidth);
 
+	if (allowExpand) {
+		Serein::Media::AttachExpandedPlayer(this, controller);
+	}
 	setupRightControls();
 
 	_volumeToggle->setAccessibleName(tr::lng_ringtones_box_volume(tr::now));

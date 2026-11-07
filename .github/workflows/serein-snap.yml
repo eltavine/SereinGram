@@ -3,7 +3,6 @@ name: Serein Snap.
 on:
   push:
     branches:
-      - develop
       - main
     paths:
       - 'snap/**'
@@ -11,9 +10,19 @@ on:
   schedule:
     - cron: '0 1 * * 1'
   workflow_dispatch:
+  workflow_call:
+    inputs:
+      channel:
+        type: string
+        default: ''
+    secrets:
+      SEREIN_API_ID:
+        required: false
+      SEREIN_API_HASH:
+        required: false
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}-snap
   cancel-in-progress: false
 
 permissions:
@@ -23,11 +32,11 @@ jobs:
 
   snap:
     name: Snap (x86_64)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Clone.
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
           fetch-depth: 0
@@ -49,16 +58,22 @@ jobs:
           lvm-span-mountpoint: /var/snap/lxd/common/lxd/storage-pools/default/containers
 
       # The recipe never carries credentials; they are added to this copy only.
-      - name: Choose the API credentials.
+      - name: Choose the API credentials and the release channel.
         env:
           SEREIN_API_ID: ${{ secrets.SEREIN_API_ID }}
           SEREIN_API_HASH: ${{ secrets.SEREIN_API_HASH }}
+          CHANNEL: ${{ inputs.channel }}
         run: |
           if [ -n "$SEREIN_API_ID" ] && [ -n "$SEREIN_API_HASH" ]; then
             set -- "-DTDESKTOP_API_ID=$SEREIN_API_ID" "-DTDESKTOP_API_HASH=$SEREIN_API_HASH"
           else
             echo "::notice::The repository secrets are missing; building with the test-only credentials."
             set -- -DTDESKTOP_API_TEST=ON
+          fi
+          credentials=$#
+          if [ -n "$CHANNEL" ]; then
+            set -- "$@" -DSEREIN_BUILD_PACKAGE=snap \
+              "-DSEREIN_BUILD_CHANNEL=$CHANNEL" "-DSEREIN_BUILD_COMMIT=$GITHUB_SHA"
           fi
           # Every CMake part has the same install prefix line; only the app gets the flags.
           python3 - "$@" <<'EOF'
@@ -70,7 +85,8 @@ jobs:
           lines[prefix + 1:prefix + 1] = ["      - " + flag for flag in sys.argv[1:]]
           path.write_text("\n".join(lines))
           EOF
-          test "$(grep -c -e '-DTDESKTOP_API_' snap/snapcraft.yaml)" -eq "$#"
+          test "$(grep -c -e '-DTDESKTOP_API_' snap/snapcraft.yaml)" -eq "$credentials"
+          test "$(grep -c -e '-DSEREIN_BUILD_' snap/snapcraft.yaml)" -eq "$(($# - credentials))"
 
       # The recipe takes the snap version from `git describe --tags`; the tag stays local.
       - name: Tag the app version.
@@ -86,16 +102,16 @@ jobs:
           mkdir artifact
           mv sereingram_*.snap artifact/SereinGram-linux-x86_64.snap
           sudo snap install --dangerous artifact/SereinGram-linux-x86_64.snap
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq xvfb >/dev/null
+          tools/serein/retry.sh 3 30 sudo apt-get update -qq -o Acquire::Retries=3
+          tools/serein/retry.sh 3 30 sudo apt-get install -y -qq -o Acquire::Retries=3 xvfb >/dev/null
           # Strictly confined snaps see the home folder, not the host /tmp.
           mkdir -p "$HOME/smoke"
           TMPDIR="$HOME/smoke" xvfb-run -a python3 tools/serein/smoke_test.py /snap/bin/sereingram
 
-      - uses: actions/upload-artifact@v7
-        name: Upload artifact.
+      - name: Upload the snap.
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: SereinGram-linux-x86_64-snap
-          path: artifact/
+          path: artifact/SereinGram-linux-x86_64.snap
+          archive: false
           if-no-files-found: error
           retention-days: 3

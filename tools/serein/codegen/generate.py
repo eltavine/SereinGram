@@ -10,6 +10,7 @@ Run from anywhere: uv run tools/serein/codegen/generate.py [--check]
 
 import argparse
 import json
+import re
 import subprocess
 import sys
 import tempfile
@@ -17,7 +18,7 @@ from pathlib import Path
 
 import jinja2
 from codec_model import build_files
-from model import SchemaError, build_pages, check_titles
+from model import SchemaError, build_pages, check_titles, check_visuals
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[2]
@@ -31,6 +32,11 @@ STRINGS = (
     ROOT / "Telegram/Resources/langs/lang.strings",
     ROOT / "Telegram/Resources/langs/serein/serein.strings",
 )
+ICON_STYLES = (
+    ROOT / "Telegram/SourceFiles/ui/menu_icons.style",
+    ROOT / "Telegram/SourceFiles/serein/serein.style",
+)
+STYLE_ICON = re.compile(r"^([A-Za-z_][A-Za-z0-9_]*): icon\b")
 
 
 def build_image():
@@ -53,7 +59,16 @@ def string_keys():
     return keys
 
 
-def render(image, known_strings=None):
+def icon_names():
+    names = set()
+    for path in ICON_STYLES:
+        for line in path.read_text(encoding="utf-8").splitlines():
+            if match := STYLE_ICON.match(line):
+                names.add(match[1])
+    return names
+
+
+def render(image, known_strings=None, known_icons=None):
     environment = jinja2.Environment(
         loader=jinja2.FileSystemLoader(HERE / "templates"),
         trim_blocks=True,
@@ -66,7 +81,9 @@ def render(image, known_strings=None):
     implementation = environment.get_template("codec.cpp.j2")
     rows = environment.get_template("settings_rows.h.j2")
     pages = build_pages(image)
-    check_titles(pages, string_keys() if known_strings is None else known_strings)
+    strings = string_keys() if known_strings is None else known_strings
+    check_titles(pages, strings)
+    check_visuals(pages, strings, icon_names() if known_icons is None else known_icons)
     outputs = {f"{SCHEMA}/{page.header}": settings.render(page=page) for page in pages}
     hook_header = environment.get_template("hooks.h.j2")
     hook_source = environment.get_template("hooks.cpp.j2")

@@ -8,10 +8,16 @@ class History;
 
 namespace Serein::HistoryFeature {
 
+struct RestoreArgs {
+	MsgId id;
+	MessageFlags flags;
+	TimeId date = 0;
+	bool asLogEntry = false;
+};
+
 [[nodiscard]] not_null<HistoryItem*> MakeRestoredMessage(
 	not_null<::History*> history,
 	const History::Record &record,
-	MsgId id,
-	MessageFlags flags);
+	RestoreArgs args);
 
 } // namespace Serein::HistoryFeature

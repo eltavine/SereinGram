@@ -29,11 +29,11 @@ namespace Serein::Hooks::Ghost {
 [[nodiscard]] rpl::producer<bool> GhostMarkReadAfterSendingValue(gsl::not_null<Main::Session*> session);
 [[nodiscard]] bool GhostExplicitReadReceipts(gsl::not_null<Main::Session*> session);
 [[nodiscard]] rpl::producer<bool> GhostExplicitReadReceiptsValue(gsl::not_null<Main::Session*> session);
+[[nodiscard]] QString ReadReceiptExceptions(gsl::not_null<Main::Session*> session);
+[[nodiscard]] rpl::producer<QString> ReadReceiptExceptionsValue(gsl::not_null<Main::Session*> session);
 [[nodiscard]] bool GhostSendSilently(gsl::not_null<Main::Session*> session);
 [[nodiscard]] rpl::producer<bool> GhostSendSilentlyValue(gsl::not_null<Main::Session*> session);
 [[nodiscard]] bool GhostUseScheduledMessages(gsl::not_null<Main::Session*> session);
 [[nodiscard]] rpl::producer<bool> GhostUseScheduledMessagesValue(gsl::not_null<Main::Session*> session);
-[[nodiscard]] QString ReadReceiptExceptions(gsl::not_null<Main::Session*> session);
-[[nodiscard]] rpl::producer<QString> ReadReceiptExceptionsValue(gsl::not_null<Main::Session*> session);
 
 } // namespace Serein::Hooks::Ghost

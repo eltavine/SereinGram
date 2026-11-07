@@ -1,6 +1,7 @@
 #include "serein/chats/chat_cache.h"
 
 #include "base/flat_set.h"
+#include "serein/media/cache.h"
 #include "data/data_document.h"
 #include "data/data_media_types.h"
 #include "data/data_photo.h"
@@ -13,8 +14,6 @@
 
 namespace Serein::Chats {
 namespace {
-
-constexpr auto kSmallestStreamingPart = int64(128 * 1024);
 
 void Collect(
 		not_null<History*> history,
@@ -41,27 +40,6 @@ void Collect(
 	}
 }
 
-void ClearDocument(not_null<DocumentData*> document) {
-	auto &owner = document->owner();
-	if (document->loading()) {
-		document->cancel();
-	}
-	for (const auto &key : {
-			document->cacheKey(),
-			document->goodThumbnailCacheKey(),
-			document->thumbnailLocation().file().cacheKey() }) {
-		if (key) {
-			owner.cache().remove(key);
-		}
-	}
-	if (const auto base = document->bigFileBaseCacheKey()) {
-		const auto parts = document->size / kSmallestStreamingPart + 2;
-		for (auto i = int64(0); i != parts; ++i) {
-			owner.cacheBigFile().remove({ base.high, base.low + uint64(i) });
-		}
-	}
-}
-
 } // namespace
 
 int ClearLoadedMediaCache(not_null<History*> history) {
@@ -72,7 +50,7 @@ int ClearLoadedMediaCache(not_null<History*> history) {
 		Collect(migrated, documents, photos);
 	}
 	for (const auto &document : documents) {
-		ClearDocument(document);
+		Media::ClearDocumentCache(document);
 	}
 	for (const auto &photo : photos) {
 		photo->clearLocalCache();

@@ -2,6 +2,7 @@
 #pragma once
 
 #include <QtCore/QByteArray>
+#include <QtCore/QString>
 #include <rpl/producer.h>
 
 namespace Serein::Hooks::Interface {
@@ -24,18 +25,24 @@ namespace Serein::Hooks::Interface {
 [[nodiscard]] rpl::producer<bool> HideReplyThumbnailValue();
 [[nodiscard]] bool IgnoreChatTheme();
 [[nodiscard]] rpl::producer<bool> IgnoreChatThemeValue();
+[[nodiscard]] QString MonospaceFont();
+[[nodiscard]] rpl::producer<QString> MonospaceFontValue();
+[[nodiscard]] bool MonospaceLigatures();
+[[nodiscard]] rpl::producer<bool> MonospaceLigaturesValue();
 [[nodiscard]] QByteArray MainMenuConfig();
 [[nodiscard]] rpl::producer<QByteArray> MainMenuConfigValue();
-[[nodiscard]] bool HideAppIconBadge();
-[[nodiscard]] rpl::producer<bool> HideAppIconBadgeValue();
+[[nodiscard]] bool MenuShortcuts();
+[[nodiscard]] rpl::producer<bool> MenuShortcutsValue();
 [[nodiscard]] int NotificationDelay();
 [[nodiscard]] rpl::producer<int> NotificationDelayValue();
 [[nodiscard]] int OtherDeviceNotificationDelay();
 [[nodiscard]] rpl::producer<int> OtherDeviceNotificationDelayValue();
 [[nodiscard]] bool CenterTopNotifications();
 [[nodiscard]] rpl::producer<bool> CenterTopNotificationsValue();
-[[nodiscard]] bool MenuShortcuts();
-[[nodiscard]] rpl::producer<bool> MenuShortcutsValue();
+[[nodiscard]] QByteArray QuietHours();
+[[nodiscard]] rpl::producer<QByteArray> QuietHoursValue();
+[[nodiscard]] bool HideAppIconBadge();
+[[nodiscard]] rpl::producer<bool> HideAppIconBadgeValue();
 [[nodiscard]] QByteArray GlobalShortcut();
 [[nodiscard]] rpl::producer<QByteArray> GlobalShortcutValue();
 [[nodiscard]] bool HalfwidthUiPunctuation();
@@ -44,5 +51,17 @@ namespace Serein::Hooks::Interface {
 [[nodiscard]] rpl::producer<bool> MoreAccountsValue();
 [[nodiscard]] bool CheckUpdates();
 [[nodiscard]] rpl::producer<bool> CheckUpdatesValue();
+[[nodiscard]] bool OnlineStatusInChats();
+[[nodiscard]] rpl::producer<bool> OnlineStatusInChatsValue();
+[[nodiscard]] bool OnlineStatusInHeader();
+[[nodiscard]] rpl::producer<bool> OnlineStatusInHeaderValue();
+[[nodiscard]] bool OnlineStatusOnSenders();
+[[nodiscard]] rpl::producer<bool> OnlineStatusOnSendersValue();
+[[nodiscard]] bool OnlineStatusSelf();
+[[nodiscard]] rpl::producer<bool> OnlineStatusSelfValue();
+[[nodiscard]] bool OnlineStatusDetailed();
+[[nodiscard]] rpl::producer<bool> OnlineStatusDetailedValue();
+[[nodiscard]] bool PresetsOffered();
+[[nodiscard]] rpl::producer<bool> PresetsOfferedValue();
 
 } // namespace Serein::Hooks::Interface

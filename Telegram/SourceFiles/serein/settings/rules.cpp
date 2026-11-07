@@ -1,9 +1,12 @@
 #include "serein/settings/rules.h"
 
 #include "serein/settings/home.h"
+#include "serein/settings/gen/filters_rows.h"
+#include "serein/settings/keyword_alerts.h"
 #include "serein/filters/settings.h"
 #include "serein/links/settings.h"
 #include "serein/settings/page.h"
+#include "serein/settings/rows.h"
 #include "lang/lang_keys.h"
 #include "settings/settings_builder.h"
 #include "settings/settings_common_session.h"
@@ -35,28 +38,41 @@ public:
 const auto kMeta = BuildHelper({
 	.id = RulesSection::Id(),
 	.parentId = HomeId(),
-	.title = &tr::lng_serein_rules,
-	.icon = &st::menuIconChatBubble,
+	.title = Filters::kSubpageTitle,
+	.icon = Filters::kSubpageIcon,
 }, [](SectionBuilder &builder) {
 	const auto controller = builder.controller();
-	builder.addButton({
+	builder.addSkip();
+	AddRow(builder, {
 		.id = u"serein/rules/messages"_q,
 		.title = tr::lng_serein_filters(),
-		.st = &st::settingsButtonNoIcon,
 		.onClick = [=] {
 			controller->show(Box(Filters::SettingsBox, &controller->session()));
 		},
 		.keywords = { u"filter"_q, u"regex"_q },
+		.visual = {
+			.icon = &st::menuIconTagFilter,
+			.about = tr::lng_serein_filters_row_about,
+		},
 	});
-	builder.addButton({
+	EndSection(builder, tr::lng_serein_rules_filters_about);
+	builder.addSkip();
+	AddRow(builder, {
 		.id = u"serein/rules/links"_q,
 		.title = tr::lng_serein_link_rules(),
-		.st = &st::settingsButtonNoIcon,
 		.onClick = [=] {
 			controller->show(Box(Links::SettingsBox));
 		},
 		.keywords = { u"link"_q, u"URL"_q },
+		.visual = {
+			.icon = &st::menuIconLinks,
+			.about = tr::lng_serein_link_rules_row_about,
+		},
 	});
+	EndSection(builder, tr::lng_serein_rules_links_about);
+	builder.addSkip();
+	Filters::AddKeywordAlerts(builder);
+	EndSection(builder, tr::lng_serein_rules_alerts_about);
 });
 
 const SectionBuildMethod RulesSection::kBuild = kMeta.build;

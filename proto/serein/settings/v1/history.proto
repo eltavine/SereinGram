@@ -23,18 +23,61 @@ message HistorySettings {
   };
 
   optional bool history_save_deleted = 1 [(serein.options.v1.field) = {
+    section: {
+      title: "lng_serein_section_history_record"
+      id: "record"
+      keywords: [
+        "deleted",
+        "edited",
+        "bots"
+      ]
+    }
     keywords: [
       "deleted",
       "anti-recall",
       "history"
     ]
+    icon: "menuIconDelete"
+  }];
+  optional bool history_save_edits = 2 [(serein.options.v1.field) = {
+    keywords: [
+      "edit",
+      "history"
+    ]
+    icon: "menuIconEdit"
+  }];
+  optional bool history_include_bots = 3 [(serein.options.v1.field) = {
+    keywords: [
+      "bots",
+      "history"
+    ]
+    icon: "menuIconBot"
   }];
   optional bool history_keep_deleted_in_place = 6 [(serein.options.v1.field) = {
+    section: {
+      title: "lng_serein_section_history_deleted"
+      id: "deleted"
+      keywords: [
+        "deleted",
+        "media"
+      ]
+      note: "lng_serein_section_history_deleted_note"
+    }
     keywords: [
       "deleted",
       "anti-recall",
       "in chat"
     ]
+    icon: "menuIconShowInChat"
+  }];
+  optional bool history_quote_deleted_replies = 10 [(serein.options.v1.field) = {
+    keywords: [
+      "reply",
+      "quote",
+      "deleted"
+    ]
+    default_bool: true
+    icon: "menuIconReply"
   }];
   optional bool history_keep_expired_media = 8 [(serein.options.v1.field) = {
     keywords: [
@@ -43,6 +86,7 @@ message HistorySettings {
       "expired",
       "media"
     ]
+    icon: "menuIconTTL"
   }];
   optional bool history_keep_removed_chats = 9 [(serein.options.v1.field) = {
     keywords: [
@@ -53,22 +97,20 @@ message HistorySettings {
       "group"
     ]
     note: "lng_serein_history_keep_removed_chats_note"
-  }];
-  optional bool history_save_edits = 2 [(serein.options.v1.field) = {
-    keywords: [
-      "edit",
-      "history"
-    ]
-  }];
-  optional bool history_include_bots = 3 [(serein.options.v1.field) = {
-    keywords: [
-      "bots",
-      "history"
-    ]
+    icon: "menuIconRemovedUsers"
   }];
   // Zero keeps records until they are cleared by hand.
   optional int32 history_retention_days = 4 [
     (serein.options.v1.field) = {
+      section: {
+        title: "lng_serein_section_history_storage"
+        id: "storage"
+        keywords: [
+          "storage",
+          "days",
+          "limit"
+        ]
+      }
       keywords: [
         "history",
         "retention",
@@ -78,6 +120,7 @@ message HistorySettings {
         zero_label: "lng_serein_history_keep_forever"
         count_format: "lng_days"
       }
+      icon: "menuIconHourglass"
     },
     (buf.validate.field).int32 = {
       gte: 0
@@ -94,6 +137,7 @@ message HistorySettings {
       ]
       number: {zero_label: "lng_serein_history_unlimited"}
       note: "lng_serein_history_note"
+      icon: "menuIconStorage"
     },
     (buf.validate.field).int32 = {
       gte: 0

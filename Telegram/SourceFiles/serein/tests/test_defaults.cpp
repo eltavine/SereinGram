@@ -13,6 +13,7 @@
 #include "serein/schema/gen/settings/privacy.h"
 #include "serein/schema/gen/settings/services.h"
 #include "serein/schema/gen/settings/snapshot.h"
+#include "serein/tests/full_registry.h"
 #include "serein/tests/require.h"
 
 #include <doctest/doctest.h>
@@ -31,11 +32,15 @@ const auto kInertDefaults = std::map<std::string_view, std::string_view>{
 	{ "serein.checkUpdates", "replaces the updater that builds disable" },
 	{ "serein.stickerScale", "100 percent is the upstream size" },
 	{ "serein.fadeDeletedMessages", "needs history recording, off by default" },
+	{ "serein.highlightHistoryMarks", "needs history recording, off by default" },
+	{ "serein.historyQuoteDeletedReplies", "needs deleted messages kept in chat, off by default" },
 };
 
 const auto kGatedMenuActions = std::map<Serein::Menu::ActionId, std::string_view>{
+	{ Serein::Menu::ActionId::DownloadQueue, "needs sequential downloads, off by default" },
 	{ Serein::Menu::ActionId::EditHistory, "needs history recording, off by default" },
 	{ Serein::Menu::ActionId::DeletedMessages, "needs history recording, off by default" },
+	{ Serein::Menu::ActionId::RestoredMedia, "only in the history viewer, which needs recording" },
 	{ Serein::Menu::ActionId::HistoryExclusion, "needs history recording, off by default" },
 	{ Serein::Menu::ActionId::ReadUntilHere, "needs ghost read receipts, off by default" },
 	{ Serein::Menu::ActionId::QuickRatingFirst, "needs a quick rating, unset by default" },
@@ -62,20 +67,7 @@ void RequireKey(bool value, const char *message, std::string_view key) {
 
 TEST_CASE("NeutralDefaults") {
 	using namespace Serein;
-	auto registry = Registry();
-	Chats::RegisterOptions(registry);
-	Compose::RegisterOptions(registry);
-	Filters::RegisterOptions(registry);
-	Ghost::RegisterOptions(registry);
-	HistorySettings::RegisterOptions(registry);
-	Interface::RegisterOptions(registry);
-	Links::RegisterOptions(registry);
-	Media::RegisterOptions(registry);
-	Menu::RegisterOptions(registry);
-	Messages::RegisterOptions(registry);
-	Privacy::RegisterOptions(registry);
-	ServiceSettings::RegisterOptions(registry);
-	Snapshot::RegisterOptions(registry);
+	const auto registry = Tests::FullRegistry();
 	auto inert = std::size_t();
 	for (const auto &entry : registry.All()) {
 		const auto listed = kInertDefaults.contains(entry.key);

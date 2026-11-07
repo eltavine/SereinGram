@@ -59,4 +59,25 @@ struct ServicesConfig {
 	Codec::Error *error = nullptr);
 [[nodiscard]] QByteArray SerializeServicesConfig(const ServicesConfig &value);
 
+struct SendTranslations {
+	std::map<QString, QString> languages;
+
+	friend bool operator==(const SendTranslations &, const SendTranslations &) = default;
+};
+
+[[nodiscard]] bool Read(
+	const QJsonValue &json,
+	SendTranslations &result,
+	Codec::Error &error,
+	const QString &path);
+[[nodiscard]] QJsonValue Write(const SendTranslations &value);
+[[nodiscard]] bool Validate(
+	const SendTranslations &value,
+	Codec::Error &error,
+	const QString &path);
+[[nodiscard]] std::optional<SendTranslations> ParseSendTranslations(
+	const QByteArray &raw,
+	Codec::Error *error = nullptr);
+[[nodiscard]] QByteArray SerializeSendTranslations(const SendTranslations &value);
+
 } // namespace Serein::ServicesSchema

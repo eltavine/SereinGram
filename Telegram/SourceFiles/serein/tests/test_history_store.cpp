@@ -85,9 +85,14 @@ TEST_CASE("HistoryStore") {
 		editOnly.peerId = 999;
 		Require(store->save(otherPeer) && store->save(editOnly),
 			"records of other chats save");
-		Require(store->peersWithDeleted(10) == std::vector<qint64>{ 888, 777 },
-			"chats with deleted records not listed newest first");
-		Require(store->peersWithDeleted(1) == std::vector<qint64>{ 888 },
+		using Summary = Ports::PeerSummary;
+		Require(store->peersWithDeleted(std::nullopt) == std::vector<Summary>{
+				{ .peerId = 888, .count = 1, .lastRecordedAt = 400 },
+				{ .peerId = 777, .count = 2, .lastRecordedAt = 300 },
+			},
+			"chats with deleted records not listed newest first with counts");
+		Require(store->peersWithDeleted(1).size() == 1
+			&& store->peersWithDeleted(1)[0].peerId == 888,
 			"chats with deleted records not limited");
 		Require(store->clearPeer(888) && store->clearPeer(999),
 			"other chats clear");
@@ -143,4 +148,75 @@ TEST_CASE("HistoryStore") {
 	Require(!Adapters::SqlHistoryStore::Open(path, cipher, &error) && !error.isEmpty(),
 		"newer schema versions are refused");
 	std::cout << "PASS: Serein history store" << std::endl;
+}
+
+TEST_CASE("HistoryStorePaging") {
+	using namespace Serein;
+	using Kind = History::RecordKind;
+	using Order = Ports::RecordsOrder;
+	auto directory = QTemporaryDir();
+	Require(directory.isValid(), "temporary directory");
+	auto cipher = ReversingCipher();
+	auto store = Adapters::SqlHistoryStore::Open(
+		directory.filePath(u"history.sqlite3"_q),
+		cipher);
+	Require(store != nullptr, "history store opens");
+	for (auto id = 1; id <= 250; ++id) {
+		Require(store->save(Record(id, 1000 + id)), "deleted record saves");
+	}
+	Require(store->save(Record(10, 2000, Kind::Edited, 1)), "edit saves");
+	Require(store->save(Record(10, 2001, Kind::Edited, 2)), "second edit saves");
+
+	const auto ids = [](const std::vector<History::Record> &records) {
+		auto result = std::vector<qint64>();
+		for (const auto &record : records) {
+			result.push_back(record.messageId);
+		}
+		return result;
+	};
+	const auto deleted = Ports::RecordsQuery{ .peerId = 777, .kind = Kind::Deleted };
+	Require(store->count(deleted) == 250,
+		"every deleted record is counted beyond any former display limit");
+	Require(store->records(deleted).size() == 250,
+		"records without a limit are all returned");
+
+	auto newest = deleted;
+	newest.order = Order::Descending;
+	newest.limit = 3;
+	Require(ids(store->records(newest)) == std::vector<qint64>{ 250, 249, 248 },
+		"newest records come first in descending order");
+
+	auto older = deleted;
+	older.till = Ports::RecordBound{ .key = { 100, 0 } };
+	older.order = Order::Descending;
+	older.limit = 2;
+	Require(ids(store->records(older)) == std::vector<qint64>{ 99, 98 },
+		"records strictly before a key page backwards");
+	Require(store->count(older) == 99, "records before a key are counted");
+
+	auto newer = deleted;
+	newer.from = Ports::RecordBound{ .key = { 100, 0 }, .inclusive = true };
+	newer.limit = 2;
+	Require(ids(store->records(newer)) == std::vector<qint64>{ 100, 101 },
+		"inclusive lower bound keeps the key itself");
+	newer.from->inclusive = false;
+	Require(ids(store->records(newer)) == std::vector<qint64>{ 101, 102 },
+		"exclusive lower bound skips the key");
+
+	auto versions = Ports::RecordsQuery{ .peerId = 777, .messageId = 10 };
+	const auto all = store->records(versions);
+	Require(all.size() == 3
+		&& all[0].kind == Kind::Deleted
+		&& all[1].revision == 1
+		&& all[2].revision == 2,
+		"every version of one message is listed by revision");
+	versions.kind = Kind::Edited;
+	Require(store->count(versions) == 2, "versions filter by kind");
+	auto otherPeer = deleted;
+	otherPeer.peerId = 888;
+	Require(store->count(otherPeer) == 0 && store->records(otherPeer).empty(),
+		"other chats are not mixed in");
+	Require(store->deleted({ .peerId = 777 }).size() == 250,
+		"the legacy listing is no longer capped by default");
+	std::cout << "PASS: Serein history store paging" << std::endl;
 }

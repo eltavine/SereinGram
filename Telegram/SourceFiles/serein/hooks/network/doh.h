@@ -1,6 +1,10 @@
 #pragma once
 
+#include "base/basic_types.h"
+
 #include <QtCore/QStringList>
+
+class QObject;
 
 namespace Serein::Network {
 
@@ -14,5 +18,13 @@ void PrependCustomDoh(Attempts &attempts, Type type) {
 			typename Attempts::value_type{ type, host });
 	}
 }
+
+[[nodiscard]] bool ResolveWithSystemDns(
+	QObject *context,
+	const QString &domain,
+	const Fn<void(
+		const QString &domain,
+		const QStringList &ips,
+		crl::time expireAt)> &done);
 
 } // namespace Serein::Network

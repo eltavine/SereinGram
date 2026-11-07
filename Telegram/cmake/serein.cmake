@@ -1,4 +1,6 @@
 set(serein_sources
+    serein/chats/folder_icons.cpp
+    serein/chats/list_tools.cpp
     serein/chats/layout.cpp
     serein/chats/list_refresher.cpp
     serein/chats/promotions.cpp
@@ -17,16 +19,29 @@ set(serein_sources
     serein/compose/validators.cpp
     serein/app/language.cpp
     serein/core/exchange.cpp
+    serein/core/patterns.cpp
     serein/core/id_list.cpp
+    serein/app/native_settings.cpp
+    serein/adapters/tdesktop/native_settings.cpp
     serein/app/options.cpp
     serein/adapters/tdesktop/prefs.cpp
     serein/schema/codec.cpp
     serein/features/ghost/model/policy.cpp
     serein/features/ghost/model/exceptions.cpp
+    serein/features/presets/model/catalog.cpp
+    serein/features/quiet_hours/model/schedule.cpp
+    serein/features/keyword_alerts/model/keywords.cpp
+    serein/features/notifications/review.cpp
+    serein/features/send_translation/model/languages.cpp
+    serein/features/cleanup/model/candidates.cpp
     serein/features/history/deleted_marks.cpp
     serein/features/history/media_store.cpp
     serein/features/history/model/recorder.cpp
-    serein/features/updates/model/release.cpp
+    serein/features/history/model/reply_quote.cpp
+    serein/features/history/model/window.cpp
+    serein/features/online/model/presence.cpp
+    serein/features/updates/model/manifest.cpp
+    serein/features/updates/model/version.cpp
     serein/features/regdate/model/estimate.cpp
     serein/features/stories/model/post.cpp
     serein/adapters/openssl/aes_gcm_cipher.cpp
@@ -43,7 +58,18 @@ set(serein_sources
     serein/features/history/restore.cpp
     serein/features/history/backend.cpp
     serein/features/history/capture.cpp
+    serein/features/history/deleted_reply.cpp
     serein/features/history/recording.cpp
+    serein/features/history/wire.cpp
+    serein/features/history/wire_cache.cpp
+    serein/features/inspector/box.cpp
+    serein/features/inspector/dump.cpp
+    serein/features/inspector/menu.cpp
+    serein/features/inspector/model/facts.cpp
+    serein/features/inspector/model/render.cpp
+    serein/features/inspector/model/tl_tree.cpp
+    serein/features/inspector/sources.cpp
+    serein/app/inspector.cpp
     serein/app/lifecycle.cpp
     serein/app/main_menu.cpp
     serein/app/message_menu.cpp
@@ -55,11 +81,20 @@ set(serein_sources
     serein/app/shortcuts.cpp
     serein/app/sticker_set_menu.cpp
     serein/app/user_lookup.cpp
-    serein/features/history/bubbles.cpp
+    serein/features/history/copies.cpp
     serein/features/history/restored_message.cpp
     serein/features/history/viewer.cpp
+    serein/features/history/viewer/items.cpp
+    serein/features/history/viewer/saved_chats.cpp
+    serein/features/history/viewer/section.cpp
+    serein/features/history/viewer/source.cpp
+    serein/features/history/viewer/top_bar.cpp
+    serein/features/online/hooks.cpp
+    serein/features/online/status.cpp
+    serein/app/online_menu.cpp
     serein/app/tray_menu.cpp
     serein/features/updates/checker.cpp
+    serein/features/updates/install_target.cpp
     serein/features/stories/audience.cpp
     serein/features/stories/canvas.cpp
     serein/features/stories/common.cpp
@@ -69,11 +104,13 @@ set(serein_sources
     serein/features/stories/publisher.cpp
     serein/app/ghost_menu.cpp
     serein/features/ghost/send.cpp
+    serein/display/icon_tile.cpp
     serein/display/json_files.cpp
     serein/display/peer_id.cpp
     serein/display/reorder_row.cpp
     serein/display/text_entities.cpp
     serein/display/view_refresher.cpp
+    serein/interface/fonts.cpp
     serein/interface/main_menu.cpp
     serein/interface/app_icon.cpp
     serein/interface/main_menu_model.cpp
@@ -95,16 +132,23 @@ set(serein_sources
     serein/chats/shown_filters.cpp
     serein/chats/shown_order.cpp
     serein/interface/roundness.cpp
+    serein/settings/fonts.cpp
     serein/settings/interface.cpp
     serein/settings/restart.cpp
     serein/settings/rows.cpp
     serein/settings/ghost_exceptions.cpp
     serein/settings/subpages.cpp
     serein/privacy/auto_demo.cpp
+    serein/privacy/screenshot_protection.cpp
     serein/privacy/login_token.cpp
     serein/privacy/qr_decode.cpp
     serein/privacy/qr_scan.cpp
-    serein/admin/delete_mine.cpp
+    serein/features/jump/box.cpp
+    serein/features/jump/model/target.cpp
+    serein/features/purge/box.cpp
+    serein/features/purge/gateway.cpp
+    serein/features/purge/model/job.cpp
+    serein/features/purge/model/plan.cpp
     serein/admin/unblock_all.cpp
     serein/admin/upgrade.cpp
     serein/admin/shortcuts.cpp
@@ -116,8 +160,10 @@ set(serein_sources
     serein/menu/rating.cpp
     serein/menu/media.cpp
     serein/menu/buttons.cpp
+    serein/messages/markdown_menu.cpp
     serein/menu/details.cpp
     serein/menu/model.cpp
+    serein/menu/forward.cpp
     serein/menu/repeat.cpp
     serein/menu/reminder.cpp
     serein/menu/selection.cpp
@@ -127,8 +173,14 @@ set(serein_sources
     serein/media/download_names.cpp
     serein/media/force_preview.cpp
     serein/media/sticker_rounding.cpp
+    serein/media/cache.cpp
+    serein/media/downloads.cpp
+    serein/media/download_queue.cpp
+    serein/media/queue_menu.cpp
+    serein/media/player.cpp
     serein/media/voice_denoise.cpp
     serein/messages/format.cpp
+    serein/messages/markdown.cpp
     serein/messages/content.cpp
     serein/messages/dates.cpp
     serein/messages/persian_calendar.cpp
@@ -150,6 +202,7 @@ set(serein_sources
     serein/filters/subscription.cpp
     serein/filters/hide_message_menu.cpp
     serein/filters/menu.cpp
+    serein/links/clipboard.cpp
     serein/links/model.cpp
     serein/links/open.cpp
     serein/links/settings.cpp
@@ -157,9 +210,13 @@ set(serein_sources
     serein/snapshot/snapshot.cpp
     serein/privacy/profile.cpp
     serein/privacy/sessions.cpp
+    serein/privacy/bot_login.cpp
+    serein/privacy/network.cpp
+    serein/privacy/hidden.cpp
     serein/privacy/alias.cpp
     serein/privacy/alias_model.cpp
     serein/privacy/alias_rules.cpp
+    serein/settings/about.cpp
     serein/settings/home.cpp
     serein/settings/licenses.cpp
     serein/settings/lock.cpp
@@ -167,7 +224,14 @@ set(serein_sources
     serein/settings/chats.cpp
     serein/settings/compose.cpp
     serein/settings/cloud_backup.cpp
+    serein/settings/ayu_migration.cpp
     serein/settings/config.cpp
+    serein/settings/exchange_preview.cpp
+    serein/settings/presets.cpp
+    serein/settings/quiet_hours.cpp
+    serein/settings/keyword_alerts.cpp
+    serein/settings/send_translations.cpp
+    serein/settings/home_cover.cpp
     serein/settings/media.cpp
     serein/settings/menu.cpp
     serein/settings/privacy.cpp
@@ -186,6 +250,14 @@ set(serein_sources
     serein/links/preview.cpp
     serein/services/translation_context.cpp
     serein/services/draft_translation.cpp
+    serein/services/send_translation.cpp
+    serein/services/auto_transcription.cpp
+    serein/chats/chat_settings.cpp
+    serein/features/ghost/chat_row.cpp
+    serein/features/history/chat_row.cpp
+    serein/privacy/alias_row.cpp
+    serein/media/bulk_download.cpp
+    serein/chats/cleanup.cpp
     serein/services/summary.cpp
     serein/services/summary_protocol.cpp
     serein/network/dc_status.cpp
@@ -324,7 +396,12 @@ if (TARGET desktop-app::external_rnnoise)
     target_compile_definitions(Telegram PRIVATE SEREIN_HAVE_RNNOISE)
 endif()
 
-if (DESKTOP_APP_USE_PACKAGED)
+set(SEREIN_BUILD_PACKAGE "" CACHE STRING
+    "Release asset kind of a packaged build published on GitHub: flatpak, snap or pacman")
+if (NOT SEREIN_BUILD_PACKAGE MATCHES "^(flatpak|snap|pacman)?$")
+    message(FATAL_ERROR "SEREIN_BUILD_PACKAGE must be empty, flatpak, snap or pacman.")
+endif()
+if (DESKTOP_APP_USE_PACKAGED AND SEREIN_BUILD_PACKAGE STREQUAL "")
     target_compile_definitions(Telegram PRIVATE SEREIN_SYSTEM_PACKAGE)
 endif()
 
@@ -348,6 +425,7 @@ namespace Serein {
 
 const char kBuildChannel[] = "@SEREIN_BUILD_CHANNEL@";
 const char kBuildCommit[] = "@SEREIN_BUILD_COMMIT@";
+const char kBuildPackage[] = "@SEREIN_BUILD_PACKAGE@";
 
 } // namespace Serein
 ]]
@@ -398,6 +476,8 @@ if (DESKTOP_APP_TEST_APPS)
         SEREIN_LANG_SOURCE_DIR="${res_loc}/langs"
         SEREIN_OPENCC_DICTIONARY_DIR="${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/OpenCC/data/dictionary"
         SEREIN_REGDATE_POINTS="${res_loc}/serein/regdate_points.json"
+        SEREIN_PRESETS_DIR="${res_loc}/serein/presets"
+        SEREIN_RELEASE_FIXTURE="${CMAKE_CURRENT_SOURCE_DIR}/../tools/serein/tests/fixtures/release_manifest.json"
     )
 
     set_target_properties(test_serein PROPERTIES

@@ -63,13 +63,6 @@ inline constexpr auto kHideRecommendedEmoji = Option<bool>{
 	Category::Media,
 	"lng_serein_hide_recommended_emoji",
 	0 };
-inline constexpr auto kHideGifCategories = Option<bool>{
-	"serein.hideGifCategories",
-	Scope::Device,
-	false,
-	Category::Media,
-	"lng_serein_hide_gif_categories",
-	0 };
 inline constexpr auto kHideGreetingSticker = Option<bool>{
 	"serein.hideGreetingSticker",
 	Scope::Device,
@@ -95,6 +88,13 @@ inline const auto kStickerAuthorBot = Option<QString>{
 		return (value == QString())
 			|| ((value.toUcs4().size() <= 33) && (Codec::Matches(value, QString::fromUtf8("^(@?[A-Za-z][A-Za-z0-9_]{3,31})?$"))));
 	} };
+inline constexpr auto kHideGifCategories = Option<bool>{
+	"serein.hideGifCategories",
+	Scope::Device,
+	false,
+	Category::Media,
+	"lng_serein_hide_gif_categories",
+	0 };
 inline constexpr auto kDisableVideoAutoplay = Option<bool>{
 	"serein.disableVideoAutoplay",
 	Scope::Device,
@@ -108,6 +108,13 @@ inline constexpr auto kGifPlaybackControls = Option<bool>{
 	false,
 	Category::Media,
 	"lng_serein_gif_playback_controls",
+	0 };
+inline constexpr auto kMp4FilePreview = Option<bool>{
+	"serein.mp4FilePreview",
+	Scope::Device,
+	false,
+	Category::Media,
+	"lng_serein_mp4_file_preview",
 	0 };
 inline constexpr auto kForceClickPreview = Option<bool>{
 	"serein.forceClickPreview",
@@ -123,13 +130,6 @@ inline constexpr auto kDownloadsPerChat = Option<bool>{
 	Category::Media,
 	"lng_serein_downloads_per_chat",
 	0 };
-inline constexpr auto kMp4FilePreview = Option<bool>{
-	"serein.mp4FilePreview",
-	Scope::Device,
-	false,
-	Category::Media,
-	"lng_serein_mp4_file_preview",
-	0 };
 inline constexpr auto kDenoiseVoiceMessages = Option<bool>{
 	"serein.denoiseVoiceMessages",
 	Scope::Device,
@@ -144,6 +144,52 @@ inline constexpr auto kStoryPosting = Option<bool>{
 	Category::Media,
 	"lng_serein_story_posting",
 	0 };
+inline constexpr auto kExpandedAudioPlayer = Option<bool>{
+	"serein.expandedAudioPlayer",
+	Scope::Device,
+	false,
+	Category::Media,
+	"lng_serein_expanded_audio_player",
+	0 };
+inline constexpr auto kRememberPlaybackPosition = Option<bool>{
+	"serein.rememberPlaybackPosition",
+	Scope::Device,
+	false,
+	Category::Media,
+	"lng_serein_remember_playback_position",
+	0 };
+inline constexpr auto kSpacePlayback = Option<bool>{
+	"serein.spacePlayback",
+	Scope::Device,
+	false,
+	Category::Media,
+	"lng_serein_space_playback",
+	0 };
+inline constexpr auto kDownloadsCategory = Option<int>{
+	"serein.downloadsCategory",
+	Scope::Account,
+	0,
+	Category::Media,
+	"lng_serein_downloads_category",
+	static_cast<unsigned>(Flag::Hidden),
+	[](const int &value) {
+		return (value == 0)
+			|| ((value >= 0) && (value <= 4));
+	} };
+inline constexpr auto kDownloadsAllAccounts = Option<bool>{
+	"serein.downloadsAllAccounts",
+	Scope::Account,
+	false,
+	Category::Media,
+	"lng_serein_downloads_all_accounts",
+	static_cast<unsigned>(Flag::Hidden) };
+inline constexpr auto kSequentialDownloads = Option<bool>{
+	"serein.sequentialDownloads",
+	Scope::Device,
+	false,
+	Category::Media,
+	"lng_serein_sequential_downloads",
+	0 };
 
 inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kStickerScale));
@@ -153,17 +199,23 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kHideGroupStickers));
 	Expects(registry.Add(kHideRecommendedStickers));
 	Expects(registry.Add(kHideRecommendedEmoji));
-	Expects(registry.Add(kHideGifCategories));
 	Expects(registry.Add(kHideGreetingSticker));
 	Expects(registry.Add(kStickerPackAuthor));
 	Expects(registry.Add(kStickerAuthorBot));
+	Expects(registry.Add(kHideGifCategories));
 	Expects(registry.Add(kDisableVideoAutoplay));
 	Expects(registry.Add(kGifPlaybackControls));
+	Expects(registry.Add(kMp4FilePreview));
 	Expects(registry.Add(kForceClickPreview));
 	Expects(registry.Add(kDownloadsPerChat));
-	Expects(registry.Add(kMp4FilePreview));
 	Expects(registry.Add(kDenoiseVoiceMessages));
 	Expects(registry.Add(kStoryPosting));
+	Expects(registry.Add(kExpandedAudioPlayer));
+	Expects(registry.Add(kRememberPlaybackPosition));
+	Expects(registry.Add(kSpacePlayback));
+	Expects(registry.Add(kDownloadsCategory));
+	Expects(registry.Add(kDownloadsAllAccounts));
+	Expects(registry.Add(kSequentialDownloads));
 }
 
 } // namespace Serein::Media

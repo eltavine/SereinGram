@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "options": {
+    "serein.spaceOnSend": true,
+    "serein.spaceOnEdit": true,
+    "serein.readingSpacing": true
+  }
+}

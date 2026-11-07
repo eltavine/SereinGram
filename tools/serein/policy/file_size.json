@@ -8,6 +8,9 @@
     "tools/serein/",
     ".github/workflows/serein-*.yml"
   ],
+  "generated": [
+    "tools/serein/package-lock.json"
+  ],
   "extensions": [
     ".c",
     ".cc",

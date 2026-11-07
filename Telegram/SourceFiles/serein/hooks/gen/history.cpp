@@ -14,12 +14,36 @@ rpl::producer<bool> HistorySaveDeletedValue(gsl::not_null<Main::Session*> sessio
 	return ForAccount(session).Value(Serein::HistorySettings::kHistorySaveDeleted);
 }
 
+bool HistorySaveEdits(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Get(Serein::HistorySettings::kHistorySaveEdits);
+}
+
+rpl::producer<bool> HistorySaveEditsValue(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Value(Serein::HistorySettings::kHistorySaveEdits);
+}
+
+bool HistoryIncludeBots(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Get(Serein::HistorySettings::kHistoryIncludeBots);
+}
+
+rpl::producer<bool> HistoryIncludeBotsValue(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Value(Serein::HistorySettings::kHistoryIncludeBots);
+}
+
 bool HistoryKeepDeletedInPlace(gsl::not_null<Main::Session*> session) {
 	return ForAccount(session).Get(Serein::HistorySettings::kHistoryKeepDeletedInPlace);
 }
 
 rpl::producer<bool> HistoryKeepDeletedInPlaceValue(gsl::not_null<Main::Session*> session) {
 	return ForAccount(session).Value(Serein::HistorySettings::kHistoryKeepDeletedInPlace);
+}
+
+bool HistoryQuoteDeletedReplies(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Get(Serein::HistorySettings::kHistoryQuoteDeletedReplies);
+}
+
+rpl::producer<bool> HistoryQuoteDeletedRepliesValue(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Value(Serein::HistorySettings::kHistoryQuoteDeletedReplies);
 }
 
 bool HistoryKeepExpiredMedia(gsl::not_null<Main::Session*> session) {
@@ -36,22 +60,6 @@ bool HistoryKeepRemovedChats(gsl::not_null<Main::Session*> session) {
 
 rpl::producer<bool> HistoryKeepRemovedChatsValue(gsl::not_null<Main::Session*> session) {
 	return ForAccount(session).Value(Serein::HistorySettings::kHistoryKeepRemovedChats);
-}
-
-bool HistorySaveEdits(gsl::not_null<Main::Session*> session) {
-	return ForAccount(session).Get(Serein::HistorySettings::kHistorySaveEdits);
-}
-
-rpl::producer<bool> HistorySaveEditsValue(gsl::not_null<Main::Session*> session) {
-	return ForAccount(session).Value(Serein::HistorySettings::kHistorySaveEdits);
-}
-
-bool HistoryIncludeBots(gsl::not_null<Main::Session*> session) {
-	return ForAccount(session).Get(Serein::HistorySettings::kHistoryIncludeBots);
-}
-
-rpl::producer<bool> HistoryIncludeBotsValue(gsl::not_null<Main::Session*> session) {
-	return ForAccount(session).Value(Serein::HistorySettings::kHistoryIncludeBots);
 }
 
 int HistoryRetentionDays(gsl::not_null<Main::Session*> session) {

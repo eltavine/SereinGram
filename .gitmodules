@@ -21,7 +21,7 @@
 	url = https://github.com/desktop-app/codegen.git
 [submodule "Telegram/lib_ui"]
 	path = Telegram/lib_ui
-	url = https://github.com/desktop-app/lib_ui.git
+	url = https://github.com/eltavine/serein-lib-ui.git
 [submodule "Telegram/lib_lottie"]
 	path = Telegram/lib_lottie
 	url = https://github.com/desktop-app/lib_lottie.git
@@ -112,3 +112,12 @@
 [submodule "Telegram/ThirdParty/quirc"]
 	path = Telegram/ThirdParty/quirc
 	url = https://github.com/dlbeer/quirc.git
+[submodule "Telegram/ThirdParty/zxcvbn"]
+	path = Telegram/ThirdParty/zxcvbn
+	url = https://github.com/tsyrogit/zxcvbn-c.git
+[submodule "Telegram/ThirdParty/twidget"]
+	path = Telegram/ThirdParty/twidget
+	url = https://github.com/TelegramMessenger/twidget.git
+[submodule "Telegram/ThirdParty/widget-sandbox"]
+	path = Telegram/ThirdParty/widget-sandbox
+	url = https://github.com/TelegramMessenger/widget-sandbox.git

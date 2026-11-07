@@ -3,7 +3,6 @@ name: Serein Windows.
 on:
   push:
     branches:
-      - develop
       - main
     paths-ignore:
       - 'docs/**'
@@ -88,7 +87,7 @@ jobs:
 
   windows:
     name: Windows
-    runs-on: ${{ matrix.arch == 'arm64' && 'windows-11-arm' || 'windows-latest' }}
+    runs-on: ${{ matrix.arch == 'arm64' && 'windows-11-arm' || 'windows-2025-vs2026' }}
 
     strategy:
       fail-fast: false
@@ -100,8 +99,9 @@ jobs:
       # Not CONFIG: MSYS2's pacman-key reads that variable as its config file.
       BUILD_CONFIG: ${{ inputs.config || 'Debug' }}
       ASSET_ARCH: ${{ (inputs.arch || 'x64') == 'arm64' && 'arm64' || 'x86_64' }}
-      # Only these runs write caches: every branch and pull request can read the default branch's.
-      SAVE_CACHE: ${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
+      # WHY: only default-branch runs write caches, which every branch and pull request can read.
+      # A schedule event has no repository payload, but scheduled runs only start on the default branch.
+      SAVE_CACHE: ${{ github.event_name == 'schedule' || github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
       PREPARE_PATH: "Telegram/build/prepare/prepare.py"
 
     defaults:
@@ -149,7 +149,7 @@ jobs:
         run: echo "REPO_NAME=${GITHUB_REPOSITORY##*/}" >> "$GITHUB_ENV"
 
       - name: Clone.
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
           ref: ${{ inputs.ref }}
@@ -178,7 +178,8 @@ jobs:
         shell: pwsh
         run: |
           $exe = Join-Path $env:RUNNER_TEMP 'vs_buildtools.exe'
-          Invoke-WebRequest -Uri https://aka.ms/vs/18/stable/vs_buildtools.exe -OutFile $exe
+          Invoke-WebRequest -Uri https://aka.ms/vs/18/stable/vs_buildtools.exe -OutFile $exe `
+            -MaximumRetryCount 5 -RetryIntervalSec 15
           $p = Start-Process -FilePath $exe -Wait -PassThru -ArgumentList `
             '--quiet','--wait','--norestart','--nocache', `
             '--add','Microsoft.VisualStudio.Workload.VCTools', `
@@ -202,7 +203,7 @@ jobs:
       - name: ThirdParty cache.
         id: cache-third-party
         if: ${{ !inputs.no_cache }}
-        uses: actions/cache/restore@v6
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ${{ env.TBUILD }}\ThirdParty
           key: ${{ runner.OS }}-${{ runner.arch }}-third-party-${{ env.CACHE_KEY }}
@@ -211,7 +212,7 @@ jobs:
       - name: Libraries cache.
         id: cache-libs
         if: ${{ !inputs.no_cache }}
-        uses: actions/cache/restore@v6
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             ${{ env.LibrariesPath }}\*
@@ -227,7 +228,7 @@ jobs:
       - name: Qt cache.
         id: cache-qt
         if: ${{ !inputs.no_cache }}
-        uses: actions/cache/restore@v6
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             ${{ env.LibrariesPath }}\[qQ]t[_-]*
@@ -259,7 +260,7 @@ jobs:
 
       - name: Save the ThirdParty cache.
         if: ${{ !inputs.no_cache && env.SAVE_CACHE == 'true' && steps.cache-third-party.outputs.cache-hit != 'true' }}
-        uses: actions/cache/save@v6
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ${{ env.TBUILD }}\ThirdParty
           key: ${{ steps.cache-third-party.outputs.cache-primary-key }}
@@ -291,12 +292,12 @@ jobs:
 
       - name: Free up some disk space.
         shell: bash
-        run: find "$LibrariesPath" '(' '(' ! '(' -name '*.lib' -o -name '*.a' -o -name '*.exe' -o -name '*.h' -o -name '*.hpp' -o -name '*.inc' -o -name '*.cmake' -o -name '*.pc' -o -path '*/include/*' -o -path '*/objects-*' -o -path '*/cache_keys/*' -o -path '*/patches/*' -o -path '*/nv-codec-headers/*' ')' -type f ')' -o -empty ')' -delete
+        run: find "$LibrariesPath" '(' '(' ! '(' -name '*.lib' -o -name '*.a' -o -name '*.exe' -o -name '*.h' -o -name '*.hpp' -o -name '*.inc' -o -name '*.cmake' -o -name '*.pc' -o -path '*/include/*' -o -path '*/objects-*' -o -path '*/cache_keys/*' -o -path '*/patches/*' -o -path '*/wallet_engine/*' -o '(' '(' -path '*/tlottie/*' -o -path '*/wallet-engine/*' -o -path '*/tdesktop_rust/*' ')' ! -path '*/target/*' ')' -o -path '*/nv-codec-headers/*' ')' -type f ')' -o -empty ')' -delete
 
       # Saved after the cleanup, like upstream's post-job save, to leave build trees out.
       - name: Save the libraries cache.
         if: ${{ !inputs.no_cache && env.SAVE_CACHE == 'true' && steps.cache-libs.outputs.cache-hit != 'true' }}
-        uses: actions/cache/save@v6
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             ${{ env.LibrariesPath }}\*
@@ -308,7 +309,7 @@ jobs:
 
       - name: Save the Qt cache.
         if: ${{ !inputs.no_cache && env.SAVE_CACHE == 'true' && steps.cache-qt.outputs.cache-hit != 'true' }}
-        uses: actions/cache/save@v6
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             ${{ env.LibrariesPath }}\[qQ]t[_-]*
@@ -354,8 +355,12 @@ jobs:
           $version = (Select-String -Path "$root\Telegram\build\version" -Pattern '^AppVersionStr (.+)$').Matches[0].Groups[1].Value.Trim()
           $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
           if (-not (Test-Path $iscc)) {
-            choco install innosetup --no-progress -y
-            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+            foreach ($attempt in 1..3) {
+              choco install innosetup --no-progress -y
+              if ($LASTEXITCODE -eq 0) { break }
+              if ($attempt -eq 3) { exit $LASTEXITCODE }
+              Start-Sleep -Seconds (30 * $attempt)
+            }
           }
           & $iscc "/DMyAppVersion=$version" "/DMyAppVersionFull=$version" "/DReleasePath=$root\out\$env:BUILD_CONFIG" "/DMyBuildTarget=${{ matrix.arch == 'arm64' && 'winarm' || 'win64' }}" "$root\Telegram\build\setup.iss"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
@@ -365,9 +370,8 @@ jobs:
         run: |
           $out = "$env:TBUILD\$env:REPO_NAME\out\$env:BUILD_CONFIG"
           $base = "SereinGram-windows-$env:ASSET_ARCH"
-          New-Item -ItemType Directory -Force -Path artifact, portable\SereinGram | Out-Null
-          Copy-Item "$out\SereinGram.exe" portable\SereinGram\
-          Compress-Archive -Path portable\SereinGram -DestinationPath "artifact\$base-portable.zip"
+          New-Item -ItemType Directory -Force -Path artifact | Out-Null
+          Copy-Item "$out\SereinGram.exe" "artifact\$base-portable.exe"
           $setup = @(Get-ChildItem "$out\tsetup-*.exe")
           if ($setup.Count -ne 1) { throw "Expected one installer, found $($setup.Count)." }
           Move-Item $setup[0].FullName "artifact\$base-setup.exe"
@@ -377,9 +381,6 @@ jobs:
         shell: pwsh
         run: |
           $base = "artifact\SereinGram-windows-$env:ASSET_ARCH"
-          $portable = Join-Path $env:RUNNER_TEMP 'portable-check'
-          Expand-Archive "$base-portable.zip" -DestinationPath $portable
-          if (-not (Test-Path "$portable\SereinGram\SereinGram.exe")) { throw 'The portable archive lacks SereinGram.exe.' }
           $target = Join-Path $env:RUNNER_TEMP 'SereinGramInstall'
           $install = Start-Process -FilePath "$base-setup.exe" -Wait -PassThru `
             -ArgumentList '/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', '/SP-', "/DIR=$target"
@@ -387,10 +388,18 @@ jobs:
           python "$env:TBUILD\$env:REPO_NAME\tools\serein\smoke_test.py" "$target\SereinGram.exe"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-      - uses: actions/upload-artifact@v7
-        name: Upload artifact.
+      - name: Upload the installer.
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: SereinGram-windows-${{ env.ASSET_ARCH }}
-          path: artifact\
+          path: artifact/SereinGram-windows-${{ env.ASSET_ARCH }}-setup.exe
+          archive: false
+          if-no-files-found: error
+          retention-days: 3
+
+      - name: Upload the portable executable.
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          path: artifact/SereinGram-windows-${{ env.ASSET_ARCH }}-portable.exe
+          archive: false
           if-no-files-found: error
           retention-days: 3

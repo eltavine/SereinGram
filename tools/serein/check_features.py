@@ -9,7 +9,7 @@ from pathlib import Path
 
 STATUSES = {"Planned", "In Progress", "Implemented", "Verified"}
 PRIORITIES = {"P0", "P1", "P2", "P3"}
-SOURCES = {"Ni", "Na", "Ad", "Aa", "T", "D"}
+SOURCES = {"Ni", "Na", "Ad", "Aa", "Sw", "T", "D"}
 ID = re.compile(r"SG-[A-Z]+-\d{2}")
 
 

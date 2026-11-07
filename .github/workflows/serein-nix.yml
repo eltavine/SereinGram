@@ -3,7 +3,6 @@ name: Serein Nix.
 on:
   push:
     branches:
-      - develop
       - main
     paths:
       - 'flake.nix'
@@ -13,9 +12,10 @@ on:
   schedule:
     - cron: '0 2 * * 1'
   workflow_dispatch:
+  workflow_call:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}-nix
   cancel-in-progress: false
 
 permissions:
@@ -40,10 +40,10 @@ jobs:
         if: matrix.system == 'x86_64-linux'
         uses: jlumbroso/free-disk-space@ceedf095f4ec1a097402bc6bd80831f2e1a6fde6
         with:
-          tool-cache: true
+          preinstalled-runtimes: true
 
       - name: Clone.
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
           submodules: recursive
@@ -58,7 +58,7 @@ jobs:
           fi
 
       - name: Upload the lock file.
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: flake-lock-${{ matrix.system }}
           path: flake.lock
@@ -66,8 +66,8 @@ jobs:
 
       - name: Formatting.
         run: |
-          nix fmt flake.nix packaging/nix/package.nix
-          git diff --exit-code -- flake.nix packaging/nix/package.nix
+          nix fmt flake.nix packaging/nix/*.nix
+          git diff --exit-code -- flake.nix packaging/nix/
 
       - name: Build with the test-only credentials.
         run: nix build --print-build-logs ".#checks.${{ matrix.system }}.sereingram"
@@ -77,6 +77,6 @@ jobs:
         env:
           QT_XCB_GL_INTEGRATION: none
         run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq xvfb >/dev/null
+          tools/serein/retry.sh 3 30 sudo apt-get update -qq -o Acquire::Retries=3
+          tools/serein/retry.sh 3 30 sudo apt-get install -y -qq -o Acquire::Retries=3 xvfb >/dev/null
           xvfb-run -a python3 tools/serein/smoke_test.py result/bin/SereinGram

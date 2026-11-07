@@ -42,7 +42,7 @@ if have shellcheck "the shell script lint"; then
 		| xargs -0 shellcheck
 fi
 git ls-files -z '.github/workflows/serein-*.yml' 'packaging/**/*.yml' 'packaging/**/*.yaml' \
-	crowdin.yml tools/serein/yamllint.yml \
+	crowdin.yml tools/serein/yamllint.yml tools/serein/zizmor.yml \
 	| xargs -0 uvx --quiet yamllint@1.37.1 --strict -c tools/serein/yamllint.yml
 if have npx "the documentation lint"; then
 	npx --yes markdownlint-cli2@0.19.1 --config tools/serein/serein.markdownlint-cli2.jsonc \
@@ -58,7 +58,7 @@ python3 tools/serein/upstream_budget.py
 python3 tools/serein/check_features.py
 if have actionlint "the workflow lint"; then
 	actionlint .github/workflows/serein-*.yml
-	uvx --quiet zizmor@1.16.3 --offline --quiet .github/workflows/serein-*.yml
+	uvx --quiet zizmor@1.30.1 --offline --quiet --config tools/serein/zizmor.yml .github/workflows/serein-*.yml
 fi
 if [ "${SEREIN_SKIP_TIDY:-0}" != 1 ]; then
 	python3 tools/serein/run_clang_tidy.py -p "$build" \

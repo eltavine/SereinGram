@@ -4,12 +4,15 @@
 #include "serein/interface/global_shortcut.h"
 
 #include "serein/interface/options.h"
+#include "serein/settings/fonts.h"
 #include "serein/hooks/interface/main_menu.h"
 #include "serein/interface/app_icon.h"
 #include "serein/settings/gen/interface_rows.h"
 #include "serein/settings/home.h"
+#include "serein/settings/quiet_hours.h"
 #include "serein/settings/restart.h"
 #include "serein/settings/page.h"
+#include "serein/settings/rows.h"
 #include "lang/lang_keys.h"
 #include "settings/settings_builder.h"
 #include "settings/settings_common_session.h"
@@ -20,6 +23,7 @@
 #include "ui/widgets/fields/input_field.h"
 #include "window/window_session_controller.h"
 #include "styles/style_menu_icons.h"
+#include "styles/style_serein.h"
 #include "styles/style_settings.h"
 
 namespace Serein {
@@ -87,12 +91,12 @@ void AddRoundness(
 		const Option<int> &option,
 		rpl::producer<QString> title,
 		QString id,
-		QStringList keywords) {
+		QStringList keywords,
+		RowVisual visual) {
 	const auto controller = builder.controller();
-	builder.addButton({
+	AddRow(builder, {
 		.id = std::move(id),
 		.title = std::move(title),
-		.st = &st::settingsButtonNoIcon,
 		.label = ForDevice().Value(option) | rpl::map(RoundnessLabel),
 		.onClick = [=] {
 			controller->show(Box([=](not_null<Ui::GenericBox*> box) {
@@ -102,6 +106,7 @@ void AddRoundness(
 			}));
 		},
 		.keywords = std::move(keywords),
+		.visual = std::move(visual),
 	});
 }
 
@@ -134,12 +139,12 @@ void AddDelay(
 		SectionBuilder &builder,
 		const Option<int> &option,
 		rpl::producer<QString> title,
-		QString id) {
+		QString id,
+		RowVisual visual) {
 	const auto controller = builder.controller();
-	builder.addButton({
+	AddRow(builder, {
 		.id = std::move(id),
 		.title = std::move(title),
-		.st = &st::settingsButtonNoIcon,
 		.label = ForDevice().Value(option) | rpl::map(DelayLabel),
 		.onClick = [=] {
 			controller->show(Box([=](not_null<Ui::GenericBox*> box) {
@@ -149,14 +154,15 @@ void AddDelay(
 			}));
 		},
 		.keywords = { u"notification"_q, u"delay"_q },
+		.visual = std::move(visual),
 	});
 }
 
 const auto kMeta = BuildHelper({
 	.id = InterfaceSection::Id(),
 	.parentId = HomeId(),
-	.title = &tr::lng_serein_interface,
-	.icon = &st::menuIconChatBubble,
+	.title = Interface::kSubpageTitle,
+	.icon = Interface::kSubpageIcon,
 }, [](SectionBuilder &builder) {
 	const auto controller = builder.controller();
 	Interface::AddLayout(builder, {
@@ -164,24 +170,35 @@ const auto kMeta = BuildHelper({
 			AddRoundness(builder, Interface::kBubbleRoundness,
 				tr::lng_serein_bubble_roundness(),
 				u"serein/interface/bubble-roundness"_q,
-				{ u"bubble"_q, u"roundness"_q });
+				{ u"bubble"_q, u"roundness"_q },
+				{
+					.icon = &st::menuIconChatDiscuss,
+					.about = tr::lng_serein_bubble_roundness_about,
+				});
 		},
 		.avatarRoundness = [&] {
 			AddRoundness(builder, Interface::kAvatarRoundness,
 				tr::lng_serein_avatar_roundness(),
 				u"serein/interface/avatar-roundness"_q,
-				{ u"avatar"_q, u"roundness"_q });
+				{ u"avatar"_q, u"roundness"_q },
+				{
+					.icon = &st::menuIconUniqueProfile,
+					.about = tr::lng_serein_avatar_roundness_about,
+				});
 		},
 		.uniformAvatarShapes = [&] {
-			const auto button = builder.addButton({
+			const auto button = AddRow(builder, {
 				.id = u"serein/interface/uniform-avatars"_q,
 				.title = tr::lng_serein_uniform_avatar_shapes(),
-				.st = &st::settingsButtonNoIcon,
 				.label = rpl::single(tr::lng_serein_restart_required(tr::now)),
 				.toggled = ForDevice().Value(Interface::kUniformAvatarShapes),
 				.keywords = { u"forum"_q, u"channel"_q, u"avatar"_q },
 				.shown = ForDevice().Value(Interface::kAvatarRoundness)
 					| rpl::map([](int value) { return value != 0; }),
+				.visual = {
+					.icon = &st::menuIconTopics,
+					.about = tr::lng_serein_uniform_avatar_shapes_about,
+				},
 			});
 			if (button) {
 				button->toggledChanges(
@@ -191,18 +208,21 @@ const auto kMeta = BuildHelper({
 				}, button->lifetime());
 			}
 		},
+		.monospaceFont = [&] { AddMonospaceFont(builder); },
 		.mainMenu = [&] {
-			builder.addButton({
+			AddRow(builder, {
 				.id = u"serein/interface/main-menu"_q,
 				.title = tr::lng_serein_main_menu(),
-				.st = &st::settingsButtonNoIcon,
 				.onClick = [=] { controller->show(Box(Interface::MainMenuBox)); },
 				.keywords = { u"menu"_q, u"order"_q, u"visibility"_q },
+				.visual = {
+					.icon = &st::menuIconReorder,
+					.about = tr::lng_serein_main_menu_row_about,
+				},
 			});
-			builder.addButton({
+			AddRow(builder, {
 				.id = u"serein/interface/app-icon"_q,
 				.title = tr::lng_serein_app_icon(),
-				.st = &st::settingsButtonNoIcon,
 				.label = Interface::CustomAppIconValue(
 				) | rpl::map([](bool custom) {
 					return custom
@@ -211,23 +231,35 @@ const auto kMeta = BuildHelper({
 				}),
 				.onClick = [=] { controller->show(Box(Interface::AppIconBox)); },
 				.keywords = { u"icon"_q, u"dock"_q, u"taskbar"_q },
+				.visual = {
+					.icon = &st::menuIconSerein,
+					.about = tr::lng_serein_app_icon_row_about,
+				},
 			});
 		},
 		.notificationDelay = [&] {
 			AddDelay(builder, Interface::kNotificationDelay,
 				tr::lng_serein_notification_delay(),
-				u"serein/interface/notification-delay"_q);
+				u"serein/interface/notification-delay"_q,
+				{
+					.icon = &st::menuIconHourglass,
+					.about = tr::lng_serein_notification_delay_about,
+				});
 		},
 		.otherDeviceNotificationDelay = [&] {
 			AddDelay(builder, Interface::kOtherDeviceNotificationDelay,
 				tr::lng_serein_other_device_notification_delay(),
-				u"serein/interface/other-device-notification-delay"_q);
+				u"serein/interface/other-device-notification-delay"_q,
+				{
+					.icon = &st::menuIconDevices,
+					.about = tr::lng_serein_other_device_notification_delay_about,
+				});
 		},
+		.quietHours = [&] { Interface::AddQuietHours(builder); },
 		.globalShortcut = [&] {
-			builder.addButton({
+			AddRow(builder, {
 				.id = u"serein/interface/global-shortcut"_q,
 				.title = tr::lng_serein_global_shortcut(),
-				.st = &st::settingsButtonNoIcon,
 				.label = ForDevice().Value(
 					Interface::kGlobalShortcut
 				) | rpl::map([](const QByteArray &value) {
@@ -239,11 +271,14 @@ const auto kMeta = BuildHelper({
 					controller->show(Box(Interface::GlobalShortcutBox));
 				},
 				.keywords = { u"hotkey"_q, u"shortcut"_q, u"global"_q },
+				.visual = {
+					.icon = &st::menuIconShortcut,
+					.about = tr::lng_serein_global_shortcut_row_about,
+				},
 			});
 		},
 		.checkUpdates = [&] {
 			if (kSystemPackage) {
-				AddNote(builder, tr::lng_serein_updates_system_package);
 				return;
 			}
 			AddToggle(builder, {
@@ -251,6 +286,8 @@ const auto kMeta = BuildHelper({
 				.title = tr::lng_serein_check_updates,
 				.id = u"serein/interface/check-updates"_q,
 				.keywords = { u"updates"_q, u"GitHub"_q, u"version"_q },
+				.icon = &st::menuIconDownload,
+				.about = tr::lng_serein_check_updates_about,
 			});
 		},
 	});

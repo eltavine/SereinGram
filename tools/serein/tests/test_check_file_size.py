@@ -74,6 +74,18 @@ class CheckFileSizeTest(unittest.TestCase):
         self.assertIn("own/CMakeLists.txt", output)
         self.assertIn("tools/gen.py", output)
 
+    def test_ignores_generated_files(self):
+        self.write_policy(generated=["own/gen/", "own/*.lock.cpp"])
+        self.write("own/gen/a.cpp", 50)
+        self.write("own/deps.lock.cpp", 50)
+        code, output = self.run_check()
+        self.assertEqual(code, 0, output)
+        self.write("own/b.cpp", 4)
+        code, output = self.run_check()
+        self.assertEqual(code, 1)
+        self.assertIn("own/b.cpp", output)
+        self.assertNotIn("own/gen/a.cpp", output)
+
     def test_respects_gitignore(self):
         (self.root / ".gitignore").write_text("own/build/\n", encoding="utf-8")
         self.write("own/build/generated.cpp", 50)

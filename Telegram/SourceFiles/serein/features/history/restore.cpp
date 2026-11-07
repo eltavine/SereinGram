@@ -18,8 +18,6 @@
 namespace Serein::Hooks {
 namespace {
 
-constexpr auto kRestoreLimit = 500;
-
 using RestoredKey = std::pair<PeerId, qint64>;
 
 [[nodiscard]] std::set<RestoredKey> &Restored(
@@ -35,11 +33,10 @@ using RestoredKey = std::pair<PeerId, qint64>;
 void Restore(
 		gsl::not_null<::History*> history,
 		const Serein::History::Record &record) {
-	const auto item = HistoryFeature::MakeRestoredMessage(
-		history,
-		record,
-		history->session().data().nextLocalMessageId(),
-		MessageFlag::Local);
+	const auto item = HistoryFeature::MakeRestoredMessage(history, record, {
+		.id = history->session().data().nextLocalMessageId(),
+		.flags = MessageFlag::Local,
+	});
 	history->insertRestoredMessage(item);
 	HistoryFeature::MarkDeletedInPlace(item);
 }
@@ -72,7 +69,6 @@ void RestoreLoaded(gsl::not_null<::History*> history) {
 		.peerId = qint64(peerId.value),
 		.minMessageId = minId.bare,
 		.maxMessageId = maxId.bare,
-		.limit = kRestoreLimit,
 	});
 	for (const auto &record : records) {
 		const auto key = RestoredKey(peerId, record.messageId);

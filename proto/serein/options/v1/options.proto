@@ -46,6 +46,9 @@ message Subpage {
   // Name of the style::icon in st:: shown on that button.
   string icon = 2;
   repeated string keywords = 3;
+  // Lang key of the explanation under that button. Unset means
+  // lng_serein_page_<proto file name>_about.
+  string about = 4;
 }
 
 // Unset fields follow the naming convention: the C++ constant is
@@ -81,6 +84,10 @@ message FieldOptions {
   // Generates a single choice row for an int32 option.
   ChoiceInput choice = 17;
   TextInput text = 18;
+  // Menu icon style shown on a colored tile, for example "menuIconInfo".
+  string icon = 19;
+  // Lang key of the explanation under the row, "lng_serein_<field>_about" when empty.
+  string about = 20;
 }
 
 message TextInput {
@@ -112,6 +119,10 @@ message Section {
   // Search id suffix below serein/<page>/.
   string id = 2;
   repeated string keywords = 3;
+  // Lang key of the explanation that closes the section.
+  string note = 4;
+  // Name of a custom row the page draws at the end of the section.
+  string extra = 5;
 }
 
 // A file annotated with file options gets C++ types and JSON codecs.

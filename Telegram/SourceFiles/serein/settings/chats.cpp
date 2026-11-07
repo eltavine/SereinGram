@@ -1,11 +1,13 @@
 #include "serein/settings/chats.h"
 
+#include "serein/chats/cleanup.h"
 #include "serein/chats/options.h"
 #include "serein/hooks/chats/sort.h"
 #include "serein/core/options.h"
 #include "serein/settings/gen/chats_rows.h"
 #include "serein/settings/home.h"
 #include "serein/settings/page.h"
+#include "serein/settings/rows.h"
 #include "data/data_chat_filters.h"
 #include "data/data_session.h"
 #include "main/main_session.h"
@@ -153,34 +155,15 @@ void HiddenFoldersBox(
 const auto kMeta = BuildHelper({
 	.id = ChatsSection::Id(),
 	.parentId = HomeId(),
-	.title = &tr::lng_serein_chats,
-	.icon = &st::menuIconChatBubble,
+	.title = Chats::kSubpageTitle,
+	.icon = Chats::kSubpageIcon,
 }, [](SectionBuilder &builder) {
 	const auto controller = builder.controller();
 	Chats::AddLayout(builder, {
-		.startupFolderMode = [&] {
-			const auto session = &controller->session();
-			builder.addButton({
-				.id = u"serein/chats/startup-folder"_q,
-				.title = tr::lng_serein_startup_folder(),
-				.st = &st::settingsButtonNoIcon,
-				.label = rpl::single(StartupFolderLabel(session)) | rpl::then(
-					ForAccount(session).changes() | rpl::map([=](auto) {
-						return StartupFolderLabel(session);
-					})),
-				.onClick = [=] {
-					controller->show(Box([=](not_null<Ui::GenericBox*> box) {
-						StartupFolderBox(box, session);
-					}));
-				},
-				.keywords = { u"startup"_q, u"folder"_q },
-			});
-		},
 		.chatSort = [&] {
-			builder.addButton({
+			AddRow(builder, {
 				.id = u"serein/chats/chat-sort"_q,
 				.title = tr::lng_serein_chat_sort(),
-				.st = &st::settingsButtonNoIcon,
 				.label = ForDevice().Value(Chats::kChatSort)
 					| rpl::map([](int value) {
 						const auto count = std::popcount(unsigned(value & 15));
@@ -191,14 +174,38 @@ const auto kMeta = BuildHelper({
 					}),
 				.onClick = [=] { controller->show(Box(Chats::ChatSortBox)); },
 				.keywords = { u"sort"_q, u"unread"_q, u"contacts"_q },
+				.visual = {
+					.icon = &st::menuIconReorder,
+					.about = tr::lng_serein_chat_sort_about,
+				},
+			});
+		},
+		.startupFolderMode = [&] {
+			const auto session = builder.session();
+			AddRow(builder, {
+				.id = u"serein/chats/startup-folder"_q,
+				.title = tr::lng_serein_startup_folder(),
+				.label = rpl::single(StartupFolderLabel(session)) | rpl::then(
+					ForAccount(session).changes() | rpl::map([=](auto) {
+						return StartupFolderLabel(session);
+					})),
+				.onClick = [=] {
+					controller->show(Box([=](not_null<Ui::GenericBox*> box) {
+						StartupFolderBox(box, session);
+					}));
+				},
+				.keywords = { u"startup"_q, u"folder"_q },
+				.visual = {
+					.icon = &st::menuIconAddToFolder,
+					.about = tr::lng_serein_startup_folder_about,
+				},
 			});
 		},
 		.hiddenFolderIds = [&] {
-			const auto session = &controller->session();
-			builder.addButton({
+			const auto session = builder.session();
+			AddRow(builder, {
 				.id = u"serein/chats/hidden-folders"_q,
 				.title = tr::lng_serein_hidden_folders(),
-				.st = &st::settingsButtonNoIcon,
 				.label = ForAccount(session).Value(
 					Chats::kHiddenFolderIds
 				) | rpl::map([=](const QString &) {
@@ -208,6 +215,22 @@ const auto kMeta = BuildHelper({
 					controller->show(Box(HiddenFoldersBox, session));
 				},
 				.keywords = { u"folder"_q, u"hide"_q, u"tabs"_q },
+				.visual = {
+					.icon = &st::menuIconStealth,
+					.about = tr::lng_serein_hidden_folders_row_about,
+				},
+			});
+		},
+		.cleanup = [&] {
+			AddRow(builder, {
+				.id = u"serein/chats/cleanup"_q,
+				.title = tr::lng_serein_cleanup(),
+				.onClick = [=] { Chats::ShowChatCleanup(controller); },
+				.keywords = { u"clean"_q, u"deleted"_q, u"inactive"_q, u"bot"_q },
+				.visual = {
+					.icon = &st::menuIconClear,
+					.about = tr::lng_serein_cleanup_row_about,
+				},
 			});
 		},
 	});
