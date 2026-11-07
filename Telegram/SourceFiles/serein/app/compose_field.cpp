@@ -3,6 +3,7 @@
 #include "serein/compose/format_toolbar.h"
 #include "serein/compose/mention.h"
 #include "serein/compose/options.h"
+#include "serein/links/clipboard.h"
 #include "serein/compose/text_replacements.h"
 #include "serein/hooks/compose/text.h"
 #include "serein/services/draft_translation.h"
@@ -13,6 +14,7 @@ namespace Serein::Hooks::Compose {
 void InstallFieldMenu(
 		not_null<Ui::InputField*> field,
 		std::shared_ptr<Main::SessionShow> show) {
+	Serein::Links::InstallCleanPaste(field);
 	Serein::Compose::InstallQuickReplies(field);
 	Serein::Compose::InstallFormatToolbar(field, show != nullptr);
 	crl::on_main(field, [=] {

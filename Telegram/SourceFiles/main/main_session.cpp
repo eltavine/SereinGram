@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "main/main_session.h"
+#include "serein/hooks/media/download_queue.h"
 #include "serein/hooks/display/view_refresher.h"
 #include "serein/hooks/messages/badges.h"
 
@@ -189,6 +190,7 @@ Session::Session(
 , _fastButtonsBots(std::make_unique<Support::FastButtonsBots>(this))
 , _saveSettingsTimer([=] { saveSettings(); }) {
 	Expects(_settings != nullptr);
+	_sereinDownloads = std::make_unique<Serein::Hooks::DownloadQueue>(this);
 	Serein::ViewRefresher::Attach(this);
 
 	_api->requestTermsUpdate();
@@ -334,6 +336,7 @@ void Session::finishLogout() {
 }
 
 Session::~Session() {
+	_sereinDownloads.reset();
 	Wallet::CloseWallet(this);
 	unlockTerms();
 	data().clear();

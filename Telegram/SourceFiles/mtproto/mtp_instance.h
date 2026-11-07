@@ -10,6 +10,8 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "mtproto/details/mtproto_serialized_request.h"
 #include "mtproto/mtproto_response.h"
 
+#include <atomic>
+
 namespace MTP {
 namespace details {
 
@@ -90,6 +92,8 @@ public:
 	[[nodiscard]] AuthKeysList getKeysForWrite() const;
 	void addKeysForDestroy(AuthKeysList &&keys);
 
+	void setNetworkEnabled(bool enabled);
+	[[nodiscard]] bool networkEnabled() const;
 	void restart();
 	void restart(ShiftedDcId shiftedDcId);
 	int32 dcstate(ShiftedDcId shiftedDcId = 0);
@@ -241,6 +245,7 @@ private:
 		mtpRequestId afterRequestId);
 
 	class Private;
+	std::atomic<bool> _networkEnabled = true;
 	const std::unique_ptr<Private> _private;
 
 };

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "serein/core/exchange.h"
+#include "serein/ports/native_settings.h"
 #include "lang/lang_keys.h"
 
 namespace Ui {
@@ -30,6 +31,7 @@ void AddSelectableText(not_null<Ui::GenericBox*> box, const QString &text);
 void ShowExchangePreview(
 	not_null<Window::SessionController*> controller,
 	const ExchangePlan &plan,
-	const ExchangePreviewTexts &texts);
+	const ExchangePreviewTexts &texts,
+	const NativeSettingsPlan &native = {});
 
 } // namespace Serein

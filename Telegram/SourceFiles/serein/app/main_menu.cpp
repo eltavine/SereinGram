@@ -2,11 +2,17 @@
 
 #include "serein/app/online_menu.h"
 #include "serein/chats/recent_tracking.h"
+#include "serein/privacy/hidden.h"
+#include "serein/privacy/options.h"
+#include "serein/privacy/network.h"
+#include "mtproto/mtp_instance.h"
 #include "serein/features/stories/composer.h"
 #include "serein/hooks/ghost.h"
 #include "serein/schema/gen/settings/interface.h"
 #include "serein/schema/gen/settings/media.h"
 #include "data/data_user.h"
+#include "info/downloads/info_downloads_widget.h"
+#include "info/info_memento.h"
 #include "lang/lang_keys.h"
 #include "main/main_session.h"
 #include "settings/settings_common.h"
@@ -20,6 +26,22 @@ void FillMainMenu(
 		gsl::not_null<Window::SessionController*> controller,
 		const MainMenuAction &addAction) {
 	App::AddOwnOnlineStatus(controller, addAction);
+	if (ForDevice().Get(Serein::Privacy::kAccountNetworkControls)) {
+		addAction(controller->session().mtp().networkEnabled()
+			? tr::lng_serein_disconnect_account() : tr::lng_serein_reconnect_account(),
+			{ &st::menuIconNetwork }
+		)->setClickedCallback([=] { Serein::Privacy::ToggleAccountNetwork(controller); });
+	}
+	if (ForDevice().Get(Serein::Privacy::kHiddenChatsEnabled)) {
+		addAction(tr::lng_serein_hidden_chats(), { &st::menuIconArchive }
+		)->setClickedCallback([=] { Serein::Privacy::ShowHiddenChats(controller); });
+	}
+	if (ForDevice().Get(Serein::Privacy::kHiddenAccountsEnabled)) {
+		addAction(tr::lng_serein_hidden_accounts(), { &st::menuIconLock }
+		)->setClickedCallback([=] { Serein::Privacy::ShowHiddenAccounts(controller); });
+	}
+	addAction(tr::lng_downloads_section(), { &st::menuIconDownload }
+	)->setClickedCallback([=] { controller->showSection(Info::Downloads::Make(controller->session().user())); });
 	if (ForDevice().Get(Serein::Media::kStoryPosting)) {
 		addAction(
 			tr::lng_serein_story_new(),

@@ -86,16 +86,17 @@ Options *AccountOptions(not_null<Window::SessionController*> controller) {
 void ShowExchangePreview(
 		not_null<Window::SessionController*> controller,
 		const ExchangePlan &plan,
-		const ExchangePreviewTexts &texts) {
-	if (!plan.error.isEmpty()) {
-		controller->showToast(plan.error);
+		const ExchangePreviewTexts &texts,
+		const NativeSettingsPlan &native) {
+	if (!plan.error.isEmpty() || !native.error.isEmpty()) {
+		controller->showToast(plan.error.isEmpty() ? native.error : plan.error);
 		return;
 	}
 	controller->show(Box([=](not_null<Ui::GenericBox*> box) {
 		box->setTitle(texts.title());
 		AddSelectableText(box, texts.about(tr::now));
 		AddSelectableText(box, tr::lng_serein_config_changes(
-			tr::now, lt_amount, QString::number(plan.changes.size())));
+			tr::now, lt_amount, QString::number(plan.changes.size() + native.preview.size())));
 		for (const auto &change : plan.changes) {
 			if (const auto info = Find(change.key)) {
 				AddSelectableText(box, ScopedOptionTitle(*info) + u"\n"_q
@@ -103,13 +104,20 @@ void ShowExchangePreview(
 					+ u" → "_q + ValueText(*info, change.after));
 			}
 		}
+		for (const auto &line : native.preview) {
+			AddSelectableText(box, line);
+		}
 		if (!plan.skippedKeys.isEmpty()) {
 			AddSelectableText(box, tr::lng_serein_config_unknown(
 				tr::now, lt_amount, QString::number(plan.skippedKeys.size()))
 				+ u"\n"_q + plan.skippedKeys.mid(0, kSkippedShown).join('\n'));
 		}
-		if (!plan.changes.empty()) {
+		if (!plan.changes.empty() || !native.preview.empty()) {
 			box->addButton(texts.apply(), crl::guard(controller, [=] {
+				if (native.unchanged && !native.unchanged()) {
+					box->showToast(tr::lng_serein_native_changed(tr::now));
+					return;
+				}
 				const auto result = Exchange::Apply(
 					ForDevice(),
 					AccountOptions(controller),
@@ -119,9 +127,10 @@ void ShowExchangePreview(
 					box->showToast(result.error);
 					return;
 				}
+				if (native.apply) native.apply();
 				box->closeBox();
 				controller->showToast(texts.done(tr::now));
-				if (NeedsRestart(plan)) {
+				if (NeedsRestart(plan) || !native.preview.empty()) {
 					ShowRestartPrompt(controller);
 				}
 			}));

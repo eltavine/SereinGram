@@ -60,6 +60,18 @@ enum class FilterIcon : uchar {
 	// Poo,
 
 	Edit,
+	SereinDesk,
+	SereinCalendar,
+	SereinPin,
+	SereinDocument,
+	SereinTools,
+	SereinWrench,
+	SereinCamera,
+	SereinHeadphones,
+	SereinPaw,
+	SereinCoffee,
+	SereinBooks,
+	SereinMountain,
 };
 
 struct FilterIcons {

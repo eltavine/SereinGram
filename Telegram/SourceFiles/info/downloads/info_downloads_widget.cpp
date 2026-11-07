@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "info/downloads/info_downloads_widget.h"
+#include "serein/hooks/media/downloads.h"
 
 #include "info/downloads/info_downloads_inner_widget.h"
 #include "info/info_controller.h"
@@ -104,6 +105,7 @@ void Widget::selectionAction(SelectionAction action) {
 }
 
 void Widget::fillTopBarMenu(const Ui::Menu::MenuCallback &addAction) {
+	Serein::Media::FillDownloadFilters(&controller()->session(), addAction);
 	AddDeleteAllAction(this, controller(), addAction);
 }
 
@@ -118,9 +120,10 @@ void AddDeleteAllAction(
 		const auto added = manager.loadedHasNonCloudFile()
 			? QString()
 			: tr::lng_downloads_delete_in_cloud(tr::now);
+		const auto ids = Serein::Media::VisibleDownloadIds(&controller->session());
 		const auto deleteSure = [=, &manager](Fn<void()> close) {
 			Ui::PostponeCall(widget, close);
-			manager.deleteAll();
+			manager.deleteFiles(ids);
 		};
 		window->show(Ui::MakeConfirmBox({
 			.text = phrase + (added.isEmpty() ? QString() : "\n\n" + added),

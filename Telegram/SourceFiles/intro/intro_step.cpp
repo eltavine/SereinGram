@@ -208,6 +208,10 @@ void Step::finish(const MTPUser &user, QImage &&photo) {
 		}
 	}
 
+	if (user.c_user().is_bot()) {
+		createSession(user, std::move(photo), {}, false);
+		return;
+	}
 	api().request(MTPmessages_GetDialogFilters(
 	)).done([=](const MTPmessages_DialogFilters &result) {
 		const auto &d = result.data();

@@ -3,6 +3,8 @@
 
 #include "serein/core/exchange.h"
 #include "serein/hooks/core/language.h"
+#include "serein/hooks/settings/native.h"
+#include "serein/privacy/options.h"
 #include "serein/settings/cloud_backup.h"
 #include "serein/settings/chats.h"
 #include "serein/settings/compose.h"
@@ -60,10 +62,16 @@ public:
 
 [[nodiscard]] ExchangeExport ExportAll(
 		not_null<Window::SessionController*> controller) {
-	return Exchange::Export(
+	auto result = Exchange::Export(
 		ForDevice(),
 		AccountOptions(controller),
 		RegisteredOptions());
+	result.data = QJsonDocument(QJsonObject{
+		{ u"version"_q, 3 },
+		{ u"serein"_q, QJsonDocument::fromJson(result.data).object() },
+		{ u"telegram"_q, Hooks::ExportNativeSettings(&controller->session()) },
+	}).toJson(QJsonDocument::Indented);
+	return result;
 }
 
 Settings::Type CategorySection(Category category) {
@@ -82,7 +90,7 @@ Settings::Type CategorySection(Category category) {
 }
 
 void ShowModified(not_null<Window::SessionController*> controller) {
-	const auto root = QJsonDocument::fromJson(ExportAll(controller).data).object();
+	const auto root = QJsonDocument::fromJson(ExportAll(controller).data).object().value(u"serein"_q).toObject();
 	auto keys = root.value(u"options"_q).toObject().keys();
 	keys += root.value(u"account"_q).toObject().keys();
 	const auto entries = SearchRegistry::Instance().collectAll(
@@ -125,19 +133,31 @@ void ShowModified(not_null<Window::SessionController*> controller) {
 void ShowImport(
 		not_null<Window::SessionController*> controller,
 		const QByteArray &bytes) {
+	auto settings = bytes;
+	auto native = NativeSettingsPlan();
+	const auto root = QJsonDocument::fromJson(bytes).object();
+	if (root.value(u"version"_q) == QJsonValue(3)) {
+		if (bytes.size() > kMaximumImportBytes || root.size() != 3
+			|| !root.value(u"serein"_q).isObject() || !root.value(u"telegram"_q).isObject()) {
+			controller->showToast(tr::lng_serein_native_invalid(tr::now));
+			return;
+		}
+		settings = QJsonDocument(root.value(u"serein"_q).toObject()).toJson();
+		native = Hooks::PlanNativeSettings(&controller->session(), root.value(u"telegram"_q).toObject());
+	}
 	ShowExchangePreview(
 		controller,
 		Exchange::PlanImport(
 			ForDevice(),
 			AccountOptions(controller),
 			RegisteredOptions(),
-			bytes),
+			settings),
 		{
 			.title = tr::lng_serein_config_preview,
 			.about = tr::lng_serein_config_import_about,
 			.apply = tr::lng_serein_config_apply,
 			.done = tr::lng_serein_config_imported,
-		});
+		}, native);
 }
 
 void ShowReset(not_null<Window::SessionController*> controller) {
@@ -168,6 +188,10 @@ void Export(not_null<Window::SessionController*> controller) {
 		exported.data,
 		crl::guard(controller, [=](QString text) {
 			controller->showToast(text);
+		}), crl::guard(controller, [=] {
+			if (ForDevice().Get(Privacy::kAutoBackupExports)) {
+				BackUpToSavedMessages(controller, exported.data);
+			}
 		}));
 }
 
@@ -255,6 +279,13 @@ const auto kMeta = BuildHelper({
 		u"serein/config/saved-backup"_q,
 		tr::lng_serein_section_config_backup,
 		{ u"backup"_q, u"restore"_q },
+	});
+	AddToggle(builder, {
+		.option = &Privacy::kAutoBackupExports,
+		.title = tr::lng_serein_auto_backup_exports,
+		.id = u"serein/config/auto-backup"_q,
+		.icon = &st::menuIconSavedMessages,
+		.about = tr::lng_serein_auto_backup_exports_about,
 	});
 	AddRow(builder, {
 		.id = u"serein/config/backup"_q,

@@ -14,8 +14,9 @@ namespace Ui::Menu { struct MenuCallback; }
 namespace Serein::Chats {
 
 [[nodiscard]] bool AllowedInFolder(
-	gsl::not_null<::History*> history,
+	gsl::not_null<const ::History*> history,
 	int32 folderId);
+void WatchManagedChats(gsl::not_null<Main::Session*> session);
 void AddManagedOnlyAction(
 	const Ui::Menu::MenuCallback &addAction,
 	gsl::not_null<Main::Session*> session,

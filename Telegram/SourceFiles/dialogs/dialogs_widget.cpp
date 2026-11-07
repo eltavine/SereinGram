@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "dialogs/dialogs_widget.h"
+#include "serein/hooks/chats/list_tools.h"
 
 #include "base/call_delayed.h"
 #include "base/qt/qt_key_modifiers.h"
@@ -484,6 +485,7 @@ Widget::Widget(
 			_childListPeerId.value(),
 			_childListShown.value(),
 			makeChildListShown)));
+	Serein::Chats::AttachChatListTools(_search, controller);
 	controller->activeChatsFilter(
 	) | rpl::on_next([=](FilterId id) {
 		switchToChatsFilter(id);

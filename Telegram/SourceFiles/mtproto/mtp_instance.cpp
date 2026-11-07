@@ -103,6 +103,7 @@ public:
 	-> rpl::producer<mtpRequestId>;
 	[[nodiscard]] rpl::producer<> frozenErrorReceived() const;
 
+	void setNetworkEnabled(bool enabled);
 	void restart();
 	void restart(ShiftedDcId shiftedDcId);
 	[[nodiscard]] int32 dcstate(ShiftedDcId shiftedDcId = 0);
@@ -518,7 +519,7 @@ rpl::producer<DcId> Instance::Private::mainDcIdValue() const {
 }
 
 void Instance::Private::requestConfig() {
-	if (_configLoader || isKeysDestroyer()) {
+	if (_configLoader || isKeysDestroyer() || !_instance->networkEnabled()) {
 		return;
 	}
 	_configLoader = std::make_unique<ConfigLoader>(
@@ -609,6 +610,16 @@ void Instance::Private::requestCDNConfig() {
 		});
 		Local::writeSettings();
 	}).send();
+}
+
+void Instance::Private::setNetworkEnabled(bool enabled) {
+	_configLoader.reset();
+	_domainResolver.reset();
+	for (const auto &[id, session] : _sessions) {
+		if (enabled) session->start();
+		else session->stop();
+	}
+	if (enabled) requestConfig();
 }
 
 void Instance::Private::restart() {
@@ -1951,6 +1962,7 @@ Instance::Instance(Mode mode, Fields &&fields)
 }
 
 void Instance::resolveProxyDomain(const QString &host) {
+	if (!networkEnabled()) return;
 	_private->resolveProxyDomain(host);
 }
 
@@ -2032,6 +2044,16 @@ void Instance::requestConfigIfOld() {
 
 void Instance::requestCDNConfig() {
 	_private->requestCDNConfig();
+}
+
+void Instance::setNetworkEnabled(bool enabled) {
+	if (_networkEnabled.exchange(enabled) != enabled) {
+		_private->setNetworkEnabled(enabled);
+	}
+}
+
+bool Instance::networkEnabled() const {
+	return _networkEnabled.load();
 }
 
 void Instance::restart() {

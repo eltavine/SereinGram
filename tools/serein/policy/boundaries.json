@@ -247,7 +247,8 @@
         "serein/ports/",
         "serein/hooks/",
         "serein/display/",
-        "serein/features/cleanup/model/"
+        "serein/features/cleanup/model/",
+        "serein/media/cache.h"
       ],
       "app": true,
       "libraries": true

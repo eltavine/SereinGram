@@ -31,6 +31,7 @@ void RefreshFolder(gsl::not_null<Main::Session*> session) {
 	const auto data = &session->data();
 	const auto refresh = [=](not_null<PeerData*> peer) {
 		if (const auto history = data->historyLoaded(peer->id)) {
+			history->updateChatListExistence();
 			data->chatsFilters().refreshHistory(history);
 		}
 	};
@@ -42,13 +43,12 @@ void RefreshFolder(gsl::not_null<Main::Session*> session) {
 } // namespace
 
 bool AllowedInFolder(
-		gsl::not_null<History*> history,
+		gsl::not_null<const History*> history,
 		FilterId folderId) {
-	if (!folderId
-		|| !ForDevice().Get(kManagedFolderFilter)
-		|| !SelectedFolders(&history->session()).contains(folderId)) {
-		return true;
-	}
+	const auto enabled = !folderId
+		? (ForDevice().Get(kChatListTools) && ForAccount(&history->session()).Get(kOnlyManagedChats))
+		: (ForDevice().Get(kManagedFolderFilter) && SelectedFolders(&history->session()).contains(folderId));
+	if (!enabled) return true;
 	const auto peer = history->peer;
 	if (const auto chat = peer->asChat()) {
 		return chat->amCreator() || chat->adminRights() != 0;
@@ -56,6 +56,15 @@ bool AllowedInFolder(
 		return channel->amCreator() || channel->adminRights() != 0;
 	}
 	return false;
+}
+
+void WatchManagedChats(gsl::not_null<Main::Session*> session) {
+	ForAccount(session).Value(kOnlyManagedChats) | rpl::on_next([=] {
+		RefreshFolder(session);
+	}, session->lifetime());
+	ForDevice().Value(kChatListTools) | rpl::skip(1) | rpl::on_next([=] {
+		RefreshFolder(session);
+	}, session->lifetime());
 }
 
 void AddManagedOnlyAction(

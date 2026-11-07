@@ -12,7 +12,7 @@
 
 namespace Serein::Privacy {
 
-inline const auto kToggleRows = std::array<ToggleRow, 13>{ {
+inline const auto kToggleRows = std::array<ToggleRow, 16>{ {
 	{
 		.option = &kDemoMode,
 		.title = tr::lng_serein_demo_mode,
@@ -130,6 +130,33 @@ inline const auto kToggleRows = std::array<ToggleRow, 13>{ {
 		.tile = &st::settingsIconBg5,
 		.about = tr::lng_serein_save_protected_content_about,
 	},
+	{
+		.option = &kHiddenChatsEnabled,
+		.title = tr::lng_serein_hidden_chats_enabled,
+		.id = u"serein/privacy/hidden-chats-enabled"_q,
+		.keywords = {  },
+		.icon = &st::menuIconArchive,
+		.tile = &st::settingsIconBg3,
+		.about = tr::lng_serein_hidden_chats_enabled_about,
+	},
+	{
+		.option = &kHiddenAccountsEnabled,
+		.title = tr::lng_serein_hidden_accounts_enabled,
+		.id = u"serein/privacy/hidden-accounts-enabled"_q,
+		.keywords = {  },
+		.icon = &st::menuIconLock,
+		.tile = &st::settingsIconBg3,
+		.about = tr::lng_serein_hidden_accounts_enabled_about,
+	},
+	{
+		.option = &kAccountNetworkControls,
+		.title = tr::lng_serein_account_network_controls,
+		.id = u"serein/privacy/account-network-controls"_q,
+		.keywords = {  },
+		.icon = &st::menuIconNetwork,
+		.tile = &st::settingsIconBg3,
+		.about = tr::lng_serein_account_network_controls_about,
+	},
 } };
 
 inline void AddLayout(
@@ -182,6 +209,15 @@ inline void AddLayout(
 	AddToggle(builder, kToggleRows[11]);
 	AddToggle(builder, kToggleRows[12]);
 	EndSection(builder, tr::lng_serein_save_protected_content_note);
+	AddSection(builder, {
+		u"serein/privacy/hidden"_q,
+		tr::lng_serein_hidden_chats,
+		{  },
+	});
+	AddToggle(builder, kToggleRows[13]);
+	AddToggle(builder, kToggleRows[14]);
+	AddToggle(builder, kToggleRows[15]);
+	EndSection(builder);
 }
 
 inline constexpr auto kSubpageTitle = &tr::lng_serein_privacy;

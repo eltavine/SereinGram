@@ -323,6 +323,7 @@ void Session::sendAnything(crl::time msCanWait) {
 }
 
 void Session::needToResumeAndSend() {
+	if (!_instance->networkEnabled()) return;
 	if (_killed) {
 		DEBUG_LOG(("Session Info: can't resume a killed session"));
 		return;

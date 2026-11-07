@@ -12,7 +12,7 @@
 
 namespace Serein::Media {
 
-inline const auto kToggleRows = std::array<ToggleRow, 18>{ {
+inline const auto kToggleRows = std::array<ToggleRow, 19>{ {
 	{
 		.option = &kHideStickerTime,
 		.title = tr::lng_serein_hide_sticker_time,
@@ -175,6 +175,15 @@ inline const auto kToggleRows = std::array<ToggleRow, 18>{ {
 		.tile = &st::settingsIconBg1,
 		.about = tr::lng_serein_space_playback_about,
 	},
+	{
+		.option = &kSequentialDownloads,
+		.title = tr::lng_serein_sequential_downloads,
+		.id = u"serein/media/sequential-downloads"_q,
+		.keywords = {  },
+		.icon = &st::menuIconDownload,
+		.tile = &st::settingsIconBg1,
+		.about = tr::lng_serein_sequential_downloads_about,
+	},
 } };
 
 inline void AddLayout(
@@ -250,6 +259,7 @@ inline void AddLayout(
 	AddToggle(builder, kToggleRows[15]);
 	AddToggle(builder, kToggleRows[16]);
 	AddToggle(builder, kToggleRows[17]);
+	AddToggle(builder, kToggleRows[18]);
 	EndSection(builder);
 }
 

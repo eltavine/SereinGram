@@ -18,6 +18,8 @@
 #include "ui/layers/generic_box.h"
 #include "ui/widgets/buttons.h"
 #include "ui/widgets/labels.h"
+#include "window/main_window.h"
+#include "window/window_controller.h"
 #include "window/window_session_controller.h"
 
 #include <QtCore/QDir>
@@ -139,6 +141,13 @@ void AttachExpandedPlayer(
 			|| !ForDevice().Get(kExpandedAudioPlayer)) {
 			return base::EventFilterResult::Continue;
 		}
+		const auto player = ::Media::Player::instance();
+		const auto track = player->getState(AudioMsgId::Type::Song).id.audio();
+		if (player->getActiveType() != AudioMsgId::Type::Song
+			|| !track
+			|| &track->session() != &controller->session()) {
+			return base::EventFilterResult::Continue;
+		}
 		ShowExpandedPlayer(controller);
 		return base::EventFilterResult::Cancel;
 	});
@@ -146,14 +155,25 @@ void AttachExpandedPlayer(
 
 void StartPlaybackTools() {
 	base::install_event_filter(&Core::App(), qApp, [](not_null<QEvent*> event) {
-		if (event->type() != QEvent::KeyPress || !ForDevice().Get(kSpacePlayback)) {
+		if (event->type() != QEvent::KeyPress || Core::Quitting() || !ForDevice().Get(kSpacePlayback)) {
 			return base::EventFilterResult::Continue;
 		}
 		const auto key = static_cast<QKeyEvent*>(event.get());
-		const auto player = ::Media::Player::instance();
 		if (key->key() != Qt::Key_Space || key->modifiers() != Qt::NoModifier
-			|| key->isAutoRepeat() || Editable(QApplication::focusWidget())
-			|| !QApplication::activeWindow() || !player->getState(player->getActiveType()).id) {
+			|| key->isAutoRepeat() || Editable(QApplication::focusWidget())) {
+			return base::EventFilterResult::Continue;
+		}
+		const auto window = Core::App().activeWindow();
+		if (!window || QApplication::activeWindow() != window->widget().get()) {
+			return base::EventFilterResult::Continue;
+		}
+		const auto controller = window->sessionController();
+		if (!controller || Core::App().passcodeLocked()) {
+			return base::EventFilterResult::Continue;
+		}
+		const auto player = ::Media::Player::instance();
+		const auto track = player->getState(player->getActiveType()).id.audio();
+		if (!track || &track->session() != &controller->session()) {
 			return base::EventFilterResult::Continue;
 		}
 		player->playPause();

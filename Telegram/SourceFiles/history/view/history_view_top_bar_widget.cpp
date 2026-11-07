@@ -1095,7 +1095,7 @@ void TopBarWidget::refreshInfoButton() {
 			Ui::UserpicButton::Source::PeerPhoto,
 			infoButtonStyle(),
 			infoPeer->userpicShape());
-		Serein::Hooks::Online::BindAvatar(info, infoPeer);
+		Serein::Hooks::Online::BindAvatar(info, infoPeer, [=] { updateControlsGeometry(); });
 		info->showSavedMessagesOnSelf(true);
 		info->showMyNotesOnSelf(true);
 		_info.destroy();
@@ -1141,7 +1141,7 @@ void TopBarWidget::updateInfoButtonVisibility() {
 	}
 	const auto shown = (communityChatsListBar() && !rootChatsListBar())
 		? communityUserpicShown()
-		: (_controller->adaptive().isOneColumn() || !_primaryWindow);
+		: (_controller->adaptive().isOneColumn() || !_primaryWindow || (_activeChat.section == Section::History && Serein::Hooks::Online::ShowPrivateAvatar(_activeChat.key.peer())));
 	_info->setVisible(!_chooseForReportReason && shown);
 }
 

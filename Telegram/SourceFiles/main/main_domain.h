@@ -93,6 +93,7 @@ public:
 	[[nodiscard]] bool unreadBadgeMuted() const;
 	[[nodiscard]] rpl::producer<> unreadBadgeChanges() const;
 	void notifyUnreadBadgeChanged();
+	void notifyAccountVisibilityChanged();
 
 	[[nodiscard]] not_null<Main::Account*> add(MTP::Environment environment);
 	void maybeActivate(not_null<Main::Account*> account);

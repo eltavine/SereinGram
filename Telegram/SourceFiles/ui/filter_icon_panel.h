@@ -74,6 +74,7 @@ private:
 	void mousePress(Qt::MouseButton button);
 	void mouseRelease(Qt::MouseButton button);
 
+	const std::vector<FilterIcon> _icons;
 	const not_null<Ui::RpWidget*> _inner;
 	rpl::event_stream<FilterIconChosen> _chosen;
 	Ui::RoundRect _innerBg;

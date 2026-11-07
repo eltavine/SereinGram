@@ -22,10 +22,18 @@ inline constexpr auto kPreviewLinkRules = Option<bool>{
 	Category::Rules,
 	"lng_serein_link_previews",
 	0 };
+inline constexpr auto kStripTrackingParameters = Option<bool>{
+	"serein.stripTrackingParameters",
+	Scope::Device,
+	false,
+	Category::Rules,
+	"lng_serein_strip_tracking_parameters",
+	0 };
 
 inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kRules));
 	Expects(registry.Add(kPreviewLinkRules));
+	Expects(registry.Add(kStripTrackingParameters));
 }
 
 } // namespace Serein::Links

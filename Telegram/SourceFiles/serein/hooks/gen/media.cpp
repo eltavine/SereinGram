@@ -174,4 +174,28 @@ rpl::producer<bool> SpacePlaybackValue() {
 	return ForDevice().Value(Serein::Media::kSpacePlayback);
 }
 
+int DownloadsCategory(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Get(Serein::Media::kDownloadsCategory);
+}
+
+rpl::producer<int> DownloadsCategoryValue(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Value(Serein::Media::kDownloadsCategory);
+}
+
+bool DownloadsAllAccounts(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Get(Serein::Media::kDownloadsAllAccounts);
+}
+
+rpl::producer<bool> DownloadsAllAccountsValue(gsl::not_null<Main::Session*> session) {
+	return ForAccount(session).Value(Serein::Media::kDownloadsAllAccounts);
+}
+
+bool SequentialDownloads() {
+	return ForDevice().Get(Serein::Media::kSequentialDownloads);
+}
+
+rpl::producer<bool> SequentialDownloadsValue() {
+	return ForDevice().Value(Serein::Media::kSequentialDownloads);
+}
+
 } // namespace Serein::Hooks::Media

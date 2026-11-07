@@ -1,6 +1,7 @@
 #include "serein/hooks/interface/notifications.h"
 
 #include "serein/core/options.h"
+#include "serein/hooks/privacy/hidden.h"
 #include "serein/features/keyword_alerts/model/keywords.h"
 #include "serein/features/quiet_hours/model/schedule.h"
 #include "serein/schema/gen/settings/filters.h"
@@ -9,6 +10,7 @@
 #include "data/data_user.h"
 #include "history/history.h"
 #include "history/history_item.h"
+#include "main/main_session.h"
 
 #include <QtCore/QDateTime>
 
@@ -69,6 +71,8 @@ template <typename Document, typename Read>
 std::optional<bool> ReviewNotification(
 		not_null<HistoryItem*> item,
 		bool message) {
+	if (Privacy::ChatHidden(item->history()->peer)
+		|| Privacy::AccountHidden(&item->history()->session().account())) return false;
 	const auto keywordMatch = KeywordMatch(item, message);
 	if (Quiet(item, message, keywordMatch)) {
 		return false;

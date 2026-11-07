@@ -30,12 +30,12 @@ void ChooseFont(not_null<Window::SessionController*> controller) {
 	const auto dialog = new QFontDialog(initial, controller->widget());
 	dialog->setAttribute(Qt::WA_DeleteOnClose);
 	dialog->setOption(QFontDialog::MonospacedFonts);
-	QObject::connect(dialog, &QFontDialog::fontSelected, controller, [=](const QFont &font) {
+	QObject::connect(dialog, &QFontDialog::fontSelected, dialog, crl::guard(controller, [=](const QFont &font) {
 		if (font.family() != current) {
 			Expects(ForDevice().Set(kMonospaceFont, font.family()));
 			ShowRestartPrompt(controller);
 		}
-	});
+	}));
 	dialog->open();
 }
 

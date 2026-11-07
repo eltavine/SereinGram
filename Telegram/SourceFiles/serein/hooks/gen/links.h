@@ -10,5 +10,7 @@ namespace Serein::Hooks::Links {
 [[nodiscard]] rpl::producer<QByteArray> RulesValue();
 [[nodiscard]] bool PreviewLinkRules();
 [[nodiscard]] rpl::producer<bool> PreviewLinkRulesValue();
+[[nodiscard]] bool StripTrackingParameters();
+[[nodiscard]] rpl::producer<bool> StripTrackingParametersValue();
 
 } // namespace Serein::Hooks::Links

@@ -128,6 +128,7 @@ protected:
 		bool tagsEnabled);
 
 	void goBack();
+	void goNext(Step *step);
 
 	template <typename StepType>
 	void goNext() {
@@ -189,7 +190,6 @@ private:
 		float64 howMuchHidden);
 	void refreshError(const QString &text);
 
-	void goNext(Step *step);
 	void goReplace(Step *step, Animate animate);
 	[[nodiscard]] Step *stepBelow() const;
 

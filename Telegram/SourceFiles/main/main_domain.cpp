@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "main/main_domain.h"
+#include "serein/hooks/privacy/hidden.h"
 
 #include "serein/hooks/accounts.h"
 #include "serein/hooks/gen/interface.h"
@@ -301,10 +302,16 @@ void Domain::notifyUnreadBadgeChanged() {
 	}
 }
 
+void Domain::notifyAccountVisibilityChanged() {
+	_accountsChanges.fire({});
+	updateUnreadBadge();
+}
+
 void Domain::updateUnreadBadge() {
 	_unreadBadge = 0;
 	_unreadBadgeMuted = true;
 	for (const auto &[index, account] : _accounts) {
+		if (Serein::Privacy::AccountHidden(account.get())) continue;
 		if (const auto session = account->maybeSession()) {
 			const auto data = &session->data();
 			_unreadBadge += data->unreadBadge();
@@ -567,6 +574,7 @@ void Domain::maybeActivate(not_null<Main::Account*> account) {
 }
 
 void Domain::activate(not_null<Main::Account*> account) {
+	account = Serein::Privacy::VisibleAccount(account);
 	if (const auto window = Core::App().separateWindowFor(account)) {
 		window->activate();
 	}

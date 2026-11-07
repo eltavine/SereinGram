@@ -24,6 +24,7 @@
 #include "serein/media/bulk_download.h"
 #include "serein/privacy/alias_row.h"
 #include "serein/privacy/options.h"
+#include "serein/privacy/hidden.h"
 #include "serein/services/send_translation.h"
 #include "data/data_forum_topic.h"
 #include "data/data_histories.h"
@@ -84,6 +85,7 @@ void FillHistoryMenu(
 		gsl::not_null<Window::SessionController*> controller,
 		gsl::not_null<PeerData*> peer,
 		Data::ForumTopic *topic) {
+	if (!topic) Serein::Privacy::AddHideChatAction(addAction, controller, peer);
 	const auto weak = base::make_weak(topic);
 	if (!topic && ForDevice().Get(Chats::kChatSettingsMenu)) {
 		addAction(tr::lng_serein_chat_settings(tr::now), [=] {

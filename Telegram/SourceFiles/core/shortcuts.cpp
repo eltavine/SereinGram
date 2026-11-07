@@ -149,6 +149,8 @@ const auto CommandByName = base::flat_map<QString, Command>{
 	{ u"serein_toggle_ghost_mode"_q      , Command::SereinToggleGhostMode },
 	{ u"serein_toggle_presentation_mode"_q, Command::SereinToggleDemoMode },
 	{ u"serein_recent_chats"_q           , Command::SereinRecentChats },
+	{ u"serein_hidden_chats"_q, Command::SereinHiddenChats },
+	{ u"serein_hidden_accounts"_q, Command::SereinHiddenAccounts },
 	//
 };
 
@@ -177,6 +179,8 @@ const base::flat_map<Command, QString> &CommandNames() {
 	Command::SereinToggleGhostMode,
 	Command::SereinToggleDemoMode,
 	Command::SereinRecentChats,
+	Command::SereinHiddenChats,
+	Command::SereinHiddenAccounts,
 };
 
 class Manager {
@@ -527,6 +531,8 @@ bool Manager::readCustomFile() {
 void Manager::fillDefaults() {
 	const auto ctrl = Platform::IsMac() ? u"meta"_q : u"ctrl"_q;
 
+	set(u"ctrl+alt+h"_q, Command::SereinHiddenChats);
+	set(u"ctrl+alt+shift+h"_q, Command::SereinHiddenAccounts);
 	set(u"ctrl+w"_q                  , Command::Close);
 	set(u"ctrl+f4"_q                 , Command::Close);
 	set(u"ctrl+l"_q                  , Command::Lock);

@@ -570,6 +570,7 @@ MTPVector<MTPJSONObjectValue> SessionPrivate::prepareInitParams() {
 }
 
 void SessionPrivate::tryToSend() {
+	if (!_instance->networkEnabled()) return;
 	DEBUG_LOG(("MTP Info: tryToSend for dc %1.").arg(_shiftedDcId));
 	if (!_connection) {
 		DEBUG_LOG(("MTP Info: not yet connected in dc %1.").arg(_shiftedDcId));
@@ -1009,6 +1010,7 @@ void SessionPrivate::restartNow() {
 }
 
 void SessionPrivate::connectToServer(bool afterConfig) {
+	if (!_instance->networkEnabled()) return;
 	if (afterConfig && (!_testConnections.empty() || _connection)) {
 		return;
 	}

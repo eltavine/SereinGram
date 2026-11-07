@@ -98,6 +98,8 @@ enum class Command {
 	SereinToggleGhostMode,
 	SereinToggleDemoMode,
 	SereinRecentChats,
+	SereinHiddenChats,
+	SereinHiddenAccounts,
 };
 
 [[maybe_unused]] constexpr auto kShowFolder = {

@@ -8,6 +8,22 @@
 
 #include <iostream>
 
+TEST_CASE("Tracking links preserve functional parameters") {
+	using Serein::Links::StripTrackingUrl;
+	CHECK(StripTrackingUrl(u"https://example.com/p?UTM_Source=a&next=x%26y&fbclid=z#part"_q)
+		== u"https://example.com/p?next=x%26y#part"_q);
+	CHECK(StripTrackingUrl(u"https://example.com/p?utm_source=only#part"_q)
+		== u"https://example.com/p#part"_q);
+	for (const auto &unchanged : {
+			u"https://example.com/p?sig=abc&utm_source=x"_q,
+			u"https://example.com/p?X-Amz-Algorithm=a&utm_source=x"_q,
+			u"tg://resolve?domain=example&utm_source=x"_q,
+			u"See https://example.com/p?utm_source=x"_q,
+			u"https://example.com/p?name=some%20value"_q }) {
+		CHECK(StripTrackingUrl(unchanged) == unchanged);
+	}
+}
+
 TEST_CASE("Links") {
 	using namespace Serein::Links;
 	auto newRule = NewRule();

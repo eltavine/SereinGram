@@ -135,6 +135,7 @@ void SaveLastPlaybackPosition(
 		: kMinLengthForSavePositionMusic;
 	const auto time = (state.position == kTimeUnknown
 		|| state.length == kTimeUnknown
+		|| state.frequency <= 0
 		|| state.state == State::PausedAtEnd
 		|| IsStopped(state.state))
 		? TimeId(0)

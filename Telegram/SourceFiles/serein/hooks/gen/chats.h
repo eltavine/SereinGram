@@ -69,5 +69,13 @@ namespace Serein::Hooks::Chats {
 [[nodiscard]] rpl::producer<QString> ReadingPositionsValue(gsl::not_null<Main::Session*> session);
 [[nodiscard]] QString LocalPins(gsl::not_null<Main::Session*> session);
 [[nodiscard]] rpl::producer<QString> LocalPinsValue(gsl::not_null<Main::Session*> session);
+[[nodiscard]] bool ChatListTools();
+[[nodiscard]] rpl::producer<bool> ChatListToolsValue();
+[[nodiscard]] bool OnlyManagedChats(gsl::not_null<Main::Session*> session);
+[[nodiscard]] rpl::producer<bool> OnlyManagedChatsValue(gsl::not_null<Main::Session*> session);
+[[nodiscard]] int ChatDateOrder();
+[[nodiscard]] rpl::producer<int> ChatDateOrderValue();
+[[nodiscard]] int FolderIconPack();
+[[nodiscard]] rpl::producer<int> FolderIconPackValue();
 
 } // namespace Serein::Hooks::Chats

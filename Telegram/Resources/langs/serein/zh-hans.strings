@@ -861,7 +861,7 @@
 "lng_serein_config_backup" = "备份到收藏夹";
 "lng_serein_config_restore" = "从收藏夹恢复";
 "lng_serein_config_backup_about" = "备份会以设置文件的形式发送到你的收藏夹，包含本设备和本账号的设置（如幽灵模式），其他设备可以从中恢复；恢复时先列出变化再应用。保存在系统凭据库中的密钥不包含在内。";
-"lng_serein_config_backup_done" = "设置文件正在发送到收藏夹。";
+"lng_serein_config_backup_done" = "设置备份已加入发送队列，目标为收藏夹。";
 "lng_serein_config_backup_failed" = "无法生成设置文件。";
 "lng_serein_config_restore_none" = "收藏夹中没有找到 SereinGram 设置备份。";
 "lng_serein_config_restore_failed" = "无法下载设置备份。";
@@ -1070,8 +1070,8 @@
 "lng_serein_online_status_in_chats_about" = "私聊行在时间前显示对方的状态，例如“在线”“5 分钟前”；开启详细信息后显示具体时间。";
 "lng_serein_online_status_in_header" = "顶栏和资料页显示准确上线时间";
 "lng_serein_online_status_in_header_about" = "聊天顶栏、资料页和成员列表以具体时间显示对方最后上线的时刻；开启详细信息后精确到秒。";
-"lng_serein_online_status_on_senders" = "群聊发送者头像显示在线点";
-"lng_serein_online_status_on_senders_about" = "为群聊中当前在线的成员头像加上绿点；开启详细信息后，悬停头像可查看最后上线时间。";
+"lng_serein_online_status_on_senders" = "聊天头像显示在线点";
+"lng_serein_online_status_on_senders_about" = "在私聊顶栏显示头像，并给在线的私聊联系人及群聊发送者头像加绿点。开启详细信息后，悬停群聊头像可查看最后上线时间。";
 "lng_serein_online_status_self" = "在主菜单显示我的在线状态";
 "lng_serein_online_status_self_about" = "在主菜单显示别人当前看到你是在线还是离线，会考虑幽灵模式。";
 "lng_serein_online_status_detailed" = "显示详细在线信息";
@@ -1326,3 +1326,82 @@
 "lng_serein_space_playback" = "空格暂停或继续播放";
 "lng_serein_space_playback_about" = "焦点位于文本编辑器和按钮之外时，用空格切换播放。";
 "lng_serein_save_cover" = "保存封面图片";
+
+"lng_serein_downloads_all_accounts" = "所有账号";
+"lng_serein_downloads_all" = "全部文件";
+"lng_serein_downloads_archives" = "压缩包（ZIP、RAR、7z）";
+"lng_serein_downloads_music" = "音乐";
+"lng_serein_downloads_video" = "视频";
+"lng_serein_downloads_other" = "其他文件";
+
+"lng_serein_native_sound" = "通知声音";
+"lng_serein_native_desktop" = "桌面通知";
+"lng_serein_native_large_emoji" = "大号表情";
+"lng_serein_native_replace_emoji" = "替换表情";
+"lng_serein_native_suggest_emoji" = "表情建议";
+"lng_serein_native_suggest_stickers" = "贴纸建议";
+"lng_serein_native_loop_stickers" = "循环播放动态贴纸";
+"lng_serein_native_spellcheck" = "拼写检查";
+"lng_serein_native_muted_counter" = "统计静音聊天";
+"lng_serein_native_count_messages" = "统计未读消息";
+"lng_serein_native_pinned_notifications" = "置顶消息通知";
+"lng_serein_native_video_acceleration" = "硬件视频加速";
+"lng_serein_native_archive_collapsed" = "折叠归档";
+"lng_serein_native_archive_menu" = "主菜单中的归档";
+"lng_serein_native_chat_folders" = "聊天文件夹";
+"lng_serein_native_invalid" = "Telegram 设置备份无效。";
+"lng_serein_native_changed" = "Telegram 设置已改变，请重新打开导入预览。";
+"lng_serein_auto_backup_exports" = "自动备份导出的设置";
+"lng_serein_auto_backup_exports_about" = "设置文件保存成功后，同时发送副本到本账号收藏夹。";
+
+"lng_serein_sequential_downloads" = "顺序下载队列";
+"lng_serein_sequential_downloads_about" = "在消息菜单中加入本账号下载队列，选择保存目录后按顺序下载。";
+"lng_serein_download_queue" = "下载队列";
+"lng_serein_queue_add" = "加入下载队列";
+"lng_serein_queue_cancel" = "取消队列下载";
+"lng_serein_queue_status" = "队列中：{count} · 失败或跳过：{amount}";
+"lng_serein_downloads_photo" = "照片";
+
+"lng_serein_menu_clear_cache" = "清除媒体缓存";
+"lng_serein_cache_cleared" = "媒体缓存已清除，保存到个人目录的文件会保留。";
+
+"lng_serein_strip_tracking_parameters" = "移除链接追踪参数";
+"lng_serein_strip_tracking_parameters_about" = "复制或粘贴网页链接时，移除常见追踪参数；带签名的链接会保持完整。";
+
+"lng_serein_hidden_chats" = "隐藏的聊天";
+"lng_serein_hidden_accounts" = "隐藏的账号";
+"lng_serein_hidden_chats_enabled" = "隐藏聊天";
+"lng_serein_hidden_chats_enabled_about" = "允许从聊天列表隐藏聊天。在主菜单“隐藏的聊天”或按 Ctrl+Alt+H 恢复。";
+"lng_serein_hidden_accounts_enabled" = "隐藏账号";
+"lng_serein_hidden_accounts_enabled_about" = "使用应用本地密码保护隐藏的账号。按 Ctrl+Alt+Shift+H 打开管理器。";
+"lng_serein_hide_chat" = "隐藏聊天";
+"lng_serein_restore_chat" = "恢复聊天";
+"lng_serein_hide_current_account" = "隐藏当前账号";
+"lng_serein_hidden_requires_passcode" = "请先设置应用本地密码，再使用隐藏账号。";
+"lng_serein_hide_account_unavailable" = "请先保留另一个可见的已登录账号，并设置应用本地密码。";
+"lng_serein_hidden_accounts_about" = "隐藏的账号不会显示在账号列表或通知中。点击下方账号即可恢复。";
+
+"lng_serein_account_network_controls" = "账号连接控制";
+"lng_serein_account_network_controls_about" = "在主菜单中暂停单个账号的 Telegram 连接和传输。重新连接或重启应用后恢复。";
+"lng_serein_disconnect_account" = "断开本账号连接";
+"lng_serein_reconnect_account" = "重新连接本账号";
+"lng_serein_account_network_paused" = "已暂停本账号的 Telegram 连接。";
+"lng_serein_account_network_resumed" = "已恢复本账号的 Telegram 连接。";
+
+"lng_serein_chat_list_tools" = "聊天列表工具按钮";
+"lng_serein_chat_list_tools_about" = "在聊天搜索框旁显示“仅我管理的聊天”和日期排序按钮。";
+"lng_serein_admin_chats" = "我管理的聊天";
+"lng_serein_sort_date" = "按日期排序";
+"lng_serein_sort_date_default" = "Telegram 默认顺序";
+"lng_serein_sort_date_newest" = "从新到旧";
+"lng_serein_sort_date_oldest" = "从旧到新";
+
+"lng_serein_bot_login" = "使用 Bot Token 登录";
+"lng_serein_bot_token" = "Bot Token";
+"lng_serein_bot_login_about" = "输入 BotFather 为你的机器人签发的 Token。机器人账号可用的操作受 Telegram 限制。";
+"lng_serein_bot_login_failed" = "无法使用此 Bot Token 登录。请检查 Token 或稍后重试。";
+
+"lng_serein_folder_icon_pack" = "额外文件夹图标";
+"lng_serein_folder_icon_pack_about" = "在文件夹图标选择器中添加选中的图标包，保留已有图标。";
+"lng_serein_folder_icons_work" = "工作";
+"lng_serein_folder_icons_leisure" = "休闲";

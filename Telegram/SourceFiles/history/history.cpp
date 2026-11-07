@@ -6,6 +6,8 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/history.h"
+#include "serein/hooks/privacy/hidden.h"
+#include "serein/hooks/chats/managed_folders.h"
 #include "serein/hooks/chats/sort.h"
 #include "serein/hooks/history.h"
 #include "serein/hooks/privacy/alias.h"
@@ -3470,6 +3472,7 @@ bool History::trackUnreadMessages() const {
 }
 
 bool History::shouldBeInChatList() const {
+	if (Serein::Privacy::ChatHidden(peer) || !Serein::Chats::AllowedInFolder(this, 0)) return false;
 	if (peer->migrateTo() || !folderKnown()) {
 		return false;
 	} else if (const auto community = peer->asChannel()

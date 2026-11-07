@@ -89,6 +89,8 @@ namespace Wallet {
 class Session;
 } // namespace Wallet
 
+namespace Serein::Hooks { class DownloadQueue; }
+
 namespace Main {
 
 class Account;
@@ -250,6 +252,10 @@ public:
 		return *_cachedReactionIconFactory;
 	}
 
+	[[nodiscard]] Serein::Hooks::DownloadQueue &sereinDownloads() const {
+		return *_sereinDownloads;
+	}
+
 	void saveSettings();
 	void saveSettingsDelayed(crl::time delay = kDefaultSaveDelay);
 	void saveSettingsNowIfNeeded();
@@ -383,6 +389,7 @@ private:
 	QByteArray _tmpPassword;
 	TimeId _tmpPasswordValidUntil = 0;
 
+	std::unique_ptr<Serein::Hooks::DownloadQueue> _sereinDownloads;
 	rpl::lifetime _lifetime;
 
 };

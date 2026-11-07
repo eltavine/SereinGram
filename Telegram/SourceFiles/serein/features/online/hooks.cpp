@@ -92,9 +92,14 @@ QString LinkTooltip(
 		: fallback;
 }
 
+bool ShowPrivateAvatar(PeerData *peer) {
+	return Enabled(Serein::Interface::kOnlineStatusOnSenders) && StatusUser(peer);
+}
+
 void BindAvatar(
 		gsl::not_null<Ui::RpWidget*> widget,
-		gsl::not_null<PeerData*> peer) {
+		gsl::not_null<PeerData*> peer,
+		Fn<void()> visibilityChanged) {
 	const auto badge = Ui::CreateChild<Ui::RpWidget>(widget);
 	badge->setAttribute(Qt::WA_TransparentForMouseEvents);
 	widget->sizeValue() | rpl::on_next([=](QSize size) {
@@ -127,6 +132,8 @@ void BindAvatar(
 		else timer->stop();
 		badge->update();
 	}, badge->lifetime());
+	ForDevice().Value(Serein::Interface::kOnlineStatusOnSenders)
+	| rpl::skip(1) | rpl::on_next(std::move(visibilityChanged), badge->lifetime());
 	badge->show();
 }
 
