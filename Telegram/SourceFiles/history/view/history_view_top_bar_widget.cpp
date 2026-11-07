@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/history_view_top_bar_widget.h"
+#include "serein/hooks/online.h"
 #include "serein/hooks/messages/content.h"
 #include "serein/hooks/ghost.h"
 
@@ -1094,6 +1095,7 @@ void TopBarWidget::refreshInfoButton() {
 			Ui::UserpicButton::Source::PeerPhoto,
 			infoButtonStyle(),
 			infoPeer->userpicShape());
+		Serein::Hooks::Online::BindAvatar(info, infoPeer);
 		info->showSavedMessagesOnSelf(true);
 		info->showMyNotesOnSelf(true);
 		_info.destroy();

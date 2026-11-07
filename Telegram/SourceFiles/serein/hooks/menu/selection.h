@@ -15,6 +15,8 @@ class Selection final {
 public:
 	static void Select(HistoryInner *widget, HistoryItem *source);
 	static void Select(HistoryView::ListWidget *widget, HistoryItem *source);
+	static void UpdateRange(HistoryInner *widget);
+	static void UpdateRange(HistoryView::ListWidget *widget);
 	static void SelectRange(HistoryInner *widget);
 	static void SelectRange(HistoryView::ListWidget *widget);
 

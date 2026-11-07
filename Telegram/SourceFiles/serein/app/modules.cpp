@@ -19,8 +19,10 @@
 #include "serein/hooks/interface/roundness.h"
 #include "serein/hooks/interface/text.h"
 #include "serein/interface/app_icon.h"
+#include "serein/interface/fonts.h"
 #include "serein/interface/global_shortcut.h"
 #include "serein/media/voice_denoise.h"
+#include "serein/media/player.h"
 #include "serein/messages/chinese_warmup.h"
 #include "serein/messages/selection_limit.h"
 #include "serein/network/vpn_proxy.h"
@@ -33,6 +35,7 @@ namespace Serein::App {
 namespace {
 
 constexpr auto kModules = std::array{
+	Module{ "interface.fonts", Interface::StartFonts },
 	Module{ "interface.roundness", Interface::StartRoundness },
 	Module{ "interface.text", Interface::StartUiText },
 	Module{ "interface.app_icon", Interface::StartAppIcon },
@@ -52,6 +55,7 @@ constexpr auto kModules = std::array{
 	Module{ "privacy.auto_demo", Privacy::StartAutoDemoMode },
 	Module{ "privacy.screenshot_protection", Privacy::StartScreenshotProtection },
 	Module{ "privacy.settings_lock", StartSettingsLock },
+	Module{ "media.playback", Media::StartPlaybackTools },
 	Module{ "media.voice_denoise", Media::StartVoiceDenoise },
 	Module{ "messages.selection_limit", Messages::StartSelectionLimit },
 	Module{ "messages.chinese_warmup", Messages::StartChineseWarmUp },

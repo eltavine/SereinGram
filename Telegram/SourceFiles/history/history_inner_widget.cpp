@@ -5383,6 +5383,7 @@ auto HistoryInner::getSelectionState() const
 }
 
 void HistoryInner::clearSelected(bool onlyTextSelection) {
+	if (!onlyTextSelection) setProperty("sereinRangeCount", 0);
 	auto changed = false;
 	if (!onlyTextSelection && !_selected.empty()) {
 		_selected.clear();

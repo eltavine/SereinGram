@@ -1310,3 +1310,23 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_proxy_notes_row_about" = "Add a short note to each proxy; it appears after the address in the proxy list.";
 "lng_serein_custom_doh_row_about" = "Use a DNS-over-HTTPS server of your choice to help Telegram connect on restricted networks.";
 "lng_serein_dc_status_row_about" = "Open a list of Telegram data centers with their location and response time, and check again at any time.";
+
+"lng_serein_fonts" = "Fonts";
+"lng_serein_monospace_font" = "Monospaced font";
+"lng_serein_monospace_font_about" = "Choose a system monospaced font, preview it, or restore the default. Restart to apply.";
+"lng_serein_monospace_ligatures" = "Programming ligatures";
+"lng_serein_monospace_ligatures_about" = "Join programming character sequences when supported by the monospaced font. Restart to apply.";
+"lng_serein_font_default" = "Use default font";
+
+"lng_serein_forward_original" = "Forward with sender and caption";
+"lng_serein_forward_no_sender" = "Forward without sender name";
+"lng_serein_forward_no_caption" = "Forward without sender and caption";
+"lng_serein_forward_saved" = "Forward to Saved Messages";
+
+"lng_serein_expanded_audio_player" = "Expanded audio player";
+"lng_serein_expanded_audio_player_about" = "Double-click the music player to show artwork and full playback controls.";
+"lng_serein_remember_playback_position" = "Remember playback position";
+"lng_serein_remember_playback_position_about" = "Resume music and videos of any length from their last playback position.";
+"lng_serein_space_playback" = "Space to pause or resume";
+"lng_serein_space_playback_about" = "Toggle playback with Space when focus is outside a text editor or button.";
+"lng_serein_save_cover" = "Save cover image";

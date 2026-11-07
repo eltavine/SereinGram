@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/history_widget.h"
+#include "serein/hooks/menu/selection.h"
 
 #include "api/api_compose_with_ai.h"
 #include "api/api_editing.h"
@@ -11339,6 +11340,7 @@ void HistoryWidget::updateTopBarChooseForReport() {
 }
 
 void HistoryWidget::updateTopBarSelection(bool keepFocus) {
+	Serein::Menu::Selection::UpdateRange(_list.data());
 	if (!_list) {
 		_topBar->showSelected(HistoryView::TopBarWidget::SelectedState {});
 		return;

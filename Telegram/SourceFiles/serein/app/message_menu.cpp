@@ -6,6 +6,7 @@
 #include "serein/filters/hide_message_menu.h"
 #include "serein/filters/menu.h"
 #include "serein/menu/batch.h"
+#include "serein/menu/forward.h"
 #include "serein/menu/buttons.h"
 #include "serein/menu/contributors.h"
 #include "serein/menu/media.h"
@@ -56,6 +57,7 @@ void AddSelectionActions() {
 void RegisterMessageMenu() {
 	AddItemAction(Menu::InsertQuickRatingActions);
 	AddItemAction(Menu::InsertRepeatActions);
+	AddItemAction(Menu::InsertForwardActions);
 	AddItemAction(Menu::InsertReminderAction);
 	AddSelectionActions();
 	AddItemAction(Menu::InsertMediaInfoAction);

@@ -1306,3 +1306,23 @@
 "lng_serein_proxy_notes_row_about" = "为每个代理添加简短备注，备注显示在代理列表中的地址后面。";
 "lng_serein_custom_doh_row_about" = "使用你选择的 DNS-over-HTTPS 服务器，帮助 Telegram 在受限网络中连接。";
 "lng_serein_dc_status_row_about" = "打开 Telegram 数据中心列表，查看各自的位置和响应时间，并可随时重新检测。";
+
+"lng_serein_fonts" = "字体";
+"lng_serein_monospace_font" = "等宽字体";
+"lng_serein_monospace_font_about" = "选择并预览系统等宽字体，或恢复默认。重启后生效。";
+"lng_serein_monospace_ligatures" = "编程连字";
+"lng_serein_monospace_ligatures_about" = "使用等宽字体支持的编程连字。重启后生效。";
+"lng_serein_font_default" = "使用默认字体";
+
+"lng_serein_forward_original" = "保留发送者和说明转发";
+"lng_serein_forward_no_sender" = "不带发送者转发";
+"lng_serein_forward_no_caption" = "不带发送者和说明转发";
+"lng_serein_forward_saved" = "转发到收藏夹";
+
+"lng_serein_expanded_audio_player" = "展开音乐播放器";
+"lng_serein_expanded_audio_player_about" = "双击音乐播放器，显示封面和完整播放控件。";
+"lng_serein_remember_playback_position" = "记住播放位置";
+"lng_serein_remember_playback_position_about" = "从上次播放位置继续播放任意长度的音乐和视频。";
+"lng_serein_space_playback" = "空格暂停或继续播放";
+"lng_serein_space_playback_about" = "焦点位于文本编辑器和按钮之外时，用空格切换播放。";
+"lng_serein_save_cover" = "保存封面图片";

@@ -2,6 +2,7 @@
 #pragma once
 
 #include <QtCore/QByteArray>
+#include <QtCore/QString>
 #include <rpl/producer.h>
 
 namespace Serein::Hooks::Interface {
@@ -24,6 +25,10 @@ namespace Serein::Hooks::Interface {
 [[nodiscard]] rpl::producer<bool> HideReplyThumbnailValue();
 [[nodiscard]] bool IgnoreChatTheme();
 [[nodiscard]] rpl::producer<bool> IgnoreChatThemeValue();
+[[nodiscard]] QString MonospaceFont();
+[[nodiscard]] rpl::producer<QString> MonospaceFontValue();
+[[nodiscard]] bool MonospaceLigatures();
+[[nodiscard]] rpl::producer<bool> MonospaceLigaturesValue();
 [[nodiscard]] QByteArray MainMenuConfig();
 [[nodiscard]] rpl::producer<QByteArray> MainMenuConfigValue();
 [[nodiscard]] bool MenuShortcuts();

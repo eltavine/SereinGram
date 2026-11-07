@@ -1,5 +1,12 @@
 <RCC>
   <qresource prefix="/serein">
+    <file alias="fonts/NotoSansBamum-Regular.ttf">../serein/fonts/NotoSansBamum-Regular.ttf</file>
+    <file alias="fonts/NotoSansLinearA-Regular.ttf">../serein/fonts/NotoSansLinearA-Regular.ttf</file>
+    <file alias="fonts/NotoSansTaiTham-Regular.ttf">../serein/fonts/NotoSansTaiTham-Regular.ttf</file>
+    <file alias="licenses/noto.txt">../serein/fonts/Noto-LICENSE.txt</file>
+    <file alias="fonts/unifont.otf">../serein/fonts/unifont.otf</file>
+    <file alias="fonts/unifont_upper.otf">../serein/fonts/unifont_upper.otf</file>
+    <file alias="licenses/unifont.txt">../serein/fonts/OFL.txt</file>
     <file alias="presets/catalog.json">../serein/presets/catalog.json</file>
     <file alias="presets/clean.json">../serein/presets/clean.json</file>
     <file alias="presets/privacy.json">../serein/presets/privacy.json</file>

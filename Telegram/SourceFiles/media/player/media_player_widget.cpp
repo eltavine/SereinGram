@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "media/player/media_player_widget.h"
+#include "serein/hooks/media/player.h"
 
 #include "platform/platform_specific.h"
 #include "data/data_document.h"
@@ -93,6 +94,7 @@ Widget::Widget(
 	setMouseTracking(true);
 	resize(width(), st::mediaPlayerHeight + st::lineWidth);
 
+	Serein::Media::AttachExpandedPlayer(this, controller);
 	setupRightControls();
 
 	_volumeToggle->setAccessibleName(tr::lng_ringtones_box_volume(tr::now));

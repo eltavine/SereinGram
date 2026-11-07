@@ -12,7 +12,7 @@
 
 namespace Serein::Interface {
 
-inline const auto kToggleRows = std::array<ToggleRow, 15>{ {
+inline const auto kToggleRows = std::array<ToggleRow, 16>{ {
 	{
 		.option = &kWideChannelPosts,
 		.title = tr::lng_serein_wide_channel_posts,
@@ -59,12 +59,21 @@ inline const auto kToggleRows = std::array<ToggleRow, 15>{ {
 		.about = tr::lng_serein_ignore_chat_theme_about,
 	},
 	{
+		.option = &kMonospaceLigatures,
+		.title = tr::lng_serein_monospace_ligatures,
+		.id = u"serein/interface/monospace-ligatures"_q,
+		.keywords = {  },
+		.icon = &st::menuIconFont,
+		.tile = &st::settingsIconBg8,
+		.about = tr::lng_serein_monospace_ligatures_about,
+	},
+	{
 		.option = &kMenuShortcuts,
 		.title = tr::lng_serein_menu_shortcuts,
 		.id = u"serein/interface/menu-shortcuts"_q,
 		.keywords = { u"main menu"_q, u"tray"_q, u"ghost"_q, u"presentation"_q, u"recent chats"_q },
 		.icon = &st::menuIconToMainMenu,
-		.tile = &st::settingsIconBg8,
+		.tile = &st::settingsIconBg4,
 		.about = tr::lng_serein_menu_shortcuts_about,
 	},
 	{
@@ -73,7 +82,7 @@ inline const auto kToggleRows = std::array<ToggleRow, 15>{ {
 		.id = u"serein/interface/center-top-notifications"_q,
 		.keywords = { u"notification"_q, u"position"_q, u"center"_q },
 		.icon = &st::menuIconNotifications,
-		.tile = &st::settingsIconBg4,
+		.tile = &st::settingsIconBg2,
 		.about = tr::lng_serein_center_top_notifications_about,
 	},
 	{
@@ -82,7 +91,7 @@ inline const auto kToggleRows = std::array<ToggleRow, 15>{ {
 		.id = u"serein/interface/hide-app-icon-badge"_q,
 		.keywords = { u"dock"_q, u"icon"_q, u"badge"_q },
 		.icon = &st::menuIconDockBounce,
-		.tile = &st::settingsIconBg4,
+		.tile = &st::settingsIconBg2,
 		.about = tr::lng_serein_hide_app_icon_badge_about,
 	},
 	{
@@ -91,7 +100,7 @@ inline const auto kToggleRows = std::array<ToggleRow, 15>{ {
 		.id = u"serein/interface/halfwidth-ui-punctuation"_q,
 		.keywords = { u"text"_q, u"punctuation"_q },
 		.icon = &st::menuIconTranslate,
-		.tile = &st::settingsIconBg2,
+		.tile = &st::settingsIconBg5,
 		.about = tr::lng_serein_halfwidth_ui_punctuation_about,
 	},
 	{
@@ -100,7 +109,7 @@ inline const auto kToggleRows = std::array<ToggleRow, 15>{ {
 		.id = u"serein/interface/more-accounts"_q,
 		.keywords = { u"accounts"_q, u"limit"_q, u"multiple"_q },
 		.icon = &st::menuIconAddAccount,
-		.tile = &st::settingsIconBg2,
+		.tile = &st::settingsIconBg5,
 		.about = tr::lng_serein_more_accounts_about,
 	},
 	{
@@ -109,7 +118,7 @@ inline const auto kToggleRows = std::array<ToggleRow, 15>{ {
 		.id = u"serein/interface/online-status-in-chats"_q,
 		.keywords = { u"online"_q, u"last seen"_q, u"chat list"_q },
 		.icon = &st::menuIconChats,
-		.tile = &st::settingsIconBg5,
+		.tile = &st::settingsIconBg3,
 		.about = tr::lng_serein_online_status_in_chats_about,
 	},
 	{
@@ -118,7 +127,7 @@ inline const auto kToggleRows = std::array<ToggleRow, 15>{ {
 		.id = u"serein/interface/online-status-in-header"_q,
 		.keywords = { u"online"_q, u"last seen"_q, u"profile"_q, u"seconds"_q },
 		.icon = &st::menuIconProfile,
-		.tile = &st::settingsIconBg5,
+		.tile = &st::settingsIconBg3,
 		.about = tr::lng_serein_online_status_in_header_about,
 	},
 	{
@@ -127,7 +136,7 @@ inline const auto kToggleRows = std::array<ToggleRow, 15>{ {
 		.id = u"serein/interface/online-status-on-senders"_q,
 		.keywords = { u"online"_q, u"avatar"_q, u"group"_q, u"sender"_q },
 		.icon = &st::menuIconGroups,
-		.tile = &st::settingsIconBg5,
+		.tile = &st::settingsIconBg3,
 		.about = tr::lng_serein_online_status_on_senders_about,
 	},
 	{
@@ -136,7 +145,7 @@ inline const auto kToggleRows = std::array<ToggleRow, 15>{ {
 		.id = u"serein/interface/online-status-self"_q,
 		.keywords = { u"online"_q, u"invisible"_q, u"ghost"_q, u"my status"_q },
 		.icon = &st::menuIconStealth,
-		.tile = &st::settingsIconBg5,
+		.tile = &st::settingsIconBg3,
 		.about = tr::lng_serein_online_status_self_about,
 	},
 	{
@@ -145,7 +154,7 @@ inline const auto kToggleRows = std::array<ToggleRow, 15>{ {
 		.id = u"serein/interface/online-status-detailed"_q,
 		.keywords = { u"online"_q, u"last seen"_q, u"detailed"_q, u"exact time"_q },
 		.icon = &st::menuIconWhenOnline,
-		.tile = &st::settingsIconBg5,
+		.tile = &st::settingsIconBg3,
 		.about = tr::lng_serein_online_status_detailed_about,
 	},
 } };
@@ -154,6 +163,7 @@ struct CustomRows {
 	CustomRow bubbleRoundness;
 	CustomRow avatarRoundness;
 	CustomRow uniformAvatarShapes;
+	CustomRow monospaceFont;
 	CustomRow mainMenu;
 	CustomRow notificationDelay;
 	CustomRow otherDeviceNotificationDelay;
@@ -202,12 +212,20 @@ inline void AddLayout(
 	AddToggle(builder, kToggleRows[4]);
 	EndSection(builder);
 	AddSection(builder, {
+		u"serein/interface/fonts"_q,
+		tr::lng_serein_fonts,
+		{  },
+	});
+	custom.monospaceFont();
+	AddToggle(builder, kToggleRows[5]);
+	EndSection(builder);
+	AddSection(builder, {
 		u"serein/interface/main-menu-heading"_q,
 		tr::lng_serein_main_menu,
 		{ u"menu"_q, u"title"_q },
 	});
 	custom.mainMenu();
-	AddToggle(builder, kToggleRows[5]);
+	AddToggle(builder, kToggleRows[6]);
 	EndSection(builder, tr::lng_serein_menu_shortcuts_note);
 	AddSection(builder, {
 		u"serein/interface/notifications"_q,
@@ -216,10 +234,10 @@ inline void AddLayout(
 	});
 	custom.notificationDelay();
 	custom.otherDeviceNotificationDelay();
-	AddToggle(builder, kToggleRows[6]);
+	AddToggle(builder, kToggleRows[7]);
 	AddNote(builder, tr::lng_serein_center_top_notifications_note);
 	custom.quietHours();
-	AddToggle(builder, kToggleRows[7]);
+	AddToggle(builder, kToggleRows[8]);
 	EndSection(builder);
 	AddSection(builder, {
 		u"serein/interface/app"_q,
@@ -227,8 +245,8 @@ inline void AddLayout(
 		{ u"shortcut"_q, u"accounts"_q, u"updates"_q },
 	});
 	custom.globalShortcut();
-	AddToggle(builder, kToggleRows[8]);
 	AddToggle(builder, kToggleRows[9]);
+	AddToggle(builder, kToggleRows[10]);
 	AddNote(builder, tr::lng_serein_more_accounts_note);
 	custom.checkUpdates();
 	EndSection(builder);
@@ -237,11 +255,11 @@ inline void AddLayout(
 		tr::lng_serein_section_online_status,
 		{ u"online"_q, u"last seen"_q, u"presence"_q },
 	});
-	AddToggle(builder, kToggleRows[10]);
 	AddToggle(builder, kToggleRows[11]);
 	AddToggle(builder, kToggleRows[12]);
 	AddToggle(builder, kToggleRows[13]);
 	AddToggle(builder, kToggleRows[14]);
+	AddToggle(builder, kToggleRows[15]);
 	EndSection(builder);
 }
 

@@ -150,4 +150,28 @@ rpl::producer<bool> StoryPostingValue() {
 	return ForDevice().Value(Serein::Media::kStoryPosting);
 }
 
+bool ExpandedAudioPlayer() {
+	return ForDevice().Get(Serein::Media::kExpandedAudioPlayer);
+}
+
+rpl::producer<bool> ExpandedAudioPlayerValue() {
+	return ForDevice().Value(Serein::Media::kExpandedAudioPlayer);
+}
+
+bool RememberPlaybackPosition() {
+	return ForDevice().Get(Serein::Media::kRememberPlaybackPosition);
+}
+
+rpl::producer<bool> RememberPlaybackPositionValue() {
+	return ForDevice().Value(Serein::Media::kRememberPlaybackPosition);
+}
+
+bool SpacePlayback() {
+	return ForDevice().Get(Serein::Media::kSpacePlayback);
+}
+
+rpl::producer<bool> SpacePlaybackValue() {
+	return ForDevice().Value(Serein::Media::kSpacePlayback);
+}
+
 } // namespace Serein::Hooks::Media

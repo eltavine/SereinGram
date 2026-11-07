@@ -12,6 +12,8 @@ class ClickHandler;
 class PeerData;
 class QPainter;
 
+namespace Ui { class RpWidget; }
+
 namespace Data {
 class LastseenStatus;
 } // namespace Data
@@ -33,6 +35,9 @@ namespace Serein::Hooks::Online {
 [[nodiscard]] QString LinkTooltip(
 	gsl::not_null<Main::Session*> session,
 	const std::shared_ptr<ClickHandler> &link);
+void BindAvatar(
+	gsl::not_null<Ui::RpWidget*> widget,
+	gsl::not_null<PeerData*> peer);
 void PaintSender(
 	QPainter &p,
 	gsl::not_null<PeerData*> from,

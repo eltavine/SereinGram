@@ -40,6 +40,7 @@ enum class ActionId : int {
 	HideMessage = 35,
 	CopyMarkdown = 36,
 	RestoredMedia = 37,
+	ForwardToSaved = 38,
 };
 
 } // namespace Serein::Menu

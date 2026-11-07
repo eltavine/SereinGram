@@ -188,7 +188,7 @@ TEST_CASE("Options") {
 		Flag::RefreshDialogList), "stories use widget refresh");
 	auto interface = Registry();
 	Interface::RegisterOptions(interface);
-	Require(interface.All().size() == 26, "interface option count");
+	Require(interface.All().size() == 28, "interface option count");
 	for (const auto option : {
 			&Interface::kOnlineStatusInChats,
 			&Interface::kOnlineStatusInHeader,
@@ -331,7 +331,7 @@ TEST_CASE("Options") {
 	}
 	auto media = Registry();
 	Media::RegisterOptions(media);
-	Require(media.All().size() == 18, "media option count");
+	Require(media.All().size() == 21, "media option count");
 	Require(media.HasFlag(Media::kStickerScale.key,
 		Flag::RefreshMessageView), "sticker scale refresh flag");
 	Require(!media.HasFlag(Media::kRecentStickerLimit.key,

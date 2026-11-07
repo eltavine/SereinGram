@@ -1903,6 +1903,7 @@ MessageIdsList ListWidget::collectSelectedIds() const {
 }
 
 void ListWidget::pushSelectedItems() {
+	Serein::Menu::Selection::UpdateRange(this);
 	_delegate->listSelectionChanged(collectSelectedItems());
 	Tgw::RefreshNativeCopy();
 }
@@ -2287,6 +2288,7 @@ void ListWidget::showEditCaptionUploadLayer(not_null<HistoryItem*> item) {
 }
 
 void ListWidget::clearSelected() {
+	setProperty("sereinRangeCount", 0);
 	if (_selected.empty()) {
 		return;
 	}

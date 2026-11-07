@@ -106,6 +106,7 @@ set(serein_sources
     serein/display/reorder_row.cpp
     serein/display/text_entities.cpp
     serein/display/view_refresher.cpp
+    serein/interface/fonts.cpp
     serein/interface/main_menu.cpp
     serein/interface/app_icon.cpp
     serein/interface/main_menu_model.cpp
@@ -127,6 +128,7 @@ set(serein_sources
     serein/chats/shown_filters.cpp
     serein/chats/shown_order.cpp
     serein/interface/roundness.cpp
+    serein/settings/fonts.cpp
     serein/settings/interface.cpp
     serein/settings/restart.cpp
     serein/settings/rows.cpp
@@ -157,6 +159,7 @@ set(serein_sources
     serein/messages/markdown_menu.cpp
     serein/menu/details.cpp
     serein/menu/model.cpp
+    serein/menu/forward.cpp
     serein/menu/repeat.cpp
     serein/menu/reminder.cpp
     serein/menu/selection.cpp
@@ -166,6 +169,7 @@ set(serein_sources
     serein/media/download_names.cpp
     serein/media/force_preview.cpp
     serein/media/sticker_rounding.cpp
+    serein/media/player.cpp
     serein/media/voice_denoise.cpp
     serein/messages/format.cpp
     serein/messages/markdown.cpp

@@ -231,4 +231,7 @@ message MediaSettings {
     note: "lng_serein_story_posting_note"
     icon: "menuIconStoriesSavedSection"
   }];
+  optional bool expanded_audio_player = 19 [(serein.options.v1.field) = {icon: "menuIconVideoChat"}];
+  optional bool remember_playback_position = 20 [(serein.options.v1.field) = {icon: "menuIconTimer"}];
+  optional bool space_playback = 21 [(serein.options.v1.field) = {icon: "menuIconVideoChat"}];
 }

@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "media/player/media_player_instance.h"
+#include "serein/hooks/gen/media.h"
 
 #include "data/data_document.h"
 #include "data/data_session.h"
@@ -127,7 +128,9 @@ void finish(not_null<Audio::Instance*> instance) {
 void SaveLastPlaybackPosition(
 		not_null<DocumentData*> document,
 		const TrackState &state) {
-	const auto limit = document->isVideoFile()
+	const auto limit = Serein::Hooks::Media::RememberPlaybackPosition()
+		? TimeId(1)
+		: document->isVideoFile()
 		? kMinLengthForSavePositionVideo
 		: kMinLengthForSavePositionMusic;
 	const auto time = (state.position == kTimeUnknown

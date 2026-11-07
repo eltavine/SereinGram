@@ -116,6 +116,19 @@ message InterfaceSettings {
     ]
     icon: "menuIconPhoto"
   }];
+  optional string monospace_font = 27 [(serein.options.v1.field) = {
+    section: {
+      title: "lng_serein_fonts"
+      id: "fonts"
+    }
+    custom_ui: true
+    restart: true
+    icon: "menuIconFont"
+  }];
+  optional bool monospace_ligatures = 28 [(serein.options.v1.field) = {
+    restart: true
+    icon: "menuIconFont"
+  }];
   optional bytes main_menu = 10 [(serein.options.v1.field) = {
     section: {
       title: "lng_serein_main_menu"

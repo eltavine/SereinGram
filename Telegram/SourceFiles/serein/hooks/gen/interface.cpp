@@ -78,6 +78,22 @@ rpl::producer<bool> IgnoreChatThemeValue() {
 	return ForDevice().Value(Serein::Interface::kIgnoreChatTheme);
 }
 
+QString MonospaceFont() {
+	return ForDevice().Get(Serein::Interface::kMonospaceFont);
+}
+
+rpl::producer<QString> MonospaceFontValue() {
+	return ForDevice().Value(Serein::Interface::kMonospaceFont);
+}
+
+bool MonospaceLigatures() {
+	return ForDevice().Get(Serein::Interface::kMonospaceLigatures);
+}
+
+rpl::producer<bool> MonospaceLigaturesValue() {
+	return ForDevice().Value(Serein::Interface::kMonospaceLigatures);
+}
+
 QByteArray MainMenuConfig() {
 	return ForDevice().Get(Serein::Interface::kMainMenuConfig);
 }

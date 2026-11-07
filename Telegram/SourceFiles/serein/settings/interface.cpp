@@ -4,6 +4,7 @@
 #include "serein/interface/global_shortcut.h"
 
 #include "serein/interface/options.h"
+#include "serein/settings/fonts.h"
 #include "serein/hooks/interface/main_menu.h"
 #include "serein/interface/app_icon.h"
 #include "serein/settings/gen/interface_rows.h"
@@ -207,6 +208,7 @@ const auto kMeta = BuildHelper({
 				}, button->lifetime());
 			}
 		},
+		.monospaceFont = [&] { AddMonospaceFont(builder); },
 		.mainMenu = [&] {
 			AddRow(builder, {
 				.id = u"serein/interface/main-menu"_q,

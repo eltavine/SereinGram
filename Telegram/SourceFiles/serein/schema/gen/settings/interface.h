@@ -83,6 +83,20 @@ inline constexpr auto kIgnoreChatTheme = Option<bool>{
 	Category::Interface,
 	"lng_serein_ignore_chat_theme",
 	0 };
+inline const auto kMonospaceFont = Option<QString>{
+	"serein.monospaceFont",
+	Scope::Device,
+	QString(),
+	Category::Interface,
+	"lng_serein_monospace_font",
+	static_cast<unsigned>(Flag::RequiresRestart) };
+inline constexpr auto kMonospaceLigatures = Option<bool>{
+	"serein.monospaceLigatures",
+	Scope::Device,
+	false,
+	Category::Interface,
+	"lng_serein_monospace_ligatures",
+	static_cast<unsigned>(Flag::RequiresRestart) };
 inline const auto kMainMenuConfig = Option<QByteArray>{
 	"serein.mainMenu",
 	Scope::Device,
@@ -223,6 +237,8 @@ inline void RegisterOptions(Registry &registry) {
 	Expects(registry.Add(kThemeReplyColors));
 	Expects(registry.Add(kHideReplyThumbnail));
 	Expects(registry.Add(kIgnoreChatTheme));
+	Expects(registry.Add(kMonospaceFont));
+	Expects(registry.Add(kMonospaceLigatures));
 	Expects(registry.Add(kMainMenuConfig));
 	Expects(registry.Add(kMenuShortcuts));
 	Expects(registry.Add(kNotificationDelay));
