@@ -31,8 +31,11 @@ void RefreshFolder(gsl::not_null<Main::Session*> session) {
 	const auto data = &session->data();
 	const auto refresh = [=](not_null<PeerData*> peer) {
 		if (const auto history = data->historyLoaded(peer->id)) {
-			history->updateChatListExistence();
-			data->chatsFilters().refreshHistory(history);
+			if (history->shouldBeInChatList()) {
+				history->updateChatListSortPosition();
+			} else {
+				history->updateChatListExistence();
+			}
 		}
 	};
 	data->enumerateUsers(refresh);

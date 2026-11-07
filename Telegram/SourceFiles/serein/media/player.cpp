@@ -9,6 +9,7 @@
 #include "data/data_document_media.h"
 #include "data/data_file_origin.h"
 #include "data/data_session.h"
+#include "history/history_item.h"
 #include "lang/lang_keys.h"
 #include "main/main_session.h"
 #include "media/audio/media_audio.h"
@@ -24,6 +25,7 @@
 #include "window/window_session_controller.h"
 
 #include <QtCore/QDir>
+#include <QtCore/QTemporaryFile>
 #include <QtCore/QTimer>
 #include <QtGui/QDesktopServices>
 #include <QtGui/QKeyEvent>
@@ -45,6 +47,7 @@ constexpr auto kCoverSize = 240;
 struct CoverState {
 	std::shared_ptr<Data::DocumentMedia> media;
 	QImage image;
+	bool canSave = false;
 };
 
 void PlayerBox(
@@ -62,12 +65,18 @@ void PlayerBox(
 		if (!document || &document->session() != &controller->session()) {
 			state->media.reset();
 			state->image = QImage();
+			state->canSave = false;
 		} else {
 			state->media = document->createMediaView();
 			state->media->thumbnailWanted(track.id.contextId());
 			const auto thumbnail = state->media->thumbnail();
 			state->image = thumbnail ? thumbnail->original() : QImage();
+			const auto item = controller->session().data().message(track.id.contextId());
+			state->canSave = !document->forbidsFileSave()
+				&& (!item || (!item->forbidsSaving() && !item->isTtlCoveredMedia()));
 		}
+		cover->setCursor(state->canSave && !state->image.isNull()
+			? style::cur_pointer : style::cur_default);
 		cover->update();
 	};
 	cover->paintRequest() | rpl::on_next([=] {
@@ -80,15 +89,20 @@ void PlayerBox(
 		}
 	}, cover->lifetime());
 	base::install_event_filter(cover, [=](not_null<QEvent*> event) {
-		if (event->type() != QEvent::MouseButtonRelease || state->image.isNull()) {
+		if (event->type() != QEvent::MouseButtonRelease
+			|| static_cast<QMouseEvent*>(event.get())->button() != Qt::LeftButton
+			|| !state->canSave
+			|| state->image.isNull()) {
 			return base::EventFilterResult::Continue;
 		}
-		const auto folder = QDir::temp().filePath(u"SereinGram-covers"_q);
-		if (QDir().mkpath(folder)) {
-			const auto path = QDir(folder).filePath(
-				QString::number(state->image.cacheKey()) + u".png"_q);
-			if (state->image.save(path)) {
-				QDesktopServices::openUrl(QUrl::fromLocalFile(path));
+		const auto file = std::make_shared<QTemporaryFile>(
+			QDir::temp().filePath(u"SereinGram-cover-XXXXXX.png"_q));
+		if (file->open() && state->image.save(file.get(), "PNG") && file->flush()) {
+			file->close();
+			if (QDesktopServices::openUrl(QUrl::fromLocalFile(file->fileName()))) {
+				QTimer::singleShot(std::chrono::minutes(5), qApp, [file] {
+					file->remove();
+				});
 			}
 		}
 		return base::EventFilterResult::Cancel;
@@ -101,7 +115,7 @@ void PlayerBox(
 		box, tr::lng_serein_save_cover(), st::settingsButtonNoIcon));
 	save->setClickedCallback([=] {
 		const auto image = state->image;
-		if (image.isNull()) {
+		if (image.isNull() || !state->canSave) {
 			return;
 		}
 		FileDialog::GetWritePath(Core::App().getFileDialogParent(),

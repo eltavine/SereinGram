@@ -7,6 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "data/data_chat_filters.h"
 #include "serein/hooks/chats/managed_folders.h"
+#include "serein/hooks/privacy/hidden.h"
 
 #include "api/api_text_entities.h"
 #include "history/history.h"
@@ -340,7 +341,10 @@ const base::flat_set<not_null<History*>> &ChatFilter::never() const {
 bool ChatFilter::contains(
 		not_null<History*> history,
 		bool ignoreFakeUnread) const {
-	if (!Serein::Chats::AllowedInFolder(history, _id)) return false;
+	if (Serein::Privacy::ChatHidden(history->peer)
+		|| !Serein::Chats::AllowedInFolder(history, _id)) {
+		return false;
+	}
 	const auto flag = [&] {
 		const auto peer = history->peer;
 		if (const auto user = peer->asUser()) {

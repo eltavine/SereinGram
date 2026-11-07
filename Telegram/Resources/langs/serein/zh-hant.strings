@@ -1369,6 +1369,7 @@
 "lng_serein_strip_tracking_parameters_about" = "複製或貼上網頁連結時，移除常見追蹤參數；帶簽章的連結會保持完整。";
 
 "lng_serein_hidden_chats" = "隱藏的聊天";
+"lng_serein_hidden_chats_limit" = "最多可以隱藏 1,000 個聊天。";
 "lng_serein_hidden_accounts" = "隱藏的帳號";
 "lng_serein_hidden_chats_enabled" = "隱藏聊天";
 "lng_serein_hidden_chats_enabled_about" = "允許從聊天清單隱藏聊天。在主選單「隱藏的聊天」或按 Ctrl+Alt+H 還原。";

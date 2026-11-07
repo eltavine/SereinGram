@@ -22,14 +22,20 @@ bool Removes(const QString &name, const std::vector<QString> &patterns) {
 QString StripTrackingUrl(const QString &original) {
 	if (original.size() > 16384 || original.trimmed() != original
 		|| original.contains(QChar::LineFeed) || original.contains(u' ')) return original;
-	auto url = QUrl(original, QUrl::StrictMode);
+	const auto url = QUrl(original, QUrl::StrictMode);
 	if (!url.isValid() || url.host().isEmpty() || !url.userInfo().isEmpty()
 		|| (url.scheme() != u"https"_q && url.scheme() != u"http"_q)
 		|| !url.hasQuery()) return original;
 	auto kept = QStringList();
 	auto changed = false;
-	for (const auto &part : url.query(QUrl::FullyEncoded).split(u'&')) {
-		const auto name = QUrl::fromPercentEncoding(part.section(u'=', 0, 0).toUtf8()).toLower();
+	const auto start = original.indexOf(u'?');
+	const auto hash = original.indexOf(u'#', start + 1);
+	const auto end = hash < 0 ? original.size() : hash;
+	for (const auto &part : QStringView(original).sliced(
+			start + 1, end - start - 1).split(u'&')) {
+		const auto equals = part.indexOf(u'=');
+		const auto key = equals < 0 ? part : part.first(equals);
+		const auto name = QUrl::fromPercentEncoding(key.toUtf8()).toLower();
 		if (name == u"signature"_q || name == u"sig"_q
 			|| name.startsWith(u"x-amz-"_q) || name.startsWith(u"x-goog-"_q)) return original;
 		const auto tracking = name.startsWith(u"utm_"_q)
@@ -37,11 +43,12 @@ QString StripTrackingUrl(const QString &original) {
 			|| name == u"msclkid"_q || name == u"twclid"_q || name == u"yclid"_q
 			|| name == u"mc_cid"_q || name == u"mc_eid"_q || name == u"igshid"_q;
 		changed |= tracking;
-		if (!tracking) kept.push_back(part);
+		if (!tracking) kept.push_back(part.toString());
 	}
 	if (!changed) return original;
-	url.setQuery(kept.isEmpty() ? QString() : kept.join(u'&'), QUrl::StrictMode);
-	return url.toString(QUrl::FullyEncoded);
+	return original.first(start)
+		+ (kept.isEmpty() ? QString() : (u'?' + kept.join(u'&')))
+		+ original.sliced(end);
 }
 
 bool ValidLinkRules(const LinkRules &value) {

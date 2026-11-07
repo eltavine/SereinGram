@@ -120,11 +120,15 @@ void AddDeleteAllAction(
 		const auto added = manager.loadedHasNonCloudFile()
 			? QString()
 			: tr::lng_downloads_delete_in_cloud(tr::now);
-		const auto ids = Serein::Media::VisibleDownloadIds(&controller->session());
-		const auto deleteSure = [=, &manager](Fn<void()> close) {
+		const auto session = &controller->session();
+		const auto ids = Serein::Media::VisibleDownloadIds(session);
+		const auto deleteSure = crl::guard(widget, [=, &manager](Fn<void()> close) {
 			Ui::PostponeCall(widget, close);
-			manager.deleteFiles(ids);
-		};
+			const auto visible = Serein::Media::VisibleDownloadIds(session);
+			auto confirmed = std::vector<GlobalMsgId>();
+			ranges::set_intersection(ids, visible, std::back_inserter(confirmed));
+			manager.deleteFiles(confirmed);
+		});
 		window->show(Ui::MakeConfirmBox({
 			.text = phrase + (added.isEmpty() ? QString() : "\n\n" + added),
 			.confirmed = deleteSure,

@@ -1106,12 +1106,17 @@ void AccountsList::rebuild() {
 						}
 					}
 				}
+				auto fullOrder = std::vector<uint64>();
+				auto visible = order.begin();
 				for (const auto account : Core::App().domain().orderedAccounts(true)) {
 					if (Serein::Privacy::AccountHidden(account)) {
-						order.push_back(account->session().uniqueId());
+						fullOrder.push_back(account->session().uniqueId());
+					} else if (account->sessionExists() && visible != order.end()) {
+						fullOrder.push_back(*visible++);
 					}
 				}
-				Core::App().settings().setAccountsOrder(order);
+				fullOrder.insert(fullOrder.end(), visible, order.end());
+				Core::App().settings().setAccountsOrder(fullOrder);
 				Core::App().saveSettings();
 			}
 		}

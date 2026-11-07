@@ -1373,6 +1373,7 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_strip_tracking_parameters_about" = "Remove common tracking parameters when copying or pasting a web link. Signed links are kept intact.";
 
 "lng_serein_hidden_chats" = "Hidden chats";
+"lng_serein_hidden_chats_limit" = "You can hide up to 1,000 chats.";
 "lng_serein_hidden_accounts" = "Hidden accounts";
 "lng_serein_hidden_chats_enabled" = "Hide chats";
 "lng_serein_hidden_chats_enabled_about" = "Allow hiding chats from the chat list. Restore them from Hidden chats in the main menu or Ctrl+Alt+H.";

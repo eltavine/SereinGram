@@ -133,11 +133,15 @@ void ShowModified(not_null<Window::SessionController*> controller) {
 void ShowImport(
 		not_null<Window::SessionController*> controller,
 		const QByteArray &bytes) {
+	if (bytes.size() > kMaximumImportBytes) {
+		controller->showToast(tr::lng_serein_config_invalid(tr::now));
+		return;
+	}
 	auto settings = bytes;
 	auto native = NativeSettingsPlan();
 	const auto root = QJsonDocument::fromJson(bytes).object();
 	if (root.value(u"version"_q) == QJsonValue(3)) {
-		if (bytes.size() > kMaximumImportBytes || root.size() != 3
+		if (root.size() != 3
 			|| !root.value(u"serein"_q).isObject() || !root.value(u"telegram"_q).isObject()) {
 			controller->showToast(tr::lng_serein_native_invalid(tr::now));
 			return;

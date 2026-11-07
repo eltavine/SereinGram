@@ -26,8 +26,9 @@ void FillMainMenu(
 		gsl::not_null<Window::SessionController*> controller,
 		const MainMenuAction &addAction) {
 	App::AddOwnOnlineStatus(controller, addAction);
-	if (ForDevice().Get(Serein::Privacy::kAccountNetworkControls)) {
-		addAction(controller->session().mtp().networkEnabled()
+	const auto networkEnabled = controller->session().mtp().networkEnabled();
+	if (ForDevice().Get(Serein::Privacy::kAccountNetworkControls) || !networkEnabled) {
+		addAction(networkEnabled
 			? tr::lng_serein_disconnect_account() : tr::lng_serein_reconnect_account(),
 			{ &st::menuIconNetwork }
 		)->setClickedCallback([=] { Serein::Privacy::ToggleAccountNetwork(controller); });

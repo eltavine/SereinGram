@@ -640,6 +640,7 @@ private:
 
 	style::cursor _cursor = style::cur_default;
 	SelectedItems _selected;
+	int _sereinRangeCount = 0;
 	HistoryItem *_selectedTextItem = nullptr;
 	MessageSelection _selectedTextSelection;
 	TextForMimeData _selectedText;

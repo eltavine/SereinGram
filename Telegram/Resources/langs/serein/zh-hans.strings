@@ -1369,6 +1369,7 @@
 "lng_serein_strip_tracking_parameters_about" = "复制或粘贴网页链接时，移除常见追踪参数；带签名的链接会保持完整。";
 
 "lng_serein_hidden_chats" = "隐藏的聊天";
+"lng_serein_hidden_chats_limit" = "最多可以隐藏 1,000 个聊天。";
 "lng_serein_hidden_accounts" = "隐藏的账号";
 "lng_serein_hidden_chats_enabled" = "隐藏聊天";
 "lng_serein_hidden_chats_enabled_about" = "允许从聊天列表隐藏聊天。在主菜单“隐藏的聊天”或按 Ctrl+Alt+H 恢复。";

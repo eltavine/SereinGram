@@ -217,6 +217,9 @@ void Session::watchDcOptionsChanges() {
 
 void Session::start() {
 	killConnection();
+	if (!_instance->networkEnabled()) {
+		return;
+	}
 	_private = new SessionPrivate(
 		_instance,
 		_thread.get(),

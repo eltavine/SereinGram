@@ -36,6 +36,7 @@ void Selection::Select(HistoryInner *widget, HistoryItem *source) {
 		}
 	}
 	widget->clearTextSelection();
+	widget->_sereinRangeCount = 0;
 	widget->_selected = std::move(selected);
 	widget->_accessibilitySelectionAnchor = nullptr;
 	widget->update();
@@ -63,6 +64,7 @@ void Selection::Select(HistoryView::ListWidget *widget, HistoryItem *source) {
 			HistoryView::ListWidget::SelectAction::Select);
 	}
 	widget->clearTextSelection();
+	widget->_sereinRangeCount = 0;
 	widget->_selected = std::move(selected);
 	widget->_accessibilitySelectionAnchor = nullptr;
 	widget->pushSelectedItems();
@@ -70,34 +72,52 @@ void Selection::Select(HistoryView::ListWidget *widget, HistoryItem *source) {
 }
 
 void Selection::UpdateRange(HistoryInner *widget) {
-	const auto count = widget ? int(widget->_selected.size()) : 0;
-	const auto previous = widget ? widget->property("sereinRangeCount").toInt() : 0;
-	if (!previous || count == previous) {
+	if (!widget || !widget->_sereinRangeCount) {
 		return;
 	}
-	widget->setProperty("sereinRangeCount", 0);
+	const auto count = int(widget->_selected.size());
+	const auto previous = widget->_sereinRangeCount;
 	if (count > previous) {
-		SelectRange(widget);
+		if (!FillRange(widget)) {
+			widget->_sereinRangeCount = 0;
+		}
+	} else if (count < previous) {
+		widget->_sereinRangeCount = 0;
 	}
 }
 
 void Selection::UpdateRange(HistoryView::ListWidget *widget) {
-	const auto count = widget ? int(widget->_selected.size()) : 0;
-	const auto previous = widget ? widget->property("sereinRangeCount").toInt() : 0;
-	if (!previous || count == previous) {
+	if (!widget || !widget->_sereinRangeCount) {
 		return;
 	}
-	widget->setProperty("sereinRangeCount", 0);
+	const auto count = int(widget->_selected.size());
+	const auto previous = widget->_sereinRangeCount;
 	if (count > previous) {
-		SelectRange(widget);
+		if (!FillRange(widget)) {
+			widget->_sereinRangeCount = 0;
+		}
+	} else if (count < previous) {
+		widget->_sereinRangeCount = 0;
 	}
 }
 
 void Selection::SelectRange(HistoryInner *widget) {
+	if (FillRange(widget)) {
+		widget->_widget->updateTopBarSelection();
+	}
+}
+
+void Selection::SelectRange(HistoryView::ListWidget *widget) {
+	if (FillRange(widget)) {
+		widget->pushSelectedItems();
+	}
+}
+
+bool Selection::FillRange(HistoryInner *widget) {
 	if (!widget
 		|| widget->hasSelectRestriction()
 		|| widget->_selected.size() < 2) {
-		return;
+		return false;
 	}
 	auto items = std::vector<HistoryItem*>();
 	for (const auto history : { widget->_migrated, widget->_history.get() }) {
@@ -119,7 +139,7 @@ void Selection::SelectRange(HistoryInner *widget) {
 		}
 	}
 	if (first < 0 || last <= first) {
-		return;
+		return false;
 	}
 	auto selected = widget->_selected;
 	for (auto i = first; i <= last; ++i) {
@@ -130,25 +150,24 @@ void Selection::SelectRange(HistoryInner *widget) {
 			&& selected.size() >= MaxSelectedItems) {
 			widget->_controller->showToast(
 				tr::lng_serein_menu_selection_limit(tr::now));
-			return;
+			return false;
 		}
 		widget->changeSelection(&selected, item,
 			HistoryInner::SelectAction::Select);
 	}
 	widget->clearTextSelection();
-	widget->setProperty("sereinRangeCount", 0);
 	widget->_selected = std::move(selected);
+	widget->_sereinRangeCount = int(widget->_selected.size());
 	widget->_accessibilitySelectionAnchor = nullptr;
 	widget->update();
-	widget->_widget->updateTopBarSelection();
-	widget->setProperty("sereinRangeCount", int(widget->_selected.size()));
+	return true;
 }
 
-void Selection::SelectRange(HistoryView::ListWidget *widget) {
+bool Selection::FillRange(HistoryView::ListWidget *widget) {
 	if (!widget
 		|| widget->hasSelectRestriction()
 		|| widget->_selected.size() < 2) {
-		return;
+		return false;
 	}
 	auto first = -1;
 	auto last = -1;
@@ -159,7 +178,7 @@ void Selection::SelectRange(HistoryView::ListWidget *widget) {
 		}
 	}
 	if (first < 0 || last <= first) {
-		return;
+		return false;
 	}
 	auto selected = widget->_selected;
 	for (auto i = first; i <= last; ++i) {
@@ -170,18 +189,17 @@ void Selection::SelectRange(HistoryView::ListWidget *widget) {
 			&& selected.size() >= MaxSelectedItems) {
 			widget->controller()->showToast(
 				tr::lng_serein_menu_selection_limit(tr::now));
-			return;
+			return false;
 		}
 		widget->changeSelection(selected, item,
 			HistoryView::ListWidget::SelectAction::Select);
 	}
 	widget->clearTextSelection();
-	widget->setProperty("sereinRangeCount", 0);
 	widget->_selected = std::move(selected);
+	widget->_sereinRangeCount = int(widget->_selected.size());
 	widget->_accessibilitySelectionAnchor = nullptr;
-	widget->pushSelectedItems();
 	widget->update();
-	widget->setProperty("sereinRangeCount", int(widget->_selected.size()));
+	return true;
 }
 
 SelectionTarget::SelectionTarget(HistoryInner *widget)

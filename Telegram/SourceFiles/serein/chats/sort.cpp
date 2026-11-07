@@ -4,6 +4,7 @@
 #include "serein/chats/options.h"
 #include "serein/display/reorder_row.h"
 #include "data/data_chat_filters.h"
+#include "data/data_folder.h"
 #include "data/data_peer.h"
 #include "data/data_session.h"
 #include "data/data_user.h"
@@ -90,6 +91,9 @@ void RefreshSorting(gsl::not_null<Main::Session*> session) {
 		}
 	};
 	collect(session->data().chatsList());
+	if (const auto archive = session->data().folderLoaded(Data::Folder::kId)) {
+		collect(archive->chatsList());
+	}
 	for (const auto &filter : session->data().chatsFilters().list()) {
 		collect(session->data().chatsFilters().chatsList(filter.id()));
 	}

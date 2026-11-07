@@ -24,9 +24,9 @@ namespace {
 
 void ChooseFont(not_null<Window::SessionController*> controller) {
 	const auto current = ForDevice().Get(kMonospaceFont);
-	const auto initial = current.isEmpty()
-		? QFontDatabase::systemFont(QFontDatabase::FixedFont)
-		: QFont(current);
+	const auto initial = QFontDatabase::hasFamily(current)
+		? QFont(current)
+		: QFontDatabase::systemFont(QFontDatabase::FixedFont);
 	const auto dialog = new QFontDialog(initial, controller->widget().get());
 	dialog->setAttribute(Qt::WA_DeleteOnClose);
 	dialog->setOption(QFontDialog::MonospacedFonts);

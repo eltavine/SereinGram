@@ -20,6 +20,10 @@ public:
 	static void SelectRange(HistoryInner *widget);
 	static void SelectRange(HistoryView::ListWidget *widget);
 
+private:
+	static bool FillRange(HistoryInner *widget);
+	static bool FillRange(HistoryView::ListWidget *widget);
+
 };
 
 class SelectionTarget final {

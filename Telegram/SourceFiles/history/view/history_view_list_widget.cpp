@@ -2289,7 +2289,7 @@ void ListWidget::showEditCaptionUploadLayer(not_null<HistoryItem*> item) {
 }
 
 void ListWidget::clearSelected() {
-	setProperty("sereinRangeCount", 0);
+	_sereinRangeCount = 0;
 	if (_selected.empty()) {
 		return;
 	}

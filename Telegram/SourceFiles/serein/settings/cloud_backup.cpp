@@ -28,11 +28,6 @@ constexpr auto kMaximumBackupBytes = 8 * 1024 * 1024;
 constexpr auto kFileName = "sereingram-settings.json";
 constexpr auto kTag = "#SereinGramSettings";
 
-struct Loading {
-	std::shared_ptr<Data::DocumentMedia> media;
-	rpl::lifetime lifetime;
-};
-
 [[nodiscard]] DocumentData *FindBackup(
 		not_null<Main::Session*> session,
 		const MTPmessages_Messages &result,
@@ -74,7 +69,7 @@ struct Loading {
 	}
 	auto file = QFile(document->filepath(true));
 	return file.open(QIODevice::ReadOnly)
-		? file.read(kMaximumBackupBytes)
+		? file.read(kMaximumBackupBytes + 1)
 		: QByteArray();
 }
 
@@ -83,28 +78,29 @@ void Download(
 		not_null<DocumentData*> document,
 		FullMsgId itemId,
 		Fn<void(QByteArray)> done) {
-	const auto loading = controller->lifetime().make_state<Loading>();
-	loading->media = document->createMediaView();
-	document->save(itemId, QString());
+	const auto media = document->createMediaView();
+	if (!document->loading()) {
+		document->save(itemId, QString());
+	}
 	const auto finish = crl::guard(controller, [=] {
-		auto bytes = LoadedBytes(document, loading->media);
-		if (bytes.isEmpty()) {
+		auto bytes = LoadedBytes(document, media);
+		if (bytes.isEmpty() || bytes.size() > kMaximumBackupBytes) {
 			controller->showToast(
 				tr::lng_serein_config_restore_failed(tr::now));
 		} else {
 			done(std::move(bytes));
 		}
 	});
-	if (loading->media->loaded()) {
+	if (!document->loading()) {
 		finish();
 		return;
 	}
-	controller->session().downloaderTaskFinished(
-	) | rpl::filter([=] {
-		return loading->media->loaded() || !document->loading();
+	document->owner().documentLoadProgress(
+	) | rpl::filter([=](not_null<DocumentData*> updated) {
+		return updated == document && !document->loading();
 	}) | rpl::take(1) | rpl::on_next([=] {
 		finish();
-	}, loading->lifetime);
+	}, controller->lifetime());
 }
 
 } // namespace

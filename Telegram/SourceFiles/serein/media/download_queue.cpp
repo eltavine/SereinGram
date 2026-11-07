@@ -21,6 +21,7 @@
 #include "window/window_session_controller.h"
 
 #include <QtCore/QDir>
+#include <QtCore/QFile>
 #include <QtCore/QFileInfo>
 #include <QtCore/QTimer>
 
@@ -42,31 +43,38 @@ public:
 	}
 
 	void enqueue(MessageIdsList ids) {
-		const auto append = crl::guard(this, [this, ids = std::move(ids)] {
-			for (const auto id : ids) {
-				if (_queue.size() >= 1000) break;
-				const auto item = _session->data().message(id);
-				const auto media = item ? item->media() : nullptr;
-				if (!media || (!media->document() && !media->photo())
-					|| item->forbidsSaving() || item->isTtlCoveredMedia()
-					|| ranges::find(_queue, id) != _queue.end()) {
-					continue;
-				}
-				_queue.push_back(id);
+		for (const auto id : ids) {
+			if (_queue.size() >= 1000) {
+				break;
 			}
+			const auto item = _session->data().message(id);
+			const auto media = item ? item->media() : nullptr;
+			if (!media || (!media->document() && !media->photo())
+				|| item->forbidsSaving() || item->isTtlCoveredMedia()
+				|| ranges::find(_queue, id) != _queue.end()) {
+				continue;
+			}
+			_queue.push_back(id);
+		}
+		if (_queue.empty() || _choosingFolder || _timer.isActive()) {
+			return;
+		} else if (!_folder.isEmpty()) {
 			startNext();
-		});
-		if (!_folder.isEmpty()) {
-			append();
 			return;
 		}
-		FileDialog::GetFolder(Core::App().getFileDialogParent(),
-			tr::lng_serein_download_queue(tr::now), File::DefaultDownloadPath(_session),
-			crl::guard(this, [=, this](QString &&folder) {
-				if (!folder.isEmpty()) {
-					_folder = folder;
-					append();
-				}
+		_choosingFolder = true;
+		FileDialog::GetFolder(
+			Core::App().getFileDialogParent(),
+			tr::lng_serein_download_queue(tr::now),
+			File::DefaultDownloadPath(_session),
+			crl::guard(this, [this](QString &&folder) {
+				_choosingFolder = false;
+				_folder = std::move(folder);
+				startNext();
+			}),
+			crl::guard(this, [this] {
+				_choosingFolder = false;
+				cancel();
 			}));
 	}
 
@@ -105,43 +113,78 @@ public:
 	}
 
 private:
-	void cancel() {
-		_queue.clear();
-		if (_ownsTransfer) {
-			if (_document && _document->owner()->loading()) _document->owner()->cancel();
-			if (_photo && _photo->owner()->loading()) _photo->owner()->cancel();
+	void cancelTransfer() {
+		if (_document && _document->owner()->loading()) {
+			_document->owner()->cancel();
+		}
+		if (_photo && _photo->owner()->loading()) {
+			_photo->owner()->cancel();
 		}
 		_document.reset();
 		_photo.reset();
-		_ownsTransfer = false;
+	}
+
+	void cancel() {
+		_queue.clear();
+		cancelTransfer();
+		resetProgress();
 		_timer.stop();
 	}
 
+	void resetProgress() {
+		_lastProgress = -1;
+		_stalled = 0;
+	}
+
+	bool stalled(int64 offset) {
+		_stalled = offset > _lastProgress ? 0 : (_stalled + 1);
+		_lastProgress = offset;
+		return _stalled > 120;
+	}
+
+	void skip() {
+		_queue.pop_front();
+		++_failed;
+		resetProgress();
+	}
+
 	void startNext() {
-		if (!_session->mtp().networkEnabled()) { _timer.start(); return; }
+		if (_queue.empty()) {
+			_timer.stop();
+			return;
+		} else if (!_session->mtp().networkEnabled()) {
+			_timer.start();
+			return;
+		}
 		while (!_queue.empty() && !_document && !_photo) {
 			const auto item = _session->data().message(_queue.front());
 			const auto media = item ? item->media() : nullptr;
 			if (!media || item->forbidsSaving() || item->isTtlCoveredMedia()) {
-				_queue.pop_front();
-				++_failed;
+				skip();
 				continue;
 			}
 			const auto document = media->document();
 			const auto photo = media->photo();
 			if (!document && !photo) {
-				_queue.pop_front();
-				++_failed;
+				skip();
 				continue;
 			}
 			if ((document && document->loading()) || (photo && photo->loading())) {
+				if (stalled(document ? document->loadOffset() : photo->loadOffset())) {
+					skip();
+					continue;
+				}
 				_timer.start();
 				return;
 			}
-			auto name = document ? QFileInfo(document->filename()).fileName()
-				: (QString::number(photo->id) + u".jpg"_q);
-			if (name.isEmpty() || name == u"."_q || name == u".."_q) name = u"file"_q;
-			_path = filedialogNextFilename(name, QString(), _folder);
+			_path = document
+				? DocumentFileNameForSave(document, false, QString(), QDir(_folder))
+				: filedialogNextFilename(QString::number(photo->id) + u".jpg"_q,
+					QString(), _folder);
+			if (_path.isEmpty()) {
+				skip();
+				continue;
+			}
 			_started = Core::App().downloadManager().computeNextStartDate();
 			if (document) {
 				_document = document->createMediaView();
@@ -150,9 +193,7 @@ private:
 				_photo = photo->createMediaView();
 				_photo->wanted(Data::PhotoSize::Large, item->fullId());
 			}
-			_ownsTransfer = true;
-			_lastProgress = -1.;
-			_stalled = 0;
+			resetProgress();
 			_timer.start();
 		}
 		if (_queue.empty()) _timer.stop();
@@ -165,36 +206,47 @@ private:
 			return;
 		}
 		const auto item = _queue.empty() ? nullptr : _session->data().message(_queue.front());
-		const auto progress = _document ? _document->progress() : _photo->owner()->progress();
-		_stalled = (progress > _lastProgress) ? 0 : (_stalled + 1);
-		_lastProgress = progress;
+		const auto media = item ? item->media() : nullptr;
+		const auto document = _document ? _document->owner().get() : nullptr;
+		const auto photo = _photo ? _photo->owner().get() : nullptr;
+		if (!media || item->forbidsSaving() || item->isTtlCoveredMedia()
+			|| (document ? media->document() != document : media->photo() != photo)) {
+			cancelTransfer();
+			skip();
+			startNext();
+			return;
+		}
 		auto done = false;
-		auto failed = !item || _stalled > 120;
-		if (_document) {
-			done = (QFileInfo(_path).size() == _document->owner()->size)
-				&& QFileInfo::exists(_path)
-				&& !_document->owner()->loading();
-			failed |= !done && !_document->owner()->loading();
+		auto failed = stalled(document ? document->loadOffset() : photo->loadOffset());
+		if (document) {
+			const auto info = QFileInfo(_path);
+			done = !document->loading() && !document->cancelled()
+				&& info.isFile() && info.size() == document->size;
+			failed |= !done && !document->loading();
 		} else if (const auto image = _photo->image(Data::PhotoSize::Large)) {
-			done = image->original().save(_path, "JPEG");
+			auto file = QFile(_path);
+			if (file.open(QIODevice::WriteOnly | QIODevice::NewOnly)) {
+				done = image->original().save(&file, "JPEG") && file.flush();
+				if (!done) {
+					file.remove();
+				}
+			}
 			failed |= !done;
 		} else {
-			failed |= !_photo->owner()->loading();
+			failed |= !photo->loading();
 		}
 		if (!done && !failed) return;
-		if (done && item) {
-			Core::App().downloadManager().addLoaded({ item,
-				_document ? _document->owner().get() : nullptr,
-				_photo ? _photo->owner().get() : nullptr }, _path, _started);
+		if (done) {
+			Core::App().downloadManager().addLoaded(
+				{ item, document, photo }, _path, _started);
+			_document.reset();
+			_photo.reset();
+			_queue.pop_front();
+			resetProgress();
 		} else {
-			++_failed;
-			if (_document && _document->owner()->loading()) _document->owner()->cancel();
-			if (_photo && _photo->owner()->loading()) _photo->owner()->cancel();
+			cancelTransfer();
+			skip();
 		}
-		_document.reset();
-		_photo.reset();
-		_ownsTransfer = false;
-		if (!_queue.empty()) _queue.pop_front();
 		startNext();
 	}
 
@@ -206,10 +258,10 @@ private:
 	QString _path;
 	QTimer _timer;
 	Data::DownloadDate _started = 0;
-	double _lastProgress = -1.;
+	int64 _lastProgress = -1;
 	int _stalled = 0;
 	int _failed = 0;
-	bool _ownsTransfer = false;
+	bool _choosingFolder = false;
 
 };
 

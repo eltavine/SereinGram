@@ -36,9 +36,24 @@
 namespace Serein::Privacy {
 namespace {
 
+constexpr auto kHiddenIdsLimit = 1000;
+
 [[nodiscard]] std::set<quint64> Ids(const QString &value) {
-	const auto ids = ParseIdList(value, 1000).value_or(std::vector<quint64>());
+	const auto ids = ParseIdList(
+		value, kHiddenIdsLimit).value_or(std::vector<quint64>());
 	return { ids.begin(), ids.end() };
+}
+
+[[nodiscard]] bool ContainsId(QStringView value, quint64 id) {
+	const auto needle = QString::number(id);
+	for (auto i = qsizetype(0); (i = value.indexOf(needle, i)) >= 0; ++i) {
+		const auto end = i + needle.size();
+		if ((!i || value[i - 1] == u',')
+			&& (end == value.size() || value[end] == u',')) {
+			return true;
+		}
+	}
+	return false;
 }
 
 [[nodiscard]] QString Write(const std::set<quint64> &ids) {
@@ -47,17 +62,26 @@ namespace {
 	return result.join(u',');
 }
 
-void SetChatHidden(not_null<PeerData*> peer, bool hidden) {
+bool SetChatHidden(not_null<PeerData*> peer, bool hidden) {
 	auto &options = ForAccount(&peer->session());
 	auto ids = Ids(options.Get(kHiddenChatIds));
-	if (hidden) ids.insert(peer->id.value);
-	else ids.erase(peer->id.value);
+	if (hidden) {
+		if (ids.size() >= kHiddenIdsLimit && !ids.contains(peer->id.value)) {
+			return false;
+		}
+		ids.insert(peer->id.value);
+	} else {
+		ids.erase(peer->id.value);
+	}
 	Expects(options.Set(kHiddenChatIds, Write(ids)));
 	const auto history = peer->owner().history(peer);
-	history->updateChatListExistence();
 	if (hidden) {
+		history->updateChatListExistence();
 		Core::App().notifications().clearFromHistory(history);
+	} else {
+		history->updateChatListSortPosition();
 	}
+	return true;
 }
 
 void SetAccountHidden(not_null<Main::Account*> account, bool hidden) {
@@ -175,6 +199,10 @@ void AccountsBox(not_null<Ui::GenericBox*> box, not_null<Window::SessionControll
 		const auto button = box->addRow(object_ptr<Ui::SettingsButton>(
 			box, rpl::single(raw->session().user()->name()), st::settingsButtonNoIcon));
 		button->setClickedCallback(crl::guard(raw, [=] {
+			if (Core::App().passcodeLocked() || !AccountHidden(raw)) {
+				box->closeBox();
+				return;
+			}
 			SetAccountHidden(raw, false);
 			raw->domain().notifyAccountVisibilityChanged();
 			box->closeBox();
@@ -188,12 +216,16 @@ void AccountsBox(not_null<Ui::GenericBox*> box, not_null<Window::SessionControll
 
 void WatchHiddenChats(not_null<Main::Session*> session) {
 	const auto refresh = [=] {
-		const auto update = [=](not_null<PeerData*> peer) {
-			if (const auto history = session->data().historyLoaded(peer->id)) history->updateChatListExistence();
-		};
-		session->data().enumerateUsers(update);
-		session->data().enumerateGroups(update);
-		session->data().enumerateBroadcasts(update);
+		for (const auto id : Ids(ForAccount(session).Get(kHiddenChatIds))) {
+			if (const auto history = session->data().historyLoaded(
+					PeerId(PeerIdHelper(id)))) {
+				if (history->shouldBeInChatList()) {
+					history->updateChatListSortPosition();
+				} else {
+					history->updateChatListExistence();
+				}
+			}
+		}
 	};
 	ForDevice().changes() | rpl::filter([](std::string_view key) {
 		return key == kHiddenChatsEnabled.key;
@@ -202,13 +234,15 @@ void WatchHiddenChats(not_null<Main::Session*> session) {
 
 bool ChatHidden(not_null<const PeerData*> peer) {
 	return ForDevice().Get(kHiddenChatsEnabled)
-		&& Ids(ForAccount(&peer->session()).Get(kHiddenChatIds)).contains(peer->id.value);
+		&& ContainsId(
+			ForAccount(&peer->session()).Get(kHiddenChatIds), peer->id.value);
 }
 
 bool AccountHidden(not_null<Main::Account*> account) {
 	return account->sessionExists()
 		&& Core::App().domain().local().hasLocalPasscode()
-		&& Ids(ForDevice().Get(kHiddenAccountIds)).contains(account->session().uniqueId());
+		&& ContainsId(
+			ForDevice().Get(kHiddenAccountIds), account->session().uniqueId());
 }
 
 bool HiddenAccountsAvailable() {
@@ -241,9 +275,10 @@ void ShowHiddenChats(not_null<Window::SessionController*> controller) {
 			const auto button = box->addRow(object_ptr<Ui::SettingsButton>(
 				box, rpl::single(peer->name()), st::settingsButtonNoIcon));
 			button->setClickedCallback([=] {
-				SetChatHidden(peer, false);
-				box->closeBox();
-				controller->showPeerHistory(peer);
+				if (SetChatHidden(peer, false)) {
+					box->closeBox();
+					controller->showPeerHistory(peer);
+				}
 			});
 		}
 		box->addButton(tr::lng_close(), [=] { box->closeBox(); });
@@ -261,9 +296,14 @@ void AddHideChatAction(
 		not_null<PeerData*> peer) {
 	if (!ForDevice().Get(kHiddenChatsEnabled) || peer->isSelf()) return;
 	const auto hidden = ChatHidden(peer);
-	addAction(hidden ? tr::lng_serein_restore_chat(tr::now) : tr::lng_serein_hide_chat(tr::now), [=] {
-		SetChatHidden(peer, !hidden);
-	}, &st::menuIconArchive);
+	addAction(
+		hidden ? tr::lng_serein_restore_chat(tr::now) : tr::lng_serein_hide_chat(tr::now),
+		crl::guard(controller, [=] {
+			if (!SetChatHidden(peer, !ChatHidden(peer))) {
+				controller->showToast(tr::lng_serein_hidden_chats_limit(tr::now));
+			}
+		}),
+		&st::menuIconArchive);
 }
 
 } // namespace Serein::Privacy

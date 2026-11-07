@@ -10,6 +10,7 @@
 #include "history/history.h"
 #include "history/history_item.h"
 #include "lang/lang_keys.h"
+#include "main/main_domain.h"
 #include "main/main_session.h"
 #include "ui/widgets/menu/menu_add_action_callback.h"
 
@@ -59,7 +60,12 @@ void WatchDownloadFilters(
 		rpl::lifetime &lifetime) {
 	ForAccount(session).changes() | rpl::filter([](std::string_view key) {
 		return key == kDownloadsAllAccounts.key || key == kDownloadsCategory.key;
-	}) | rpl::on_next(std::move(refresh), lifetime);
+	}) | rpl::on_next(refresh, lifetime);
+	session->domain().accountsChanges() | rpl::on_next([=] {
+		if (ForAccount(session).Get(kDownloadsAllAccounts)) {
+			refresh();
+		}
+	}, lifetime);
 }
 
 void FillDownloadFilters(
@@ -102,6 +108,8 @@ std::vector<GlobalMsgId> VisibleDownloadIds(not_null<Main::Session*> session) {
 			result.push_back(entry->object.item->globalId());
 		}
 	}
+	ranges::sort(result);
+	result.erase(ranges::unique(result), end(result));
 	return result;
 }
 

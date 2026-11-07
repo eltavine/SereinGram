@@ -14,6 +14,8 @@ TEST_CASE("Tracking links preserve functional parameters") {
 		== u"https://example.com/p?next=x%26y#part"_q);
 	CHECK(StripTrackingUrl(u"https://example.com/p?utm_source=only#part"_q)
 		== u"https://example.com/p#part"_q);
+	CHECK(StripTrackingUrl(u"https://example.com/%7e?key=%2f&%75tm_campaign=x#%7a"_q)
+		== u"https://example.com/%7e?key=%2f#%7a"_q);
 	for (const auto &unchanged : {
 			u"https://example.com/p?sig=abc&utm_source=x"_q,
 			u"https://example.com/p?X-Amz-Algorithm=a&utm_source=x"_q,

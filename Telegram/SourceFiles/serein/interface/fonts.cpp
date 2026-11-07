@@ -18,8 +18,9 @@ void StartFonts() {
 			LOG(("Font Error: Could not load Unicode fallback font."));
 		}
 	}
+	const auto family = ForDevice().Get(kMonospaceFont);
 	style::SetCustomMonospaceFont(
-		ForDevice().Get(kMonospaceFont),
+		QFontDatabase::hasFamily(family) ? family : QString(),
 		ForDevice().Get(kMonospaceLigatures));
 }
 

@@ -100,6 +100,9 @@ void BindAvatar(
 		gsl::not_null<Ui::RpWidget*> widget,
 		gsl::not_null<PeerData*> peer,
 		Fn<void()> visibilityChanged) {
+	if (!StatusUser(peer)) {
+		return;
+	}
 	const auto badge = Ui::CreateChild<Ui::RpWidget>(widget);
 	badge->setAttribute(Qt::WA_TransparentForMouseEvents);
 	widget->sizeValue() | rpl::on_next([=](QSize size) {
@@ -129,8 +132,11 @@ void BindAvatar(
 	ForDevice().Value(
 		Serein::Interface::kOnlineStatusOnSenders
 	) | rpl::on_next([=](bool enabled) {
-		if (enabled) timer->start();
-		else timer->stop();
+		if (enabled) {
+			timer->start();
+		} else {
+			timer->stop();
+		}
 		badge->update();
 	}, badge->lifetime());
 	ForDevice().Value(Serein::Interface::kOnlineStatusOnSenders)

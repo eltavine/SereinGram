@@ -1092,6 +1092,7 @@ private:
 	TextForMimeData _selectedText;
 	KeyboardTextSelection _keyboardTextSelection;
 	SelectedMap _selected;
+	int _sereinRangeCount = 0;
 	base::flat_set<FullMsgId> _dragSelected;
 	DragSelectAction _dragSelectAction = DragSelectAction::None;
 	bool _dragSelectDirectionUp = false;
