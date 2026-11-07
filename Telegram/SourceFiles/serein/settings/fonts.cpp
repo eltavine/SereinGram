@@ -9,7 +9,7 @@
 #include "ui/widgets/buttons.h"
 #include "ui/widgets/labels.h"
 #include "window/window_session_controller.h"
-#include "window/main_window.h"
+#include "mainwindow.h"
 
 #include <QtGui/QFontDatabase>
 #include <QtWidgets/QFontDialog>
@@ -27,15 +27,18 @@ void ChooseFont(not_null<Window::SessionController*> controller) {
 	const auto initial = current.isEmpty()
 		? QFontDatabase::systemFont(QFontDatabase::FixedFont)
 		: QFont(current);
-	const auto dialog = new QFontDialog(initial, controller->widget());
+	const auto dialog = new QFontDialog(initial, controller->widget().get());
 	dialog->setAttribute(Qt::WA_DeleteOnClose);
 	dialog->setOption(QFontDialog::MonospacedFonts);
-	QObject::connect(dialog, &QFontDialog::fontSelected, dialog, crl::guard(controller, [=](const QFont &font) {
+	const auto selected = crl::guard(controller, [=](const QFont &font) {
 		if (font.family() != current) {
 			Expects(ForDevice().Set(kMonospaceFont, font.family()));
 			ShowRestartPrompt(controller);
 		}
-	}));
+	});
+	QObject::connect(dialog, &QFontDialog::fontSelected, dialog, [=](const QFont &font) {
+		selected(font);
+	});
 	dialog->open();
 }
 

@@ -126,7 +126,8 @@ void BindAvatar(
 	QObject::connect(timer, &QTimer::timeout, badge, [=] {
 		if (badge->isVisible()) badge->update();
 	});
-	ForDevice().Value(Serein::Interface::kOnlineStatusOnSenders)
+	ForDevice().Value(
+		Serein::Interface::kOnlineStatusOnSenders
 	) | rpl::on_next([=](bool enabled) {
 		if (enabled) timer->start();
 		else timer->stop();

@@ -4,6 +4,8 @@
 #include "serein/adapters/qtnetwork/manager.h"
 #include "serein/services/credentials.h"
 #include "serein/services/translation_protocol.h"
+#include "main/main_session.h"
+#include "mtproto/mtp_instance.h"
 
 #include <QtCore/QJsonDocument>
 #include <QtNetwork/QHttpMultiPart>
@@ -43,13 +45,22 @@ QString ServiceErrorText(ServiceError error, int status) {
 	Unexpected("Invalid service error.");
 }
 
-ServiceRequest::ServiceRequest() {
+ServiceRequest::ServiceRequest(Main::Session *session)
+: _accountBound(session != nullptr)
+, _transport(session ? &session->mtp() : nullptr) {
 	_deadline.setSingleShot(true);
 	QObject::connect(&_deadline, &QTimer::timeout, &_context, [=] {
 		if (_reply) {
 			_reply->abort();
 		}
 	});
+	if (_transport) {
+		_transport->networkEnabledChanges() | rpl::on_next([=](bool enabled) {
+			if (!enabled && _reply) {
+				_reply->abort();
+			}
+		}, _networkLifetime);
+	}
 }
 
 ServiceRequest::~ServiceRequest() {
@@ -71,6 +82,10 @@ std::optional<QNetworkRequest> ServiceRequest::prepare(
 		const ServiceDefinition &service,
 		Fn<void(ServiceResult)> &done) {
 	cancel();
+	if (_accountBound && (!_transport || !_transport->networkEnabled())) {
+		done({ .error = ServiceError::Network });
+		return std::nullopt;
+	}
 	if (!ParseService(ServiceToInstance(service))) {
 		done({ .error = ServiceError::Configuration });
 		return std::nullopt;

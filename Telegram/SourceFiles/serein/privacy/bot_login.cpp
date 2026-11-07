@@ -46,12 +46,14 @@ public:
 	void submit() override {
 		if (_request) return;
 		static const auto format = QRegularExpression(u"^[0-9]{1,20}:[A-Za-z0-9_-]{20,128}$"_q);
-		const auto text = _token->getLastText().trimmed();
+		auto text = _token->getLastText().trimmed();
+		const auto cleanse = gsl::finally([&] {
+			OPENSSL_cleanse(text.data(), text.size() * sizeof(QChar));
+		});
 		if (!format.match(text).hasMatch()) {
 			_token->showError();
 			return;
 		}
-		auto token = text.toUtf8();
 		_token->clear();
 		_token->setDisabled(true);
 		hideError();
@@ -59,7 +61,7 @@ public:
 			MTP_int(0),
 			MTP_int(ApiId),
 			MTP_string(ApiHash),
-			MTP_string(token)
+			MTP_string(text)
 		)).done([=](const MTPauth_Authorization &result) {
 			_request = 0;
 			if (result.type() != mtpc_auth_authorization
@@ -72,7 +74,6 @@ public:
 		}).fail([=] {
 			failed();
 		}).send();
-		OPENSSL_cleanse(token.data(), token.size());
 	}
 
 protected:

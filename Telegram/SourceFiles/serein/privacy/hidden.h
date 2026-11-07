@@ -10,7 +10,7 @@ class PeerData;
 
 namespace Serein::Privacy {
 
-void StartHiddenAccounts();
+[[nodiscard]] bool HiddenAccountsAvailable();
 void WatchHiddenChats(gsl::not_null<Main::Session*> session);
 void ShowHiddenChats(gsl::not_null<Window::SessionController*> controller);
 void ShowHiddenAccounts(gsl::not_null<Window::SessionController*> controller);

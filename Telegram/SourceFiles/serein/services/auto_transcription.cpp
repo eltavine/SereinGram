@@ -69,7 +69,8 @@ private:
 };
 
 AutoTranscriber::AutoTranscriber(not_null<Main::Session*> session)
-: _session(session) {
+: _session(session)
+, _request(session) {
 	_session->data().newItemAdded(
 	) | rpl::filter(Eligible) | rpl::on_next([=](not_null<HistoryItem*> item) {
 		added(item);

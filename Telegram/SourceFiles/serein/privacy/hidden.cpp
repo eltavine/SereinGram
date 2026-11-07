@@ -4,6 +4,7 @@
 #include "serein/hooks/privacy/hidden.h"
 #include "serein/privacy/options.h"
 #include "core/application.h"
+#include "data/data_channel.h"
 #include "data/data_peer.h"
 #include "data/data_session.h"
 #include "data/data_user.h"
@@ -12,6 +13,7 @@
 #include "main/main_account.h"
 #include "main/main_domain.h"
 #include "main/main_session.h"
+#include "settings.h"
 #include "window/notifications_manager.h"
 #include "storage/storage_domain.h"
 #include "ui/layers/generic_box.h"
@@ -76,14 +78,24 @@ void AskUnlock(
 	}
 	controller->show(Box([=](not_null<Ui::GenericBox*> box) {
 		box->setTitle(tr::lng_serein_hidden_accounts());
-		const auto field = box->addRow(object_ptr<Ui::PasswordInput>(
-			box, st::defaultInputField, tr::lng_passcode_ph()));
+		const auto row = box->addRow(object_ptr<Ui::RpWidget>(box));
+		const auto field = Ui::CreateChild<Ui::PasswordInput>(
+			row, st::defaultInputField, tr::lng_passcode_ph());
+		row->resize(row->width(), field->height());
+		row->widthValue() | rpl::on_next([=](int width) {
+			field->resize(width, field->height());
+		}, row->lifetime());
 		box->setFocusCallback([=] { field->setFocusFast(); });
 		const auto submit = [=] {
-			if (field->isDisabled()) return;
+			if (!field->isEnabled() || field->getLastText().isEmpty()) {
+				return;
+			} else if (!passcodeCanTry()) {
+				controller->showToast(tr::lng_flood_error(tr::now));
+				return;
+			}
 			auto passcode = field->getLastText().toUtf8();
 			const auto started = Core::App().domain().tryPasscode(passcode,
-				crl::guard(box, [=](bool correct) {
+				[update = crl::guard(box, [=](bool correct) {
 					field->setDisabled(false);
 					if (!correct || Core::App().passcodeLocked()) {
 						field->showError();
@@ -93,7 +105,11 @@ void AskUnlock(
 					field->clear();
 					box->closeBox();
 					crl::on_main(controller, done);
-				}));
+				})](bool correct) {
+					cSetPasscodeBadTries(correct ? 0 : cPasscodeBadTries() + 1);
+					cSetPasscodeLastTry(crl::now());
+					update(correct);
+				});
 			OPENSSL_cleanse(passcode.data(), passcode.size());
 			if (started) field->setDisabled(true);
 		};
@@ -145,12 +161,14 @@ void HideCurrentAccount(not_null<Window::SessionController*> controller) {
 void AccountsBox(not_null<Ui::GenericBox*> box, not_null<Window::SessionController*> controller) {
 	box->setTitle(tr::lng_serein_hidden_accounts());
 	box->addRow(object_ptr<Ui::FlatLabel>(box, tr::lng_serein_hidden_accounts_about(), st::boxLabel));
-	const auto hide = box->addRow(object_ptr<Ui::SettingsButton>(
-		box, tr::lng_serein_hide_current_account(), st::settingsButtonNoIcon));
-	hide->setClickedCallback([=] {
-		box->closeBox();
-		HideCurrentAccount(controller);
-	});
+	if (ForDevice().Get(kHiddenAccountsEnabled)) {
+		const auto hide = box->addRow(object_ptr<Ui::SettingsButton>(
+			box, tr::lng_serein_hide_current_account(), st::settingsButtonNoIcon));
+		hide->setClickedCallback([=] {
+			box->closeBox();
+			HideCurrentAccount(controller);
+		});
+	}
 	for (const auto &[index, account] : controller->session().domain().accounts()) {
 		if (!AccountHidden(account.get())) continue;
 		const auto raw = account.get();
@@ -167,26 +185,6 @@ void AccountsBox(not_null<Ui::GenericBox*> box, not_null<Window::SessionControll
 }
 
 } // namespace
-
-void StartHiddenAccounts() {
-	class Watcher final : public QObject {
-	public:
-		explicit Watcher(QObject *parent) : QObject(parent) {
-			ForDevice().changes() | rpl::filter([](std::string_view key) {
-				return key == kHiddenAccountsEnabled.key;
-			}) | rpl::on_next([this] {
-				crl::on_main(this, [] {
-					ApplyAccountVisibility(Core::App().domain());
-				});
-			}, _lifetime);
-		}
-
-	private:
-		rpl::lifetime _lifetime;
-
-	};
-	new Watcher(&Core::App());
-}
 
 void WatchHiddenChats(not_null<Main::Session*> session) {
 	const auto refresh = [=] {
@@ -208,16 +206,28 @@ bool ChatHidden(not_null<const PeerData*> peer) {
 }
 
 bool AccountHidden(not_null<Main::Account*> account) {
-	return account->sessionExists() && ForDevice().Get(kHiddenAccountsEnabled)
+	return account->sessionExists()
 		&& Core::App().domain().local().hasLocalPasscode()
 		&& Ids(ForDevice().Get(kHiddenAccountIds)).contains(account->session().uniqueId());
 }
 
+bool HiddenAccountsAvailable() {
+	return ForDevice().Get(kHiddenAccountsEnabled)
+		|| ranges::any_of(Core::App().domain().accounts(), [](const auto &entry) {
+			return AccountHidden(entry.account.get());
+		});
+}
+
 not_null<Main::Account*> VisibleAccount(not_null<Main::Account*> account) {
 	if (!AccountHidden(account)) return account;
+	auto login = (Main::Account*)nullptr;
 	for (const auto &[index, other] : account->domain().accounts()) {
-		if (other->sessionExists() && !AccountHidden(other.get())) return other.get();
+		if (!AccountHidden(other.get())) {
+			if (other->sessionExists()) return other.get();
+			login = other.get();
+		}
 	}
+	if (login) return login;
 	SetAccountHidden(account, false);
 	return account;
 }
@@ -241,7 +251,7 @@ void ShowHiddenChats(not_null<Window::SessionController*> controller) {
 }
 
 void ShowHiddenAccounts(not_null<Window::SessionController*> controller) {
-	if (!ForDevice().Get(kHiddenAccountsEnabled)) return;
+	if (!HiddenAccountsAvailable()) return;
 	AskUnlock(controller, crl::guard(controller, [=] { controller->show(Box(AccountsBox, controller)); }));
 }
 

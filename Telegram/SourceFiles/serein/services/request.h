@@ -11,6 +11,9 @@
 class QNetworkReply;
 class QHttpMultiPart;
 
+namespace Main { class Session; }
+namespace MTP { class Instance; }
+
 namespace Serein {
 
 struct TranslationCall;
@@ -36,7 +39,7 @@ struct ServiceResult {
 
 class ServiceRequest final {
 public:
-	ServiceRequest();
+	explicit ServiceRequest(Main::Session *session = nullptr);
 	~ServiceRequest();
 	void cancel();
 	void json(
@@ -65,9 +68,12 @@ private:
 
 	QObject _context;
 	QTimer _deadline;
+	const bool _accountBound;
+	const QPointer<MTP::Instance> _transport;
 	QPointer<QNetworkReply> _reply;
 	QByteArray _body;
 	bool _tooLarge = false;
+	rpl::lifetime _networkLifetime;
 
 };
 

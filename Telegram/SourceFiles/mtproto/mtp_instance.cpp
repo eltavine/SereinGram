@@ -2049,11 +2049,16 @@ void Instance::requestCDNConfig() {
 void Instance::setNetworkEnabled(bool enabled) {
 	if (_networkEnabled.exchange(enabled) != enabled) {
 		_private->setNetworkEnabled(enabled);
+		_networkEnabledChanges.fire_copy(enabled);
 	}
 }
 
 bool Instance::networkEnabled() const {
 	return _networkEnabled.load();
+}
+
+rpl::producer<bool> Instance::networkEnabledChanges() const {
+	return _networkEnabledChanges.events();
 }
 
 void Instance::restart() {

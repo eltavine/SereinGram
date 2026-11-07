@@ -1359,7 +1359,7 @@
 "lng_serein_download_queue" = "下載佇列";
 "lng_serein_queue_add" = "加入下載佇列";
 "lng_serein_queue_cancel" = "取消佇列下載";
-"lng_serein_queue_status" = "佇列中：{count} · 失敗或跳過：{amount}";
+"lng_serein_queue_status" = "佇列中：{pending} · 失敗或跳過：{amount}";
 "lng_serein_downloads_photo" = "相片";
 
 "lng_serein_menu_clear_cache" = "清除媒體快取";

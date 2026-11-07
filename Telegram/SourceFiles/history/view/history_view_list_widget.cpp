@@ -9,6 +9,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "serein/hooks/messages/reactions.h"
 #include "serein/hooks/messages/double_click.h"
 #include "serein/hooks/media/force_preview.h"
+#include "serein/hooks/menu/selection.h"
 #include "serein/hooks/gen/privacy.h"
 #include "serein/hooks/online.h"
 

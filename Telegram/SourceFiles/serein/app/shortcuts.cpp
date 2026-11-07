@@ -71,7 +71,7 @@ void StartShortcuts() {
 			return true;
 		});
 		request->check(Command::SereinHiddenAccounts) && request->handle([=] {
-			if (!controller || !ForDevice().Get(Privacy::kHiddenAccountsEnabled)) return false;
+			if (!controller || !Privacy::HiddenAccountsAvailable()) return false;
 			Privacy::ShowHiddenAccounts(controller);
 			return true;
 		});

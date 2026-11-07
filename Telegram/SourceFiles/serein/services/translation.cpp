@@ -50,7 +50,8 @@ public:
 	: _session(session)
 	, _service(std::move(service))
 	, _error(std::move(error))
-	, _unavailable(std::move(unavailable)) {
+	, _unavailable(std::move(unavailable))
+	, _request(session) {
 	}
 
 	bool supportsMessageId() const override {

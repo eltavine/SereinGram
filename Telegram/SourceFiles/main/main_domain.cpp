@@ -205,11 +205,13 @@ const std::vector<Domain::AccountWithIndex> &Domain::accounts() const {
 	return _accounts;
 }
 
-std::vector<not_null<Account*>> Domain::orderedAccounts() const {
+std::vector<not_null<Account*>> Domain::orderedAccounts(bool includeHidden) const {
 	const auto order = Core::App().settings().accountsOrder();
 	auto accounts = ranges::views::all(
 		_accounts
-	) | ranges::views::transform([](const Domain::AccountWithIndex &a) {
+	) | ranges::views::filter([=](const Domain::AccountWithIndex &a) {
+		return includeHidden || !Serein::Privacy::AccountHidden(a.account.get());
+	}) | ranges::views::transform([](const Domain::AccountWithIndex &a) {
 		return not_null{ a.account.get() };
 	}) | ranges::to_vector;
 	ranges::stable_sort(accounts, [&](
@@ -441,7 +443,7 @@ void Domain::closeAccountWindows(not_null<Main::Account*> account) {
 	auto another = (Main::Account*)nullptr;
 	for (auto i = _accounts.begin(); i != _accounts.end(); ++i) {
 		const auto other = not_null(i->account.get());
-		if (other == account) {
+		if (other == account || Serein::Privacy::AccountHidden(other)) {
 			continue;
 		} else if (Core::App().separateWindowFor(other)) {
 			const auto that = Core::App().separateWindowFor(account);

@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "inline_bots/bot_attach_web_view.h"
+#include "mtproto/mtp_instance.h"
 #include "serein/hooks/services/web_apps.h"
 
 #include "api/api_blocked_peers.h"
@@ -2551,7 +2552,7 @@ void AttachWebView::openByUsername(
 		const QString &botUsername,
 		const QString &startCommand,
 		bool fullscreen) {
-	if (botUsername.isEmpty()
+	if (!_session->mtp().networkEnabled() || botUsername.isEmpty()
 		|| (_botUsername == botUsername
 			&& _startCommand == startCommand
 			&& _fullScreenRequested == fullscreen)) {
@@ -2840,6 +2841,7 @@ void AttachWebView::resolveUsername(
 }
 
 void AttachWebView::open(WebViewDescriptor &&descriptor) {
+	if (!_session->mtp().networkEnabled()) return;
 	for (const auto &instance : _instances) {
 		if (instance->bot() == descriptor.bot
 			&& instance->source() == descriptor.source) {

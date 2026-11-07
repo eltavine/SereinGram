@@ -5,6 +5,7 @@
 #include "data/data_document.h"
 #include "data/data_document_media.h"
 #include "data/data_download_manager.h"
+#include "data/data_file_origin.h"
 #include "data/data_media_types.h"
 #include "data/data_photo.h"
 #include "data/data_photo_media.h"
@@ -76,7 +77,7 @@ public:
 			const auto refresh = crl::guard(this, [=, this] {
 				auto lines = QStringList();
 				lines.push_back(tr::lng_serein_queue_status(tr::now,
-					lt_count, QString::number(_queue.size()),
+					lt_pending, QString::number(_queue.size()),
 					lt_amount, QString::number(_failed)));
 				if (_document || _photo) {
 					const auto progress = _document ? _document->progress() : _photo->progress();
@@ -92,7 +93,7 @@ public:
 				label->setText(lines.join('\n'));
 			});
 			const auto timer = new QTimer(box);
-			QObject::connect(timer, &QTimer::timeout, box, refresh);
+			QObject::connect(timer, &QTimer::timeout, box, [=] { refresh(); });
 			timer->start(1000);
 			refresh();
 			box->addButton(tr::lng_serein_queue_cancel(), crl::guard(this, [this, refresh] {

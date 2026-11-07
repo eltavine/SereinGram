@@ -56,7 +56,7 @@ constexpr auto kModules = std::array{
 	Module{ "app.shortcuts", StartShortcuts },
 	Module{ "app.message_menu", RegisterMessageMenu },
 	Module{ "app.inspector", RegisterInspector },
-	Module{ "privacy.hidden", Privacy::StartHiddenAccounts, Privacy::WatchHiddenChats },
+	Module{ "privacy.hidden", nullptr, Privacy::WatchHiddenChats },
 	Module{ "privacy.auto_demo", Privacy::StartAutoDemoMode },
 	Module{ "privacy.screenshot_protection", Privacy::StartScreenshotProtection },
 	Module{ "privacy.settings_lock", StartSettingsLock },

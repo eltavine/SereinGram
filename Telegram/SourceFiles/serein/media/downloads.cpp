@@ -68,7 +68,7 @@ void FillDownloadFilters(
 	if (ForDevice().Get(kSequentialDownloads)) {
 		addAction(tr::lng_serein_download_queue(tr::now), [=] {
 			if (const auto window = session->tryResolveWindow()) session->sereinDownloads().show(window);
-		});
+		}, nullptr);
 	}
 	const auto all = ForAccount(session).Get(kDownloadsAllAccounts);
 	addAction(tr::lng_serein_downloads_all_accounts(tr::now), [=] {

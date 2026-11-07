@@ -94,6 +94,7 @@ public:
 
 	void setNetworkEnabled(bool enabled);
 	[[nodiscard]] bool networkEnabled() const;
+	[[nodiscard]] rpl::producer<bool> networkEnabledChanges() const;
 	void restart();
 	void restart(ShiftedDcId shiftedDcId);
 	int32 dcstate(ShiftedDcId shiftedDcId = 0);
@@ -246,6 +247,7 @@ private:
 
 	class Private;
 	std::atomic<bool> _networkEnabled = true;
+	rpl::event_stream<bool> _networkEnabledChanges;
 	const std::unique_ptr<Private> _private;
 
 };

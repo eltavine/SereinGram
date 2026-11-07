@@ -36,7 +36,7 @@ void FillMainMenu(
 		addAction(tr::lng_serein_hidden_chats(), { &st::menuIconArchive }
 		)->setClickedCallback([=] { Serein::Privacy::ShowHiddenChats(controller); });
 	}
-	if (ForDevice().Get(Serein::Privacy::kHiddenAccountsEnabled)) {
+	if (Serein::Privacy::HiddenAccountsAvailable()) {
 		addAction(tr::lng_serein_hidden_accounts(), { &st::menuIconLock }
 		)->setClickedCallback([=] { Serein::Privacy::ShowHiddenAccounts(controller); });
 	}

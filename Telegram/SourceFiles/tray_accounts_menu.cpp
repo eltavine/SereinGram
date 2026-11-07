@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "tray_accounts_menu.h"
+#include "serein/hooks/privacy/hidden.h"
 
 #include "base/weak_ptr.h"
 #include "base/qt/qt_key_modifiers.h"
@@ -67,7 +68,7 @@ void Fill(Platform::Tray &tray) {
 			}),
 			[weak] {
 				const auto strong = weak.get();
-				if (!strong || !strong->sessionExists()) {
+				if (!strong || !strong->sessionExists() || Serein::Privacy::AccountHidden(strong)) {
 					return;
 				}
 				if (base::IsCtrlPressed()) {

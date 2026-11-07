@@ -7,6 +7,7 @@
 #include "core/file_utilities.h"
 #include "data/data_document.h"
 #include "data/data_document_media.h"
+#include "data/data_file_origin.h"
 #include "data/data_session.h"
 #include "lang/lang_keys.h"
 #include "main/main_session.h"

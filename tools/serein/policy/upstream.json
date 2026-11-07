@@ -32,11 +32,11 @@
     "Telegram/lib_ui"
   ],
   "budget": {
-    "all_files": 264,
-    "all_added_lines": 1848,
-    "source_files": 183,
-    "source_added_lines": 1636,
+    "all_files": 266,
+    "all_added_lines": 1898,
+    "source_files": 185,
+    "source_added_lines": 1686,
     "direct_include_files": 0,
-    "upstream_headers": 178
+    "upstream_headers": 179
   }
 }

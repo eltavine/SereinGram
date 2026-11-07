@@ -425,7 +425,7 @@ void Application::run() {
 			: rpl::never<not_null<Main::Account*>>();
 	}) | rpl::flatten_latest(
 	) | rpl::on_next([=](not_null<Main::Account*> account) {
-		const auto ordered = _domain->orderedAccounts();
+		const auto ordered = _domain->orderedAccounts(true);
 		const auto it = ranges::find(ordered, account);
 		if (_lastActivePrimaryWindow && it != end(ordered)) {
 			const auto index = std::distance(begin(ordered), it);

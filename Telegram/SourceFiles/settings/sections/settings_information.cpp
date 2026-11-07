@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "settings/sections/settings_information.h"
+#include "serein/hooks/privacy/hidden.h"
 
 #include "settings/sections/settings_main.h"
 #include "settings/settings_builder.h"
@@ -1105,6 +1106,11 @@ void AccountsList::rebuild() {
 						}
 					}
 				}
+				for (const auto account : Core::App().domain().orderedAccounts(true)) {
+					if (Serein::Privacy::AccountHidden(account)) {
+						order.push_back(account->session().uniqueId());
+					}
+				}
 				Core::App().settings().setAccountsOrder(order);
 				Core::App().saveSettings();
 			}
@@ -1112,16 +1118,23 @@ void AccountsList::rebuild() {
 	}, inner->lifetime());
 
 	const auto premiumLimit = _controller->session().domain().maxAccounts();
-	const auto list = _controller->session().domain().orderedAccounts();
+	const auto &domain = _controller->session().domain();
+	const auto list = domain.orderedAccounts(true);
+	const auto visibleCount = int(ranges::count_if(list, [](const auto account) {
+		return !Serein::Privacy::AccountHidden(account);
+	}));
+	auto position = 0;
 	for (const auto &account : list) {
 		auto i = _watched.find(account);
 		Assert(i != _watched.end());
 
 		auto &button = i->second;
-		if (!account->sessionExists() || list.size() == 1) {
+		const auto nextIsLocked = (position++ >= premiumLimit);
+		if (!account->sessionExists()
+			|| visibleCount == 1
+			|| Serein::Privacy::AccountHidden(account)) {
 			button = nullptr;
 		} else if (!button) {
-			const auto nextIsLocked = (inner->count() >= premiumLimit);
 			auto callback = [=](Qt::KeyboardModifiers modifiers) {
 				if (_reordering) {
 					return;
@@ -1166,7 +1179,7 @@ void AccountsList::rebuild() {
 
 	_reorder->addPinnedInterval(
 		premiumLimit,
-		std::max(1, count - premiumLimit));
+		std::max(1, visibleCount - premiumLimit));
 
 	_addAccount->toggle(
 		(count < std::max(::Main::Domain::kPremiumMaxAccounts, premiumLimit)),

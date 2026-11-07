@@ -1363,7 +1363,7 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_download_queue" = "Download queue";
 "lng_serein_queue_add" = "Add to download queue";
 "lng_serein_queue_cancel" = "Cancel queued downloads";
-"lng_serein_queue_status" = "Queued: {count} · Failed or skipped: {amount}";
+"lng_serein_queue_status" = "Queued: {pending} · Failed or skipped: {amount}";
 "lng_serein_downloads_photo" = "Photo";
 
 "lng_serein_menu_clear_cache" = "Clear cached media";
