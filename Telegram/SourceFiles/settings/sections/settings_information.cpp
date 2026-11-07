@@ -1108,7 +1108,7 @@ void AccountsList::rebuild() {
 				}
 				auto fullOrder = std::vector<uint64>();
 				auto visible = order.begin();
-				for (const auto account : Core::App().domain().orderedAccounts(true)) {
+				for (const auto &account : Core::App().domain().orderedAccounts(true)) {
 					if (Serein::Privacy::AccountHidden(account)) {
 						fullOrder.push_back(account->session().uniqueId());
 					} else if (account->sessionExists() && visible != order.end()) {

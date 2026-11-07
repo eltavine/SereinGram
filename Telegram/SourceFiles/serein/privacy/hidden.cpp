@@ -151,7 +151,7 @@ void ApplyAccountVisibility(Main::Domain &domain) {
 		if (!AccountHidden(account.get())) continue;
 		const auto session = &account->session();
 		Core::App().notifications().clearFromSession(session);
-		for (const auto window : session->windows()) {
+		for (const auto &window : session->windows()) {
 			windows.push_back(base::make_weak(&window->window()));
 		}
 	}

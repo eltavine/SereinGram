@@ -80,7 +80,7 @@ void InsertClearCacheAction(
 				for (const auto type : { AudioMsgId::Type::Song, AudioMsgId::Type::Voice }) {
 					if (player->getState(type).id.audio() == document) player->stop(type);
 				}
-				for (const auto quality : document->resolveQualities(current)) {
+				for (const auto &quality : document->resolveQualities(current)) {
 					if (quality != document) {
 						ClearDocumentCache(quality);
 					}
