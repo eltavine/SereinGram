@@ -885,7 +885,7 @@
 "lng_serein_catalog_order_saved" = "包顺序已保存。";
 "lng_serein_catalog_order_failed" = "Telegram 未能保存部分顺序。正在从服务器刷新已安装列表，请重新打开预览后重试。";
 "lng_serein_config_title" = "配置管理";
-"lng_serein_config_scope" = "备份本机和当前账号已修改的 SereinGram 设置，不包含消息、凭据和 Telegram 设置。";
+"lng_serein_config_scope" = "备份本机和当前账号已修改的 SereinGram 设置及支持迁移的 Telegram 偏好设置。不包含消息、凭据或单个聊天的设置。";
 "lng_serein_config_modified" = "已修改的设置";
 "lng_serein_config_reset" = "恢复默认设置";
 "lng_serein_config_reset_about" = "本设备和当前账号的以下 SereinGram 设置将恢复为默认值，其他账号的设置保持不变。";
@@ -1288,7 +1288,7 @@
 "lng_serein_startup_folder_about" = "选择 SereinGram 启动时打开的文件夹：Telegram 默认、上次打开的文件夹或指定文件夹。";
 "lng_serein_hidden_folders_row_about" = "在文件夹标签和侧边栏中隐藏所选文件夹。其中的对话仍在“全部对话”里。";
 "lng_serein_cleanup_row_about" = "在对话列表中找出已注销的账号、不再使用的机器人以及不活跃的群组或频道，以便归档、删除或退出。";
-"lng_serein_config_export_about" = "将你更改过的 SereinGram 设置保存为 JSON 文件，以便日后导入。";
+"lng_serein_config_export_about" = "将已修改的 SereinGram 设置和支持迁移的 Telegram 偏好设置保存为 JSON 文件。";
 "lng_serein_config_import_row_about" = "从 JSON 文件加载设置。每项更改都会先列出供你查看，再应用。";
 "lng_serein_config_backup_row_about" = "在收藏夹中保留一份设置副本，你的其他设备也能取用。";
 "lng_serein_config_restore_about" = "查看收藏夹中最新设置备份的更改后，再将其应用。";
@@ -1406,3 +1406,14 @@
 "lng_serein_folder_icon_pack_about" = "在文件夹图标选择器中添加选中的图标包，保留已有图标。";
 "lng_serein_folder_icons_work" = "工作";
 "lng_serein_folder_icons_leisure" = "休闲";
+"lng_serein_config_import_ayu" = "导入 AyuGram Desktop 设置";
+"lng_serein_config_import_ayu_about" = "选择 AyuGram Desktop 的 tdata/ayu_settings.json 文件。应用前可以预览兼容设置的变更。";
+"lng_serein_config_ayu_invalid" = "文件无效，或不包含支持导入的 AyuGram 设置。";
+"lng_serein_native_attention" = "通知图标提醒";
+"lng_serein_native_audio_volume" = "音频播放音量";
+"lng_serein_native_video_volume" = "视频播放音量";
+"lng_serein_native_preview" = "通知预览";
+"lng_serein_native_send_key" = "消息发送快捷键";
+"lng_serein_open_cover" = "打开封面图片";
+"lng_serein_open_cover_error" = "无法打开封面图片。";
+"lng_serein_downloads_sort" = "按文件类型筛选下载";

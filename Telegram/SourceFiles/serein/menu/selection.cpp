@@ -22,10 +22,12 @@ void Selection::Select(HistoryInner *widget, HistoryItem *source) {
 		for (const auto &block : history->blocks) {
 			for (const auto &view : block->messages) {
 				const auto item = view->data();
-				if (item->from() != source->from() || !item->canBeSelected()) {
+				if (item->from() != source->from()
+					|| !item->canBeSelected()
+					|| selected.contains(item)) {
 					continue;
 				}
-				if (!selected.contains(item) && selected.size() >= MaxSelectedItems) {
+				if (selected.size() >= MaxSelectedItems) {
 					widget->_controller->showToast(
 						tr::lng_serein_menu_selection_limit(tr::now));
 					return;
@@ -51,11 +53,11 @@ void Selection::Select(HistoryView::ListWidget *widget, HistoryItem *source) {
 	for (const auto &view : widget->_items) {
 		const auto item = view->data();
 		if (item->from() != source->from()
-			|| !widget->_delegate->listIsItemGoodForSelection(item)) {
+			|| !widget->_delegate->listIsItemGoodForSelection(item)
+			|| selected.contains(item->fullId())) {
 			continue;
 		}
-		if (!selected.contains(item->fullId())
-			&& selected.size() >= MaxSelectedItems) {
+		if (selected.size() >= MaxSelectedItems) {
 			widget->controller()->showToast(
 				tr::lng_serein_menu_selection_limit(tr::now));
 			return;
@@ -144,10 +146,9 @@ bool Selection::FillRange(HistoryInner *widget) {
 	auto selected = widget->_selected;
 	for (auto i = first; i <= last; ++i) {
 		const auto item = items[i];
-		if (!item->canBeSelected()) {
+		if (!item->canBeSelected() || selected.contains(item)) {
 			continue;
-		} else if (!selected.contains(item)
-			&& selected.size() >= MaxSelectedItems) {
+		} else if (selected.size() >= MaxSelectedItems) {
 			widget->_controller->showToast(
 				tr::lng_serein_menu_selection_limit(tr::now));
 			return false;
@@ -183,10 +184,10 @@ bool Selection::FillRange(HistoryView::ListWidget *widget) {
 	auto selected = widget->_selected;
 	for (auto i = first; i <= last; ++i) {
 		const auto item = widget->_items[i]->data();
-		if (!widget->_delegate->listIsItemGoodForSelection(item)) {
+		if (!widget->_delegate->listIsItemGoodForSelection(item)
+			|| selected.contains(item->fullId())) {
 			continue;
-		} else if (!selected.contains(item->fullId())
-			&& selected.size() >= MaxSelectedItems) {
+		} else if (selected.size() >= MaxSelectedItems) {
 			widget->controller()->showToast(
 				tr::lng_serein_menu_selection_limit(tr::now));
 			return false;

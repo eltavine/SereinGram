@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/history_inner_widget.h"
+#include "serein/hooks/links/clipboard.h"
 #include "serein/hooks/messages/reactions.h"
 #include "serein/hooks/messages/double_click.h"
 #include "serein/hooks/media/force_preview.h"
@@ -3772,7 +3773,7 @@ void HistoryInner::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 			_menu->addAction(
 				actionText,
 				[text = link->copyToClipboardText()] {
-					QGuiApplication::clipboard()->setText(text);
+					QGuiApplication::clipboard()->setText(Serein::Links::CleanCopiedLink(text));
 				},
 				&st::menuIconCopy);
 		} else if (item

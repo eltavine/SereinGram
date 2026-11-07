@@ -4,10 +4,7 @@
 #include "serein/menu/model.h"
 
 #include <QtGui/QGuiApplication>
-#include "api/api_common.h"
-#include "apiwrap.h"
 #include "data/data_session.h"
-#include "data/data_user.h"
 #include "history/history.h"
 #include "history/history_item.h"
 #include "lang/lang_keys.h"
@@ -30,20 +27,20 @@ void Forward(
 	if (!item || !item->allowsForward() || item->isLocal()) {
 		return;
 	}
-	const auto ids = item->history()->owner().itemOrItsGroup(item);
-	if (!saved) {
-		Window::ShowForwardMessagesBox(controller, { .ids = ids, .options = options });
+	auto &data = item->history()->owner();
+	auto ids = data.itemOrItsGroup(item);
+	if (ranges::any_of(ids, [&](FullMsgId id) {
+		const auto item = data.message(id);
+		return !item || item->isLocal() || !item->allowsForward();
+	})) {
 		return;
 	}
-	const auto target = controller->session().data().history(
-		controller->session().user());
-	auto resolved = target->resolveForwardDraft({ .ids = ids, .options = options });
-	if (resolved.items.size() != ids.size()) {
-		return;
+	auto draft = Data::ForwardDraft{ .ids = std::move(ids), .options = options };
+	if (saved) {
+		Window::ForwardToSelf(controller->uiShow(), draft);
+	} else {
+		Window::ShowForwardMessagesBox(controller, std::move(draft));
 	}
-	auto action = Api::SendAction(target);
-	action.clearDraft = false;
-	controller->session().api().forwardMessages(std::move(resolved), action);
 }
 
 void Fill(

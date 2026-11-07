@@ -29,6 +29,7 @@ void ChooseFont(not_null<Window::SessionController*> controller) {
 		: QFontDatabase::systemFont(QFontDatabase::FixedFont);
 	const auto dialog = new QFontDialog(initial, controller->widget().get());
 	dialog->setAttribute(Qt::WA_DeleteOnClose);
+	dialog->setOption(QFontDialog::DontUseNativeDialog);
 	dialog->setOption(QFontDialog::MonospacedFonts);
 	const auto selected = crl::guard(controller, [=](const QFont &font) {
 		if (font.family() != current) {

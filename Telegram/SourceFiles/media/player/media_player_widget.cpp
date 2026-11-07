@@ -45,7 +45,8 @@ namespace Player {
 Widget::Widget(
 	QWidget *parent,
 	not_null<Ui::RpWidget*> dropdownsParent,
-	not_null<Window::SessionController*> controller)
+	not_null<Window::SessionController*> controller,
+	bool allowExpand)
 : RpWidget(parent)
 , _controller(controller)
 , _orderMenuParent(dropdownsParent)
@@ -94,7 +95,9 @@ Widget::Widget(
 	setMouseTracking(true);
 	resize(width(), st::mediaPlayerHeight + st::lineWidth);
 
-	Serein::Media::AttachExpandedPlayer(this, controller);
+	if (allowExpand) {
+		Serein::Media::AttachExpandedPlayer(this, controller);
+	}
 	setupRightControls();
 
 	_volumeToggle->setAccessibleName(tr::lng_ringtones_box_volume(tr::now));

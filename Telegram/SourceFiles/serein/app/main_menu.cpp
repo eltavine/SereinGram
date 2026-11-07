@@ -26,10 +26,17 @@ void FillMainMenu(
 		gsl::not_null<Window::SessionController*> controller,
 		const MainMenuAction &addAction) {
 	App::AddOwnOnlineStatus(controller, addAction);
-	const auto networkEnabled = controller->session().mtp().networkEnabled();
+	const auto &mtp = controller->session().mtp();
+	const auto networkEnabled = mtp.networkEnabled();
 	if (ForDevice().Get(Serein::Privacy::kAccountNetworkControls) || !networkEnabled) {
-		addAction(networkEnabled
-			? tr::lng_serein_disconnect_account() : tr::lng_serein_reconnect_account(),
+		auto title = rpl::single(networkEnabled) | rpl::then(
+			mtp.networkEnabledChanges()
+		) | rpl::map([](bool enabled) {
+			return enabled
+				? tr::lng_serein_disconnect_account(tr::now)
+				: tr::lng_serein_reconnect_account(tr::now);
+		});
+		addAction(std::move(title),
 			{ &st::menuIconNetwork }
 		)->setClickedCallback([=] { Serein::Privacy::ToggleAccountNetwork(controller); });
 	}

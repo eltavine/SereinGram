@@ -7,6 +7,8 @@
 #include "data/data_peer_id.h"
 #include "data/data_session.h"
 #include "data/data_user.h"
+#include "history/history.h"
+#include "history/history_item.h"
 #include "lang/lang_keys.h"
 #include "main/main_session.h"
 #include "main/session/session_show.h"
@@ -26,6 +28,7 @@ namespace {
 struct Selection {
 	int from = 0;
 	int till = 0;
+	int revision = 0;
 	QString text;
 };
 
@@ -45,6 +48,7 @@ struct Selection {
 	return Selection{
 		.from = cursor.selectionStart(),
 		.till = cursor.selectionEnd(),
+		.revision = cursor.document()->revision(),
 		.text = text,
 	};
 }
@@ -54,6 +58,9 @@ void ApplyMention(
 		const Selection &selection,
 		not_null<UserData*> user) {
 	auto cursor = field->textCursor();
+	if (cursor.document()->revision() != selection.revision) {
+		return;
+	}
 	cursor.setPosition(selection.from);
 	cursor.setPosition(selection.till, QTextCursor::KeepAnchor);
 	if (cursor.selectedText() != selection.text) {
@@ -71,7 +78,32 @@ void ResolveUser(
 		const MentionQuery &query,
 		Fn<void(UserData*)> done) {
 	if (query.userId) {
-		done(session->data().userLoaded(UserId(query.userId)));
+		const auto id = UserId(query.userId);
+		auto &data = session->data();
+		if (const auto user = data.userLoaded(id)) {
+			done(user->isInaccessible() ? nullptr : user);
+			return;
+		}
+		const auto message = data.messageWithPeer(peerFromUser(id));
+		if (!message && !session->user()->isBot()) {
+			done(nullptr);
+			return;
+		}
+		const auto input = message
+			? MTP_inputUserFromMessage(
+				message->history()->peer->input(),
+				MTP_int(message->id.bare),
+				MTP_long(id.bare))
+			: MTP_inputUser(MTP_long(id.bare), MTP_long(0));
+		session->api().request(MTPusers_GetUsers(
+			MTP_vector<MTPInputUser>(1, input)
+		)).done([=](const MTPVector<MTPUser> &result) {
+			session->data().processUsers(result);
+			const auto user = session->data().userLoaded(id);
+			done((user && !user->isInaccessible()) ? user : nullptr);
+		}).fail([=] {
+			done(nullptr);
+		}).send();
 		return;
 	} else if (const auto peer = session->data().peerByUsername(
 			query.username)) {
@@ -109,14 +141,20 @@ void AskMention(
 			st::boxRowPadding);
 		box->setFocusCallback([=] { input->setFocusFast(); });
 		const auto submit = [=] {
+			if (!input->isEnabled()) {
+				return;
+			}
 			const auto query = ParseMentionQuery(input->getLastText());
 			if (!query.userId && query.username.isEmpty()) {
 				input->showError();
 				return;
 			}
+			input->setDisabled(true);
 			ResolveUser(&show->session(), query, crl::guard(box, [=](
 					UserData *user) {
 				if (!user) {
+					input->setDisabled(false);
+					input->setFocusFast();
 					input->showError();
 					show->showToast(tr::lng_serein_mention_not_found(tr::now));
 					return;

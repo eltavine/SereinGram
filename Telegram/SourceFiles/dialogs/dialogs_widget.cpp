@@ -15,6 +15,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "dialogs/ui/dialogs_stories_content.h"
 #include "serein/hooks/chats/layout.h"
 #include "serein/hooks/gen/chats.h"
+#include "serein/hooks/privacy/hidden.h"
 #include "dialogs/ui/dialogs_stories_list.h"
 #include "dialogs/ui/dialogs_suggestions.h"
 #include "dialogs/ui/dialogs_top_bar_suggestion_content.h"
@@ -486,6 +487,7 @@ Widget::Widget(
 			_childListShown.value(),
 			makeChildListShown)));
 	Serein::Chats::AttachChatListTools(_search, controller);
+	fullSearchRefreshOn(Serein::Privacy::HiddenChatsChanges(&session()));
 	controller->activeChatsFilter(
 	) | rpl::on_next([=](FilterId id) {
 		switchToChatsFilter(id);

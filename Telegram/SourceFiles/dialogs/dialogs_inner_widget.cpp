@@ -7,6 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "dialogs/dialogs_inner_widget.h"
 #include "serein/hooks/gen/privacy.h"
+#include "serein/hooks/privacy/hidden.h"
 #include "serein/hooks/chats/list_refresher.h"
 #include "serein/hooks/chats/layout.h"
 #include "serein/hooks/chats/promotions.h"
@@ -330,6 +331,16 @@ InnerWidget::InnerWidget(
 	Serein::Messages::AttachActivityRefresh(this);
 	Serein::Messages::AttachPremiumRefresh(this);
 	Serein::ListRefresher::Attach(this);
+	Serein::Privacy::HiddenChatsChanges(&session()) | rpl::on_next([=] {
+		if (_state == WidgetState::Filtered) {
+			_filterResultsGlobal.clear();
+			refreshFilterResults();
+			clearSearchResults();
+			clearPreviewResults();
+			clearMouseSelection(true);
+			refresh();
+		}
+	}, lifetime());
 	setAccessibleName(tr::lng_recent_chats(tr::now));
 
 	_communityViewable.setRepaint([=] { update(); });
@@ -4501,16 +4512,17 @@ void InnerWidget::refreshFilterResults() {
 		: TextUtilities::PrepareSearchWords(_filter);
 	_filterResults.clear();
 	const auto append = [&](not_null<IndexedList*> list) {
-		const auto results = list->filtered(words);
 		auto top = filteredHeight();
-		auto i = _filterResults.insert(
-			end(_filterResults),
-			begin(results),
-			end(results));
-		for (const auto e = end(_filterResults); i != e; ++i) {
-			i->top = top;
-			i->row->recountHeight(_narrowRatio, _filterId);
-			top += i->row->height();
+		for (const auto &result : list->filtered(words)) {
+			const auto peer = result->key().peer();
+			if (peer && Serein::Privacy::ChatHidden(peer)) {
+				continue;
+			}
+			_filterResults.push_back(result);
+			auto &added = _filterResults.back();
+			added.top = top;
+			added.row->recountHeight(_narrowRatio, _filterId);
+			top += added.row->height();
 		}
 	};
 	if (_searchState.filterChatsList() && !words.isEmpty()) {
@@ -4539,6 +4551,10 @@ void InnerWidget::refreshFilterResults() {
 }
 
 void InnerWidget::appendToFiltered(Key key) {
+	const auto peer = key.peer();
+	if (peer && Serein::Privacy::ChatHidden(peer)) {
+		return;
+	}
 	for (const auto &row : _filterResults) {
 		if (row.key() == key) {
 			return;
@@ -4927,7 +4943,7 @@ void InnerWidget::searchReceived(
 		: (!_openedForum || _searchState.inChat.topic())
 		? _searchState.inChat
 		: Key(_openedForum->history());
-	if (inject
+	if (inject && !Serein::Privacy::ChatHidden(inject->history()->peer)
 		&& (globalSearch
 			|| !_searchState.inChat
 			|| inject->history() == _searchState.inChat.history())) {
@@ -4945,6 +4961,9 @@ void InnerWidget::searchReceived(
 	auto &results = toPreview ? _previewResults : _searchResults;
 	for (const auto &item : messages) {
 		const auto history = item->history();
+		if (Serein::Privacy::ChatHidden(history->peer)) {
+			continue;
+		}
 		if (toPreview || !uniquePeers || !hasHistoryInResults(history)) {
 			const auto index = int(results.size());
 			const auto repaint = toPreview
@@ -4987,6 +5006,9 @@ void InnerWidget::peerSearchReceived(Api::PeerSearchResult result) {
 		appendToFiltered(peer->owner().history(peer));
 	}
 	const auto inlist = [&](not_null<PeerData*> peer) {
+		if (Serein::Privacy::ChatHidden(peer)) {
+			return true;
+		}
 		if (const auto history = peer->owner().historyLoaded(peer)) {
 			// Skip existing chats.
 			return history->inChatList();

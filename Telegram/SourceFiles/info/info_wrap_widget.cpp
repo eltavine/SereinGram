@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "info/info_wrap_widget.h"
+#include "serein/hooks/media/download_filters.h"
 
 #include "info/profile/info_profile_widget.h"
 #include "info/profile/info_profile_values.h"
@@ -57,6 +58,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "styles/style_chat.h" // popupMenuExpandedSeparator
 #include "styles/style_info.h"
 #include "styles/style_layers.h"
+#include "styles/style_menu_icons.h"
 
 namespace Info {
 namespace {
@@ -571,6 +573,23 @@ void WrapWidget::setupTopBarMenuToggle() {
 	} else if (section.type() == Section::Type::Media) {
 		addTopBarMenuButton();
 	} else if (section.type() == Section::Type::Downloads) {
+		const auto &st = (wrap() == Wrap::Layer)
+			? st::infoLayerTopBarMenu
+			: st::infoTopBarMenu;
+		const auto sort = _topBar->addButton(
+			base::make_unique_q<Ui::IconButton>(_topBar, st));
+		sort->setIconOverride(&st::menuIconTagFilter);
+		sort->setAccessibleName(tr::lng_serein_downloads_sort(tr::now));
+		sort->addClickHandler([=, this] {
+			const auto menu = Ui::CreateChild<Ui::PopupMenu>(
+				sort, st::popupMenuExpandedSeparator);
+			Serein::Media::FillDownloadFilters(
+				&_controller->session(),
+				Ui::Menu::CreateAddActionCallback(menu));
+			menu->popup(Ui::PopupMenu::ConstrainToParentScreen(
+				menu,
+				sort->mapToGlobal(st::infoLayerTopBarMenuPosition)));
+		});
 		auto &manager = Core::App().downloadManager();
 		rpl::merge(
 			rpl::single(false),

@@ -105,7 +105,6 @@ void Widget::selectionAction(SelectionAction action) {
 }
 
 void Widget::fillTopBarMenu(const Ui::Menu::MenuCallback &addAction) {
-	Serein::Media::FillDownloadFilters(&controller()->session(), addAction);
 	AddDeleteAllAction(this, controller(), addAction);
 }
 

@@ -1,29 +1,41 @@
 #include "serein/links/clipboard.h"
 
+#include "serein/hooks/links/clipboard.h"
 #include "serein/links/model.h"
-#include "core/application.h"
+#include "ui/text/text_entity.h"
 #include "ui/text/text_utilities.h"
 #include "ui/widgets/fields/input_field.h"
 
 #include <QtCore/QMimeData>
-#include <QtGui/QClipboard>
-#include <QtGui/QGuiApplication>
 #include <QtWidgets/QTextEdit>
 
 namespace Serein::Links {
+namespace {
 
-void StartClipboardCleaner() {
-	const auto clipboard = QGuiApplication::clipboard();
-	QObject::connect(clipboard, &QClipboard::dataChanged, &Core::App(), [=] {
-		if (!ForDevice().Get(kStripTrackingParameters) || !clipboard->ownsClipboard()) return;
-		const auto data = clipboard->mimeData();
-		if (!data || data->formats() != QStringList(u"text/plain"_q)) {
-			return;
+[[nodiscard]] QString CleanText(const QString &text) {
+	if (!text.contains(u"http"_q, Qt::CaseInsensitive)) {
+		return text;
+	}
+	const auto parsed = TextUtilities::ParseEntities(text, TextParseLinks);
+	auto result = text;
+	for (const auto &entity : ranges::views::reverse(parsed.entities)) {
+		if (entity.type() == EntityType::Url) {
+			const auto url = text.mid(entity.offset(), entity.length());
+			const auto clean = StripTrackingUrl(url);
+			if (clean != url) {
+				result.replace(entity.offset(), entity.length(), clean);
+			}
 		}
-		const auto text = data->text();
-		const auto cleaned = StripTrackingUrl(text);
-		if (cleaned != text) clipboard->setText(cleaned);
-	});
+	}
+	return result;
+}
+
+} // namespace
+
+QString CleanCopiedLink(const QString &link) {
+	return ForDevice().Get(kStripTrackingParameters)
+		? StripTrackingUrl(link)
+		: link;
 }
 
 void InstallCleanPaste(gsl::not_null<Ui::InputField*> field) {
@@ -37,7 +49,7 @@ void InstallCleanPaste(gsl::not_null<Ui::InputField*> field) {
 			return false;
 		}
 		const auto text = data->text();
-		const auto cleaned = StripTrackingUrl(text);
+		const auto cleaned = CleanText(text);
 		if (cleaned == text) return false;
 		if (action == Ui::InputField::MimeAction::Insert) field->rawTextEdit()->insertPlainText(cleaned);
 		return true;

@@ -69,8 +69,12 @@ public:
 			File::DefaultDownloadPath(_session),
 			crl::guard(this, [this](QString &&folder) {
 				_choosingFolder = false;
-				_folder = std::move(folder);
-				startNext();
+				if (folder.isEmpty()) {
+					cancel();
+				} else {
+					_folder = std::move(folder);
+					startNext();
+				}
 			}),
 			crl::guard(this, [this] {
 				_choosingFolder = false;

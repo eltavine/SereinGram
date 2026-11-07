@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "info/media/info_media_list_widget.h"
+#include "serein/hooks/links/clipboard.h"
 
 #include "info/global_media/info_global_media_provider.h"
 #include "info/media/info_media_common.h"
@@ -1553,7 +1554,7 @@ void ListWidget::showContextMenu(
 			_contextMenu->addAction(
 				actionText,
 				[text = link->copyToClipboardText()] {
-					QGuiApplication::clipboard()->setText(text);
+					QGuiApplication::clipboard()->setText(Serein::Links::CleanCopiedLink(text));
 				},
 				&st::menuIconCopy);
 		}

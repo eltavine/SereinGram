@@ -6,6 +6,8 @@
 #include "data/data_media_types.h"
 #include "data/data_photo.h"
 #include "data/data_session.h"
+#include "data/data_streaming.h"
+#include "data/data_web_page.h"
 #include "history/history_item.h"
 #include "lang/lang_keys.h"
 #include "main/main_session.h"
@@ -20,7 +22,20 @@
 namespace Serein::Media {
 namespace {
 
-constexpr auto kSmallestStreamingPart = int64(128 * 1024);
+struct CachedMedia {
+	DocumentData *document = nullptr;
+	PhotoData *photo = nullptr;
+};
+
+[[nodiscard]] CachedMedia MediaFor(HistoryItem *item) {
+	const auto media = item ? item->media() : nullptr;
+	if (const auto page = media ? media->webpage() : nullptr) {
+		return { page->document, page->photo };
+	}
+	return media
+		? CachedMedia{ media->document(), media->photo() }
+		: CachedMedia();
+}
 
 } // namespace
 
@@ -29,6 +44,7 @@ void ClearDocumentCache(not_null<DocumentData*> document) {
 	if (document->loading()) {
 		document->cancel();
 	}
+	owner.streaming().clearCache(document);
 	for (const auto &key : {
 			document->cacheKey(),
 			document->goodThumbnailCacheKey(),
@@ -37,36 +53,41 @@ void ClearDocumentCache(not_null<DocumentData*> document) {
 			owner.cache().remove(key);
 		}
 	}
-	if (const auto base = document->bigFileBaseCacheKey()) {
-		const auto parts = document->size / kSmallestStreamingPart + 2;
-		for (auto i = int64(0); i != parts; ++i) {
-			owner.cacheBigFile().remove({ base.high, base.low + uint64(i) });
-		}
+	if (const auto view = document->activeMediaView()) {
+		view->setBytes(QByteArray());
 	}
+	document->setLoadedInMediaCache(false);
 }
 
 void InsertClearCacheAction(
 		Ui::PopupMenu *menu,
 		HistoryItem *item,
 		Window::SessionController *controller) {
-	const auto media = item ? item->media() : nullptr;
-	if (!menu || !controller || !media || (!media->document() && !media->photo())) return;
+	const auto [document, photo] = MediaFor(item);
+	if (!menu || !controller || (!document && !photo)) {
+		return;
+	}
 	const auto id = item->fullId();
 	Menu::Tag(menu->addAction(tr::lng_serein_menu_clear_cache(tr::now),
 		crl::guard(controller, [=] {
 			const auto current = controller->session().data().message(id);
-			const auto media = current ? current->media() : nullptr;
-			if (!media) return;
-			if (const auto document = media->document()) {
+			const auto [document, photo] = MediaFor(current);
+			if (!document && !photo) {
+				return;
+			}
+			if (document) {
 				const auto player = ::Media::Player::instance();
 				for (const auto type : { AudioMsgId::Type::Song, AudioMsgId::Type::Voice }) {
 					if (player->getState(type).id.audio() == document) player->stop(type);
 				}
+				for (const auto quality : document->resolveQualities(current)) {
+					if (quality != document) {
+						ClearDocumentCache(quality);
+					}
+				}
 				ClearDocumentCache(document);
-				if (const auto view = document->activeMediaView()) view->setBytes(QByteArray());
-				document->setLoadedInMediaCache(false);
-			} else if (const auto photo = media->photo()) {
-				photo->cancel();
+			}
+			if (photo) {
 				photo->clearLocalCache();
 			}
 			controller->showToast(tr::lng_serein_cache_cleared(tr::now));

@@ -20,6 +20,7 @@ namespace {
 constexpr auto kPartSize = Loader::kPartSize;
 constexpr auto kPartsInSlice = 64;
 constexpr auto kInSlice = uint32(kPartsInSlice * kPartSize);
+constexpr auto kMaxSliceNumber = 0x1FEU;
 constexpr auto kMaxPartsInHeader = 64;
 constexpr auto kMaxOnlyInHeader = 80 * kPartSize;
 constexpr auto kPartsOutsideFirstSliceGood = 8;
@@ -60,7 +61,7 @@ bool ComputeIsGoodHeader(int64 size, const PartsMap &header) {
 int SlicesCount(uint32 size) {
 	const auto result = (size + kInSlice - 1) / kInSlice;
 
-	Ensures(result < 0x1FFU);
+	Ensures(result <= kMaxSliceNumber);
 	return result;
 }
 
@@ -230,6 +231,7 @@ struct Reader::CacheHelper {
 	const Storage::Cache::Key baseKey;
 
 	QMutex mutex;
+	bool writeEnabled = true;
 	base::flat_map<uint32, PartsMap> results;
 	std::vector<int> sizes;
 	std::atomic<crl::semaphore*> waiting = nullptr;
@@ -1212,7 +1214,32 @@ void Reader::putToCache(SerializedSlice &&slice) {
 	Expects(_cacheHelper != nullptr);
 	Expects(slice.number >= 0);
 
-	_cache->put(_cacheHelper->key(slice.number), std::move(slice.data));
+	const auto lock = QMutexLocker(&_cacheHelper->mutex);
+	if (_cacheHelper->writeEnabled) {
+		_cache->put(_cacheHelper->key(slice.number), std::move(slice.data));
+	}
+}
+
+void Reader::disableCacheWrites() {
+	if (_cacheHelper) {
+		const auto lock = QMutexLocker(&_cacheHelper->mutex);
+		_cacheHelper->writeEnabled = false;
+	}
+}
+
+void Reader::ClearCache(
+		Storage::Cache::Database &cache,
+		const Storage::Cache::Key &base,
+		int64 size) {
+	if (!base || size < 0) {
+		return;
+	}
+	const auto slices = std::min<int64>(
+		(size / kInSlice) + (size % kInSlice != 0),
+		kMaxSliceNumber);
+	for (auto i = uint64(0); i <= uint64(slices); ++i) {
+		cache.remove({ base.high, base.low + i });
+	}
 }
 
 int64 Reader::size() const {

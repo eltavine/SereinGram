@@ -20,13 +20,16 @@
 #include "ui/layers/generic_box.h"
 #include "ui/widgets/buttons.h"
 #include "ui/widgets/labels.h"
+#include "ui/widgets/popup_menu.h"
 #include "window/main_window.h"
 #include "window/window_controller.h"
 #include "window/window_session_controller.h"
 
 #include <QtCore/QDir>
+#include <QtCore/QSaveFile>
 #include <QtCore/QTemporaryFile>
 #include <QtCore/QTimer>
+#include <QtGui/QContextMenuEvent>
 #include <QtGui/QDesktopServices>
 #include <QtGui/QKeyEvent>
 #include <QtGui/QPainter>
@@ -37,6 +40,7 @@
 #include <QtWidgets/QTextEdit>
 
 #include "styles/style_layers.h"
+#include "styles/style_menu_icons.h"
 #include "styles/style_settings.h"
 
 namespace Serein::Media {
@@ -56,9 +60,11 @@ void PlayerBox(
 	box->setTitle(tr::lng_serein_expanded_audio_player());
 	box->setWidth(st::boxWideWidth);
 	const auto state = box->lifetime().make_state<CoverState>();
-	const auto cover = box->addRow(object_ptr<Ui::RpWidget>(box));
+	const auto cover = box->addRow(object_ptr<Ui::AbstractButton>(box));
+	cover->setAccessibleName(tr::lng_serein_open_cover(tr::now));
 	cover->resize(cover->width(), kCoverSize);
-	cover->setCursor(style::cur_pointer);
+	const auto save = box->addRow(object_ptr<Ui::SettingsButton>(
+		box, tr::lng_serein_save_cover(), st::settingsButtonNoIcon));
 	const auto refresh = [=] {
 		const auto track = ::Media::Player::instance()->getState(AudioMsgId::Type::Song);
 		const auto document = track.id.audio();
@@ -75,7 +81,10 @@ void PlayerBox(
 			state->canSave = !document->forbidsFileSave()
 				&& (!item || (!item->forbidsSaving() && !item->isTtlCoveredMedia()));
 		}
-		cover->setCursor(state->canSave && !state->image.isNull()
+		const auto available = state->canSave && !state->image.isNull();
+		cover->setDisabled(!available);
+		save->setDisabled(!available);
+		cover->setCursor(available
 			? style::cur_pointer : style::cur_default);
 		cover->update();
 	};
@@ -88,12 +97,9 @@ void PlayerBox(
 				(kCoverSize - image.height()) / 2, image);
 		}
 	}, cover->lifetime());
-	base::install_event_filter(cover, [=](not_null<QEvent*> event) {
-		if (event->type() != QEvent::MouseButtonRelease
-			|| static_cast<QMouseEvent*>(event.get())->button() != Qt::LeftButton
-			|| !state->canSave
-			|| state->image.isNull()) {
-			return base::EventFilterResult::Continue;
+	cover->setClickedCallback([=] {
+		if (!state->canSave || state->image.isNull()) {
+			return;
 		}
 		const auto file = std::make_shared<QTemporaryFile>(
 			QDir::temp().filePath(u"SereinGram-cover-XXXXXX.png"_q));
@@ -103,16 +109,11 @@ void PlayerBox(
 				QTimer::singleShot(std::chrono::minutes(5), qApp, [file] {
 					file->remove();
 				});
+				return;
 			}
 		}
-		return base::EventFilterResult::Cancel;
+		box->showToast(tr::lng_serein_open_cover_error(tr::now));
 	});
-	const auto controls = box->addRow(object_ptr<::Media::Player::Widget>(
-		box, box, controller));
-	controls->setCloseCallback([=] { box->closeBox(); });
-	controls->setShowItemCallback([](not_null<const HistoryItem*>) {});
-	const auto save = box->addRow(object_ptr<Ui::SettingsButton>(
-		box, tr::lng_serein_save_cover(), st::settingsButtonNoIcon));
 	save->setClickedCallback([=] {
 		const auto image = state->image;
 		if (image.isNull() || !state->canSave) {
@@ -120,8 +121,22 @@ void PlayerBox(
 		}
 		FileDialog::GetWritePath(Core::App().getFileDialogParent(),
 			tr::lng_serein_save_cover(tr::now), u"PNG (*.png)"_q, u"cover.png"_q,
-			[=](QString &&path) { if (!path.isEmpty()) image.save(path, "PNG"); });
+			crl::guard(controller, [=](QString &&path) {
+				if (path.isEmpty()) {
+					return;
+				}
+				auto file = QSaveFile(path);
+				if (!file.open(QIODevice::WriteOnly)
+					|| !image.save(&file, "PNG")
+					|| !file.commit()) {
+					controller->showToast(tr::lng_serein_snapshot_write_error(tr::now));
+				}
+			}));
 	});
+	const auto controls = box->addRow(object_ptr<::Media::Player::Widget>(
+		box, box, controller, false));
+	controls->setCloseCallback([=] { box->closeBox(); });
+	controls->setShowItemCallback([](not_null<const HistoryItem*>) {});
 	controller->session().downloaderTaskFinished() | rpl::on_next(refresh, box->lifetime());
 	::Media::Player::instance()->trackChanged() | rpl::on_next(refresh, box->lifetime());
 	box->addButton(tr::lng_close(), [=] { box->closeBox(); });
@@ -152,7 +167,8 @@ void AttachExpandedPlayer(
 		not_null<Ui::RpWidget*> widget,
 		not_null<Window::SessionController*> controller) {
 	base::install_event_filter(widget, [=](not_null<QEvent*> event) {
-		if (event->type() != QEvent::MouseButtonDblClick
+		const auto type = event->type();
+		if ((type != QEvent::MouseButtonDblClick && type != QEvent::ContextMenu)
 			|| !ForDevice().Get(kExpandedAudioPlayer)) {
 			return base::EventFilterResult::Continue;
 		}
@@ -163,7 +179,17 @@ void AttachExpandedPlayer(
 			|| &track->session() != &controller->session()) {
 			return base::EventFilterResult::Continue;
 		}
-		ShowExpandedPlayer(controller);
+		if (type == QEvent::ContextMenu) {
+			const auto menu = Ui::CreateChild<Ui::PopupMenu>(widget, st::popupMenuWithIcons);
+			menu->addAction(
+				tr::lng_serein_expanded_audio_player(tr::now),
+				crl::guard(controller, [=] { ShowExpandedPlayer(controller); }));
+			menu->popup(static_cast<QContextMenuEvent*>(event.get())->globalPos());
+		} else if (static_cast<QMouseEvent*>(event.get())->button() == Qt::LeftButton) {
+			ShowExpandedPlayer(controller);
+		} else {
+			return base::EventFilterResult::Continue;
+		}
 		return base::EventFilterResult::Cancel;
 	});
 }

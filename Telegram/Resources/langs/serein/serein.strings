@@ -889,7 +889,7 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_catalog_order_saved" = "Pack order saved.";
 "lng_serein_catalog_order_failed" = "Telegram could not save part of the order. The installed lists will be refreshed from the server; reopen this preview to retry.";
 "lng_serein_config_title" = "Configuration";
-"lng_serein_config_scope" = "Back up changed SereinGram preferences of this device and of the current account. Messages, credentials and Telegram settings are excluded.";
+"lng_serein_config_scope" = "Back up changed SereinGram settings and supported Telegram preferences for this device and the current account. Messages, credentials and per-chat settings are excluded.";
 "lng_serein_config_modified" = "Modified settings";
 "lng_serein_config_reset" = "Reset to defaults";
 "lng_serein_config_reset_about" = "These SereinGram settings of this device and of the current account return to their defaults. Other accounts keep their settings.";
@@ -1292,7 +1292,7 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_startup_folder_about" = "Choose which folder opens when SereinGram starts: Telegram’s default, the last one you used or a specific folder.";
 "lng_serein_hidden_folders_row_about" = "Hide chosen folders from the folder tabs and side bar. Their chats stay in All Chats.";
 "lng_serein_cleanup_row_about" = "Finds deleted accounts, unused bots and inactive groups or channels in your chat list so you can archive, delete or leave them.";
-"lng_serein_config_export_about" = "Save the SereinGram settings you changed to a JSON file that you can import later.";
+"lng_serein_config_export_about" = "Save your changed SereinGram settings and supported Telegram preferences to a JSON file.";
 "lng_serein_config_import_row_about" = "Load settings from a JSON file. You review every change before it is applied.";
 "lng_serein_config_backup_row_about" = "Keep a copy of your settings in Saved Messages, where your other devices can reach it.";
 "lng_serein_config_restore_about" = "Apply your latest settings backup from Saved Messages after reviewing its changes.";
@@ -1410,3 +1410,14 @@ Telegram/cmake/td_lang.cmake. Every key uses the lng_serein_ prefix.
 "lng_serein_folder_icon_pack_about" = "Add the selected pack to the folder icon picker. Existing folder icons are kept.";
 "lng_serein_folder_icons_work" = "Work";
 "lng_serein_folder_icons_leisure" = "Leisure";
+"lng_serein_config_import_ayu" = "Import AyuGram Desktop settings";
+"lng_serein_config_import_ayu_about" = "Choose tdata/ayu_settings.json from AyuGram Desktop. Preview the compatible settings before applying them.";
+"lng_serein_config_ayu_invalid" = "This file is invalid or contains no supported AyuGram settings.";
+"lng_serein_native_attention" = "Notification attention indicator";
+"lng_serein_native_audio_volume" = "Audio playback volume";
+"lng_serein_native_video_volume" = "Video playback volume";
+"lng_serein_native_preview" = "Notification preview";
+"lng_serein_native_send_key" = "Message send key";
+"lng_serein_open_cover" = "Open cover image";
+"lng_serein_open_cover_error" = "Could not open the cover image.";
+"lng_serein_downloads_sort" = "Filter downloads by file type";

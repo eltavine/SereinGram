@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/history_view_context_menu.h"
+#include "serein/hooks/links/clipboard.h"
 #include "serein/hooks/menu/actions.h"
 #include "serein/hooks/menu/selection.h"
 
@@ -1437,7 +1438,7 @@ void AddCopyLinkAction(
 	const auto text = link->copyToClipboardText();
 	menu->addAction(
 		action,
-		[=] { QGuiApplication::clipboard()->setText(text); },
+		[=] { QGuiApplication::clipboard()->setText(Serein::Links::CleanCopiedLink(text)); },
 		&st::menuIconCopy);
 }
 

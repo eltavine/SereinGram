@@ -271,6 +271,9 @@ void Application::closeAdditionalWindows() {
 }
 
 Application::~Application() {
+	if (_domain->started()) {
+		Media::Player::instance()->savePlaybackPositions();
+	}
 	if (_savedWindows) {
 		_savedWindows->writeNow();
 	}

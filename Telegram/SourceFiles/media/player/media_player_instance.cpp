@@ -141,6 +141,7 @@ void SaveLastPlaybackPosition(
 		? TimeId(0)
 		: (state.length >= limit * state.frequency)
 		? (state.position / state.frequency) * crl::time(1000)
+			+ ((state.position % state.frequency) * crl::time(1000)) / state.frequency
 		: TimeId(0);
 	const auto &session = document->session();
 	if (session.local().mediaLastPlaybackPosition(document->id) != time) {
@@ -382,6 +383,20 @@ void Instance::clearStreamed(not_null<Data*> data, bool savePosition) {
 
 	_roundPlaying = false;
 	Core::App().floatPlayerToggleGifsPaused(false);
+}
+
+void Instance::savePlaybackPositions() {
+	if (!Serein::Hooks::Media::RememberPlaybackPosition()) {
+		return;
+	}
+	for (const auto type : { AudioMsgId::Type::Song, AudioMsgId::Type::Voice }) {
+		const auto data = getData(type);
+		if (data && data->streamed && !data->streamed->clearing) {
+			SaveLastPlaybackPosition(
+				data->streamed->id.audio(),
+				data->streamed->instance.player().prepareLegacyState());
+		}
+	}
 }
 
 void Instance::refreshPlaylist(not_null<Data*> data) {

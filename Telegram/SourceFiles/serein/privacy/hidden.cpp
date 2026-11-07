@@ -238,6 +238,12 @@ bool ChatHidden(not_null<const PeerData*> peer) {
 			ForAccount(&peer->session()).Get(kHiddenChatIds), peer->id.value);
 }
 
+rpl::producer<> HiddenChatsChanges(not_null<Main::Session*> session) {
+	return rpl::merge(
+		ForDevice().Value(kHiddenChatsEnabled) | rpl::skip(1) | rpl::to_empty,
+		ForAccount(session).Value(kHiddenChatIds) | rpl::skip(1) | rpl::to_empty);
+}
+
 bool AccountHidden(not_null<Main::Account*> account) {
 	return account->sessionExists()
 		&& Core::App().domain().local().hasLocalPasscode()
@@ -262,6 +268,7 @@ not_null<Main::Account*> VisibleAccount(not_null<Main::Account*> account) {
 		}
 	}
 	if (login) return login;
+	Core::App().lockByPasscode();
 	SetAccountHidden(account, false);
 	return account;
 }

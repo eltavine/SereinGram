@@ -148,6 +148,10 @@ Uploader::Entry::Entry(
 
 void Uploader::Entry::setDocSize(int64 size) {
 	docSize = size;
+	if (Serein::Network::PreferLargeUploadParts() && size >= kDocumentUploadPartSize4) {
+		setPartSize(kDocumentUploadPartSize4);
+		return;
+	}
 	constexpr auto limit0 = 1024 * 1024;
 	constexpr auto limit1 = 32 * limit0;
 	if (docSize >= limit0 || !setPartSize(kDocumentUploadPartSize0)) {

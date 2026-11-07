@@ -1,4 +1,5 @@
 #include "serein/settings/config.h"
+#include "serein/settings/ayu_migration.h"
 #include "serein/settings/exchange_preview.h"
 
 #include "serein/core/exchange.h"
@@ -25,6 +26,7 @@
 #include "lang/lang_instance.h"
 #include "lang/lang_keys.h"
 #include "lang_auto_counts.h"
+#include "main/main_session.h"
 #include "settings/settings_builder.h"
 #include "settings/settings_common_session.h"
 #include "ui/layers/generic_box.h"
@@ -47,6 +49,7 @@ using namespace ::Settings;
 using namespace ::Settings::Builder;
 
 constexpr auto kMaximumImportBytes = 8 * 1024 * 1024;
+constexpr auto kBackupVersion = 4;
 
 class ConfigSection final : public Page<ConfigSection> {
 public:
@@ -67,7 +70,7 @@ public:
 		AccountOptions(controller),
 		RegisteredOptions());
 	result.data = QJsonDocument(QJsonObject{
-		{ u"version"_q, 3 },
+		{ u"version"_q, kBackupVersion },
 		{ u"serein"_q, QJsonDocument::fromJson(result.data).object() },
 		{ u"telegram"_q, Hooks::ExportNativeSettings(&controller->session()) },
 	}).toJson(QJsonDocument::Indented);
@@ -130,6 +133,25 @@ void ShowModified(not_null<Window::SessionController*> controller) {
 	}));
 }
 
+void PreviewImport(
+		not_null<Window::SessionController*> controller,
+		const QByteArray &settings,
+		const NativeSettingsPlan &native = {},
+		const QStringList &skipped = {}) {
+	auto plan = Exchange::PlanImport(
+		ForDevice(),
+		AccountOptions(controller),
+		RegisteredOptions(),
+		settings);
+	plan.skippedKeys += skipped;
+	ShowExchangePreview(controller, plan, {
+		.title = tr::lng_serein_config_preview,
+		.about = tr::lng_serein_config_import_about,
+		.apply = tr::lng_serein_config_apply,
+		.done = tr::lng_serein_config_imported,
+	}, native);
+}
+
 void ShowImport(
 		not_null<Window::SessionController*> controller,
 		const QByteArray &bytes) {
@@ -140,7 +162,8 @@ void ShowImport(
 	auto settings = bytes;
 	auto native = NativeSettingsPlan();
 	const auto root = QJsonDocument::fromJson(bytes).object();
-	if (root.value(u"version"_q) == QJsonValue(3)) {
+	const auto version = root.value(u"version"_q);
+	if (version == QJsonValue(3) || version == QJsonValue(kBackupVersion)) {
 		if (root.size() != 3
 			|| !root.value(u"serein"_q).isObject() || !root.value(u"telegram"_q).isObject()) {
 			controller->showToast(tr::lng_serein_native_invalid(tr::now));
@@ -149,19 +172,24 @@ void ShowImport(
 		settings = QJsonDocument(root.value(u"serein"_q).toObject()).toJson();
 		native = Hooks::PlanNativeSettings(&controller->session(), root.value(u"telegram"_q).toObject());
 	}
-	ShowExchangePreview(
-		controller,
-		Exchange::PlanImport(
-			ForDevice(),
-			AccountOptions(controller),
-			RegisteredOptions(),
-			settings),
-		{
-			.title = tr::lng_serein_config_preview,
-			.about = tr::lng_serein_config_import_about,
-			.apply = tr::lng_serein_config_apply,
-			.done = tr::lng_serein_config_imported,
-		}, native);
+	PreviewImport(controller, settings, native);
+}
+
+void ShowAyuImport(
+		not_null<Window::SessionController*> controller,
+		const QByteArray &bytes) {
+	if (bytes.size() > kMaximumImportBytes) {
+		controller->showToast(tr::lng_serein_config_invalid(tr::now));
+		return;
+	}
+	const auto migration = MigrateAyuSettings(
+		QJsonDocument::fromJson(bytes).object(),
+		controller->session().userId().bare);
+	if (migration.settings.isEmpty()) {
+		controller->showToast(tr::lng_serein_config_ayu_invalid(tr::now));
+		return;
+	}
+	PreviewImport(controller, migration.settings, {}, migration.skippedKeys);
 }
 
 void ShowReset(not_null<Window::SessionController*> controller) {
@@ -199,11 +227,13 @@ void Export(not_null<Window::SessionController*> controller) {
 		}));
 }
 
-void Import(not_null<Window::SessionController*> controller) {
+void Import(
+		not_null<Window::SessionController*> controller,
+		void (*show)(not_null<Window::SessionController*>, const QByteArray &)) {
 	Display::OpenJsonFile(
 		kMaximumImportBytes,
 		crl::guard(controller, [=](QByteArray bytes) {
-			ShowImport(controller, bytes);
+			show(controller, bytes);
 		}),
 		crl::guard(controller, [=](QString text) {
 			controller->showToast(text);
@@ -258,7 +288,7 @@ const auto kMeta = BuildHelper({
 	AddSection(builder, {
 		u"serein/config/files"_q,
 		tr::lng_serein_section_config_files,
-		{ u"export"_q, u"import"_q },
+		{ u"export"_q, u"import"_q, u"ayugram"_q },
 	});
 	AddRow(builder, {
 		.id = u"serein/config/export"_q,
@@ -272,10 +302,19 @@ const auto kMeta = BuildHelper({
 	AddRow(builder, {
 		.id = u"serein/config/import"_q,
 		.title = tr::lng_serein_config_import(),
-		.onClick = [=] { Import(controller); },
+		.onClick = [=] { Import(controller, ShowImport); },
 		.visual = {
 			.icon = &st::menuIconImportTheme,
 			.about = tr::lng_serein_config_import_row_about,
+		},
+	});
+	AddRow(builder, {
+		.id = u"serein/config/import-ayugram"_q,
+		.title = tr::lng_serein_config_import_ayu(),
+		.onClick = [=] { Import(controller, ShowAyuImport); },
+		.visual = {
+			.icon = &st::menuIconImportTheme,
+			.about = tr::lng_serein_config_import_ayu_about,
 		},
 	});
 	EndSection(builder, tr::lng_serein_config_scope);

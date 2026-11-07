@@ -224,6 +224,7 @@ set(serein_sources
     serein/settings/chats.cpp
     serein/settings/compose.cpp
     serein/settings/cloud_backup.cpp
+    serein/settings/ayu_migration.cpp
     serein/settings/config.cpp
     serein/settings/exchange_preview.cpp
     serein/settings/presets.cpp

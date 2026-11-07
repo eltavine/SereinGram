@@ -6,6 +6,7 @@ set(serein_test_sources
     serein/tests/test_options.cpp
     serein/tests/test_session_lifetime.cpp
     serein/tests/test_exchange.cpp
+    serein/tests/test_ayu_migration.cpp
     serein/tests/test_presets.cpp
     serein/tests/test_markdown.cpp
     serein/tests/test_quiet_hours.cpp
@@ -104,6 +105,7 @@ set(serein_test_sources
     serein/privacy/qr_decode.cpp
     serein/compose/validators.cpp
     serein/core/exchange.cpp
+    serein/settings/ayu_migration.cpp
     serein/core/patterns.cpp
     serein/core/id_list.cpp
     serein/interface/main_menu_model.cpp

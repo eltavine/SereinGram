@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "dialogs/ui/dialogs_suggestions.h"
+#include "serein/hooks/privacy/hidden.h"
 
 #include "api/api_chat_participants.h"
 #include "api/api_peer_search.h"
@@ -3700,7 +3701,8 @@ rpl::producer<TopPeersList> TopPeersContent(
 		const auto now = base::unixtime::now();
 		for (const auto &peer : top) {
 			const auto user = peer->asUser();
-			if (user->isInaccessible()) {
+			if (!user || user->isInaccessible()
+				|| Serein::Privacy::ChatHidden(peer)) {
 				continue;
 			}
 			const auto self = user && user->isSelf();
@@ -3822,7 +3824,9 @@ rpl::producer<TopPeersList> TopPeersContent(
 }
 
 RecentPeersList RecentPeersContent(not_null<Main::Session*> session) {
-	return RecentPeersList{ session->recentPeers().list() };
+	auto peers = session->recentPeers().list();
+	peers.erase(ranges::remove_if(peers, Serein::Privacy::ChatHidden), end(peers));
+	return RecentPeersList{ std::move(peers) };
 }
 
 object_ptr<Ui::BoxContent> StarsExamplesBox(

@@ -34,9 +34,14 @@ namespace {
 		return 3;
 	}
 	const auto suffix = QFileInfo(document->filename()).suffix().toLower();
+	const auto mime = document->mimeString();
 	return (suffix == u"zip"_q || suffix == u"rar"_q || suffix == u"7z"_q
 		|| suffix == u"gz"_q || suffix == u"bz2"_q || suffix == u"xz"_q
-		|| suffix == u"tar"_q || suffix == u"zst"_q) ? 1 : 4;
+		|| suffix == u"tar"_q || suffix == u"zst"_q
+		|| mime == u"application/zip"_q
+		|| mime == u"application/x-7z-compressed"_q
+		|| mime == u"application/vnd.rar"_q
+		|| mime == u"application/x-rar-compressed"_q) ? 1 : 4;
 }
 
 } // namespace
