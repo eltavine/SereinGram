@@ -229,7 +229,7 @@ modules:
         sha256: 6dcfbca271d76a6502741a2c0dc6fc98ef7dd0b7b4cfd0abcebb285a86a26f33
       - type: git
         url: https://github.com/desktop-app/patches.git
-        commit: a59fc82462fb2987e9f0ee1498e2db694410ae81
+        commit: 23d349a3ff09dbc1fa8127ce39ba9223de0edf21
         dest: patches
       - type: shell
         commands:
@@ -295,7 +295,7 @@ modules:
           - bindgen/cpp/Cargo.lock
       - type: git
         url: https://github.com/desktop-app/patches.git
-        commit: a59fc82462fb2987e9f0ee1498e2db694410ae81
+        commit: 23d349a3ff09dbc1fa8127ce39ba9223de0edf21
         dest: patches
       - type: shell
         commands:

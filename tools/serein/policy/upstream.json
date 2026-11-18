@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "upstream": "https://github.com/telegramdesktop/tdesktop.git#dev",
-  "base": "7381fb1df75d863eb3463fdddef57a2ac51f1d56",
+  "base": "9918118a04f4e7f26649516980f789e89161179d",
   "source_root": "Telegram/SourceFiles/",
   "owned_extra": [
     "docs/serein/",
