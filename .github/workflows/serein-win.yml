@@ -120,7 +120,17 @@ jobs:
             'C:\Program Files\dotnet',
             'C:\hostedtoolcache\windows\CodeQL',
             'C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk',
-            'C:\ghcup'
+            'C:\ghcup',
+            'C:\Miniconda',
+            'C:\msys64',
+            'C:\vcpkg',
+            "$env:USERPROFILE\.cargo",
+            "$env:USERPROFILE\.rustup",
+            'C:\Program Files\PostgreSQL',
+            'C:\Program Files\MongoDB',
+            'C:\Program Files\MySQL',
+            'C:\Program Files\R',
+            'C:\SeleniumWebDrivers'
           )
           foreach ($path in $unused) {
             if (Test-Path $path) {
@@ -155,6 +165,13 @@ jobs:
           ref: ${{ inputs.ref }}
           submodules: recursive
           path: ${{ env.TBUILD }}\${{ env.REPO_NAME }}
+
+      - name: Apply the upstream dav1d MSVC fix.
+        shell: bash
+        run: |
+          prepare="$TBUILD/$REPO_NAME/$PREPARE_PATH"
+          test "$(sed -n '/^    cd dav1d\r\?$/p' "$prepare" | wc -l)" -eq 1
+          sed -i '/^    cd dav1d\r\?$/a\    git fetch origin a34e0685b9111b9eb1d7835ea7bea5b425dced73\n    git cherry-pick --no-commit FETCH_HEAD' "$prepare"
 
       - name: First set up.
         shell: bash
@@ -255,6 +272,8 @@ jobs:
 
       # Debug and Release libraries, so both configurations share one cache.
       - name: Libraries.
+        env:
+          CARGO_INCREMENTAL: '0'
         run: |
           %TBUILD%\%REPO_NAME%\Telegram\build\prepare\win.bat silent ${{ matrix.qt }}
 

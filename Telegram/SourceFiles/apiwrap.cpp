@@ -3949,7 +3949,7 @@ FullMsgId ApiWrap::forwardMessages(
 	if (Serein::Hooks::SplitForward(draft, successCallback, [&](auto &&part, auto &&done) {
 		forwardMessages(std::move(part), action, std::move(done));
 	})) {
-		return;
+		return {};
 	}
 	auto &histories = _session->data().histories();
 

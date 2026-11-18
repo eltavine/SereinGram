@@ -9,6 +9,16 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import patch_dockerfile
 
 DOCKERFILE = """\
+FROM rockylinux:8 AS builder
+RUN <<EOF
+dnf -y install cmake autoconf automake libtool pkgconfig make patch git \\
+\tpython3.11-pip
+EOF
+RUN <<EOF
+alternatives --set python3 /usr/bin/python3.11
+python3 -m pip install meson ninja
+EOF
+
 FROM builder AS rnnoise
 RUN <<EOF
 git clone -b v0.2 --depth=1 https://github.com/xiph/rnnoise.git
@@ -40,12 +50,20 @@ def gnu_sed():
 
 class PatchDockerfileTest(unittest.TestCase):
     def test_keeps_native_rust_and_fixes_rnnoise(self):
-        text = patch_dockerfile.patch(DOCKERFILE)
+        text = patch_dockerfile.patch(DOCKERFILE, "arm64")
         self.assertNotIn("x86_64-unknown-linux-gnu", text)
         self.assertNotIn("--target", text)
         self.assertIn("target/release/libtdesktop_rust.a", text)
         self.assertIn("cd rnnoise\nsed -i ", text)
         self.assertLess(text.index("sed -i "), text.index("./autogen.sh"))
+
+    def test_checks_expat_on_both_architectures(self):
+        for arch in ("x86_64", "arm64"):
+            with self.subTest(arch=arch):
+                text = patch_dockerfile.patch(DOCKERFILE, arch)
+                self.assertIn("'expat >= 2.5.0' python3.12", text)
+                self.assertIn("python3.12 -c 'import pyexpat'", text)
+                self.assertEqual("cd rnnoise\nsed -i " in text, arch == "arm64")
 
     @unittest.skipUnless(gnu_sed(), "the fix runs with GNU sed in the Rocky Linux image")
     def test_the_rnnoise_fix_matches_upstream(self):
@@ -61,19 +79,24 @@ class PatchDockerfileTest(unittest.TestCase):
 
     def test_fails_when_upstream_moves(self):
         with self.assertRaises(patch_dockerfile.PatchError):
-            patch_dockerfile.patch(DOCKERFILE.replace(" AS tdesktop_rust", " AS tlottie"))
+            patch_dockerfile.patch(DOCKERFILE.replace(" AS tdesktop_rust", " AS tlottie"), "arm64")
         with self.assertRaises(patch_dockerfile.PatchError):
-            patch_dockerfile.patch(DOCKERFILE.replace("--lib", "--lib --target x86_64"))
+            patch_dockerfile.patch(DOCKERFILE.replace("--lib", "--lib --target x86_64"), "arm64")
         with self.assertRaises(patch_dockerfile.PatchError):
-            patch_dockerfile.patch(DOCKERFILE.replace("cd rnnoise\n", ""))
+            patch_dockerfile.patch(DOCKERFILE.replace("cd rnnoise\n", ""), "arm64")
+        with self.assertRaises(patch_dockerfile.PatchError):
+            patch_dockerfile.patch(
+                DOCKERFILE.replace("alternatives --set", "update-alternatives --set"), "x86_64"
+            )
 
     def test_main_rewrites_the_file(self):
         with tempfile.TemporaryDirectory() as temp:
             path = Path(temp) / "Dockerfile"
             path.write_text(DOCKERFILE)
-            self.assertEqual(patch_dockerfile.main([str(path)]), 0)
+            args = [str(path), "--arch", "arm64"]
+            self.assertEqual(patch_dockerfile.main(args), 0)
             self.assertIn("target/release/libtdesktop_rust.a", path.read_text())
-            self.assertEqual(patch_dockerfile.main([str(path)]), 1)
+            self.assertEqual(patch_dockerfile.main(args), 1)
 
 
 if __name__ == "__main__":

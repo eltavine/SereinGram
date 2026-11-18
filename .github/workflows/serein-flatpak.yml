@@ -44,6 +44,7 @@ jobs:
       image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-51
       options: >-
         --privileged
+        --volume /var/lib/flatpak
         --volume /usr/share/dotnet:/host/dotnet
         --volume /usr/local/lib/android:/host/android
         --volume /opt/ghc:/host/ghc
