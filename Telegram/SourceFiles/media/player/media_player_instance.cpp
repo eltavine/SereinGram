@@ -43,7 +43,7 @@ namespace Media {
 namespace Player {
 namespace {
 
-Instance *SingleInstance = nullptr;
+auto SingleInstance = (Instance*)nullptr;
 
 // Preload X message ids before and after current.
 constexpr auto kIdsLimit = 32;
@@ -151,7 +151,7 @@ void SaveLastPlaybackPosition(
 
 bool IsRealPlaybackContext(not_null<const HistoryItem*> item) {
 	return item->isRegular()
-		|| item->isScheduled()
+		|| (item->isScheduled() && !item->isSending() && !item->hasFailed())
 		|| item->isSavedMusicItem();
 }
 

@@ -21,8 +21,8 @@ let
     sha256 = "45d22ed481dc4fab07390abfa811c095c424e11c745e87b9d0d27b40efa17da2";
   };
   walletPatch = fetchurl {
-    url = "https://raw.githubusercontent.com/desktop-app/patches/a59fc82462fb2987e9f0ee1498e2db694410ae81/wallet-engine.patch";
-    sha256 = "b40aba82c39a42d0526a85ecfa40d613baa57b1a2d6600e601a42a1576b3b822";
+    url = "https://raw.githubusercontent.com/desktop-app/patches/23d349a3ff09dbc1fa8127ce39ba9223de0edf21/wallet-engine.patch";
+    sha256 = "67a2fc79096544bfedffbbad14798b6edac43cf5757b41b8fc1ede5d6f8e5cd6";
   };
   sources = builtins.fromJSON (builtins.readFile ../flatpak/tdesktop-rust-cargo-sources.json);
   vendor = runCommand "tdesktop-rust-vendor" { } (
@@ -48,7 +48,7 @@ let
 in
 stdenv.mkDerivation {
   pname = "tdesktop-rust";
-  version = "7.4.1";
+  version = "7.4.4";
   dontUnpack = true;
   dontConfigure = true;
   nativeBuildInputs = [
